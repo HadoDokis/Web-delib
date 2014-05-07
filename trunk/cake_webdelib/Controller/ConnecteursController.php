@@ -19,8 +19,10 @@ class ConnecteursController extends AppController {
             3 => 'Parapheur électronique (Signature)',
             4 => 'Tiers de télétransmission (TDT)',
             5 => 'I-delibRE',
-            6 => 'GED (export CMIS)',
-           // 7 => 'Service d\'archivage électronique (As@lae)',
+            6 => 'Gestion électronique de document (GED)',
+            7 => 'Service d\'archivage électronique (SAE)',
+            8 => 'LDAP',
+            9 => 'Pastell',
         );
 
         $this->set('connecteurs', $connecteurs);
@@ -48,22 +50,20 @@ class ConnecteursController extends AppController {
                 break;
             case 3:
                 // Configuration signature
-                $protocoles = array('pastell' => 'Pastell', 'iparapheur' => 'i-Parapheur');
+                $protocoles = array('PASTELL' => 'Pastell', 'IPARAPHEUR' => 'i-Parapheur');
+                if (!Configure::read('USE_PASTELL')){
+                    unset($protocoles['PASTELL']);
+                }
                 $this->set('protocoles', $protocoles);
-                $config_pastell = Configure::read('Pastell');
-                if (!empty($config_pastell))
-                    $config_pastell = array_combine(array_keys($config_pastell),array_keys($config_pastell));
-                $this->set('flux_pastell', $config_pastell);
                 $this->render('signature');
                 break;
             case 4:
                 // Configuration tdt
-                $protocoles = array('pastell' => 'Pastell', 's2low' => 'S²low');
+                $protocoles = array('PASTELL' => 'Pastell', 'S2LOW' => 'S²low');
+                 if (!Configure::read('USE_PASTELL')){
+                    unset($protocoles['PASTELL']);
+                }
                 $this->set('protocoles', $protocoles);
-                $config_pastell = Configure::read('Pastell');
-                if (!empty($config_pastell))
-                    $config_pastell = array_combine(array_keys($config_pastell),array_keys($config_pastell));
-                $this->set('flux_pastell', $config_pastell);
                 $this->render('tdt');
                 break;
             case 5:
@@ -75,8 +75,20 @@ class ConnecteursController extends AppController {
                 $this->render('cmis');
                 break;
             case 7:
-                // Connecteur AS@LAE
-                $this->render('asalae');
+                // Connecteur SAE
+                $protocoles = array('PASTELL' => 'Pastell');
+                $this->set('protocoles', $protocoles);
+                $this->render('sae');
+                break;
+            case 8:
+                // Connecteur LDAP
+                $protocoles = array('AD' => 'Active Directory', 'OPENLDAP' => 'OpenLDAP');
+                $this->set('protocoles', $protocoles);
+                $this->render('ldap');
+                break;
+            case 9:
+                // Connecteur Pastell
+                $this->render('pastell');
                 break;
             default:
                 $this->Session->setFlash('Ce connecteur n\'est pas valide', 'growl', array('type' => 'erreur'));
@@ -111,13 +123,10 @@ class ConnecteursController extends AppController {
                 $protocol = strtoupper($this->data['Connecteur']['signature_protocol']);
                 $content = $this->_replaceValue($content, 'PARAPHEUR', $protocol);
                 $content = $this->_replaceValue($content, 'USE_PARAPHEUR', $this->data['Connecteur']['use_signature']);
-                $content = $this->_replaceValue($content, "USE_$protocol", $this->data['Connecteur']['use_signature']);
-                $content = $this->_replaceValue($content, $protocol . '_HOST', $this->data['Connecteur']['host']);
-                $content = $this->_replaceValue($content, $protocol . '_LOGIN', $this->data['Connecteur']['login']);
-                $content = $this->_replaceValue($content, $protocol . '_PWD', $this->data['Connecteur']['pwd']);
+                $content = $this->_replaceValue($content, 'IPARAPHEUR_HOST', $this->data['Connecteur']['host']);
+                $content = $this->_replaceValue($content, 'IPARAPHEUR_LOGIN', $this->data['Connecteur']['login']);
+                $content = $this->_replaceValue($content, 'IPARAPHEUR__PWD', $this->data['Connecteur']['pwd']);
                 $content = $this->_replaceValue($content, 'IPARAPHEUR_TYPE', $this->data['Connecteur']['type']);
-                if ($protocol == 'PASTELL' && !empty($this->data['Connecteur']['pastelltype']))
-                    $content = $this->_replaceValue($content, 'PASTELL_TYPE', $this->data['Connecteur']['pastelltype']);
                 if ($protocol == 'IPARAPHEUR') {
                     $content = $this->_replaceValue($content, 'IPARAPHEUR_CERTPWD', $this->data['Connecteur']['certpwd']);
                     if (file_exists($this->data['Connecteur']['clientcert']['tmp_name'])) {
@@ -136,16 +145,12 @@ class ConnecteursController extends AppController {
                 $protocol = strtoupper($this->data['Connecteur']['tdt_protocol']);
                 $content = $this->_replaceValue($content, 'TDT', $protocol);
                 $content = $this->_replaceValue($content, 'USE_TDT', $this->data['Connecteur']['use_tdt']);
-                if ($protocol == 'PASTELL'){
-                    $content = $this->_replaceValue($content, "USE_S2LOW", 'false');
-                    $content = $this->_replaceValue($content, 'PASTELL_TYPE', $this->data['Connecteur']['type']);
-                }
-                $content = $this->_replaceValue($content, "USE_$protocol", 'true');
-                $content = $this->_replaceValue($content, $protocol . '_LOGIN', $this->data['Connecteur']['login']);
-                $content = $this->_replaceValue($content, $protocol . '_PWD', $this->data['Connecteur']['pwd']);
                 if ($protocol == 'S2LOW') {
-                    if (strpos($this->request->data['Connecteur']['host'], 'https://') === false)
+                    $content = $this->_replaceValue($content, 'USE_S2LOW', 'true');
+                    if (strpos($this->request->data['Connecteur']['host'], 'https://') === false) {
                         $this->request->data['Connecteur']['host'] = 'https://' . $this->request->data['Connecteur']['host'];
+                    }
+                    $content = $this->_replaceValue($content, 'S2LOW_HOST', $this->data['Connecteur']['host']);
                     $content = $this->_replaceValue($content, 'S2LOW_CERTPWD', $this->data['Connecteur']['certpwd']);
                     $content = $this->_replaceValue($content, 'S2LOW_USEPROXY', $this->data['Connecteur']['use_proxy']);
                     $content = $this->_replaceValue($content, 'S2LOW_PROXYHOST', $this->data['Connecteur']['proxy_host']);
@@ -162,8 +167,9 @@ class ConnecteursController extends AppController {
                         } else
                             $this->Session->setFlash('Le mot de passe du certificat est erroné', 'growl', array('type' => 'erreur'));
                     }
+                }elseif ($protocol == 'PASTELL'){
+                    $content = $this->_replaceValue($content, "USE_S2LOW", 'false');
                 }
-                $content = $this->_replaceValue($content, $protocol . '_HOST', $this->request->data['Connecteur']['host']);
                 break;
 
             case 'idelibre' :
@@ -193,10 +199,10 @@ class ConnecteursController extends AppController {
                 break;
             case 'cmis' :
                 $content = $this->_replaceValue($content, 'USE_GED', $this->data['Connecteur']['use_ged']);
-                $content = $this->_replaceValue($content, 'GED_HOST', $this->data['Connecteur']['ged_url']);
-                $content = $this->_replaceValue($content, 'GED_LOGIN', $this->data['Connecteur']['ged_login']);
-                $content = $this->_replaceValue($content, 'GED_PWD', $this->data['Connecteur']['ged_passwd']);
-                $content = $this->_replaceValue($content, 'GED_REPO', $this->data['Connecteur']['ged_repo']);
+                $content = $this->_replaceValue($content, 'CMIS_HOST', $this->data['Connecteur']['ged_url']);
+                $content = $this->_replaceValue($content, 'CMIS_LOGIN', $this->data['Connecteur']['ged_login']);
+                $content = $this->_replaceValue($content, 'CMIS_PWD', $this->data['Connecteur']['ged_passwd']);
+                $content = $this->_replaceValue($content, 'CMIS_REPO', $this->data['Connecteur']['ged_repo']);
                 $content = $this->_replaceValue($content, 'GED_XML_VERSION', $this->data['Connecteur']['ged_xml_version']);
                 break;
             case 'mail' :
@@ -207,14 +213,36 @@ class ConnecteursController extends AppController {
                 $content = $this->_replaceValue($content, 'SMTP_TIMEOUT', $this->data['Connecteur']['smtp_timeout']);
                 $content = $this->_replaceValue($content, 'SMTP_USERNAME', $this->data['Connecteur']['smtp_username']);
                 $content = $this->_replaceValue($content, 'SMTP_PASSWORD', $this->data['Connecteur']['smtp_password']);
+                $content = $this->_replaceValue($content, 'SMTP_CLIENT', $this->data['Connecteur']['smtp_client']);
+                
                 break;
-            case 'asalae' :
+            case 'sae' :
                 $content = $this->_replaceValue($content, 'USE_ASALAE', $this->data['Connecteur']['use_asalae']);
                 $content = $this->_replaceValue($content, 'ASALAE_WSDL', $this->data['Connecteur']['asalae_wsdl']);
                 $content = $this->_replaceValue($content, 'ASALAE_SIREN_ARCHIVE', $this->data['Connecteur']['siren_archive']);
                 $content = $this->_replaceValue($content, 'ASALAE_NUMERO_AGREMENT', $this->data['Connecteur']['numero_agrement']);
                 $content = $this->_replaceValue($content, 'ASALAE_LOGIN', $this->data['Connecteur']['identifiant_versant']);
                 $content = $this->_replaceValue($content, 'ASALAE_PWD', $this->data['Connecteur']['mot_de_passe']);
+                break;
+            case 'ldap' :
+                $protocol = strtoupper($this->data['Connecteur']['ldap_protocol']);
+                $content = $this->_replaceValue($content, 'LDAP', $protocol);
+                $content = $this->_replaceValue($content, 'USE_LDAP', $this->data['Connecteur']['use_ldap']);
+                $content = $this->_replaceValue($content, 'LDAP_HOST', $this->data['Connecteur']['ldap_host']);
+                $content = $this->_replaceValue($content, 'LDAP_PORT', $this->data['Connecteur']['ldap_port']);
+                $content = $this->_replaceValue($content, 'LDAP_LOGIN', $this->data['Connecteur']['ldap_login']);
+                $content = $this->_replaceValue($content, 'LDAP_PASSWD', $this->data['Connecteur']['ldap_password']);
+                $content = $this->_replaceValue($content, 'LDAP_UID', $this->data['Connecteur']['ldap_uid']);
+                $content = $this->_replaceValue($content, 'LDAP_BASE_DN', $this->data['Connecteur']['ldap_basedn']);
+                $content = $this->_replaceValue($content, 'LDAP_ACCOUNT_SUFFIX', $this->data['Connecteur']['ldap_suffix']);
+                $content = $this->_replaceValue($content, 'LDAP_DN', $this->data['Connecteur']['ldap_dn']);
+                break;
+            case 'pastell' :
+                $content = $this->_replaceValue($content, 'USE_PASTELL', $this->data['Connecteur']['use_pastell']);
+                $content = $this->_replaceValue($content, 'PASTELL_HOST', $this->data['Connecteur']['host']);
+                $content = $this->_replaceValue($content, 'PASTELL_LOGIN', $this->data['Connecteur']['login']);
+                $content = $this->_replaceValue($content, 'PASTELL_PWD', $this->data['Connecteur']['pwd']);
+                $content = $this->_replaceValue($content, 'PASTELL_TYPE', $this->data['Connecteur']['type']);
                 break;
             case 'debug' :
                 $content = $this->_replaceValue($content, 'debug', $this->data['Connecteur']['debug']);

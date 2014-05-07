@@ -32,7 +32,7 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-Configure::write('debug', 0);
+Configure::write('debug', 01);
 /**
  * Configure the Error handler used to handle errors for your application.  By default
  * ErrorHandler::handleError() is used.  It will display errors using Debugger, when debug > 0
@@ -115,7 +115,7 @@ Configure::write('App.encoding', 'UTF-8');
  * Turn off all caching application-wide.
  *
  */
-Configure::write('Cache.disable', false);
+Configure::write('Cache.disable', true);
 
 /**
  * Enable cache checking.
@@ -310,6 +310,8 @@ if (file_exists(APP.DS.'Config'.DS.'pastell.inc'))
     include_once('pastell.inc');
 
 //appVersion
-define('VERSION', '4.2');
+$versionFile = file(APP . DS . 'VERSION.txt');
+define('VERSION', trim(array_pop($versionFile)));
+
 //dbVersion
 include_once(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Cakeflow' . DS . 'Config' . DS . 'cakeflow.conf.php');

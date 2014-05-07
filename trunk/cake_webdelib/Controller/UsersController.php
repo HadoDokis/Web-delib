@@ -445,11 +445,20 @@ class UsersController extends AppController {
             if ($user['User']['id'] == 1) {
                 $isAuthentif = ($user['User']['password'] == md5($this->data['User']['password']));
             } else {
-                if (Configure::read('USE_AD')) {
-                    include(ROOT . DS . APP_DIR . DS . "Vendor/adLDAP.php");
+                if (Configure::read('USE_LDAP') && Configure::read('LDAP')=='AD') {
+                    //Mise en place des defines pour la librairie adLDAP
+                    define('LDAP_HOST', Configure::read('LDAP_HOST'));
+                    define('LDAP_PORT', Configure::read('LDAP_PORT'));
+                    define('LDAP_LOGIN', Configure::read('LDAP_LOGIN'));
+                    define('LDAP_PASSWD', Configure::read('LDAP_PASSWD'));
+                    define('LDAP_UID', Configure::read('LDAP_UID'));
+                    define('LDAP_BASE_DN', Configure::read('LDAP_BASE_DN'));
+                    define('ACCOUNT_SUFFIX', Configure::read('LDAP_ACCOUNT_SUFFIX'));
+                    define('LDAP_DN', Configure::read('LDAP_DN'));
+                    include(ROOT . DS . APP_DIR . DS . 'Vendor/adLDAP.php');
                     $ldap = new adLDAP();
                     $isAuthentif = $ldap->authenticate($this->data['User']['login'], $this->data['User']['password']);
-                } elseif (Configure::read('USE_OPENLDAP'))
+                } elseif (Configure::read('USE_LDAP') && Configure::read('LDAP')=='OPENLDAP')
                     $isAuthentif = $this->_checkLDAP($this->data['User']['login'], $this->data['User']['password']);
                 else
                     $isAuthentif = ($user['User']['password'] == md5($this->data['User']['password']));

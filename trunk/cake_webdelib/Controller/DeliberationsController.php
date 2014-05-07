@@ -311,7 +311,7 @@ class DeliberationsController extends AppController
         $canEditAll = $this->Droits->check($this->user_id, "Deliberations:editerTous");
 
         $this->set('USE_PASTELL', Configure::read('USE_PASTELL'));
-        if (Configure::read('USE_PASTELL')) {
+        if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL')  && Configure::read('USE_TDT')) {
             App::uses('Tdt', 'Lib');
             $Tdt = new Tdt();
             $res = $Tdt->listClassification();
@@ -892,8 +892,7 @@ class DeliberationsController extends AppController
                 'conditions' => array('model' => 'Deliberation', 'actif' => true),
                 'order' => 'ordre',
                 'contain' => array('Profil.id'))));
-
-            if (Configure::read('USE_PASTELL')) {
+            if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL') && Configure::read('USE_TDT')) {
                 App::uses('Tdt', 'Lib');
                 $Tdt = new Tdt();
                 $res = $Tdt->listClassification();
@@ -2027,7 +2026,7 @@ class DeliberationsController extends AppController
                         $delib['Deliberation']['pastell_id'] = $Tdt->createPastell($delib, $this->Deliberation->getAnnexesToSend($delib_id));
                         $this->Deliberation->saveField('pastell_id', $delib['Deliberation']['pastell_id']);
                     }
-                    if (Configure::read('USE_PASTELL') && !empty($delib['Deliberation']['pastell_id'])) {
+                    if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL') && !empty($delib['Deliberation']['pastell_id'])) {
                         $sent = $Tdt->send($delib['Deliberation']['pastell_id'], $delib['Deliberation']['num_pref']);
                         if ($sent) {
                             $this->Deliberation->saveField('etat', 5);
@@ -3649,7 +3648,7 @@ class DeliberationsController extends AppController
             $delibs[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($delibs[$i]['Deliberation']['num_pref']);
         }
 
-        if (Configure::read('USE_PASTELL')) {
+        if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL')) {
             App::uses('Tdt', 'Lib');
             $Tdt = new Tdt();
             $res = $Tdt->listClassification();
@@ -4042,7 +4041,7 @@ class DeliberationsController extends AppController
             $actes[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($actes[$i]['Deliberation']['num_pref']);
         }
 
-        if (Configure::read('USE_PASTELL')) {
+        if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL')) {
             App::uses('Tdt', 'Lib');
             $Tdt = new Tdt();
             $res = $Tdt->listClassification();

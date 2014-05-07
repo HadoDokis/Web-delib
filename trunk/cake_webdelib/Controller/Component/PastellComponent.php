@@ -78,6 +78,8 @@ class PastellComponent extends Component {
     public function execute($page, $data = array(), $file_transfert = false) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_USERPWD, $this->login . ":" . $this->pwd);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $api = $this->host . "/api/$page";

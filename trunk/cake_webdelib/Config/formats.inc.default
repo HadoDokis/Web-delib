@@ -202,5 +202,63 @@ Configure::write('DOC_TYPE', array(
                 'version' => '1.0'
             ),
         ),
+    ),
+    'application/vnd.ms-excel' => array(
+        'formatname' => 'Microsoft Excel 2000-2003 Workbook (xls)',
+        'extension' => 'xls',
+        'joindre_fusion' => false,
+        'joindre_ctrl_legalite' => false,
+        'convertir' => false,
+        'puid' => array(
+            'fmt/62' => array(
+                'actif' => true,
+                'version' => '8X'
+            ),
+                'fmt/61' => array(
+                'actif' => true,
+                'version' => '8'
+            ),
+
+            
+        ),
+    ),
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => array(
+        'formatname' => 'Microsoft Excel for Windows',
+        'extension' => 'xslx',
+        'joindre_fusion' => false,
+        'joindre_ctrl_legalite' => false,
+        'convertir' => false,
+        'puid' => array(
+            'fmt/214' => array(
+                'actif' => true,
+                'version' => '2007 onwards'
+            ),
+        ),
+    ),
+     'application/vnd.ms-powerpoint' => array(
+        'formatname' => 'Microsoft Powerpoint Presentation',
+        'extension' => 'ppt',
+        'joindre_fusion' => false,
+        'joindre_ctrl_legalite' => false,
+        'convertir' => false,
+        'puid' => array(
+            'fmt/126' => array(
+                'actif' => true,
+                'version' => '97-2002'
+            ),
+        ),
+    ),
+     'application/vnd.openxmlformats-officedocument.presentationml.presentation' => array(
+        'formatname' => 'Microsoft Powerpoint for Windows',
+        'extension' => 'pptx',
+        'joindre_fusion' => false,
+        'joindre_ctrl_legalite' => false,
+        'convertir' => false,
+        'puid' => array(
+            'fmt/215' => array(
+                'actif' => true,
+                'version' => '2007 onwards'
+            ),
+        ),
     )
 ));

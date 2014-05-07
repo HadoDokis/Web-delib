@@ -85,7 +85,7 @@ class Tdt {
         $protocol = Configure::read('TDT');
 
         if (!$signature)
-            throw new Exception("Signature désactivée");
+            throw new Exception("TDT désactivée");
         if (empty($protocol))
             throw new Exception("Aucun TDT désigné");
 

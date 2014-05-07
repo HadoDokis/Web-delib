@@ -23,9 +23,8 @@ Configure::write('CONVERSION_TYPE', 'CLOUDOOO');
 Configure::write('CLOUDOOO_HOST', '127.0.0.1');
 Configure::write('CLOUDOOO_PORT', '8011');
 
-/* Configuration pour la manipulation des pdf */ //apt-get install poppler-utils
+/* Configuration pour la manipulation des pdf */
 Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
-Configure::write('PDFINFO_EXEC', '/usr/bin/pdfinfo');
 
 /* Configuration GhostScript */
 // Chemin vers l'executable
@@ -34,14 +33,14 @@ Configure::write('GS_EXEC', '/usr/bin/gs');
 Configure::write('GS_RESOLUTION', '150');
 
 /* Configuration mail */
-Configure::write('MAIL_FROM', 'Webdelib <webdelib@mon-domaine.fr>');
+Configure::write('MAIL_FROM', '');
 Configure::write('SMTP_USE', false);
-Configure::write('SMTP_PORT', 25);
-Configure::write('SMTP_TIMEOUT', 30);
-Configure::write('SMTP_HOST', 'your.smtp.server');
-Configure::write('SMTP_USERNAME', 'your_smtp_username');
-Configure::write('SMTP_PASSWORD', 'your_smtp_password');
-Configure::write('SMTP_CLIENT', 'smtp_helo_hostname');
+Configure::write('SMTP_PORT', '');
+Configure::write('SMTP_TIMEOUT', '');
+Configure::write('SMTP_HOST', '');
+Configure::write('SMTP_USERNAME', '');
+Configure::write('SMTP_PASSWORD', '');
+Configure::write('SMTP_CLIENT', '');
 
 /* Configuration GEDOOo */
 Configure::write('GEDOOO_WSDL', 'http://127.0.0.1:8880/ODFgedooo/OfficeService?wsdl');
@@ -52,7 +51,7 @@ Configure::write('GEDOOO_WSDL', 'http://127.0.0.1:8880/ODFgedooo/OfficeService?w
 /* Activer le parapheur */
 Configure::write('USE_PARAPHEUR', false);
 /* Service utilisé pour le parapheur ('PASTELL', 'IPARAPHEUR', ...) */
-Configure::write('PARAPHEUR', 'IPARAPHEUR');
+Configure::write('PARAPHEUR', array('PASTELL','IPARAPHEUR'));
 
 /**
  * TDT (Tiers de télétransmission)
@@ -60,7 +59,7 @@ Configure::write('PARAPHEUR', 'IPARAPHEUR');
 /* Activer le TDT (tiers de télétransmission) */
 Configure::write('USE_TDT', false);
 /* Service utilisé pour le TDT ('PASTELL', 'S2LOW', ...) */
-Configure::write('TDT', 'S2LOW');
+Configure::write('TDT', array('PASTELL', 'S2LOW'));
 
 /**
  * SAE (Service d'archivage électronique)
@@ -76,7 +75,7 @@ Configure::write('SAE', 'ASALAE');
 /* Activer la GED */
 Configure::write('USE_GED', false);
 /* Service utilisé pour la GED ('PASTELL' ou 'GED') */
-Configure::write('GED_PASTELL', false);
+Configure::write('GED', 'CMIS');
 Configure::write('GED_XML_VERSION', '2');
 
 /**
@@ -84,92 +83,78 @@ Configure::write('GED_XML_VERSION', '2');
  */
 /* Configuration de PASTELL */
 Configure::write('USE_PASTELL', false);
-Configure::write('PASTELL_HOST', 'http://pastell.x.x.org');
-Configure::write('PASTELL_TYPE', 'actes-generique');
-Configure::write('PASTELL_LOGIN', 'login');
-Configure::write('PASTELL_PWD', 'password');
+Configure::write('PASTELL_HOST', '');
+Configure::write('PASTELL_TYPE', '');
+Configure::write('PASTELL_LOGIN', '');
+Configure::write('PASTELL_PWD', '');
+Configure::write('PASTELL_CACERT', APP . 'Config/cert_pastell/ac.pem');
+Configure::write('PASTELL_CLIENTCERT', APP . 'Config/cert_pastell/cert.pem');
+Configure::write('PASTELL_CERTPWD', '');
 
 /* Configuration Webservice du i-Parapheur */
 Configure::write('USE_IPARAPHEUR', false);
-Configure::write('IPARAPHEUR_HOST', 'https://iparapheur.x.x.org');
-Configure::write('IPARAPHEUR_LOGIN', 'login');
-Configure::write('IPARAPHEUR_PWD', 'password');
-Configure::write('IPARAPHEUR_TYPE', 'Actes');
+Configure::write('IPARAPHEUR_HOST', '');
+Configure::write('IPARAPHEUR_LOGIN', '');
+Configure::write('IPARAPHEUR_PWD', '');
+Configure::write('IPARAPHEUR_TYPE', '');
 Configure::write('IPARAPHEUR_VISIBILITY', 'PUBLIC');
 Configure::write('IPARAPHEUR_WSDL', 'ws-iparapheur?wsdl');
 Configure::write('IPARAPHEUR_CACERT', APP . 'Config/cert_parapheur/ac.pem');
 Configure::write('IPARAPHEUR_CLIENTCERT', APP . 'Config/cert_parapheur/cert.pem');
-Configure::write('IPARAPHEUR_CERTPWD', 'passphrase');
+Configure::write('IPARAPHEUR_CERTPWD', '');
 
 /* Configuration S2LOW */
 Configure::write('USE_S2LOW', false);
-Configure::write('S2LOW_HOST', 'https://s2low.x.x.org');
+Configure::write('S2LOW_HOST', '');
 Configure::write('S2LOW_PEM', APP . 'Config/cert_s2low/client.pem');
 Configure::write('S2LOW_SSLKEY', APP . 'Config/cert_s2low/key.pem');
 Configure::write('S2LOW_CAPATH', APP . 'Config/cert_s2low/');
 Configure::write('S2LOW_CLASSIFICATION', APP . 'webroot/files/actes/classification.xml');
-Configure::write('S2LOW_CERTPWD', 'password');
+Configure::write('S2LOW_CERTPWD', '');
 Configure::write('S2LOW_USEPROXY', false);
 Configure::write('S2LOW_PROXYHOST', '');
 Configure::write('S2LOW_MAILSEC', false);
 Configure::write('S2LOW_MAILSECPWD', '');
 
 /* Configuration CONNECTEUR CMIS GED */
-Configure::write('GED_HOST', 'https://ged.x.x.x/alfresco/service/api/cmis');
-Configure::write('GED_LOGIN', 'login');
-Configure::write('GED_PWD', 'password');
-Configure::write('GED_REPO', '/Sites/Web-delib');
+Configure::write('CMIS_HOST', '');
+Configure::write('CMIS_LOGIN', '');
+Configure::write('CMIS_PWD', '');
+Configure::write('CMIS_REPO', '');
 
 /* Configuration pour Idélibre */
 Configure::write('USE_IDELIBRE', false);
-Configure::write('IDELIBRE_HOST', 'https://idelibre.x.x.org');
-Configure::write('IDELIBRE_LOGIN', 'login');
-Configure::write('IDELIBRE_PWD', 'password');
-Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
-//Certificats
+Configure::write('IDELIBRE_HOST', '');
+Configure::write('IDELIBRE_LOGIN', '');
+Configure::write('IDELIBRE_PWD', '');
+Configure::write('IDELIBRE_CONN', ''); //Collectivité
+//Certificats pour Idélibre
 Configure::write('IDELIBRE_USE_CERT', false);
 Configure::write('IDELIBRE_CAPATH', APP . 'Config/cert_idelibre/');
 Configure::write('IDELIBRE_CA', APP . 'Config/cert_idelibre/ca.pem');
 Configure::write('IDELIBRE_KEY', APP . 'Config/cert_idelibre/key.pem');
 Configure::write('IDELIBRE_CERT', APP . 'Config/cert_idelibre/cert.pem');
-Configure::write('IDELIBRE_CERTPWD', 'passphrase');
+Configure::write('IDELIBRE_CERTPWD', '');
 
 /* Configuration ASAL@AE */
 Configure::write('USE_ASALAE', false);
-Configure::write('ASALAE_HOST', 'https://asalae.x.x.org');
-Configure::write('ASALAE_LOGIN', 'WEBDELIBSERVICES_LOGIN');
-Configure::write('ASALAE_PWD', 'WEBDELIBSERVICES_MDP');
-Configure::write('ASALAE_WSDL', '/webservices/wsdl');
-Configure::write('ASALAE_SIREN_ARCHIVE', 'DEMO');
-Configure::write('ASALAE_NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
+Configure::write('ASALAE_HOST', '');
+Configure::write('ASALAE_LOGIN', '');
+Configure::write('ASALAE_PWD', '');
+Configure::write('ASALAE_WSDL', '');
+Configure::write('ASALAE_SIREN_ARCHIVE', '');
+Configure::write('ASALAE_NUMERO_AGREMENT', '');
 
 /**
- * Configuration des annuaires (AD ou OpenLDAP)
+ * Configuration des annuaires (OpenLDAP ou Active Directory)
  */
-
-/* Configuration de OpenLDAP (pour Active Directory voir plus bas) */
-Configure::write('USE_OPENLDAP', false);
-Configure::write('LDAP_HOST', 'ldap.x.x.x');
-Configure::write('LDAP_PORT', '389');
-Configure::write('LDAP_LOGIN', NULL);
-Configure::write('LDAP_PASSWD', NULL);
-Configure::write('LDAP_UID', 'UID');
-Configure::write('LDAP_BASE_DN', 'OU=Utilisateurs,dc=mairie-xxx,dc=xxx');
-Configure::write('LDAP_ACCOUNT_SUFFIX', '@mairie-xxx.xxx');
-Configure::write('LDAP_DN', 'dn');
-
-/*
- * Pour utiliser un Active Directory, utiliser les instructions "define" (ci-dessous) à la place des "Configure::write" (ci-dessus)
- * Changez Configure::write('USE_AD', false) => Configure::write('USE_AD', true)
- */
-Configure::write('USE_AD', false);
-/*
-define('LDAP_HOST', 'your.active_directory.server');
-define('LDAP_PORT', '389');
-define('LDAP_LOGIN', 'your_ad_login');
-define('LDAP_PASSWD', 'your_ad_password');
-define('LDAP_UID', 'UID');
-define('LDAP_BASE_DN', 'OU=users,dc=CGxx,dc=fr');
-define('LDAP_ACCOUNT_SUFFIX', '@CG-xx.xx');
-define('LDAP_DN', 'distinguishedname');
- */
+Configure::write('USE_LDAP', false);
+Configure::write('LDAP', 'OPENLDAP');
+Configure::write('LDAP_HOST', '');
+Configure::write('LDAP_PORT', '');
+Configure::write('LDAP_LOGIN', '');
+Configure::write('LDAP_PASSWD', '');
+Configure::write('LDAP_UID', '');
+Configure::write('LDAP_BASE_DN', '');
+Configure::write('LDAP_ACCOUNT_SUFFIX', '');
+Configure::write('LDAP_DN', '');

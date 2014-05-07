@@ -1,16 +1,5 @@
-<?php
-if (empty($flux_pastell)){
-    echo '<div class="alert">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <strong>Attention !</strong> Connecteur Pastell désactivé. Le fichier pastell.inc est introuvable.
-    </div>';
-    unset($protocoles['pastell']);
-}
-?>
-<div class='spacer'></div>
 <div id="configSignature">
     <?php
-    $protocol = Configure::read('PARAPHEUR');
     $true_false = array('true' => 'Oui', 'false' => 'Non');
     echo $this->Form->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'signature'), 'type' => 'file'));
     ?>
@@ -35,54 +24,46 @@ if (empty($flux_pastell)){
             echo $this->Form->input('signature_protocol', array(
                 'type' => 'select',
                 'options' => $protocoles,
-                'label' => 'Protocole',
+                'label' => 'Type de connecteur',
                 'onChange' => 'changeProtocol()',
-                'value' => strtolower($protocol)));
+                'value' => Configure::read('PARAPHEUR')));
             ?>
         </fieldset>
         <div class='spacer'></div>
-        <fieldset>
+        <fieldset class="iparapheur-infos">
             <legend>Informations d'authentification</legend>
             <?php
             echo $this->Form->input('host', array(
                 'type' => 'text',
-                'placeholder' => 'http://'.strtolower($protocol).'.x.x.org',
+                'placeholder' => 'https://i-parapheur.x.x.org',
                 'label' => 'URL',
-                'value' => Configure::read($protocol.'_HOST')));
+                'value' => Configure::read('IPARAPHEUR_HOST')));
 
             echo $this->Form->input('login', array(
                 'type' => 'text',
                 'placeholder' => 'Nom d\'utilisateur',
                 'label' => 'Login',
-                'value' => Configure::read($protocol.'_LOGIN')));
+                'value' => Configure::read('IPARAPHEUR_LOGIN')));
 
             echo $this->Form->input('pwd', array(
                 'type' => 'password',
                 'placeholder' => 'Mot de passe utilisateur',
                 'label' => 'Mot de passe',
-                'value' => Configure::read($protocol.'_PWD')));
+                'value' => Configure::read('IPARAPHEUR_PWD')));
             ?>
         </fieldset>
-        <fieldset>
+        <fieldset class='iparapheur-infos'>
             <legend>Configuration des flux</legend>
             <?php
-            echo $this->Form->input('pastelltype', array(
-                'type' => 'select',
-                'options' => $flux_pastell,
-                'title' => 'Pour modifier les flux Pastell, éditer le fichier de configuration pastell.inc',
-                'value' => Configure::read('PASTELL_TYPE'),
-                'label' => 'Type de flux (Pastell)',
-                'div' => array('id'=> 'pastell_type','style' => ($protocol != 'PASTELL') ? 'display: none;' : '')
-            ));
             echo $this->Form->input('type', array(
                 'type' => 'text',
                 'label' => 'Type technique (Parapheur)',
-                'placeholder' => 'Exemple : Actes',
+                'placeholder' => 'Actes',
                 'value' => Configure::read('IPARAPHEUR_TYPE'),
             ));
             ?>
         </fieldset>
-        <fieldset id='infos_certificat'<?php if ($protocol != 'IPARAPHEUR') echo ' style="display: none;"'; ?>>
+        <fieldset class='iparapheur-infos'>
             <legend>Certificat d'authentification</legend>
             <?php
             echo $this->Form->input('clientcert', array(
@@ -104,7 +85,32 @@ if (empty($flux_pastell)){
     echo $this->Form->button("<i class='fa fa-save'></i> Enregistrer", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Modifier la configuration'));
     echo $this->Html->tag('/div', null);
     echo $this->Form->end();
-    echo $this->Html->script('connecteurs/signature');
     echo $this->Html->css('connecteurs');
     ?>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+    changeProtocol();
+});
+function changeActivation(element) {
+    if ($(element).val() == 'true') {
+        $('#config_content').show();
+    } else {
+        $('#config_content').hide();
+    }
+}
+
+function changeProtocol() {
+    var protocol = $('#ConnecteurSignatureProtocol').val();
+    if (protocol == 'PASTELL') {
+        $('.pastell-infos').show();
+    } else {
+        $('.pastell-infos').hide();
+    }
+    if (protocol == 'IPARAPHEUR') {
+        $('.iparapheur-infos').show();
+    } else {
+        $('.iparapheur-infos').hide();
+    }
+}
+</script>
