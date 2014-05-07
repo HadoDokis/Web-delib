@@ -1,15 +1,5 @@
-<?php
-if (empty($flux_pastell)){
-    echo '<div class="alert">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <strong>Attention !</strong> Connecteur Pastell désactivé. Le fichier pastell.inc est introuvable.
-    </div>';
-    unset($protocoles['pastell']);
-}
-?>
 <div id="configTdt">
     <?php
-    $protocol = Configure::read('TDT');
     $true_false = array('true' => 'Oui', 'false' => 'Non');
     echo $this->Form->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'tdt'), 'type' => 'file'));
     ?>
@@ -36,42 +26,21 @@ if (empty($flux_pastell)){
                 'options' => $protocoles,
                 'label' => 'Protocole',
                 'onChange' => 'changeProtocol()',
-                'value' => strtolower($protocol)));
+                'value' => Configure::read('TDT')
+                ));
             ?>
         </fieldset>
         <div class='spacer'></div>
-        <fieldset>
+        <fieldset class="s2low-infos">
             <legend>Informations de connexion</legend>
-            <?php
+             <?php
             echo $this->Form->input('host', array(
                 'type' => 'text',
-                'placeholder' => 'https://' . strtolower($protocol) . '.x.x.org',
+                'placeholder' => 'https://www.s2low.org',
                 'label' => 'URL du serveur',
-                'value' => Configure::read($protocol . '_HOST')));
-            echo $this->Form->hidden('pastell_host', array('value' => Configure::read('PASTELL_HOST')));
-            echo $this->Form->hidden('s2low_host', array('value' => Configure::read('S2LOW_HOST')));
+                'value' => Configure::read('S2LOW_HOST')
+                ));
             ?>
-            <span class="pastell-infos">
-            <?php
-            echo $this->Form->input('login', array(
-                'type' => 'text',
-                'placeholder' => 'Nom d\'utilisateur',
-                'label' => 'Login',
-                'value' => Configure::read('PASTELL_LOGIN')));
-            echo $this->Form->input('pwd', array(
-                'type' => 'text',
-                'placeholder' => 'Mot de passe utilisateur',
-                'label' => 'Mot de passe',
-                'value' => Configure::read('PASTELL_PWD')));
-            echo $this->Form->input('type', array(
-                'type' => 'select',
-                'label' => 'Type de flux',
-                'options' => $flux_pastell,
-                'title' => 'Pour modifier les flux Pastell, éditer le fichier de configuration pastell.inc',
-                'value' => Configure::read('PASTELL_TYPE'),
-            ));
-            ?>
-            </span>
         </fieldset>
         <fieldset class="s2low-infos">
             <legend>Certificat d'authentification</legend>
@@ -81,13 +50,13 @@ if (empty($flux_pastell)){
                 'label' => 'Certificat (p12)'
             ));
             echo $this->Form->input('certpwd', array(
-                'type' => 'text',
+                'type' => 'password',
                 'placeholder' => "Fourni avec votre certificat",
                 'value' => Configure::read('S2LOW_CERTPWD'),
                 'label' => 'Mot de passe'));
             ?>
         </fieldset>
-        <div class="s2low-infos"<?php if ($protocol != 'S2LOW') echo ' style="display: none;"'; ?>>
+        <div class="s2low-infos"<?php if (Configure::read('TDT') != 'S2LOW') echo ' style="display: none;"'; ?>>
             <fieldset>
                 <legend>Proxy</legend>
                 <?php
@@ -105,7 +74,7 @@ if (empty($flux_pastell)){
                     <?php
                     echo $this->Form->input('proxy_host', array(
                         'type' => 'text',
-                        'placeholder' => 'Exemple : http://x.x.x.x:8080',
+                        'placeholder' => 'http://x.x.x.x:8080',
                         'value' => Configure::read('S2LOW_PROXYHOST'),
                         'label' => 'Adresse du proxy'));
                     ?> </div>
@@ -127,7 +96,7 @@ if (empty($flux_pastell)){
                     id="mails_password" <?php if (!Configure::read('S2LOW_MAILSEC')) echo ' style="display: none;"'; ?>>
                     <?php
                     echo $this->Form->input('mails_password', array(
-                        'type' => 'text',
+                        'type' => 'password',
                         'placeholder' => 'Mot de passe mail sécurisé',
                         'value' => Configure::read('S2LOW_MAILSECPWD'),
                         'label' => 'Mot de passe'
@@ -139,20 +108,37 @@ if (empty($flux_pastell)){
         <div class='spacer'></div>
     </div>
     <?php
-    foreach ($protocoles as $id_p => $p) {
-        echo $this->Form->hidden($id_p . '_host', array('value' => Configure::read(strtoupper($id_p) . '_HOST')));
-        echo $this->Form->hidden($id_p . '_login', array('value' => Configure::read(strtoupper($id_p) . '_LOGIN')));
-        echo $this->Form->hidden($id_p . '_pwd', array('value' => Configure::read(strtoupper($id_p) . '_PWD')));
-        echo $this->Form->hidden($id_p . '_type', array('value' => Configure::read(strtoupper($id_p) . '_TYPE')));
-    }
     echo $this->Html->tag('div', null, array('class' => 'btn-group', 'style' => 'margin-top:10px;'));
     echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('controller' => 'connecteurs', 'action' => 'index'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
     echo $this->Form->button("<i class='fa fa-save'></i> Enregistrer", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Modifier la configuration'));
     echo $this->Html->tag('/div', null);
-
     echo $this->Form->end();
-
-    echo $this->Html->script('connecteurs/tdt');
     echo $this->Html->css('connecteurs');
     ?>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+    changeProtocol();
+});
+function changeActivation(element) {
+    if ($(element).val() == 'true') {
+        $('#config_content').show();
+    } else {
+        $('#config_content').hide();
+    }
+}
+
+function changeProtocol() {
+    var protocol = $('#ConnecteurTdtProtocol').val();
+    if (protocol == 'PASTELL') {
+        $('.pastell-infos').show();
+    } else {
+        $('.pastell-infos').hide();
+    }
+    if (protocol == 'S2LOW') {
+        $('.s2low-infos').show();
+    } else {
+        $('.s2low-infos').hide();
+    }
+}
+</script>

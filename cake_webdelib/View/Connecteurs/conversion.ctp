@@ -9,7 +9,7 @@
 <?php  
         echo $this->Form->input('gedooo_url', 
                                 array('type' => 'text', 
-                                      "placeholder"=>"Exemple : http://gedooo.services.adullact.org:8880/ODFgedooo/OfficeService?wsdl", 
+                                      "placeholder"=>"Exemple : http://127.0.0.1:8880/ODFgedooo/OfficeService?wsdl", 
                                       'label' => 'WSDL de ODFGEDOOo : ' , 
                                       'value' => Configure::read('GEDOOO_WSDL')));
 ?>
@@ -19,7 +19,7 @@
 <?php
     echo $this->Form->input('cloudooo_url', array('type' => 'text', 
                                               "placeholder"=>"fourni avec votre certificat", 
-                                              "placeholder"=>"Exemple :  http://cloudooo.services.adullact.org/",
+                                              "placeholder"=>"Exemple : 127.0.0.1",
                                               'label' => 'Adresse de CLOUDOOo :',
                                               'value' => Configure::read('CLOUDOOO_HOST')));
 ?>

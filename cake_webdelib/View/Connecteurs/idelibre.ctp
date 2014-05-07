@@ -24,7 +24,7 @@ echo $this->Form->create('Connecteur', array('url' => array('controller' => 'con
             <?php
             echo $this->Form->input('idelibre_host', array(
                 'type' => 'text',
-                "placeholder" => "http://idelibre-server.ma-ville.fr",
+                "placeholder" => "https://idelibre.adullact.org",
                 'label' => 'URL',
                 'value' => Configure::read('IDELIBRE_HOST')
             ));
@@ -87,5 +87,21 @@ echo $this->Form->button("<i class='fa fa-save'></i> Enregistrer", array('type' 
 echo $this->Html->tag('/div', null);
 echo $this->Form->end();
 echo $this->Html->css('connecteurs');
-echo $this->Html->script('connecteurs/idelibre');
 ?>
+<script type="text/javascript">
+function changeActivation(element) {
+    if ($(element).val() == 'true') {
+        $('#config_content').show();
+    } else {
+        $('#config_content').hide();
+    }
+}
+
+function changeActivationCert(element) {
+    if ($(element).val() == 'true') {
+        $('#idelibre_cert').show();
+    } else {
+        $('#idelibre_cert').hide();
+    }
+}
+</script>

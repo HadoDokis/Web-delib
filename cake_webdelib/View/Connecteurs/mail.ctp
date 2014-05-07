@@ -1,17 +1,14 @@
+<div id="configSmtp">
 <?php
-if (is_null(Configure::read('SMTP_USE'))){
-    echo "<strong>La directive &quot;Configure::write('SMTP_USE')&quot; est introuvable dans le fichier de configuration webdelib.inc</strong>";
-    echo '<br><br>';
-    echo $this->Html->link('< Retour', array('action'=>'index'), array('class'=>'btn'));
-}else{
-
-    echo $this->Form->create('Connecteur', array('url'=>'/connecteurs/makeconf/mail')); ?>
+$true_false = array('true' => 'Oui', 'false' => 'Non');
+echo $this->Form->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'mail')));
+?>
 <fieldset>
     <legend>Configuration des mails</legend>
     <?php
     echo $this->Form->input('mail_from',
                         array('type' => 'text',
-                              "placeholder"=>"exemple : 'Webdelib <webdelib@ma-collectivite.fr>",
+                              "placeholder"=>"Exemple : 'Webdelib <webdelib@ma-collectivite.fr>",
                               'label' => false,
                               'value' => Configure::read('MAIL_FROM'),
                               'before' => '<label>Mail de expéditeur : </label>')); 
@@ -20,32 +17,30 @@ if (is_null(Configure::read('SMTP_USE'))){
        </fieldset>
     <fieldset>
         <legend>Activation du SMTP</legend>
-<?php
-    $notif = array('true' => 'Oui&nbsp;', 'false'=>'Non&nbsp;');
-    echo $this->Form->input('smtp_use', array( 'before'  => '<label style="text-align: left;">Utilisation du SMTP de la collectivité&nbsp;</label>',
-                                               'legend'  => false,
-                                               'type'    => 'radio',
-                                               'options' => $notif,
-                                               'value'   => Configure::read('SMTP_USE') ? 'true' : 'false',
-                                               'div'     => false,
-                                               'default' => 'false',
-                                               'label'   => false,
-                                               'onClick' => "if (this.value=='true') $('#affiche').show(); else $('#affiche').hide(); " ));
- ?>
+        <?php
+        echo $this->Form->input('smtp_use', array(
+            'legend' => false,
+            'type' => 'radio',
+            'options' => $true_false,
+            'value' => Configure::read('SMTP_USE') ? 'true' : 'false',
+            'div' => true,
+            'label' => true,
+            'onChange' => 'changeActivation(this)'));
+        ?>
     <div class='spacer'> </div>
-    <div id='affiche' <?php echo is_null(Configure::read('SMTP_USE')) || !Configure::read('SMTP_USE') ? 'style="display: none;"' : ''; ?>>
+    <div id='config_content' <?php echo Configure::read('SMTP_USE') === false ? 'style="display: none;"' : ''; ?>>
     <fieldset>
         <legend>Paramètrage du SMTP</legend>
 <?php  
     echo $this->Form->input('smtp_host', 
                              array('type' => 'text', 
                                    "placeholder"=>"Exemple : smtp.maville.fr", 
-                                   'label' => 'Serveur SMTP : ' , 
+                                   'label' => 'Serveur SMTP' , 
                                    'value' => Configure::read('SMTP_HOST')));
     echo $this->Form->input('smtp_port',
                             array('type' => 'text',
                                   "placeholder"=>"Exemple : 25",
-                                  'label' => 'port du serveur : ' ,
+                                  'label' => 'Port du serveur' ,
                                   'value' => Configure::read('SMTP_PORT'))); 
     echo $this->Form->input('smtp_timeout',
                              array('type' => 'text',
@@ -65,12 +60,34 @@ if (is_null(Configure::read('SMTP_USE'))){
                                   'label' => false,
                                   'value' => Configure::read('SMTP_PASSWORD'),
                                   'before' => '<label>Mot de passe</label>')); 
+     echo $this->Form->input('smtp_client',
+                            array('type' => 'text',
+                                  "placeholder"=>"smtp_helo_hostname",
+                                  'label' => false,
+                                  'value' => Configure::read('SMTP_CLIENT'),
+                                  'before' => '<label>Client (Helo hostname)</label>')); 
+    
 ?>
     </fieldset>
 </div>
   </fieldset>
 <?php
-    echo $this->Html2->boutonsSaveCancel('','/connecteurs/index');
-    echo $this->Form->end();
-}
+echo $this->Html->tag('div', null, array('class' => 'btn-group', 'style' => 'margin-top:10px;'));
+echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('controller' => 'connecteurs', 'action' => 'index'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
+echo $this->Form->button("<i class='fa fa-save'></i> Enregistrer", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Modifier la configuration'));
+echo $this->Html->tag('/div', null);
+echo $this->Form->end();
+echo $this->Html->css('connecteurs');
 ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+    changeProtocol();
+});
+function changeActivation(element) {
+    if ($(element).val() == 'true') {
+        $('#config_content').show();
+    } else {
+        $('#config_content').hide();
+    }
+}
+</script>

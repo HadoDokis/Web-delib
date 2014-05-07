@@ -100,7 +100,7 @@ class MaintenanceShell extends AppShell {
             $docs_info = Configure::read('DOC_TYPE');
             $i = 0;
             foreach ($annexes as $annexe) {
-                if (empty($docs_info[$annexe['Annex']['filetype']]['convertir'])) continue;
+                //if (empty($docs_info[$annexe['Annex']['filetype']]['convertir'])) continue;
                 $i++;
                 $this->out('Conversion annexe n°' . $annexe['Annex']['id'] . ' ('.$i.'/'.count($annexes).')...');
                 $return = $this->CronJob->convertionAnnexesJob($annexe['Annex']['foreign_key'], true);

@@ -26,24 +26,24 @@ $notif = array('true' => 'Oui', 'false' => 'Non');
                 'type' => 'text',
                 "placeholder" => "Exemple : http://x.x.ma-ville.fr",
                 'label' => 'Serveur de la GED : ',
-                'value' => Configure::read('GED_HOST')));
+                'value' => Configure::read('CMIS_HOST')));
         echo $this->Form->input('ged_login', array(
                 'type' => 'text',
                 "placeholder" => "Nom d'utilisateur",
                 'label' => false,
-                'value' => Configure::read('GED_LOGIN'),
+                'value' => Configure::read('CMIS_LOGIN'),
                 'before' => '<label>Nom d\'utilisateur</label>'));
         echo $this->Form->input('ged_passwd',
-                array('type' => 'text',
+                array('type' => 'password',
                     "placeholder" => "Mot de passe",
                     'label' => false,
-                    'value' => Configure::read('GED_PWD'),
+                    'value' => Configure::read('CMIS_PWD'),
                     'before' => '<label>Mot de passe</label>'));
         echo $this->Form->input('ged_repo',
                 array('type' => 'text',
                     "placeholder" => "Exemple : /Sites/Web-delib",
                     'label' => false,
-                    'value' => Configure::read('GED_REPO'),
+                    'value' => Configure::read('CMIS_REPO'),
                     'before' => '<label>Répertoire de stockage</label>'));
         echo $this->Form->input('ged_xml_version', array(
             'type' => 'select',

@@ -1177,6 +1177,8 @@ function getPastellVersion() {
         d(Configure::read('PASTELL_HOST'), 'info');
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN") . ":" . Configure::read("PASTELL_PWD"));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $api = Configure::read("PASTELL_HOST") . "/api/version.php";
@@ -1227,27 +1229,15 @@ function checkGED(){
 function checkLDAP(){
     
     $ldapInfos = array();
-    if(Configure::read('USE_OPENLDAP')){
-        $ldapInfos["Serveur"] = Configure::read("LDAP_HOST");
-        $ldapInfos["Port"] = Configure::read("LDAP_PORT");
-        $ldapInfos["Login"] = Configure::read("LDAP_LOGIN");
-        $ldapInfos["Password"] = Configure::read("LDAP_PASSWD");
-        $ldapInfos["Unique_ID"] = Configure::read("LDAP_UID");
-        $ldapInfos["Base_DN"] = Configure::read("LDAP_BASE_DN");
-        $ldapInfos["Account_suffix"] = Configure::read("LDAP_ACCOUNT_SUFFIX");
-        $ldapInfos["DN"] = Configure::read("LDAP_DN");
-    }
-    elseif(Configure::read('USE_AD')){
-        $ldapInfos = array();
-        $ldapInfos["Serveur"] = LDAP_HOST;
-        $ldapInfos["Port"] = LDAP_PORT;
-        $ldapInfos["Login"] = LDAP_LOGIN;
-        $ldapInfos["Password"] = LDAP_PASSWD;
-        $ldapInfos["Unique_ID"] = LDAP_UID;
-        $ldapInfos["Base_DN"] = LDAP_BASE_DN;
-        $ldapInfos["Account_suffix"] = LDAP_ACCOUNT_SUFFIX;
-        $ldapInfos["DN"] = LDAP_DN;
-    }
+    var_dump(Configure::read("LDAP_HOST"));
+    $ldapInfos["Serveur"] = Configure::read("LDAP_HOST");
+    $ldapInfos["Port"] = Configure::read("LDAP_PORT");
+    $ldapInfos["Login"] = Configure::read("LDAP_LOGIN");
+    $ldapInfos["Password"] = Configure::read("LDAP_PASSWD");
+    $ldapInfos["Unique_ID"] = Configure::read("LDAP_UID");
+    $ldapInfos["Base_DN"] = Configure::read("LDAP_BASE_DN");
+    $ldapInfos["Account_suffix"] = Configure::read("LDAP_ACCOUNT_SUFFIX");
+    $ldapInfos["DN"] = Configure::read("LDAP_DN");
     
     // affichage des infos LDAP
     d('Paramètres de connexion : ', 'info');
@@ -1261,13 +1251,13 @@ function checkLDAP(){
     // ouverture de la connexion
     $conn = ldap_connect($ldapInfos["Serveur"], $ldapInfos["Port"]);
     if ($conn) {
-        if (Configure::read('USE_AD')){
+        if (Configure::read('LDAP')=='AD'){
             ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
             ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
         }
         
         // authentification
-        if(Configure::read('USE_OPENLDAP'))
+        if(Configure::read('LDAP')=='OPENLDAP')
             @ldap_bind($conn, $ldapInfos["Unique_ID"].'='.$ldapInfos["Login"].','.$ldapInfos["Base_DN"], $ldapInfos["Password"]);
         else
             @ldap_bind($conn, $ldapInfos["Login"], $ldapInfos["Password"]);
@@ -1280,7 +1270,7 @@ function checkLDAP(){
                 d('Authentification à l\'annuaire LDAP réussie', 'ok');
             } else {
                 d('Echec de l\'authentification à l\'annuaire LDAP : '.ldap_error($conn), 'ko');
-                if(Configure::read('USE_OPENLDAP')){
+                if(Configure::read('LDAP')=='OPENLDAP'){
                     // recherche de l'utilisateur dans l'annuaire (ne fonctionne que si ldap public)
                     $result = @ldap_search($conn, $ldapInfos["Base_DN"], $ldapInfos["Unique_ID"]."=".$ldapInfos["Login"]);
                     $info = @ldap_get_entries($conn, $result);
