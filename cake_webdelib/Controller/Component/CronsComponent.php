@@ -111,7 +111,7 @@ class CronsComponent extends Component
         if (!empty($crons)){
             // exécutions
             foreach ($crons as $cron) {
-                $rapport .= $cron['Cron']['id'].'-'.$cron['Cron']['nom'].' : '.$this->runCronId($cron['Cron']['id'])."\n";
+                $rapport .= $cron['Cron']['id'].'-'.$cron['Cron']['nom']." : \n".$this->runCronId($cron['Cron']['id']) . "\n";
             }
         }else{
             $rapport .= "Aucune tâche planifiée à exécuter";
