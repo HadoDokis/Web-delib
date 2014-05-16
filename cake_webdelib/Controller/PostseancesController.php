@@ -926,13 +926,13 @@ class PostseancesController extends AppController {
                     $sARacte = $this->Tdt->getArActe($delib['Deliberation']['tdt_id']);
                     $document = $this->_createElement($dom, 'document', null, array(
                         'idDocument' => $aDocuments['ARacte'],
-                        'nom' => 'ARacte.xml',
-                        'relname' => 'ARacte/ARacte.xml',
+                        'nom' => $delib['Deliberation']['id']. '-' .'ARacte.xml',
+                        'relname' => 'ARacte/'.$delib['Deliberation']['id'] . '-' .'ARacte.xml',
                         'type' => 'ARacte'));
                     $document->appendChild($this->_createElement($dom, 'mimetype', 'application/xml'));
                     $doc->appendChild($document);
                     //Ajout à l'archive
-                    $zip->addFromString('ARacte' . DS . 'ARacte.xml', $sARacte);
+                    $zip->addFromString('ARacte' . DS . $delib['Deliberation']['id']. '-' .'ARacte.xml', $sARacte);
                     unset($sARacte);
                 }
             }
