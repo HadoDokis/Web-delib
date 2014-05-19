@@ -245,6 +245,7 @@ class User extends AppModel
         // utilisateur existe et accepte les mails ?
         if (empty($user)
             || empty($user['User']['accept_notif'])
+            || empty($user['User']['email']) 
             || empty($user['User']["mail_$type"])
         ) return false;
 
