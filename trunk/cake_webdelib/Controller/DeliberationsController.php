@@ -591,7 +591,7 @@ class DeliberationsController extends AppController
         $this->response->disableCache();
         $this->response->body($bordereau);
         $this->response->type('application/pdf');
-        $this->response->download($num_delib . '_bordereau_signature_.pdf');
+        $this->response->download('bordereau_signature_'.$num_delib . '.pdf');
         return $this->response;
     }
 
@@ -1718,14 +1718,14 @@ class DeliberationsController extends AppController
                     'fields' => array('libelle', 'teletransmettre'),
                     'conditions' => array('Typeacte.teletransmettre' => true)),
                 'Circuit' => array('fields' => array('nom')),
-                'TdtMessage' => array('fields' => array('message_id', 'type_message')),
+                'TdtMessage' => array('fields' => array('message_id', 'type_message', 'type_reponse')),
             'Deliberationtypeseance' => array('fields' => array('id'),
                     'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
                     )),
                 'Deliberationseance' => array('fields' => array('id'),
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
                         'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
-            'order' => 'Deliberation.num_delib ASC',
+            'order' => 'Deliberation.id DESC',
             'limit' => 20));
 
         $this->set('host', Configure::read(Configure::read('TDT').'_HOST'));
@@ -1773,23 +1773,13 @@ class DeliberationsController extends AppController
 
     function toSend($seance_id = null) {
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
-        $this->set('host', Configure::read('S2LOW_HOST'));
-        if (Configure::read('USE_TDT')){
-            App::uses('Tdt', 'Lib');
-            $Tdt = new Tdt();
-            $date_classification = $Tdt->getDateClassification();
-            $this->set('dateClassification', $date_classification);
-            $this->set('USE_PASTELL', Configure::read('USE_PASTELL'));
-        }
-        if (Configure::read('TDT') == 'S2LOW') {
-            if ($date_classification != false) {
-                $this->set('tabNature', $this->_getNatureListe());
-                $this->set('tabMatiere', $this->_getMatiereListe());
-            }
-        } else {
-            $res = $Tdt->listClassification();
-            $this->set('nomenclatures', $res);
-        }
+        
+        App::uses('Tdt', 'Lib');
+        $Tdt = new Tdt();
+        $this->set('dateClassification', $Tdt->getDateClassification());
+        $this->set('tabNature', $this->_getNatureListe());
+        $this->set('tabMatiere', $this->_getMatiereListe());
+        $this->set('nomenclatures', $Tdt->listClassification());
 
         if (empty($seance_id)) {
             $conditions = $this->_handleConditions($this->Filtre->conditions());
@@ -2003,187 +1993,189 @@ class DeliberationsController extends AppController
         $erreur = '';
         //Cases sélectionnées ?
         if (!empty($this->data['Deliberation']['id'])) {
-            //si S2low : fichier classification présent ?
-            if (Configure::read('TDT') == 'S2LOW' && !is_file(Configure::read('S2LOW_CLASSIFICATION')))
-                $this->S2low->getClassification();
+            try{
+                //si S2low : fichier classification présent ?
+                if (Configure::read('TDT') == 'S2LOW' && !is_file(Configure::read('S2LOW_CLASSIFICATION')))
+                    $this->S2low->getClassification();
 
-            $nbEnvoyee = 1;
-            $this->Deliberation->Typeacte->Behaviors->load('Containable');
-            //Pour chaque délib
-            foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
-                //Si non cochée passer
-                if (!$bool) continue;
+                $nbEnvoyee = 1;
+                $this->Deliberation->Typeacte->Behaviors->load('Containable');
+                //Pour chaque délib
+                foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
+                    //Si non cochée passer
+                    if (!$bool) continue;
 
-                $this->Deliberation->id = $delib_id;
+                    $this->Deliberation->id = $delib_id;
 
-                if (!empty($this->data[$delib_id . "classif2"])) {
-                    $this->Deliberation->saveField('num_pref', $this->data[$delib_id . "classif2"]);
-                    $delib = $this->Deliberation->find('first', array(
-                        'conditions' => array('Deliberation.id' => $delib_id)
-                    ));
-
-                    if (Configure::read('TDT') == 'PASTELL' && empty($delib['Deliberation']['pastell_id'])) {
-                        $delib['Deliberation']['pastell_id'] = $Tdt->createPastell($delib, $this->Deliberation->getAnnexesToSend($delib_id));
-                        $this->Deliberation->saveField('pastell_id', $delib['Deliberation']['pastell_id']);
-                    }
-                    if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL') && !empty($delib['Deliberation']['pastell_id'])) {
-                        $sent = $Tdt->send($delib['Deliberation']['pastell_id'], $delib['Deliberation']['num_pref']);
-                        if ($sent) {
-                            $this->Deliberation->saveField('etat', 5);
-                            $this->Historique->enregistre($delib_id, $this->user_id, 'Acte envoyé au tiers de télétransmission');
-                        } else {
-                            $erreur .= $delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Envoi au TDT échoué';// <i class="fa fa-info-sign" title="'.$sent.'"></i>
-                            continue;
-                        }
-                    } elseif (Configure::read('TDT') == 'S2LOW' && Configure::read('USE_S2LOW')) {
-                        $typeacte = $this->Deliberation->Typeacte->find('first', array(
-                            'conditions' => array('Typeacte.id' => $delib['Typeacte']['id']),
-                            'contain' => array('Nature.code')
+                    if (!empty($this->data[$delib_id . "classif2"])) {
+                        $this->Deliberation->saveField('num_pref', $this->data[$delib_id . "classif2"]);
+                        $delib = $this->Deliberation->find('first', array(
+                            'conditions' => array('Deliberation.id' => $delib_id)
                         ));
-                        switch ($typeacte['Nature']['code']) {
-                            case 'DE':
-                                $nature_code = 1;
-                                break;
-                            case 'AR':
-                                $nature_code = 2;
-                                break;
-                            case 'AI':
-                                $nature_code = 3;
-                                break;
-                            case 'CC':
-                                $nature_code = 4;
-                                break;
-                            case 'AU':
-                                $nature_code = 5;
-                                break;
-                            default:
-                                continue;
-                        }
 
-                        //$this->Deliberation->changeClassification($delib_id, $classification);
-                        $classification = $delib['Deliberation']['num_pref'];
-                        if (strpos($classification, ' -') != false)
-                            $classification = substr($classification, 0, strpos($classification, ' -'));
-
-                        $class1 = substr($classification, 0, strpos($classification, '.'));
-                        $rest = substr($classification, strpos($classification, '.') + 1, strlen($classification));
-                        $class2 = substr($rest, 0, strpos($classification, '.'));
-                        $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
-                        $class3 = substr($rest, 0, strpos($classification, '.'));
-                        $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
-                        $class4 = substr($rest, 0, strpos($classification, '.'));
-                        $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
-                        $class5 = substr($rest, 0, strpos($classification, '.'));
-
-                        if (empty($delib['Deliberation']['delib_pdf'])) {
-                            $erreur .= $delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Fichier Vide.';
-                            continue;
-                        }
-                        $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'tdt' . DS . $delib_id), true, 0777);
-                        $errors = $folder->errors();
-                        if (!empty($errors)) {
-                            $erreur .= $delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : ' . implode($errors) . '.';
-                            continue;
-                        }
-
-                        $file = new File($folder->pwd() . DS . 'D_' . $delib_id . '.pdf');
-                        $file->write($delib['Deliberation']['delib_pdf']);
-                        $file->close();
-
-                        if (!empty($delib['Deliberation']['signature'])) {
-                            $fileSignature = new File($folder->pwd() . DS . 'signature_' . $delib_id . '.zip');
-                            $fileSignature->write($delib['Deliberation']['signature']);
-
-                            $zip = new ZipArchive();
-                            $res = $zip->open($fileSignature->pwd(), ZIPARCHIVE::OVERWRITE);
-                            if ($res === TRUE) {
-                                $zip->extractTo($folder->pwd() . DS, array('signature.pkcs7'));
-                                $zip->close();
+                        if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL')) {
+                            try {
+                                if(!empty($acte['Deliberation']['pastell_id'])){
+                                    $Tdt->send($delib, $delib['Deliberation']['delib_pdf'], $this->Deliberation->getAnnexesToSend($delib['Deliberation']['id']));
+                                }
+                                else
+                                    $sent = $Tdt->send($delib);
+                                if ($sent) {
+                                    $this->Deliberation->saveField('etat', 5);
+                                    $this->Historique->enregistre($delib_id, $this->user_id, 'Acte envoyé au tiers de télétransmission');
+                                }   
+                            } catch (Exception $e) {
+                                throw new Exception($this->Deliberation->field('num_delib'). ' :' . $e->getMessage());
                             }
-                            $fileSignature->close();
-                        }
-                        // Checker le code classification
-                        if (isset($delib['Deliberation']['date_acte']))
-                            $decision_date = date("Y-m-d", strtotime($delib['Deliberation']['date_acte']));
-                        else {
-                            $seances = array();
-                            foreach ($delib['Seance'] as $seance)
-                                $seances[] = $seance['id'];
-                            $this->Seance->id = $this->Seance->getSeanceDeliberante($seances);
-                            $decision_date = date("Y-m-d", strtotime($this->Seance->field('date')));
-                        }
-
-                        if ($class1 == false)
-                            $class1 = null;
-                        if ($class2 == false)
-                            $class2 = null;
-                        if ($class3 == false)
-                            $class3 = null;
-                        if ($class4 == false)
-                            $class4 = null;
-                        if ($class5 == false)
-                            $class5 = null;
-
-                        $acte = array(
-                            'api' => '1',
-                            'nature_code' => utf8_decode($nature_code),
-                            'classif1' => utf8_decode($class1),
-                            'classif2' => utf8_decode($class2),
-                            'classif3' => utf8_decode($class3),
-                            'classif4' => utf8_decode($class4),
-                            'classif5' => utf8_decode($class5),
-                            'number' => utf8_decode($delib['Deliberation']['num_delib']),
-                            'decision_date' => $decision_date,
-                            'subject' => utf8_decode($delib['Deliberation']['objet_delib']),
-                            'acte_pdf_file' => '@' . $file->pwd(),
-                        );
-
-                        if (file_exists($folder->pwd() . DS . 'signature.pkcs7')) {
-                            $acte['acte_pdf_file_sign'] = '@' . $folder->pwd() . DS . 'signature.pkcs7';
-                        }
-
-                        $annexes = $this->Deliberation->getAnnexesToSend($delib_id);
-                        if (!empty($annexes)) {
-                            $acte['acte_attachments_sign[' . count($annexes) . ']'] = "";
-                            foreach ($annexes as $key => $annex) {
-                                $fileAnnexe = new File($folder->pwd() . DS . $annex['filename']);
-                                $fileAnnexe->append($annex['content']);
-                                $acte["acte_attachments[$key]"] = '@' . $fileAnnexe->pwd();
-                                $file->close();
+                        } 
+                        elseif (Configure::read('TDT') == 'S2LOW' && Configure::read('USE_S2LOW')) {
+                            $typeacte = $this->Deliberation->Typeacte->find('first', array(
+                                'conditions' => array('Typeacte.id' => $delib['Typeacte']['id']),
+                                'contain' => array('Nature.code')
+                            ));
+                            switch ($typeacte['Nature']['code']) {
+                                case 'DE':
+                                    $nature_code = 1;
+                                    break;
+                                case 'AR':
+                                    $nature_code = 2;
+                                    break;
+                                case 'AI':
+                                    $nature_code = 3;
+                                    break;
+                                case 'CC':
+                                    $nature_code = 4;
+                                    break;
+                                case 'AU':
+                                    $nature_code = 5;
+                                    break;
+                                default:
+                                    continue;
                             }
-                        }
 
-                        $curl_return = utf8_encode($this->S2low->send($acte));
-                        $pos = strpos($curl_return, 'OK');
-                        $tdt_id = substr($curl_return, 3, strlen($curl_return));
-                        if ($pos === false) {
-                            $order = array("\r\n", "\n", "\r");
-                            $replace = '<br />';
-                            $curl_return = str_replace($order, $replace, $curl_return);
-                            $erreur .= $delib['Deliberation']['objet_delib'] . '(' . $delib['Deliberation']['num_delib'] . ') : ' . $curl_return . '<br />';
+                            //$this->Deliberation->changeClassification($delib_id, $classification);
+                            $classification = $delib['Deliberation']['num_pref'];
+                            if (strpos($classification, ' -') != false)
+                                $classification = substr($classification, 0, strpos($classification, ' -'));
+
+                            $class1 = substr($classification, 0, strpos($classification, '.'));
+                            $rest = substr($classification, strpos($classification, '.') + 1, strlen($classification));
+                            $class2 = substr($rest, 0, strpos($classification, '.'));
+                            $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
+                            $class3 = substr($rest, 0, strpos($classification, '.'));
+                            $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
+                            $class4 = substr($rest, 0, strpos($classification, '.'));
+                            $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
+                            $class5 = substr($rest, 0, strpos($classification, '.'));
+
+                            if (empty($delib['Deliberation']['delib_pdf'])) {
+                                throw new Exception($delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Fichier Vide.');
+                            }
+                            $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'tdt' . DS . $delib_id), true, 0777);
+                            $errors = $folder->errors();
+                            if (!empty($errors)) {
+                                throw new Exception($delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : ' . implode($errors) . '.');
+                            }
+
+                            $file = new File($folder->pwd() . DS . 'D_' . $delib_id . '.pdf');
+                            $file->write($delib['Deliberation']['delib_pdf']);
+                            $file->close();
+
+                            if (!empty($delib['Deliberation']['signature'])) {
+                                $fileSignature = new File($folder->pwd() . DS . 'signature_' . $delib_id . '.zip');
+                                $fileSignature->write($delib['Deliberation']['signature']);
+
+                                $zip = new ZipArchive();
+                                $res = $zip->open($fileSignature->pwd(), ZIPARCHIVE::OVERWRITE);
+                                if ($res === TRUE) {
+                                    $zip->extractTo($folder->pwd() . DS, array('signature.pkcs7'));
+                                    $zip->close();
+                                }
+                                $fileSignature->close();
+                            }
+                            // Checker le code classification
+                            if (isset($delib['Deliberation']['date_acte']))
+                                $decision_date = date("Y-m-d", strtotime($delib['Deliberation']['date_acte']));
+                            else {
+                                $seances = array();
+                                foreach ($delib['Seance'] as $seance)
+                                    $seances[] = $seance['id'];
+                                $this->Seance->id = $this->Seance->getSeanceDeliberante($seances);
+                                $decision_date = date("Y-m-d", strtotime($this->Seance->field('date')));
+                            }
+
+                            if ($class1 == false)
+                                $class1 = null;
+                            if ($class2 == false)
+                                $class2 = null;
+                            if ($class3 == false)
+                                $class3 = null;
+                            if ($class4 == false)
+                                $class4 = null;
+                            if ($class5 == false)
+                                $class5 = null;
+
+                            $acte = array(
+                                'api' => '1',
+                                'nature_code' => utf8_decode($nature_code),
+                                'classif1' => utf8_decode($class1),
+                                'classif2' => utf8_decode($class2),
+                                'classif3' => utf8_decode($class3),
+                                'classif4' => utf8_decode($class4),
+                                'classif5' => utf8_decode($class5),
+                                'number' => utf8_decode($delib['Deliberation']['num_delib']),
+                                'decision_date' => $decision_date,
+                                'subject' => utf8_decode($delib['Deliberation']['objet_delib']),
+                                'acte_pdf_file' => '@' . $file->pwd(),
+                            );
+
+                            if (file_exists($folder->pwd() . DS . 'signature.pkcs7')) {
+                                $acte['acte_pdf_file_sign'] = '@' . $folder->pwd() . DS . 'signature.pkcs7';
+                            }
+
+                            $annexes = $this->Deliberation->getAnnexesToSend($delib_id);
+                            if (!empty($annexes)) {
+                                $acte['acte_attachments_sign[' . count($annexes) . ']'] = "";
+                                foreach ($annexes as $key => $annex) {
+                                    $fileAnnexe = new File($folder->pwd() . DS . $annex['filename']);
+                                    $fileAnnexe->append($annex['content']);
+                                    $acte["acte_attachments[$key]"] = '@' . $fileAnnexe->pwd();
+                                    $file->close();
+                                }
+                            }
+
+                            $curl_return = utf8_encode($this->S2low->send($acte));
+                            $pos = strpos($curl_return, 'OK');
+                            $tdt_id = substr($curl_return, 3, strlen($curl_return));
+                            if ($pos === false) {
+                                $order = array("\r\n", "\n", "\r");
+                                $replace = '<br />';
+                                $curl_return = str_replace($order, $replace, $curl_return);
+                                $erreur .= $delib['Deliberation']['objet_delib'] . '(' . $delib['Deliberation']['num_delib'] . ') : ' . $curl_return . '<br />';
+                            } else {
+                                $nbEnvoyee++;
+                                $this->Deliberation->saveField('etat', 5);
+                                $this->Deliberation->saveField('tdt_id', trim($tdt_id));
+                                $this->Historique->enregistre($delib_id, $this->user_id, 'Acte envoyé au tiers de télétransmission');
+                            }
+                            $folder->delete();
+                            sleep(5);
                         } else {
-                            $nbEnvoyee++;
-                            $this->Deliberation->saveField('etat', 5);
-                            $this->Deliberation->saveField('tdt_id', trim($tdt_id));
-                            $this->Historique->enregistre($delib_id, $this->user_id, 'Acte envoyé au tiers de télétransmission');
+                            throw new Exception('Aucun connecteur TDT valide !');
                         }
-                        $folder->delete();
-                        sleep(5);
-                    } else {
-                        $erreur .= 'Aucun connecteur TDT valide !';
-                        break;
-                    }
-                } else $erreur .= $this->Deliberation->field('objet_delib') . ' (' . $this->Deliberation->field('num_delib') . ') : Aucune classification sélectionnée.';
+                    } else
+                        throw new Exception($this->Deliberation->field('objet_delib') . ' (' . $this->Deliberation->field('num_delib') . ') : Aucune classification sélectionnée.');
 
+                }
+                $this->Session->setFlash('Acte(s) envoyé(s) correctement au TdT', 'growl');
+            } catch (Exception $e) {
+                if(isset($folder))$folder->delete(); //Purge du dernier dossier en cas d'erreur
+                $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'error'));
             }
-        } else $erreur = 'Aucun Acte(s) selectionné(s)';
+        } else 
+            $this->Session->setFlash('Aucun Acte(s) selectionné(s)', 'growl', array('type' => 'error'));
 
-        if (empty($erreur))
-            $this->Session->setFlash('Acte(s) envoyé(s) correctement au TdT', 'growl');
-        else
-            $this->Session->setFlash($erreur, 'growl', array('type' => 'error'));
-
-        return $this->redirect($this->previous);
+        return $this->redirect($this->referer());
     }
 
     function getClassification() {
@@ -3521,7 +3513,7 @@ class DeliberationsController extends AppController
                             $message .= $num_delib . ($signee ? " : Signé correctement<br />" : " : Erreur de signature<br />");
                         } else { //Signature électronique
                             $envoye = $this->Deliberation->envoyerAuParapheur($delib_id, $this->data['Parapheur']['circuit_id'], $this->user_id);
-                            $message .= $num_delib . ($envoye ? " : Envoyé<br />" : " : Echec de l'envoi<br />");
+                           $message .= $num_delib . ($envoye ? " : Envoyé<br />" : " : Echec de l'envoi<br />");
                         }
                     }
                 }
@@ -3648,32 +3640,94 @@ class DeliberationsController extends AppController
             $delibs[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($delibs[$i]['Deliberation']['num_pref']);
         }
 
-        if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL')) {
-            App::uses('Tdt', 'Lib');
-            $Tdt = new Tdt();
-            $res = $Tdt->listClassification();
-            $this->set('nomenclatures', $res);
-        }
+        $this->set('nomenclatures', $this->Signature->listClassification());
 
         $circuits = $this->Signature->printCircuits();
         $this->set('deliberations', $delibs);
         $this->set('circuits', $circuits);
     }
 
-    function verserAsalae()
+    function sendToSae()
     {
-        require_once(ROOT . DS . APP_DIR . DS . 'Vendor' . DS . 'pcltar' . DS . 'pcltar.lib.php');
-        if (empty($this->data)) {
+        if (!Configure::read('USE_SAE')) {
+            $this->Session->setFlash('Erreur : SAE désactivé. Pour activer ce service, veuillez contacter votre administrateur.', 'growl', array('type' => 'erreurSAE'));
+            return $this->redirect($this->referer());
+        }
+        App::uses('Sae', 'Lib');
+        try {
+            $this->Sae = new Sae();
+        } catch (Exception $e) {
+            $this->Session->setFlash($e->getMessage(), 'growl');
+            return $this->redirect($this->referer());
+        }
+
+        // Formulaire envoyé
+        if (!empty($this->data['Deliberation'])) {
+            try {
+                foreach ($this->data['Deliberation'] as $id => $bool) { // Parcours les checkboxes
+                    if ($bool == 1) { // Checkbox cochée
+                        $acte_id = substr($id, 3, strlen($id));
+                        $this->Deliberation->id = $acte_id;
+                        
+                        if (!empty($this->data[$acte_id . "classif2"])){
+                        $this->Deliberation->saveField('num_pref', $this->data[$acte_id . "classif2"]);
+                        } elseif (Configure::read('PARAPHEUR') == 'PASTELL'){
+                            throw new Exception("Acte n°" . $acte_id . ': Classification manquante');
+                        }
+                    
+                        $acte = $this->Deliberation->find('first', array(
+                        'field'=>array('id','objet_delib','num_delib','pastell_id'),
+                        'conditions' => array('Deliberation.id' => $acte_id)
+                        ));
+                        
+                        if(empty($acte['Deliberation']['pastell_id']))
+                        {
+                            $this->Sae->send($acte, $acte['Deliberation']['tdt_data_bordereau_pdf'], $this->Deliberation->getAnnexesToSend($acte['Deliberation']['id']));
+                        }
+                        $sent = $this->Sae->send($acte);
+                        if ($sent) {
+                            $this->Deliberation->saveField('sae_etat', 1);
+                            $this->Historique->enregistre($acte_id, $this->user_id, 'Acte envoyé au SAE');
+                        } else {
+                            throw new Exception($acte['Deliberation']['objet_delib'] . ' (' . $acte['Deliberation']['num_delib'] . ') : Envoi au SAE échoué');
+                        }
+                        
+                    }
+                }
+                
+                $this->Session->setFlash('Acte(s) envoyé(s) correctement au SAE', 'growl');
+            } catch (Exception $e) {
+                $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'error'));
+            }
+
+            return $this->redirect($this->referer());
+        }
+        
+        //require_once(ROOT . DS . APP_DIR . DS . 'Vendor' . DS . 'pcltar' . DS . 'pcltar.lib.php');
+        //if (empty($this->data)) {
             $this->Deliberation->Behaviors->load('Containable');
             $this->paginate = array('conditions' => array('Deliberation.etat' => 5),
-                'fields' => array('Deliberation.id', 'Deliberation.objet_delib', 'Deliberation.titre',
+                'fields' => array('Deliberation.id', 'Deliberation.objet_delib', 'Deliberation.num_pref',
                     'Deliberation.num_delib', 'sae_etat'),
                 'contain' => array('Service.libelle', 'Theme.libelle'),
-                'limit' => 20);
-
+                'limit' => 20,
+                'order'=>'Deliberation.id DESC');
+            
             $delibs = $this->Paginator->paginate('Deliberation');
+            
+            for ($i = 0; $i < count($delibs); $i++) {
+            $delibs[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($delibs[$i]['Deliberation']['num_pref']);
+            }
             $this->set('deliberations', $delibs);
-        } else {
+            
+            $this->set('nomenclatures', $this->Sae->listClassification());
+       // } 
+        
+        /*
+         * else {
+         */
+            
+            /*
             $client = new SoapClient(Configure::read('ASALAE_WSDL'));
 
             foreach ($this->data['Deliberation'] as $id => $bool) {
@@ -3775,6 +3829,7 @@ class DeliberationsController extends AppController
                         base64_encode($document), 'TARGZ',
                         Configure::read('ASALAE_LOGIN'),
                         Configure::read('ASALAE_PWD')));
+             * 
                     // Changement d'état de la délibération
                     if ($ret == 0) {
                         $this->Session->setFlash("Les documents ont été transférés à AS@LAE", 'growl');
@@ -3783,10 +3838,9 @@ class DeliberationsController extends AppController
                     } else {
                         $this->Session->setFlash("Code retour de AS@LAE : $ret", 'growl', array('type' => 'erreur'));
                     }
-                }
-            }
-            return $this->redirect(array('action'=>'verserAsalae'));
-        }
+                }*/
+           /* }
+            return $this->redirect(array('action'=>'verserAsalae'));*/
     }
 
     function goNext($delib_id) {
@@ -4041,13 +4095,7 @@ class DeliberationsController extends AppController
             $actes[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($actes[$i]['Deliberation']['num_pref']);
         }
 
-        if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL')) {
-            App::uses('Tdt', 'Lib');
-            $Tdt = new Tdt();
-            $res = $Tdt->listClassification();
-            $this->set('nomenclatures', $res);
-        }
-
+        $this->set('nomenclatures', $this->Signature->listClassification());
         $this->set('canEdit', $editerTous);
         $this->set('actes', $actes);
         $this->set('circuits', $circuits);
@@ -4412,82 +4460,88 @@ class DeliberationsController extends AppController
 
 
 
-    public function majArTdt($id=null){
-        if (empty($id)){
-            $this->Deliberation->majArAll();
-            $this->Session->setFlash('Mise à jour des accusés de réception effectuée.', 'growl');
-        }else{
-            if ($ar = $this->Deliberation->majAr($id)){
-                $this->Session->setFlash("Dossier reçu par le tdt le $ar.", 'growl');
-            }else{
-                $this->Session->setFlash("Impossible de contacter le TDT.", 'growl');
-            }
-        }
+    public function majArTdt($cookieToken = null){
+        $this->Deliberation->majArAll();
+        $this->Session->setFlash('Mise à jour des accusés de réception effectuée.', 'growl');
+        // envoi au client         
+        if(!empty($cookieToken))
+            $this->Session->write('Generer.downloadToken', $cookieToken, false, 3600);
+        
         return $this->redirect($this->referer());
     }
 
 
-    public function majEchangesTdt($id = null){
-        if (empty($id)){
-            $this->Deliberation->majEchangesTdtAll();
-        }else{
-            $this->Deliberation->majEchangesTdt($id);
-        }
+    public function majEchangesTdt($cookieToken = null){
+        $this->Deliberation->majEchangesTdtAll();
         $this->Session->setFlash('Mise à jour des échanges avec le TDT effectuée.', 'growl');
+        
+        // envoi au client         
+        if(!empty($cookieToken))
+            $this->Session->write('Generer.downloadToken', $cookieToken, false, 3600);
+        
         return $this->redirect($this->referer());
     }
 
     function downloadTdtMessage($message_id = null) {
-        if (empty($message_id)) {
-            $this->Session->setFlash('Merci d\indiquer l\'identifiant du message.', 'growl');
+        
+        try
+        {
+            if (empty($message_id)) {
+                throw new Exception('Merci d\indiquer l\'identifiant du message.');
+            }
+
+            $data = $this->Deliberation->TdtMessage->find('first', array(
+                'fields' => array('data'),
+                'conditions' => array('message_id' => $message_id)
+            ));
+
+            if (empty($data['TdtMessage']['data'])) {
+                 throw new Exception('Le message est indiponible.');
+            }
+
+            $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'S2low'), true, 0777);
+            $fileTgz = new File($folder->path . DS . 'WD_S2LOW_DOC.tgz', true, 0777);
+            $fileTgz->write($data['TdtMessage']['data']);
+            $phar = new PharData($fileTgz->pwd());
+            $phar->extractTo($folder->path); 
+
+            $files = $folder->find('.*\.pdf', true);
+            foreach ($files as $file) {
+                $file = new File($folder->pwd() . DS . $file);
+                $content = $file->read();
+            }
+            $folder->delete();
+            // envoi au client
+            $this->response->disableCache();
+            $this->response->body($content);
+            $this->response->type('application/pdf');
+            $this->response->download('tdt_message_' . $message_id . '.pdf');
+            return $this->response;
+        }
+        catch (Exception $e)
+        {
+            $this->Session->setFlash($e->getMessage(), 'growl');
             return $this->redirect($this->referer());
         }
-
-        $data = $this->Deliberation->TdtMessage->find('first', array(
-            'fields' => array('data'),
-            'conditions' => array('message_id' => $message_id)
-        ));
-
-        if (empty($data['TdtMessage']['data'])) {
-            $this->Session->setFlash('Message introuvable en base de données.', 'growl');
-            return $this->redirect($this->referer());
-        }
-
-        // envoi au client
-        $this->response->disableCache();
-        $this->response->body($data['TdtMessage']['data']);
-        $this->response->type('application/x-gzip');
-        $this->response->download('tdt_message_' . $message_id . '.tar.gz');
-        return $this->response;
     }
 
     function getTampon($delib_id) {
 
         $delib = $this->Deliberation->find('first', array(
             'conditions' => array('id' => $delib_id),
-            'fields' => array('num_delib','tdt_id','tdt_data_pdf', 'pastell_id'),
+            'fields' => array('num_delib','tdt_data_pdf'),
             'recursive' => -1
         ));
 
         if(empty($delib['Deliberation']['tdt_data_pdf'])){
-            App::uses('Tdt', 'Lib');
-            $Tdt = new Tdt;
-            $tdt_id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
-            $tampon = $Tdt->getTampon($tdt_id);
-            if (!empty($tampon)){
-                $delib['Deliberation']['tdt_data_pdf'] = $tampon;
-                $this->Deliberation->id = $delib_id;
-                $this->Deliberation->saveField('tdt_data_pdf', $tampon);
-            } else {
-                $this->Session->setFlash('Erreur lors de la récupération de l\'acte tamponné', 'growl');
-                $this->redirect($this->referer());
-            }
+            $this->Session->setFlash('l\'acte tamponné n\'est pas encore disponible', 'growl');
+            $this->redirect($this->referer());
         }
         // envoi au client
         $this->response->disableCache();
         $this->response->body($delib['Deliberation']['tdt_data_pdf']);
         $this->response->type('application/pdf');
-        $this->response->download('Acte_'.$delib['Deliberation']['num_delib'].'_tampon_tdt.pdf');
+        $this->response->download('tampon_tdt_'.$delib['Deliberation']['num_delib'].'.pdf');
         return $this->response;
     }
 
@@ -4498,27 +4552,18 @@ class DeliberationsController extends AppController
     function getBordereauTdt($delib_id) {
         $delib = $this->Deliberation->find('first', array(
             'conditions' => array('id' => $delib_id),
-            'fields' => array('num_delib', 'tdt_id', 'tdt_data_bordereau_pdf', 'pastell_id', 'tdt_dateAR'),
+            'fields' => array('num_delib', 'tdt_data_bordereau_pdf'),
             'recursive' => -1
         ));
-        App::uses('Tdt', 'Lib');
-        $Tdt = new Tdt;
-        $tdt_id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
-        $bordereau = $Tdt->getBordereau($tdt_id);
-        if (!empty($bordereau)) {
-            $this->Deliberation->id = $delib_id;
-            $this->Deliberation->saveField('tdt_data_bordereau_pdf', $bordereau);
-        } elseif (!empty($delib['Deliberation']['tdt_data_bordereau_pdf'])) {
-            $bordereau = $delib['Deliberation']['tdt_data_bordereau_pdf'];
-        } else {
-            $this->Session->setFlash('Erreur : Impossible de récupérer le bordereau.', 'growl');
+        if (empty($delib['Deliberation']['tdt_data_bordereau_pdf'])) {
+            $this->Session->setFlash('le bordereau n\'est pas encore disponible', 'growl');
             return $this->referer($this->referer());
         }
         // envoi au client
         $this->response->disableCache();
-        $this->response->body($bordereau);
+        $this->response->body($delib['Deliberation']['tdt_data_bordereau_pdf']);
         $this->response->type('application/pdf');
-        $this->response->download('Acte_' . $delib['Deliberation']['num_delib'] . '_bordereau_tdt.pdf');
+        $this->response->download('bordereau_tdt_' . $delib['Deliberation']['num_delib'] . '.pdf');
         return $this->response;
     }
 

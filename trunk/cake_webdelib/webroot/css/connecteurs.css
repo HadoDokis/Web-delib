@@ -8,6 +8,7 @@ label {
 #configIdelibre fieldset,
 #configSignature fieldset,
 #configPastell fieldset,
+#configSae fieldset,
 #configTdt fieldset {
     width: 33%;
     float: left;

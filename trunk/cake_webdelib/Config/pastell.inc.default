@@ -16,6 +16,7 @@ Configure::write('Pastell', array(
             'classification' => 'classification',
             'envoi_signature' => 'envoi_signature',
             'envoi_tdt' => 'envoi_tdt',
+            'envoi_sae' => 'envoi_sae',
             'iparapheur_type' => 'iparapheur_type',
             'iparapheur_sous_type' => 'iparapheur_sous_type',
             'has_signature' => 'has_signature',
@@ -32,6 +33,8 @@ Configure::write('Pastell', array(
             'verif-reponse-tdt' => 'verif-reponse-tdt',
             'send-iparapheur' => 'send-iparapheur',
             'verif-iparapheur' => 'verif-iparapheur',
+            'send-archive' => 'send-archive',
+            'verif-sae' => 'verif-sae',
             'supression' => 'supression'
         )
     )

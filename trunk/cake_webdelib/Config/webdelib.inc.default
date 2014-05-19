@@ -51,7 +51,7 @@ Configure::write('GEDOOO_WSDL', 'http://127.0.0.1:8880/ODFgedooo/OfficeService?w
 /* Activer le parapheur */
 Configure::write('USE_PARAPHEUR', false);
 /* Service utilisé pour le parapheur ('PASTELL', 'IPARAPHEUR', ...) */
-Configure::write('PARAPHEUR', array('PASTELL','IPARAPHEUR'));
+Configure::write('PARAPHEUR', 'IPARAPHEUR');
 
 /**
  * TDT (Tiers de télétransmission)
@@ -59,7 +59,7 @@ Configure::write('PARAPHEUR', array('PASTELL','IPARAPHEUR'));
 /* Activer le TDT (tiers de télétransmission) */
 Configure::write('USE_TDT', false);
 /* Service utilisé pour le TDT ('PASTELL', 'S2LOW', ...) */
-Configure::write('TDT', array('PASTELL', 'S2LOW'));
+Configure::write('TDT', 'S2LOW');
 
 /**
  * SAE (Service d'archivage électronique)

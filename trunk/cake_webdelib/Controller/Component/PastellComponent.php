@@ -32,7 +32,6 @@ class PastellComponent extends Component {
     private $pastell_type;
     private $Session;
     private $config;
-    public $reponse;
 
     function __construct() {
         $collection = new ComponentCollection();
@@ -41,11 +40,10 @@ class PastellComponent extends Component {
         $this->login = Configure::read('PASTELL_LOGIN');
         $this->pwd = Configure::read('PASTELL_PWD');
         $this->pastell_type = Configure::read('PASTELL_TYPE');
-        $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
+        $this->parapheur_type = Configure::read('PASTELL_PARAPHEUR_TYPE');
         //clés de champs
         $pastell_config = Configure::read('Pastell');
         $this->config = $pastell_config[$this->pastell_type];
-        $this->reponse = null;
     }
 
     /**
@@ -78,6 +76,7 @@ class PastellComponent extends Component {
     public function execute($page, $data = array(), $file_transfert = false) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_USERPWD, $this->login . ":" . $this->pwd);
@@ -88,60 +87,59 @@ class PastellComponent extends Component {
             curl_setopt($curl, CURLOPT_POST, TRUE);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
+        
         if ($file_transfert) {
-            $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS), true, 0777);
+            $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'Pastell'), true, 0777);
             $file = new File($folder->path . DS . 'WD_PASTELL_DOC', true, 0777);
             $fp = fopen($file->path, 'w');
             curl_setopt($curl, CURLOPT_FILE, $fp);
-            $response = curl_exec($curl);
-            curl_close($curl);
+        }
+        
+        $response = curl_exec($curl);
+        curl_close($curl);
+            
+        if ($file_transfert) {
             fclose($fp);
             $content = $file->read();
             $folder->delete();
-        }else{
-            $response = curl_exec($curl);
-            curl_close($curl);
-        }
-        $result = json_decode($response, true);
-        $ok = $this->_log($page, $data, $result);
-        if ($ok){
-            if ($file_transfert){
-                // Test si le retour est un fichier ou un message json (erreur)
-                return json_decode($content) == null ? $content : false;
-            }
-            else
-                return $result;
-        }
-        else
-            return false;
+        } else $content=NULL;
+        
+        return $this->_parseRetour($page, $data, $response, $content);
     }
 
     /**
-     * Fonction de log des réponses pastell
+     * Fonction de parse des réponses de pastell
      * @param string $page script ws
      * @param array $data paramètres
      * @param array $retourWS reponse ws
      * @return bool false si en erreur
      */
-    protected function _log($page, $data, $retourWS) {
-        $this->log('Request : ' . $page, 'pastell');
-        if (!empty($data)) {
-            $this->log('Data : ' . print_r($data, true), 'pastell');
+    protected function _parseRetour($page, $data, $retourWS, $content) {
+        
+        $result = json_decode($retourWS, true);
+        // Test si le retour est un fichier ou un message json (erreur)
+        $this->log(print_r(array('Request'=> $page,'Data'=> $data), true), 'pastell');
+        if(!empty($content)){
+            $this->log('Récupération du fichier Ok', 'pastell');
+            return $content;
         }
-        if (empty($retourWS)) {
-            $this->log('Error : Aucune réponse du serveur distant', 'pastell');
-            return false;
+        if (!empty($result['message'])) {
+            return $result['message'];
+            $this->log('Message : ' . $result['message'], 'pastell');
         }
-        if (!empty($retourWS['message'])) {
-            $this->reponse = 'Message : ' . $retourWS['message'];
-            $this->log($this->reponse, 'pastell');
+        if (!empty($result['error-message'])) {
+            $this->log('Error : ' . $result['error-message'], 'pastell');
+            throw new Exception('Error : ' . $result['error-message']);
         }
-        if (!empty($retourWS['error-message'])) {
-            $this->reponse = 'Error : ' . $retourWS['error-message'];
-            $this->log($this->reponse, 'pastell');
-            return false;
+        if (!empty($result) && is_array($result)) {
+            $this->log('Message : ' . print_r($result, true), 'pastell');
+            return $result;
         }
-        return true;
+        
+        $this->log('Error : Aucune réponse du serveur distant', 'pastell');
+        throw new Exception('Aucune réponse du serveur distant Pastell', 500);
+        
+        return false;
     }
 
     /**
@@ -659,7 +657,7 @@ class PastellComponent extends Component {
                 $data[$this->config['field']['envoi_tdt']] = true;
             if (Configure::read('USE_SAE') && Configure::read('SAE') == 'PASTELL')
                 $data[$this->config['field']['envoi_sae']] = true;
-            if (Configure::read('USE_GED') && Configure::read('GED_PASTELL'))
+            if (Configure::read('USE_GED') && Configure::read('GED') == 'PASTELL')
                 $data[$this->config['field']['envoi_ged']] = true;
         } elseif (!empty($params)) {
             $data = array_merge($data, $params);
