@@ -240,23 +240,45 @@ class S2lowComponent extends Component {
     }
     
     function getDocument($document_id) {
-        $url = 'https://' . Configure::read('HOST') . "/modules/actes/actes_transac_get_document.php?id=$document_id";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, trim($url));
-        if (Configure::read('USE_PROXY'))
-            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
-        curl_setopt($ch, CURLOPT_POST, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+        
+        $url = Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_document.php?id=$document_id";
+        try {
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, trim($url));
+            if (Configure::read('USE_PROXY'))
+                curl_setopt($curl, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
+            curl_setopt($curl, CURLOPT_POST, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($curl, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+            curl_setopt($curl, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+            curl_setopt($curl, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
 
-        $curl_return = curl_exec($ch);
-        curl_close($ch);
-        return $curl_return;
+            $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'S2low'), true, 0777);
+            $file = new File($folder->path . DS . 'WD_S2LOW_DOC', true, 0777);
+            $fp = fopen($file->path, 'w');
+            curl_setopt($curl, CURLOPT_FILE, $fp);
+
+            $response = curl_exec($curl);
+
+            fclose($fp);
+            $content = $file->read();
+            $folder->delete();
+
+            if ($response === false) {
+                 throw new Exception(curl_error($curl));
+                 $this->log(curl_error($ch), 's2low');
+            }
+        }
+        catch (Exception $e)
+        {
+            return false;
+        }
+        curl_close($curl);
+        
+        return $content;
     }
     
     function isNewMessage($delib_id, $type, $reponse, $message_id) {

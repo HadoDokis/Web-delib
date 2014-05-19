@@ -12,7 +12,7 @@ class CronJob extends AppModel {
     public $useTable = false;
 
     /**
-     * Mise à jour des dossiers en attente de signature dans le i-parapheur connecté
+     * Mise à jour des dossiers en attente de signature parapheur
      * @return string
      */
     public function signatureJob() {
@@ -83,11 +83,11 @@ class CronJob extends AppModel {
             }
 
             if (empty($users))
-                return Cron::MESSAGE_FIN_EXEC_SUCCES . "Aucun utilisateur en retard";
+                return Cron::MESSAGE_FIN_EXEC_SUCCES . " Aucun utilisateur en retard";
             else
-                return Cron::MESSAGE_FIN_EXEC_SUCCES . "Utilisateurs alertés :\n\n" . implode(",\n", $users);
+                return Cron::MESSAGE_FIN_EXEC_SUCCES . " Utilisateurs alertés :\n\n" . implode(",\n", $users);
         } catch (Exception $e) {
-            return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
+            return Cron::MESSAGE_FIN_EXEC_ERROR .' '. $e->getMessage();
         }
     }
 
@@ -97,7 +97,7 @@ class CronJob extends AppModel {
     public function mailSecJob() {
         //Si service désactivé ==> quitter
         if (!Configure::read('USE_S2LOW')) {
-            return Cron::MESSAGE_FIN_EXEC_ERROR . "\nService S2LOW désactivé";
+            return Cron::EXECUTION_STATUS_WARNING . " Service S2LOW désactivé";
         }
         try {
             //Initialisations
@@ -224,9 +224,9 @@ class CronJob extends AppModel {
         $this->Deliberation = new Deliberation();
         try {
             $rapport = $this->Deliberation->majArAll();
-            return Cron::MESSAGE_FIN_EXEC_SUCCES . $rapport;
+            return Cron::MESSAGE_FIN_EXEC_SUCCES . ' ' . $rapport;
         } catch (Exception $e) {
-            return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
+            return Cron::MESSAGE_FIN_EXEC_ERROR . ' ' . $e->getMessage();
         }
     }
 

@@ -10,24 +10,10 @@
  * Utilise les connecteurs/components PastellComponent et IparapheurComponent
  *
  */
-App::uses('ComponentCollection', 'Controller');
-App::uses('Component', 'Controller');
 App::uses('IparapheurComponent', 'Controller/Component');
-App::uses('PastellComponent', 'Controller/Component');
-App::uses('Deliberation', 'Model');
-App::uses('Collectivite', 'Model');
+App::uses('Connecteur', 'Lib');
 
-class Signature {
-
-    /**
-     * @var string Protocole de signature (pastell|iparapheur)
-     */
-    private $connecteur;
-
-    /**
-     * @var Composant PastellComponent
-     */
-    private $Pastell;
+class Signature extends Connecteur  {
 
     /**
      * @var Composant IparapheurComponent
@@ -35,89 +21,38 @@ class Signature {
     private $Iparapheur;
 
     /**
-     * @var Model Deliberation
-     */
-    private $Deliberation;
-
-    /**
      * @var string type technique dans le parapheur
      */
     private $parapheur_type;
-
-    /**
-     * @var string type pastell
-     */
-    private $pastell_type;
-
-    /**
-     * @var int|string collectivite
-     */
-    private $collectivite;
 
     /**
      * @var string visibilité du document parapheur
      */
     private $visibility;
 
-    /**
-     * @var array configuration
-     */
-    private $config;
 
     /**
      * Appelée lors de l'initialisation de la librairie
      * Charge le bon protocol de signature et initialise le composant correspondant
      */
     public function __construct() {
-        $collection = new ComponentCollection();
-        $use_parapheur = Configure::read('USE_PARAPHEUR');
-        $protocol = Configure::read('PARAPHEUR');
+        parent::__construct(Configure::read('PARAPHEUR'));
 
-        if ($use_parapheur) {
-            if (empty($protocol))
+        if (Configure::read('USE_PARAPHEUR')) {
+            if (!$this->getType())
                 throw new Exception("Aucun parapheur désigné");
 
-            if (Configure::read("USE_$protocol"))
-                $this->connecteur = Configure::read('PARAPHEUR');
-            else
-                throw new Exception("Le connecteur parapheur désigné n'est pas activé : USE_$protocol");
+            if (!Configure::read("USE_".$this->getType()))
+                throw new Exception("Le connecteur parapheur désigné n'est pas activé : USE_".$this->getType());
 
-            if ($protocol == 'PASTELL') {
-                $this->Pastell = new PastellComponent($collection);
-                //Enregistrement de la collectivité (pour pastell)
-                $Collectivite = new Collectivite();
-                $Collectivite->id = 1;
-                $this->collectivite = $Collectivite->field('id_entity');
-                $this->pastell_type = Configure::read('PASTELL_TYPE');
-                $pastell_config = Configure::read('Pastell');
-                $this->config = $pastell_config[$this->pastell_type];
-            }
-            if ($protocol == 'IPARAPHEUR') {
-                $this->Iparapheur = new IparapheurComponent($collection);
+            if ($this->getType() == 'IPARAPHEUR') {
+                $this->Iparapheur = new IparapheurComponent($this->collection);
                 $this->visibility = Configure::read('IPARAPHEUR_VISIBILITY');
             }
-            $this->Deliberation = new Deliberation;
             $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
         }
-    }
-
-    /**
-     * Fonction appelée à chaque appel de fonction non connu
-     * et redirige vers la bonne fonction selon le protocol
-     *
-     * @param string $name nom de la fonction appelée
-     * @param array $arguments tableau d'arguments indexés
-     * @return mixed
-     * @throws Exception
-     */
-    public function __call($name, $arguments) {
-        $suffix = ucfirst(strtolower($this->connecteur));
-
-        if (method_exists($this, $name . $suffix))
-            return call_user_func_array(array($this, $name . $suffix), $arguments);
-        else {
-            throw new Exception(sprintf('The required method "%s" does not exist for %s', $name . $suffix, get_class()));
-        }
+        else
+            $this->active = false;
     }
 
     /**
@@ -163,37 +98,38 @@ class Signature {
      * @param array $annexes (content, filename)
      * @return bool|int false si echec sinon identifiant pastell
      */
-    public function sendPastell($delib, $circuit_id, $document = null, $annexes = array()) {
+    public function sendPastell($acte, $circuit_id, $document = null, $annexes = array()) {
         //Vérifications
-        if (empty($delib['Deliberation']['num_pref']))
+        if (empty($acte['Deliberation']['num_pref']))
             return false;
         //Présence document ? delib_pdf ?
         if (empty($document))
-            if (!empty($delib['Deliberation']['delib_pdf']))
-                $document = $delib['Deliberation']['delib_pdf'];
+            if (!empty($acte['Deliberation']['delib_pdf']))
+                $document = $acte['Deliberation']['delib_pdf'];
             else
                 return false;
 
-
-        $id_d = $this->Pastell->createDocument($this->collectivite, $this->pastell_type);
+        $id_d = $this->Pastell->createDocument($this->id_e, $this->pastell_type);
         try {
-            if (!$this->Pastell->modifDocument($this->collectivite, $id_d, $delib, $document, $annexes))
+            if (!$this->Pastell->editTransmission($this->id_e, $id_d))
+                throw new Exception();
+            if (!$this->Pastell->modifDocument($this->id_e, $id_d, $acte, $document, $annexes))
                 throw new Exception();
 
             if (is_numeric($circuit_id)) {
-                $circuits = $this->Pastell->getInfosField($this->collectivite, $id_d, $this->config['field']['iparapheur_sous_type']);
+                $circuits = $this->Pastell->getInfosField($this->id_e, $id_d, $this->config['field']['iparapheur_sous_type']);
                 $sousType = $circuits[$circuit_id];
             } else {
                 $sousType = $circuit_id;
             }
 
-            $this->Pastell->selectCircuit($this->collectivite, $id_d, $sousType);
-            if ($this->Pastell->action($this->collectivite, $id_d, $this->config['action']['send-iparapheur']))
+            $this->Pastell->selectCircuit($this->id_e, $id_d, $sousType);
+            if ($this->Pastell->action($this->id_e, $id_d, $this->config['action']['send-iparapheur']))
                 return $id_d;
             else
                 throw new Exception();
         } catch (Exception $e) {
-            $this->Pastell->action($this->collectivite, $id_d, $this->config['action']['supression']);
+            $this->Pastell->action($this->id_e, $id_d, $this->config['action']['supression']);
             return false;
         }
     }
@@ -211,7 +147,7 @@ class Signature {
      * )
      */
     public function getLastActionPastell($id_d, $get_details = false) {
-        $details = $this->Pastell->detailDocument($this->collectivite, $id_d);
+        $details = $this->Pastell->detailDocument($this->id_e, $id_d);
         if ($get_details)
             return $details['last_action'];
         $last_action = $details['last_action']['action'];
@@ -223,8 +159,7 @@ class Signature {
      * @return string flux du fichier bordereau
      */
     public function getBordereauPastell($id_d) {
-        $bordereau = $this->Pastell->getFile($this->collectivite, $id_d, $this->config['field']['document_signe']);
-        return $bordereau;
+        return $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['document_signe']);
     }
 
     /**
@@ -232,8 +167,8 @@ class Signature {
      * @return string flux du fichier signature (zip)
      */
     public function getSignaturePastell($id_d) {
-        $signature = $this->Pastell->getFile($this->collectivite, $id_d, $this->config['field']['signature']);
-        return $this->Pastell->getFile($this->collectivite, $id_d, $this->config['field']['signature']);
+        $signature = $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['signature']);
+        return $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['signature']);
     }
 
     /**
@@ -241,7 +176,7 @@ class Signature {
      * @return array
      */
     public function getDetailsPastell($id_d) {
-        return $this->Pastell->detailDocument($this->collectivite, $id_d);
+        return $this->Pastell->detailDocument($this->id_e, $id_d);
     }
 
     /**
@@ -249,7 +184,7 @@ class Signature {
      * @return bool
      */
     public function isSignePastell($id_d) {
-        $details = $this->Pastell->detailDocument($this->collectivite, $id_d);
+        $details = $this->Pastell->detailDocument($this->id_e, $id_d);
         return !empty($details['data'][$this->config['field']['has_signature']]);
     }
 
@@ -272,7 +207,7 @@ class Signature {
      * @return array
      */
     public function deletePastell($id_d) {
-        return $this->Pastell->action($this->collectivite, $id_d, $this->config['action']['supression']);
+        return $this->Pastell->action($this->id_e, $id_d, $this->config['action']['supression']);
     }
 
     /**
@@ -294,7 +229,7 @@ class Signature {
      * @return array
      */
     public function listCircuitsPastell() {
-        return $this->Pastell->getCircuits($this->collectivite);
+        return $this->Pastell->getCircuits($this->id_e);
     }
 
     /**
@@ -333,7 +268,13 @@ class Signature {
      * @return array
      */
     public function updateInfosPastell($id_d) {
-        $this->Pastell->action($this->collectivite, $id_d, $this->config['action']['verif-iparapheur']);
+        $details=$this->getDetailsPastell($id_d);
+        if (!empty($details['last_action']['action']) && $details['last_action']['action'] === 'recu-iparapheur') {
+            return $details;
+        } else {
+            $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-iparapheur']);
+        }
+
         return $this->getDetailsPastell($id_d);
     }
 }

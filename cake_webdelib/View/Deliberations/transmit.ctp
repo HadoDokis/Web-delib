@@ -39,8 +39,8 @@
                 ?>
             </th>
             <th><?php echo $this->Paginator->sort('num_pref', 'Classification'); ?></th>
-            <th>Statut TDT <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majArTdt'), array('escape'=>false)); ?></th>
-            <th>Courriers Ministériels <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majEchangesTdt'), array('escape'=>false)); ?></th>
+            <th>Statut TDT <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majArTdt'), array('escape'=>false, 'class'=>'waiter')); ?></th>
+            <th>Courriers Ministériels <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majEchangesTdtAll'), array('escape'=>false, 'class'=>'waiter')); ?></th>
         </tr>
         <?php
         $numLigne = 1;
@@ -91,22 +91,25 @@
                 <?php
                 if (!empty($delib['TdtMessage'])) {
                     foreach ($delib['TdtMessage'] as $message) {
-                        if (Configure::read('TDT') == 'S2LOW')
-                            $url_newMessage = Configure::read("S2LOW_HOST") . "/modules/actes/actes_transac_show.php?id=" . $message['message_id'];
-                        else
                             $url_newMessage = array('action'=>'downloadTdtMessage', $message['message_id']);
 
                         $libelle = 'Message ' . $message['message_id'];
                         if ($message['type_message'] == 2)
                             $libelle = "Courrier simple";
-                        if ($message['type_message'] == 3)
+                        if ($message['type_message'] == 3){
                             $libelle = "Demande de pièces complémentaires";
+                        }
                         if ($message['type_message'] == 4)
                             $libelle = "Lettre d'observation";
                         if ($message['type_message'] == 5)
                             $libelle = 'Déféré au tribunal administratif';
-                        if (!empty($libelle))
-                            echo $this->Html->link($libelle, $url_newMessage, array('target' => '_blank')) . "<br />";
+                        if (!empty($libelle)){
+                            if($message['type_reponse'] == 7
+                                OR $message['type_reponse'] == 8) $libelle .=' (reçu)';
+                            else $libelle .=' (envoyé)';
+                            echo $this->Html->link($libelle, $url_newMessage) . "<br />";
+                        }
+                            
                     }
                 }
                 ?>

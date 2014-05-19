@@ -30,6 +30,17 @@
             ?>
         </fieldset>
         <div class='spacer'></div>
+        <fieldset class='pastell-infos'>
+            <legend>Configuration des flux</legend>
+            <?php
+            echo $this->Form->input('pastell_parapheur_type', array(
+                'type' => 'text',
+                'label' => 'Type technique (Parapheur)',
+                'placeholder' => 'Actes',
+                'value' => Configure::read('PASTELL_PARAPHEUR_TYPE'),
+            ));
+            ?>
+        </fieldset>
         <fieldset class="iparapheur-infos">
             <legend>Informations d'authentification</legend>
             <?php

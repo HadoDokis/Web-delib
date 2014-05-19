@@ -9,30 +9,16 @@
  * Utilise les connecteurs/components PastellComponent et S2lowComponent
  *
  */
-App::uses('ComponentCollection', 'Controller');
-App::uses('Component', 'Controller');
 App::uses('S2lowComponent', 'Controller/Component');
-App::uses('PastellComponent', 'Controller/Component');
-App::uses('Deliberation', 'Model');
 App::uses('TdtMessage', 'Model');
-App::uses('Collectivite', 'Model');
 App::uses('AppTools', 'Lib');
+App::uses('Connecteur', 'Lib');
 
 /**
  * Class Tdt
  * @package App.Lib.Tdt
  */
-class Tdt {
-
-    /**
-     * @var string Protocole de signature (pastell|iparapheur)
-     */
-    private $connecteur;
-
-    /**
-     * @var Component PastellComponent
-     */
-    private $Pastell;
+class Tdt extends Connecteur {
 
     /**
      * @var Component s2lowComponent
@@ -40,29 +26,9 @@ class Tdt {
     private $S2low;
 
     /**
-     * @var Model Deliberation
-     */
-    private $Deliberation;
-
-    /**
      * @var Model TdtMessage
      */
     private $TdtMessage;
-
-    /**
-     * @var string type pastell
-     */
-    private $pastell_type;
-
-    /**
-     * @var array configuration
-     */
-    private $config;
-
-    /**
-     * @var int|string $id_e
-     */
-    private $id_e;
 
     /**
      * @var array type_message => libelle_type_message
@@ -80,56 +46,23 @@ class Tdt {
      * Charge le bon protocol de signature et initialise le composant correspondant
      */
     public function __construct() {
-        $collection = new ComponentCollection();
-        $signature = Configure::read('USE_TDT');
-        $protocol = Configure::read('TDT');
+        parent::__construct(Configure::read('TDT'));
 
-        if (!$signature)
+        if (!Configure::read('USE_TDT'))
             throw new Exception("TDT désactivée");
-        if (empty($protocol))
+        if (!$this->getType())
             throw new Exception("Aucun TDT désigné");
 
-        if (Configure::read("USE_$protocol"))
+        if (Configure::read("USE_".$this->getType()))
             $this->connecteur = Configure::read('TDT');
         else
-            throw new Exception("Le connecteur tdt désigné n'est pas activé : USE_$protocol");
+            throw new Exception("Le connecteur tdt désigné n'est pas activé : USE_".$this->getType());
 
-        if ($protocol == 'PASTELL') {
-            $this->Pastell = new PastellComponent($collection);
-            //Enregistrement de la collectivité (pour pastell)
-            $Collectivite = new Collectivite();
-            $Collectivite->id = 1;
-            $this->id_e = $Collectivite->field('id_entity');
-            $this->pastell_type = Configure::read('PASTELL_TYPE');
-            $pastell_config = Configure::read('Pastell');
-            $this->config = $pastell_config[$this->pastell_type];
-        }
-        if ($protocol == 'S2LOW') {
-            $this->S2low = new S2lowComponent($collection);
+        if ($this->getType() == 'S2LOW') {
+            $this->S2low = new S2lowComponent($this->collection);
         }
         $this->TdtMessage = new TdtMessage;
         $this->Deliberation = new Deliberation;
-    }
-
-    /**
-     * Fonction appelée à chaque appel de fonction non connu
-     * et redirige vers la bonne fonction selon le protocol
-     *
-     * @param string $name nom de la fonction appelée
-     * @param array $arguments tableau d'arguments indexés
-     * @return mixed
-     * @throws Exception
-     */
-    public function __call($name, $arguments) {
-        $suffix = ucfirst(strtolower($this->connecteur));
-        
-        if (method_exists($this, $name.$suffix))
-                return call_user_func_array(array($this, $name.$suffix), $arguments);
-        else{
-            $this->log($name, 'error');
-            $this->log($arguments, 'error');
-          throw new Exception(sprintf('The required method "%s" does not exist for %s', $name.$suffix, get_class()));
-        } 
     }
 
     /**
@@ -138,42 +71,21 @@ class Tdt {
      * @param null $classification
      * @return array
      */
-    public function sendPastell($id_d, $classification = null) {
-        $this->Pastell->envoiTdt($this->id_e, $id_d, $classification);
-        $result = $this->Pastell->action($this->id_e, $id_d, $this->config['action']['send-tdt']);
+    public function sendPastell($acte, $document = null, $annexes = array()) {
+        
+        if(empty($acte['Deliberation']['pastell_id']))
+            $acte['Deliberation']['pastell_id']=  parent::createPastell($acte, $document = null, $annexes = array());
+        //$this->Pastell->envoiTdt($this->id_e, $id_d, $classification);
+        //$acte['Deliberation']['num_pref']
+        
+        $result = $this->Pastell->action($this->id_e, $acte['Deliberation']['pastell_id'], $this->config['action']['send-tdt']);
         //Récupération du tdt_id
-        $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
+        $infos = $this->Pastell->detailDocument($this->id_e, $acte['Deliberation']['pastell_id']);
         if (!empty($infos['data']['tedetis_transaction_id'])) {
-            $delib = $this->Deliberation->find('first', array(
-                'recursive' => -1,
-                'fields' => array('id'),
-                'conditions' => array('pastell_id' => $id_d)
-            ));
-            if (empty($delib)) return false;
-            $this->Deliberation->id = $delib['Deliberation']['id'];
+            $this->Deliberation->id = $acte['Deliberation']['id'];
             $this->Deliberation->saveField('tdt_id', $infos['data']['tedetis_transaction_id']);
         }
         return $result;
-    }
-
-
-    /**
-     * @param array $delib
-     * @param array $annexes (content, filename)
-     * @return bool|int false si echec sinon identifiant pastell
-     */
-    public function createPastell($delib, $annexes = array()) {
-        $id_d = $this->Pastell->createDocument($this->id_e, $this->pastell_type);
-        try {
-            if ($this->Pastell->modifDocument($this->id_e, $id_d, $delib, $delib['Deliberation']['delib_pdf'], $annexes))
-                return $id_d;
-            else
-                throw new Exception();
-
-        } catch (Exception $e) {
-            $this->Pastell->action($this->id_e, $id_d, $this->config['action']['supression']);
-            return false;
-        }
     }
 
     /**
@@ -213,7 +125,8 @@ class Tdt {
      * @param bool $all
      * @return array|bool
      */
-    public function getReponsesPastell($id_d, $all = false) {
+    public function getReponsesPastell($acte, $all = false) {
+        $id_d=$acte['Deliberation']['pastell_id'];
         $tdt_messages = array();
         $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-reponse-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
@@ -243,7 +156,8 @@ class Tdt {
      * @param int $tdt_id
      * @return mixed
      */
-    public function getReponsesS2low($tdt_id) {
+    public function getReponsesS2low($acte) {
+        $tdt_id=$acte['Deliberation']['tdt_id'];
         $tdt_messages = array();
         $result = $this->S2low->getNewFlux($tdt_id);
         if (!empty($result)){
@@ -256,6 +170,7 @@ class Tdt {
                         $tdt_message['TdtMessage']['type_message'] = $infos[0];
                         $tdt_message['TdtMessage']['type_reponse'] = $infos[1];
                         $tdt_message['TdtMessage']['message_id'] = $infos[2];
+                        $tdt_message['TdtMessage']['data'] = $this->S2low->getDocument($infos[2]);
                         $tdt_messages[] = $tdt_message;
                     }
                 }
@@ -264,11 +179,12 @@ class Tdt {
         return $tdt_messages;
     }
 
-    public function getDateArPastell($id_d) {
+    public function getDateArPastell($acte) {
+        $id_d=$acte['Deliberation']['pastell_id'];
         $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
         if (!empty($infos['data']['date_ar']))
-            return $infos['data']['date_ar'];
+            return $infos['data']['date_ar'];////$this->Date->frenchDate(strtotime($date))
         else
             return false;
     }
@@ -277,7 +193,8 @@ class Tdt {
      * @param int $tdt_id
      * @return bool
      */
-    public function getDateArS2low($tdt_id) {
+    public function getDateArS2low($acte) {
+        $tdt_id=$acte['Deliberation']['tdt_id'];
         $flux = $this->S2low->getFluxRetour($tdt_id);
         $codeRetour = substr($flux, 3, 1);
 
@@ -286,35 +203,6 @@ class Tdt {
             return $dateAR;
         }
         return false;
-    }
-
-    /**
-     * @return array
-     */
-    public function listClassification() {
-        $liste = array();
-        App::uses('Nomenclature', 'Model');
-        $Nomenclature = new Nomenclature();
-        $categories = $Nomenclature->find('list', array(
-            'fields' => array('id', 'libelle'),
-            'conditions' => array('parent_id' => 0)
-        ));
-        $nomenclatures = $Nomenclature->find('all', array(
-            'fields' => array('id', 'libelle', 'parent_id'),
-            'conditions' => array('parent_id <>' => 0)
-        ));
-        foreach ($nomenclatures as $nom) {
-            $niveau = substr_count($nom['Nomenclature']['id'], '.');
-            $liste[$nom['Nomenclature']['parent_id']][$nom['Nomenclature']['id']] = str_repeat('&nbsp;', $niveau * 2) . $nom['Nomenclature']['id'] . ' ' . $nom['Nomenclature']['libelle'];
-        }
-
-        foreach ($liste as $titre => $array) {
-            ksort($array);
-            $liste[$titre . ' ' . $categories[$titre]] = $array;
-            unset($liste[$titre]);
-        }
-        ksort($liste);
-        return $liste;
     }
 
     public function updateClassificationS2low() {
@@ -355,10 +243,11 @@ class Tdt {
     /**
      * Récupération de l'acte tamponé au format pdf
      */
-    public function getTamponS2low($tdt_id) {
+    public function getTamponS2low($acte) {
+        $tdt_id=$acte['Deliberation']['tdt_id'];
         $flux = $this->S2low->getActeTampon($tdt_id);
         $infoContent=AppTools::FileMime($flux);
-        if($infoContent['mimetype']=='application/pdf')
+        if(!empty($infoContent['mimetype']) && $infoContent['mimetype']=='application/pdf')
             return $flux;
         
         return NULL;
@@ -367,7 +256,8 @@ class Tdt {
     /**
      * Récupération de l'acte tamponé au format pdf
      */
-    public function getTamponPastell($id_d) {
+    public function getTamponPastell($acte) {
+        $id_d=$acte['Deliberation']['pastell_id'];
         $flux = $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['acte_tamponne']);
         return $flux;
     }
@@ -375,9 +265,9 @@ class Tdt {
     /**
      * Récupération du fichier bordereau
      */
-    public function getBordereauPastell($id_d) {
-        $flux = $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['bordereau']);
-        return $flux;
+    public function getBordereauPastell($acte) {
+        $id_d=$acte['Deliberation']['pastell_id'];
+        return $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['bordereau']);
     }
 
     /**
@@ -385,7 +275,8 @@ class Tdt {
      * @param int $tdt_id
      * @return mixed
      */
-    public function getBordereauS2low($tdt_id) {
+    public function getBordereauS2low($acte) {
+        $tdt_id=$acte['Deliberation']['tdt_id'];
         return $this->S2low->getAR($tdt_id);
     }
     
@@ -396,7 +287,7 @@ class Tdt {
      * @return String
      */
     public function getDocumentS2low($message_id) {
-        //return gzread($this->S2low->getDocument($message_id));
+        return gzread($this->S2low->getDocument($message_id));
     }
     
     /**
@@ -405,8 +296,8 @@ class Tdt {
      * @param int $iTdt
      * @return boolean|String
      */
-    public function getArActeS2low($iTdt) {
-
+    public function getArActeS2low($acte) {
+        $iTdt=$acte['Deliberation']['tdt_id'];
         $flux = $this->S2low->getFluxRetour($iTdt);
         $codeRetour = substr($flux, 3, 1);
 
@@ -423,7 +314,8 @@ class Tdt {
      * @param int $iTdt
      * @return boolean|String
      */
-    public function getArActePastell($id_d) {
+    public function getArActePastell($acte) {
+        $iTdt=$acte['Deliberation']['tdt_id'];
         $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
         if (!empty($infos['data']['aractes']))

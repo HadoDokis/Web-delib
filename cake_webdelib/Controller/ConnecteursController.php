@@ -76,7 +76,10 @@ class ConnecteursController extends AppController {
                 break;
             case 7:
                 // Connecteur SAE
-                $protocoles = array('PASTELL' => 'Pastell');
+                $protocoles = array('PASTELL' => 'Pastell', 'ASALAE' => 'as@lae');
+                 if (!Configure::read('USE_PASTELL')){
+                    unset($protocoles['PASTELL']);
+                }
                 $this->set('protocoles', $protocoles);
                 $this->render('sae');
                 break;
@@ -122,10 +125,12 @@ class ConnecteursController extends AppController {
             case 'signature' :
                 $protocol = strtoupper($this->data['Connecteur']['signature_protocol']);
                 $content = $this->_replaceValue($content, 'PARAPHEUR', $protocol);
+                $content = $this->_replaceValue($content, 'PASTELL_PARAPHEUR_TYPE', $this->data['Connecteur']['pastell_parapheur_type']);
                 $content = $this->_replaceValue($content, 'USE_PARAPHEUR', $this->data['Connecteur']['use_signature']);
+                $content = $this->_replaceValue($content, 'USE_IPARAPHEUR', $this->data['Connecteur']['use_signature']);
                 $content = $this->_replaceValue($content, 'IPARAPHEUR_HOST', $this->data['Connecteur']['host']);
                 $content = $this->_replaceValue($content, 'IPARAPHEUR_LOGIN', $this->data['Connecteur']['login']);
-                $content = $this->_replaceValue($content, 'IPARAPHEUR__PWD', $this->data['Connecteur']['pwd']);
+                $content = $this->_replaceValue($content, 'IPARAPHEUR_PWD', $this->data['Connecteur']['pwd']);
                 $content = $this->_replaceValue($content, 'IPARAPHEUR_TYPE', $this->data['Connecteur']['type']);
                 if ($protocol == 'IPARAPHEUR') {
                     $content = $this->_replaceValue($content, 'IPARAPHEUR_CERTPWD', $this->data['Connecteur']['certpwd']);
@@ -217,12 +222,19 @@ class ConnecteursController extends AppController {
                 
                 break;
             case 'sae' :
-                $content = $this->_replaceValue($content, 'USE_ASALAE', $this->data['Connecteur']['use_asalae']);
-                $content = $this->_replaceValue($content, 'ASALAE_WSDL', $this->data['Connecteur']['asalae_wsdl']);
-                $content = $this->_replaceValue($content, 'ASALAE_SIREN_ARCHIVE', $this->data['Connecteur']['siren_archive']);
-                $content = $this->_replaceValue($content, 'ASALAE_NUMERO_AGREMENT', $this->data['Connecteur']['numero_agrement']);
-                $content = $this->_replaceValue($content, 'ASALAE_LOGIN', $this->data['Connecteur']['identifiant_versant']);
-                $content = $this->_replaceValue($content, 'ASALAE_PWD', $this->data['Connecteur']['mot_de_passe']);
+                $protocol = strtoupper($this->data['Connecteur']['sae_protocol']);
+                $content = $this->_replaceValue($content, 'SAE', $protocol);
+                $content = $this->_replaceValue($content, 'USE_SAE', $this->data['Connecteur']['use_sae']);
+                if ($protocol == 'ASALAE') {
+                    $content = $this->_replaceValue($content, 'USE_S2LOW', 'true');
+                    $content = $this->_replaceValue($content, 'ASALAE_WSDL', $this->data['Connecteur']['host']);
+                    $content = $this->_replaceValue($content, 'ASALAE_SIREN_ARCHIVE', $this->data['Connecteur']['siren_archive']);
+                    $content = $this->_replaceValue($content, 'ASALAE_NUMERO_AGREMENT', $this->data['Connecteur']['numero_agrement']);
+                    $content = $this->_replaceValue($content, 'ASALAE_LOGIN', $this->data['Connecteur']['login']);
+                    $content = $this->_replaceValue($content, 'ASALAE_PWD', $this->data['Connecteur']['pwd']);
+                }elseif ($protocol == 'PASTELL'){
+                    $content = $this->_replaceValue($content, "USE_ASALAE", 'false');
+                }
                 break;
             case 'ldap' :
                 $protocol = strtoupper($this->data['Connecteur']['ldap_protocol']);

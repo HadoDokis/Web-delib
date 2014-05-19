@@ -29,7 +29,7 @@
         <tr>
             <th style="width: 2px;"><input type='checkbox' id='masterCheckbox'/></th>
             <th style="width: 20px;">Id</th>
-            <th>Numéro Délibération</th>
+            <th style="width: 100px;">Numéro Délibération</th>
             <th>Libellé de l'acte</th>
             <th>Titre</th>
             <th>Classification</th>
@@ -50,53 +50,54 @@
             echo '<td style="text-align:center;">' . $this->Form->checkbox('Deliberation.id.' . $delib['Deliberation']['id'], $options) . '</td>';
             ?>
             <td style="text-align:center"><?php echo $this->Html->link($delib['Deliberation']['id'], array('action' => 'view', $delib['Deliberation']['id'])); ?></td>
-            <?php echo "<td>" . $this->Html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/' . $delib['Deliberation']['id']); ?>
-            </td>
+            <td><?php echo $this->Html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/' . $delib['Deliberation']['id']); ?></td>
             <td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
             <td><?php echo $delib['Deliberation']['titre']; ?></td>
             <td><?php
                 $id_num_pref = $delib['Deliberation']['id'] . '_num_pref';
-                if (Configure::read('TDT') == 'PASTELL') {
-                    if (empty($nomenclatures)) $nomenclatures = array();
-                    echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
-                        'name' => $delib['Deliberation']['id'] . 'classif2',
-                        'label' => false,
-                        'options' => $nomenclatures,
-                        'default' => $delib['Deliberation']['num_pref'],
-                        'readonly' => empty($nomenclatures),
-                        'empty' => true,
-                        'class' => 'select2 selectone',
-                        'style' => 'width:auto; max-width:500px;',
-                        'div' => array('style' => 'text-align:center;font-size: 1.1em;'),
-                        'escape' => false
-                    ));
-                } else {
-                    echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref_libelle', array(
-                        'label' => false,
-                        'div' => false,
-                        'id' => $delib['Deliberation']['id'] . 'classif1',
-                        'style' => 'width: 25em;',
-                        'disabled' => true,
-                        'value' => $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle']));?>
-                    <br/>
-                    <a class="list_form" href="#add"
-                       onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id']; ?>', 'Classification', 'scrollbars=yes,,width=570,height=450');"
-                       id="<?php echo $delib['Deliberation']['id']; ?> _classification_text">[Choisir la
-                        classification]</a>
-                    <?php
-                    echo $this->Form->hidden('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
-                        'id' => $delib['Deliberation']['id'] . 'classif2',
-                        'name' => $delib['Deliberation']['id'] . 'classif2',
-                        'value' => $delib['Deliberation']['num_pref']
-                    ));
+                if ($delib['Deliberation']['etat'] == 5){
+                     echo $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle'] ;
+                }
+                else {
+                    if (!empty($nomenclatures)) {
+                        echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
+                            'name' => $delib['Deliberation']['id'] . 'classif2',
+                            'label' => false,
+                            'options' => $nomenclatures,
+                            'default' => $delib['Deliberation']['num_pref'],
+                            'readonly' => empty($nomenclatures),
+                            'empty' => true,
+                            'class' => 'select2 selectone',
+                            'style' => 'width:auto; max-width:500px;',
+                            'div' => array('style' => 'text-align:center;font-size: 1.1em;'),
+                            'escape' => false
+                        ));
+                    } else {
+                        echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref_libelle', array(
+                            'label' => false,
+                            'div' => false,
+                            'id' => $delib['Deliberation']['id'] . 'classif1',
+                            'style' => 'width: 25em;',
+                            'disabled' => true,
+                            'value' => $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle']));?>
+                        <br/>
+                        <a class="list_form" href="#add"
+                           onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id']; ?>', 'Classification', 'scrollbars=yes,,width=570,height=450');"
+                           id="<?php echo $delib['Deliberation']['id']; ?> _classification_text">[Choisir la
+                            classification]</a>
+                        <?php
+                        echo $this->Form->hidden('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
+                            'id' => $delib['Deliberation']['id'] . 'classif2',
+                            'name' => $delib['Deliberation']['id'] . 'classif2',
+                            'value' => $delib['Deliberation']['num_pref']
+                        ));
+                    }
                 }
                 ?></td>
             <td style="text-align: center">
                 <?php
                 if ($delib['Deliberation']['etat'] == 5) {
                     $statut = "<i class='fa fa-check-circle'></i> Envoyé";
-                    if (!empty($host))
-                        $statut = "<a href='$host/modules/actes/actes_transac_get_status.php?transaction=" . $delib['Deliberation']['tdt_id'] . "'>$statut</a>";
                 } else {
                     $statut = "Non envoyé";
                 }
