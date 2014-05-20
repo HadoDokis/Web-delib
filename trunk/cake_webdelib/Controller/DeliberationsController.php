@@ -1302,11 +1302,14 @@ class DeliberationsController extends AppController
     function delete($id = null) {
         $delib = $this->Deliberation->find('first', array(
             'recursive' => -1,
-            'fields' => array('Deliberation.id', 'Deliberation.redacteur_id', 'Deliberation.etat'),
+            'fields' => array('Deliberation.id', 'Deliberation.redacteur_id', 'Deliberation.etat', 'Deliberation.parapheur_etat'),
             'conditions' => array('id' => $id)));
 
         if (empty($delib)) {
             $this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type' => 'erreur'));
+        }
+        elseif($delib['Deliberation']['parapheur_etat']==1) {
+                $this->Session->setFlash('Le projet est dans une étape parapheur, il ne peut être validé en urgence.', 'growl', array('type' => 'erreur'));
         } else {
             $canDelete = $this->Droits->check($this->user_id, "Deliberations:delete");
             if ((($delib['Deliberation']['redacteur_id'] == $this->user_id) && ($delib['Deliberation']['etat'] == 0)) || ($canDelete)) {
@@ -3120,13 +3123,16 @@ class DeliberationsController extends AppController
         $this->Deliberation->recursive = -1;
         $this->request->data = $this->Deliberation->find('first', array(
             'conditions' => array('Deliberation.id' => $delibId),
-            'fields' => array('Deliberation.id', 'Deliberation.etat'),
+            'fields' => array('Deliberation.id', 'Deliberation.etat','Deliberation.parapheur_etat'),
             'recursive' => -1));
         if (empty($this->data))
-            $this->Session->setFlash('Invalide id pour le projet de délibération', 'growl', array('type' => 'erreur'));
+            $this->Session->setFlash('Invalide id pour le projet de délibération.', 'growl', array('type' => 'erreur'));
         else {
             if ($this->data['Deliberation']['etat'] != 1)
-                $this->Session->setFlash('Le projet doit être dans un circuit pour être validé', 'growl', array('type' => 'erreur'));
+                $this->Session->setFlash('Le projet doit être dans un circuit pour être validé.', 'growl', array('type' => 'erreur'));
+            elseif($this->data['Deliberation']['parapheur_etat']==1) {
+                $this->Session->setFlash('Le projet est dans une étape parapheur, il ne peut être validé en urgence.', 'growl', array('type' => 'erreur'));
+            }
             else {
                 // initialisation du visa si utilisateur connecté est hors traitement
                 $options = array(
@@ -3147,7 +3153,7 @@ class DeliberationsController extends AppController
                 $this->Deliberation->saveField('etat', 2);
                 $this->Deliberation->saveField('parapheur_etat', 0);
                 $this->Historique->enregistre($delibId, $this->user_id, 'Validation en urgence');
-                $this->Session->setFlash('Le projet ' . $this->data['Deliberation']['id'] . ' a été validé en urgence', 'growl');
+                $this->Session->setFlash('Le projet ' . $this->data['Deliberation']['id'] . ' a été validé en urgence.', 'growl');
             }
         }
         if ($redirect)
@@ -3845,8 +3851,14 @@ class DeliberationsController extends AppController
 
     function goNext($delib_id) {
         $delib = $this->Deliberation->read(null, $delib_id);
+        
         if (empty($delib)){
             $this->Session->setFlash("Le projet n'existe pas", 'growl', array('type' => 'erreur'));
+            return $this->redirect($this->referer());
+        }
+        
+        if($delib['Deliberation']['parapheur_etat']==1) {
+            $this->Session->setFlash('Le projet est dans une étape parapheur, on ne peut pas sauter d\'étapes.', 'growl', array('type' => 'erreur'));
             return $this->redirect($this->referer());
         }
 
