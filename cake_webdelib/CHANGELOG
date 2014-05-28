@@ -1,3 +1,23 @@
+4.2.01
+======
+- Correction prise en compte de 5 niveaux sur la classification Tdt
+- Correction le suppléant n'apparaissait pas dans la listes des votants en génération
+- Prise en compte des ods en modification webdav
+- Prise en compte de nouveaux formats d'annexe par defaut : Powerpoint, Excel (hors génération)
+- La recherche rapide ne fonctionnait pas correctement lors que l'utilisateur n'avait pas le droit "tousLesProjetsRecherche"
+- Correction de la génération et de la validation par lot
+- Correction problème bouton retour (historique) vers la home
+- Correction du retour de l'acte tamponné via pastell
+- Correction export prise en compte des annexes en pdf
+- Mise à jour du plugin ModelOdtValidator
+- Correction les variables du rédacteur de projet et "titre_annexe" étaient manquantes en génération
+- Modification de l'administration des connecteurs (Ldap, https pastell ...)
+- Ajout du connecteur SAE pour pastell
+- Blocage des actions de suppression, valider projet et sauter étape pour une étape parapheur 
+- Maintenance : Récupération des anciens bordereaux et messages du Tdt
+- Mise à jour cakeflow vers 3.1.01
+- Mise à jour ModelOdtValidator vers 1.0.01
+
 4.2
 ===
 - Ajout d'une confirmation lors d'un refus de projet
