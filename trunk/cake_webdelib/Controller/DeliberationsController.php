@@ -1895,6 +1895,20 @@ class DeliberationsController extends AppController
         if($aClassification!=false)
         $this->set('classification', $aClassification);
     }
+    
+    function _getMatiereOrdonne($matiere, $key) {
+        //debug($matiere);
+        if(count($matiere)==1){
+            if(count($matiere[$key])==1) 
+                return array($matiere[$key]);
+                else return $matiere[$key];
+        }
+        if( isset($matiere['@actes:CodeMatiere'])) return array($matiere);
+        
+        $matiere = Hash::sort($matiere, '{n}.@actes:CodeMatiere', 'asc');
+        
+        return $matiere;
+    }
 
     function _getMatiereListe() {
         $tab = array();
@@ -1907,27 +1921,28 @@ class DeliberationsController extends AppController
             }
 
             $xmlArray = Xml::toArray($xmlObject);
-            foreach ($xmlArray['RetourClassification']['actes:Matieres'] as $matiere)
-                foreach ($matiere as $matiere1) {
-                    $tab[$matiere1['@actes:CodeMatiere']] = $matiere1['@actes:Libelle'];
-                    if(isset($matiere1['actes:Matiere2'])){
-                        $matiere1['actes:Matiere2'] = Hash::sort($matiere1['actes:Matiere2'], '{n}.@actes:CodeMatiere', 'asc');
-                        foreach ($matiere1['actes:Matiere2'] as $matiere2) {
-                            $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere']] = $matiere2['@actes:Libelle'];
-                            if(isset($matiere1['actes:Matiere3'])){
-                                $matiere1['actes:Matiere3'] = Hash::sort($matiere1['actes:Matiere3'], '{n}.@actes:CodeMatiere', 'asc');
-                                foreach ($matiere2['actes:Matiere3'] as $matiere3) {
-                                    $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere'] . '.' . $matiere3['@actes:CodeMatiere']] = $matiere3['@actes:Libelle'];
-                                    if(isset($matiere1['actes:Matiere4'])){
-                                        $matiere1['actes:Matiere4'] = Hash::sort($matiere1['actes:Matiere4'], '{n}.@actes:CodeMatiere', 'asc');
-                                        foreach ($matiere3['actes:Matiere4'] as $matiere4) {
-                                            $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere'] . '.' . $matiere3['@actes:CodeMatiere'] . '.' . $matiere4['@actes:CodeMatiere']] = $matiere4['@actes:Libelle'];
-                                             if(isset($matiere1['actes:Matiere5'])){
-                                                $matiere1['actes:Matiere5'] = Hash::sort($matiere1['actes:Matiere5'], '{n}.@actes:CodeMatiere', 'asc');
-                                                foreach ($matiere1['actes:Matiere5'] as $matiere5) {
-                                                    $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere'] . '.' . $matiere3['@actes:CodeMatiere'] . '.' . $matiere4['@actes:CodeMatiere'] . '.' . $matiere5['@actes:CodeMatiere']] = $matiere2['@actes:Libelle'];
-                                                }
-                                             }
+            $aMatiere=$this->_getMatiereOrdonne($xmlArray['RetourClassification']['actes:Matieres'],'actes:Matiere1');
+            foreach ($aMatiere as $matiere1)
+            {
+                $tab[$matiere1['@actes:CodeMatiere']] = $matiere1['@actes:Libelle'];
+                if(isset($matiere1['actes:Matiere2'])){
+                    $aMatiere2=$this->_getMatiereOrdonne($matiere1['actes:Matiere2'], 'actes:Matiere2');
+                    foreach ($aMatiere2 as $matiere2) {
+                        $tab[$matiere1['@actes:CodeMatiere'] . '.' .$matiere2['@actes:CodeMatiere']] = $matiere2['@actes:Libelle'];
+                        if(isset($matiere2['actes:Matiere3'])){
+                            $aMatiere3=$this->_getMatiereOrdonne($matiere2['actes:Matiere3'],'actes:Matiere3');
+                            foreach ($aMatiere3 as $matiere3) {
+                                $tab[$matiere1['@actes:CodeMatiere'] . '.' .$matiere2['@actes:CodeMatiere']. '.' .$matiere3['@actes:CodeMatiere']] = $matiere3['@actes:Libelle'];
+                                if(isset($matiere3['actes:Matiere4'])){
+                                    $aMatiere4=$this->_getMatiereOrdonne($matiere3['actes:Matiere4'],'actes:Matiere5');
+                                    foreach ($aMatiere4 as $matiere4) {
+                                        $tab[$matiere1['@actes:CodeMatiere'] . '.' .$matiere2['@actes:CodeMatiere']. '.' .$matiere3['@actes:CodeMatiere']. '.' .$matiere4['@actes:CodeMatiere']] = $matiere4['@actes:Libelle'];
+
+                                        if(isset($matiere4['actes:Matiere5'])){
+                                            $aMatiere5=$this->_getMatiereOrdonne($matiere4['actes:Matiere5'],'actes:Matiere6');
+                                            foreach ($aMatiere5 as $matiere5) {
+                                                $tab[$matiere1['@actes:CodeMatiere'] . '.' .$matiere2['@actes:CodeMatiere']. '.' .$matiere3['@actes:CodeMatiere']. '.' .$matiere4['@actes:CodeMatiere']. '.' .$matiere5['@actes:CodeMatiere']] = $matiere5['@actes:Libelle'];
+                                            }
                                         }
                                     }
                                 }
@@ -1935,11 +1950,13 @@ class DeliberationsController extends AppController
                         }
                     }
                 }
-        } else { //TODO test
+            }
+        }else { //TODO test
             App::uses('Tdt', 'Lib');
             $Tdt = new Tdt();
             $tab = $Tdt->listClassification();
         }
+        
         return $tab;
     }
     
