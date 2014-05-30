@@ -55,7 +55,6 @@ class Listepresence extends AppModel {
         // nombre d'acteurs présents
         $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
         $oMainPart->addElement(new GDO_FieldType('nombre_acteur_present', $nbActeurs, 'text'));
-        if ($nbActeurs==0) return;
 
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = array();
@@ -76,6 +75,16 @@ class Listepresence extends AppModel {
 
         // itérations sur les acteurs présents
         $oStyleIteration = new GDO_IterationType("ActeursPresents");
+        
+        if ($nbActeurs==0){
+            $oDevPart = new GDO_PartType();
+            foreach($acteurFields as $fieldname)
+                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_present', $acteur['Acteur'][$fieldname], "text"));
+            $oStyleIteration->addPart($oDevPart);
+            $oMainPart->addElement($oStyleIteration);
+            return;
+        }
+        
         foreach($acteurs as &$acteur) {
             // traitement du suppléant
             if (!empty($acteur['Listepresence']['suppleant_id'])) {
@@ -114,8 +123,7 @@ class Listepresence extends AppModel {
         // nombre d'acteurs absents
         $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
         $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', $nbActeurs, 'text'));
-        if ($nbActeurs==0) return;
-
+        
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = array();
         foreach($fusionVariables as $fusionVariable)
@@ -124,7 +132,7 @@ class Listepresence extends AppModel {
                 $acteurFields[] = $fusionVariable;
             }
         if (empty($aliasActeurFields)) return;
-
+        
         // lecture des données en base de données
         $this->Behaviors->load('Containable');
         $acteurs = $this->find('all', array (
@@ -135,6 +143,16 @@ class Listepresence extends AppModel {
 
         // itérations sur les acteurs absents
         $oStyleIteration = new GDO_IterationType("ActeursAbsents");
+        
+        if ($nbActeurs==0){
+            $oDevPart = new GDO_PartType();
+            foreach($acteurFields as $fieldname)
+                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_absent', "", "text"));
+            $oStyleIteration->addPart($oDevPart);
+            $oMainPart->addElement($oStyleIteration);
+            return;
+        }
+        
         foreach($acteurs as &$acteur) {
             // traitement de la date de naissance
             if (!empty($acteur['Acteur']['date_naissance']))
@@ -163,7 +181,6 @@ class Listepresence extends AppModel {
         // nombre d'acteurs mandatés
         $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
         $oMainPart->addElement(new GDO_FieldType('nombre_acteur_mandataire', $nbActeurs, 'text'));
-        if ($nbActeurs==0) return;
 
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = $mandateFields = $aliasMandateFields = array();
@@ -189,6 +206,18 @@ class Listepresence extends AppModel {
 
         // itérations sur les acteurs mandatés
         $oStyleIteration = new GDO_IterationType("ActeursMandates");
+        
+        if ($nbActeurs==0){
+            $oDevPart = new GDO_PartType();
+            foreach($acteurFields as $fieldname)
+                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandataire', "", "text"));
+            foreach($mandateFields as $fieldname)
+                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandate', "", "text"));
+            $oStyleIteration->addPart($oDevPart);
+            $oMainPart->addElement($oStyleIteration);
+            return;
+        }
+        
         foreach($acteurs as &$acteur) {
             // traitement de la date de naissance
             if (!empty($acteur['Acteur']['date_naissance']))

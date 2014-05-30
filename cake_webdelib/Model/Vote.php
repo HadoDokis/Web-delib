@@ -44,7 +44,6 @@ class Vote extends AppModel {
             // nombre de votes
             $nbVotes = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
             $oMainPart->addElement(new GDO_FieldType('nombre_acteur_'.$voteIteration['fusionVariableSuffixe'], $nbVotes, 'text'));
-            if ($nbVotes==0) continue;
 
             // liste des variables utilisées dans le template
             $acteurFields = $aliasActeurFields = array();
@@ -55,7 +54,7 @@ class Vote extends AppModel {
                 }
             if (empty($aliasActeurFields)) continue;
             else $aliasActeurFields[]='Acteur.id';
-
+            
             // lecture des données en base
             $this->Behaviors->load('Containable');
             $acteurs = $this->find('all', array (
@@ -65,6 +64,16 @@ class Vote extends AppModel {
                 'order' => 'Acteur.position ASC'));
             // itérations sur les acteurs
             $oStyleIteration = new GDO_IterationType($voteIteration['iterationName']);
+            
+            if ($nbVotes==0){
+                $oDevPart = new GDO_PartType();
+                foreach($acteurFields as $fieldname)
+                    $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_'.$voteIteration['fusionVariableSuffixe'], "", "text"));
+                $oStyleIteration->addPart($oDevPart);
+                $oMainPart->addElement($oStyleIteration);
+                continue;
+            }
+            
             foreach($acteurs as &$acteur) {
                 // traitement du suppléant
                 $listepresence=$this->Deliberation->Listepresence->find('first', array (
@@ -84,8 +93,10 @@ class Vote extends AppModel {
                 if (!empty($acteur['Acteur']['date_naissance']))
                     $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
                 $oDevPart = new GDO_PartType();
-                foreach($acteurFields as $fieldname)
-                    $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_'.$voteIteration['fusionVariableSuffixe'], $acteur['Acteur'][$fieldname], "text"));
+                foreach($acteurFields as $fieldname){
+                     $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_'.$voteIteration['fusionVariableSuffixe'], $acteur['Acteur'][$fieldname], "text"));
+                }
+                   
                 $oStyleIteration->addPart($oDevPart);
             }
             $oMainPart->addElement($oStyleIteration);
