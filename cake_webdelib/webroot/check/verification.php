@@ -1015,11 +1015,14 @@ function testerOdfGedooo() {
         return;
 
     try {
-        $oService = new SoapClient($gedoooWsdl);
-        d("Version de l'outil d'édition : ".$oService->__soapCall("Version", array()), 'info');
+        $oService = new SoapClient($gedoooWsdl,array("cache_wsdl"=>0,
+				    "exceptions"=> 1,
+				    "trace"=>1,
+				    "classmap"=>array("Version" => "Version")));
+        d("Version de l'outil d'édition : ".$oService->Version());
     } catch (Exception $e) {
         //Erreur lors de l'initialisation de la connexion : code 001
-        d("Version de l'outil d'édition : Erreur lors de la connexion au WSDL : " . $e->getMessage(), 'ko');
+        d("Version de l'outil d'édition : Erreur lors de la connexion au WSDL : " . $e->getCode(). $e->getMessage(), 'ko');
     }
 
     // test d'édition
