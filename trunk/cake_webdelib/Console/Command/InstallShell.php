@@ -22,7 +22,7 @@ class InstallShell extends AppShell {
             $this->out("\n<important>Annulation de l'installation</important>");
             return;
         }
-        $this->version = file_get_contents(APP . 'VERSION.txt');
+        $this->version = file(APP . DS . 'VERSION.txt');
 
         $this->install($this->params);
 
@@ -76,10 +76,13 @@ class InstallShell extends AppShell {
         if ($clean)
             $notransac = $noerrors = true;
 
-        if (!$clean)
-            $sql_files['Webdelib v' . $this->version] = APP . 'Config' . DS . 'Schema' . DS . 'webdelib-v' . $this->version . '.sql';
+        if (!$clean){
+            $sql_files['web-delib v'.$this->version] = APP . 'Config' . DS . 'Schema' . DS . 'webdelib-v4.2.sql';
+            $sql_files['Plugin : Cakeflow v3.1.01'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'3.1_to_3.1.01.sql';
+            $sql_files['Plugin : ModelOdtValidator v1.0.01'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'1.0_to_1.0.01.sql';
+        }
         else
-            $sql_files['Webdelib v' . $this->version] = APP . 'Config' . DS . 'Schema' . DS . 'webdelib-v' . $this->version . '.clean.sql';
+            $sql_files['web-delib v4.2 purge'] = APP . 'Config' . DS . 'Schema' . DS . 'patchs' . DS . 'purges_delibs.sql';
 
         $this->out("<important>Installation de Webdelib v" . $this->version . "</important>\n");
 
