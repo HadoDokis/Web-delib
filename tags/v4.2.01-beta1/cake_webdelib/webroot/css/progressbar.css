@@ -1,0 +1,39 @@
+/* 
+    Document   : progressbar
+    Created on : 17 oct. 2013, 11:29:12
+    Author     : fajir
+    Description:
+        Feuille de style du composant ProgressComponent.
+*/
+
+#contTemp{
+    position:absolute;
+    top:0;
+    left:0px;
+    background-image:url(../img/grid-18px-masked.png);
+    width:100%; 
+    height:250px; 
+    margin-left: 0px;
+    padding: 0px;
+}
+#pourcentage{
+    position:absolute;
+    height: 22px;
+    font-family:Tahoma;
+    font-weight:bold;
+    z-index:1;
+    text-align:center;
+}
+#progrbar{
+    position:absolute;
+    width:0px;
+    height: 22px;
+    background-image:url(../img/pbar-ani.gif);
+    z-index:0;
+}
+#affiche{
+    position:absolute;
+    height: 30px; 
+    font-size: 10px;
+    z-index:0;
+}
