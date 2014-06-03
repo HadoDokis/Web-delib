@@ -76,7 +76,7 @@ class ConnecteursController extends AppController {
                 break;
             case 7:
                 // Connecteur SAE
-                $protocoles = array('PASTELL' => 'Pastell', 'ASALAE' => 'as@lae');
+                $protocoles = array('PASTELL' => 'Pastell'/*, 'ASALAE' => 'as@lae'*/);
                  if (!Configure::read('USE_PASTELL')){
                     unset($protocoles['PASTELL']);
                 }
@@ -91,6 +91,7 @@ class ConnecteursController extends AppController {
                 break;
             case 9:
                 // Connecteur Pastell
+                $this->set('flux_pastell', Configure::read('Pastell'));
                 $this->render('pastell');
                 break;
             default:
@@ -222,17 +223,20 @@ class ConnecteursController extends AppController {
                 
                 break;
             case 'sae' :
+                if(!empty($this->data['Connecteur']['sae_protocol'])){
                 $protocol = strtoupper($this->data['Connecteur']['sae_protocol']);
-                $content = $this->_replaceValue($content, 'SAE', $protocol);
                 $content = $this->_replaceValue($content, 'USE_SAE', $this->data['Connecteur']['use_sae']);
+                }else $protocol='';
+                $content = $this->_replaceValue($content, 'SAE', $protocol);
+                
                 if ($protocol == 'ASALAE') {
-                    $content = $this->_replaceValue($content, 'USE_S2LOW', 'true');
+                    $content = $this->_replaceValue($content, 'USE_ASALAE', 'true');
                     $content = $this->_replaceValue($content, 'ASALAE_WSDL', $this->data['Connecteur']['host']);
                     $content = $this->_replaceValue($content, 'ASALAE_SIREN_ARCHIVE', $this->data['Connecteur']['siren_archive']);
                     $content = $this->_replaceValue($content, 'ASALAE_NUMERO_AGREMENT', $this->data['Connecteur']['numero_agrement']);
                     $content = $this->_replaceValue($content, 'ASALAE_LOGIN', $this->data['Connecteur']['login']);
                     $content = $this->_replaceValue($content, 'ASALAE_PWD', $this->data['Connecteur']['pwd']);
-                }elseif ($protocol == 'PASTELL'){
+                }else{
                     $content = $this->_replaceValue($content, "USE_ASALAE", 'false');
                 }
                 break;

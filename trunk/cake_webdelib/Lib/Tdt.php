@@ -215,7 +215,7 @@ class Tdt extends Connecteur {
         //Récupération de la classification
         $classification = $this->Pastell->getClassification($this->id_e, $id_d);
         //Suppression du dossier temporaire
-        $this->Pastell->delete($this->id_e, $id_d);
+        //$this->Pastell->delete($this->id_e, $id_d);
 
         App::uses('Nomenclature', 'Model');
         $Nomenclature = new Nomenclature();
