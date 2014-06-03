@@ -85,6 +85,7 @@ Configure::write('GED_XML_VERSION', '2');
 Configure::write('USE_PASTELL', false);
 Configure::write('PASTELL_HOST', '');
 Configure::write('PASTELL_TYPE', '');
+Configure::write('PASTELL_PARAPHEUR_TYPE', 'Actes');
 Configure::write('PASTELL_LOGIN', '');
 Configure::write('PASTELL_PWD', '');
 Configure::write('PASTELL_CACERT', APP . 'Config/cert_pastell/ac.pem');

@@ -69,7 +69,7 @@ class Connecteur {
         else $this->connecteur = NULL;
         
         if ($this->connecteur == 'PASTELL') {
-                $this->Pastell = new PastellComponent($collection);
+                $this->Pastell = new PastellComponent($this->collection);
                 //Enregistrement de la collectivité (pour pastell)
                 $Collectivite = new Collectivite();
                 $Collectivite->id = 1;
