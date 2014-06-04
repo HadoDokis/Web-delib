@@ -1018,7 +1018,7 @@ class DeliberationsController extends AppController
                             'recursive' => -1,
                             'fields' => array('filename', 'filetype', 'id','foreign_key'),
                             'conditions' => array('Annex.id' => $annexeId)));
-                        if ($annex_filename['Annex']['filetype']=='application/vnd.oasis.opendocument.text' || $annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet') {
+                        if ($annex_filename['Annex']['filetype']=='application/vnd.oasis.opendocument.text') {
                             $this->Annex->save(array(
                                 'id' => $annexeId,
                                 'titre' => $annexe['titre'],
