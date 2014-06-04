@@ -641,25 +641,25 @@ class PastellComponent extends Component {
      * Attention: le document doit être inséré dans un circuit avant !
      * @param int $id_e identifiant de la collectivité
      * @param int $id_d identifiant du dossier pastell
-     * @param bool $auto déclaration automatique du cheminement en fonction de la configuration webdelib
-     * @param array $params si !auto, les paramètres doivent être passés dans ce tableau
+     * @param array $params
      * @return bool|array résultat
      */
-    public function editTransmission($id_e, $id_d, $auto = true, $params = array()) {
+    public function editTransmission($id_e, $id_d, $params = array()) {
         $data = array(
             'id_e' => $id_e,
             'id_d' => $id_d
         );
-        if ($auto) {
-            if (Configure::read('USE_PARAPHEUR') && Configure::read('PARAPHEUR') == 'PASTELL')
-                $data[$this->config['field']['envoi_signature']] = true;
-            if (Configure::read('USE_TDT') && Configure::read('TDT') == 'PASTELL')
-                $data[$this->config['field']['envoi_tdt']] = true;
-            if (Configure::read('USE_SAE') && Configure::read('SAE') == 'PASTELL')
-                $data[$this->config['field']['envoi_sae']] = true;
-            if (Configure::read('USE_GED') && Configure::read('GED') == 'PASTELL')
-                $data[$this->config['field']['envoi_ged']] = true;
-        } elseif (!empty($params)) {
+        
+        if (Configure::read('USE_PARAPHEUR') && Configure::read('PARAPHEUR') == 'PASTELL')
+            $data[$this->config['field']['envoi_signature']] = true;
+        if (Configure::read('USE_TDT') && Configure::read('TDT') == 'PASTELL')
+            $data[$this->config['field']['envoi_tdt']] = true;
+        if (Configure::read('USE_SAE') && Configure::read('SAE') == 'PASTELL')
+            $data[$this->config['field']['envoi_sae']] = true;
+        if (Configure::read('USE_GED') && Configure::read('GED') == 'PASTELL')
+            $data[$this->config['field']['envoi_ged']] = true;
+        //FIX    
+        if (!empty($params)) {
             $data = array_merge($data, $params);
         } else {
             return false;
