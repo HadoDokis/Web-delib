@@ -1309,7 +1309,7 @@ class DeliberationsController extends AppController
             $this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type' => 'erreur'));
         }
         elseif($delib['Deliberation']['parapheur_etat']==1) {
-                $this->Session->setFlash('Le projet est dans une étape parapheur, il ne peut être validé en urgence.', 'growl', array('type' => 'erreur'));
+                $this->Session->setFlash('Le projet est dans une étape parapheur, il ne peut être supprimé.', 'growl', array('type' => 'erreur'));
         } else {
             $canDelete = $this->Droits->check($this->user_id, "Deliberations:delete");
             if ((($delib['Deliberation']['redacteur_id'] == $this->user_id) && ($delib['Deliberation']['etat'] == 0)) || ($canDelete)) {
