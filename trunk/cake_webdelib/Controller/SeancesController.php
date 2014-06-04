@@ -602,6 +602,8 @@ class SeancesController extends AppController {
     public function saisirDebatGlobal($id = null) {
         $this->Seance->Behaviors->load('Containable');
         $this->set('seance_id', $id);
+        if($this->request->isPost())
+        {
         if (!empty($this->data['Seance']['texte_doc']['tmp_name'])) {
             $this->Seance->set($this->data);
             if ($this->Seance->validates(array('fieldList' => array('texte_doc')))) {
@@ -624,6 +626,7 @@ class SeancesController extends AppController {
         }
         else
             $this->Session->setFlash('Veuillez mettre un fichier pour enregistrer la saisie des débats généraux.', 'growl', array('type' => 'erreur'));
+        }
         $this->request->data = $this->Seance->find('first', array(
             'conditions' => array('Seance.id' => $id)
         ));
