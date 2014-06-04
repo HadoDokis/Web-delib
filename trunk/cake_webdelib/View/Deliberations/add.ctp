@@ -62,7 +62,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/add', 't
         <div id="select_classification">
             <?php
             if ($USE_PASTELL) {
-                echo $this->Form->input('Deliberation.num_pref_libelle', array(
+                echo $this->Form->input('Deliberation.num_pref', array(
                     'label' => 'Nomenclature',
                     'options' => $nomenclatures,
                     'default' => $this->Html->value('Deliberation.num_pref'),
