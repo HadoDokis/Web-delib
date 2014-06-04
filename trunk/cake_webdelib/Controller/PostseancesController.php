@@ -50,7 +50,7 @@ class PostseancesController extends AppController {
             $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
             $seances[$i]['Seance']['Actions'] = $actions;
         }
-        $this->set('use_s2low', Configure::read('USE_S2LOW'));
+        $this->set('use_tdt', Configure::read('USE_TDT'));
         $this->set('seances', $seances);
     }
 

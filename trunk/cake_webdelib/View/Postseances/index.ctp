@@ -40,7 +40,7 @@
                         'title' => 'Nouvelle méthode génération du pv complet pour la séance du ' . $seance['Seance']['date'],
                     ));
             }
-            if ($use_s2low) {
+            if ($use_tdt) {
                 echo $this->Html->link(SHY, '/deliberations/toSend/' . $seance['Seance']['id'], array(
                     'class' => 'link_tdt',
                     'escape' => false,
