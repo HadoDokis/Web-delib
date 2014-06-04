@@ -146,9 +146,12 @@ class Connecteur {
         
         $this->Deliberation->id = $acte['Deliberation']['id'];
         $id_d = $this->Pastell->createDocument($this->id_e, $this->pastell_type);
-        
+        $data=array();
+        //Gestion dans Pastell des signatures manuscrites parapheur_etat==0 OR IS NULL
+        if(empty($acte['Deliberation']['parapheur_etat']))
+            $data[$this->config['field']['envoi_signature']] = false;
         try {
-            $this->Pastell->editTransmission($this->id_e, $id_d);
+            $this->Pastell->editTransmission($this->id_e, $id_d, $data);
             if ($this->Pastell->modifDocument($this->id_e, $id_d, $acte, $acte['Deliberation']['delib_pdf'], $annexes)) {
                 $this->Deliberation->saveField('pastell_id', $id_d);
                 return $id_d;
