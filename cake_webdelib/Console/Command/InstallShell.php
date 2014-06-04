@@ -22,7 +22,7 @@ class InstallShell extends AppShell {
             $this->out("\n<important>Annulation de l'installation</important>");
             return;
         }
-        $this->version = file(APP . DS . 'VERSION.txt');
+        $this->version = trim(array_pop(file(APP . DS . 'VERSION.txt')));
 
         $this->install($this->params);
 
