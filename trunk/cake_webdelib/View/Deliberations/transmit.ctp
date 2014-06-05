@@ -40,7 +40,7 @@
             </th>
             <th><?php echo $this->Paginator->sort('num_pref', 'Classification'); ?></th>
             <th>Statut TDT <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majArTdt'), array('escape'=>false, 'class'=>'waiter')); ?></th>
-            <th>Courriers Ministériels <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majEchangesTdtAll'), array('escape'=>false, 'class'=>'waiter')); ?></th>
+            <th>Courriers Ministériels <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majEchangesTdt'), array('escape'=>false, 'class'=>'waiter')); ?></th>
         </tr>
         <?php
         $numLigne = 1;
