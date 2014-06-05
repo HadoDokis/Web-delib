@@ -163,7 +163,7 @@ class AppTools {
     public static function FileMime($data) {
 
         App::uses('File', 'Utility');
-        App::uses('Fido', 'ModelOdtValidator.Lib/Fido');
+        App::uses('Fido', 'ModelOdtValidator.Lib');
         
         $file = new File($data, false);
         if(!$file->exists()){
