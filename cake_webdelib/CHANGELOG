@@ -8,8 +8,8 @@
 - Correction de la génération et de la validation par lot
 - Correction problème bouton retour (historique) vers la home
 - Correction du retour de l'acte tamponné via pastell
-- Correction export prise en compte des annexes en pdf
-- Mise à jour du plugin ModelOdtValidator
+- Correction nomenclature non pris en compte à la création d'un projet pour pastell
+- Correction export v1 prise en compte des annexes en pdf
 - Correction les variables du rédacteur de projet et "titre_annexe" étaient manquantes en génération
 - Modification de l'administration des connecteurs (Ldap, https pastell ...)
 - Ajout du connecteur SAE pour pastell
