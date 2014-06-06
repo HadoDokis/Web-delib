@@ -194,7 +194,7 @@ class SeancesController extends AppController {
 			$this->redirect('/seances/listerFuturesSeances');
 		}
 		if ($this->Seance->delete($id)) {
-			$this->Session->setFlash('La séance a été suprimée');
+			$this->Session->setFlash('La séance a été supprimée', 'growl');
 			$this->redirect('/seances/listerFuturesSeances');
 		}
 		else {
