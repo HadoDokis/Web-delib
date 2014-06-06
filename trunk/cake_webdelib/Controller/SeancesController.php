@@ -570,29 +570,30 @@ class SeancesController extends AppController {
             $this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...', 'growl', array('type' => 'erreur'));
             return $this->redirect(array('controller' => 'postseances', 'action' => 'index'));
         }
-
-        if (!empty($this->data['Deliberation']['texte_doc']['tmp_name'])) {
-            $this->Deliberation->set($this->data);
-            if ($this->Deliberation->validates(array('fieldList' => array('texte_doc')))) {
-                $details = $this->Fido->analyzeFile($this->data['Deliberation']['texte_doc']['tmp_name']);
-                $type = $seance['Typeseance']['action'] ? 'commission' : 'debat';
-                $deliberation = array(
-                    'Deliberation' => array(
-                        'id' => $delib_id,
-                        $type . '_name' => $this->data['Deliberation']['texte_doc']['name'],
-                        $type . '_size' => $this->data['Deliberation']['texte_doc']['size'],
-                        $type . '_type' => $details['mimetype'],
-                        $type => file_get_contents($this->data['Deliberation']['texte_doc']['tmp_name'])
-                    )
-                );
-                if ($this->Deliberation->save($deliberation)) {
-                    return $this->redirect($this->previous);
+        if($this->request->isPost())
+        {
+            if (!empty($this->data['Deliberation']['texte_doc']['tmp_name'])) {
+                $this->Deliberation->set($this->data);
+                if ($this->Deliberation->validates(array('fieldList' => array('texte_doc')))) {
+                    $details = $this->Fido->analyzeFile($this->data['Deliberation']['texte_doc']['tmp_name']);
+                    $type = $seance['Typeseance']['action'] ? 'commission' : 'debat';
+                    $deliberation = array(
+                        'Deliberation' => array(
+                            'id' => $delib_id,
+                            $type . '_name' => $this->data['Deliberation']['texte_doc']['name'],
+                            $type . '_size' => $this->data['Deliberation']['texte_doc']['size'],
+                            $type . '_type' => $details['mimetype'],
+                            $type => file_get_contents($this->data['Deliberation']['texte_doc']['tmp_name'])
+                        )
+                    );
+                    if ($this->Deliberation->save($deliberation)) {
+                        return $this->redirect($this->previous);
+                    }
                 }
-            }
-            $this->Session->setFlash('Erreur : Format du fichier incorrect', 'growl', array('type' => 'erreur'));
-        }else
-            $this->Session->setFlash('Veuillez mettre un fichier pour enregistrer la saisie des débats.', 'growl', array('type' => 'erreur'));
-        
+                $this->Session->setFlash('Erreur : Format du fichier incorrect', 'growl', array('type' => 'erreur'));
+            }else
+                $this->Session->setFlash('Veuillez mettre un fichier pour enregistrer la saisie des débats.', 'growl', array('type' => 'erreur'));
+        }
         $this->request->data = $this->Deliberation->find('first', array(
             'conditions' => array('Deliberation.id' => $delib_id),
             'recursive' => -1));
