@@ -269,7 +269,6 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function traiteXMLMessageRetour() {
-       
         $xml = simplexml_load_string($this->responseMessageStr);
         if ($xml !== false) {
             $result = $xml->xpath('S:Body/S:Fault');
@@ -417,12 +416,16 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         if ($signsdocprinc->length > 0) {
             $signdocprinc = $signsdocprinc->item(0)->nodeValue;
         }
-        $bordereau = $dom->documentElement->getElementsByTagName('fichier');
-        $this->log($bordereau->item(0)->parentNode->nodeName, 'debug');
-        if ($bordereau->length > 0 && $bordereau->item(0)->parentNode->nodeName == 'DocAnnexe') {
-            $bordereau = $bordereau->item(0)->nodeValue;
+        
+        $annexesNode = $dom->documentElement->getElementsByTagName('DocAnnexe');
+        if (!empty($annexesNode)) {
+            foreach ($annexesNode as $Node) {
+                if ($Node->getElementsByTagName("nom")->item(0)->nodeValue == '"iParapheur_impression_dossier.pdf"') {
+                    $bordereau = $Node->getElementsByTagName("fichier")->item(0)->nodeValue;
+                }
+            }
         }
-        $this->log($bordereau, 'debug');
+
         $response['getdossier'] = array(
             'type' => $typetech,
             'soustype' => $soustype,
@@ -434,7 +437,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             'docprinc' => $docprinc,
             'nomdocprinc' => $nomdocprinc,
             'signature' => $signdocprinc,
-            'bordereau' => $bordereau
+            'bordereau' => !empty($bordereau)?$bordereau:''
         );
 
         return $response;
