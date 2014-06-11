@@ -516,6 +516,18 @@ class Seance extends AppModel
                 $oMainPart->addElement($oStyleIteration);
             }
         }
+        
+        if ($modelOdtInfos->hasUserFieldDeclared('debat_'.$suffixe)){
+            $debat=$this->findById($id,'debat_global');
+            if (!empty($debat['Seance']['debat_global'])) {
+                $oMainPart->addElement(new GDO_ContentType('debat_seance',
+                                'debat_seance.odt',
+                                'application/vnd.oasis.opendocument.text' ,
+                                'binary',
+                                $debat['Seance']['debat_global']));
+            }else $oMainPart->addElement(new GDO_FieldType("debat_seance", "", "text"));
+        }
+        
         // projets/délibérations de la séance
         if ($addProjetIterations) {
             $this->Behaviors->load('Containable');
