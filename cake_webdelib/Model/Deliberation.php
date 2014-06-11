@@ -1896,6 +1896,12 @@ class Deliberation extends AppModel {
             if ($this->majEchangesTdt($acte)) {
                 $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
             }
+            $tdtArActe=$Tdt->getArActe($acte);
+            if (!empty($tdtArActe)) {
+                //Récupération de l'ARacte
+                $this->saveField('tdt_ar', $tdtArActe);
+                $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
+            }
             $tampon=$Tdt->getTampon($acte);
             if (!empty($tampon)) {
                 //Récupération du tampon
