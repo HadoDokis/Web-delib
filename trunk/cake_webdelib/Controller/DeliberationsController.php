@@ -2014,12 +2014,9 @@ class DeliberationsController extends AppController
         //Cases sélectionnées ?
         if (!empty($this->data['Deliberation']['id'])) {
             try{
-                //si S2low : fichier classification présent ?
-                if (Configure::read('TDT') == 'S2LOW' && !is_file(Configure::read('S2LOW_CLASSIFICATION')))
-                    $this->S2low->getClassification();
-
                 $nbEnvoyee = 1;
                 $this->Deliberation->Typeacte->Behaviors->load('Containable');
+                
                 //Pour chaque délib
                 foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
                     //Si non cochée passer
@@ -2171,7 +2168,7 @@ class DeliberationsController extends AppController
                                 $order = array("\r\n", "\n", "\r");
                                 $replace = '<br />';
                                 $curl_return = str_replace($order, $replace, $curl_return);
-                                $erreur .= $delib['Deliberation']['objet_delib'] . '(' . $delib['Deliberation']['num_delib'] . ') : ' . $curl_return . '<br />';
+                                throw new Exception($delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : ' . $curl_return );
                             } else {
                                 $nbEnvoyee++;
                                 $this->Deliberation->saveField('etat', 5);
