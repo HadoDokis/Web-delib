@@ -211,9 +211,9 @@ class PatchShell extends AppShell {
         //1° Passage des scripts sql de migration
         $this->out("\nPassage des patchs de mise à jour de la base de données...");
         $sql_files = array();
-        $sql_files['Webdelib42'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.2_to_4.2.01.sql';
+        $sql_files['Webdelib4201'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.2_to_4.2.01.sql';
         $sql_files['Plugin.Cakeflow3101'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.1_to_v3.1.01.sql';
-
+        $sql_files['Plugin.ModelOdtValidator1001'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.1_to_v3.1.01.sql';
         
         $this->Sql->execute();
         $this->Sql->begin();
