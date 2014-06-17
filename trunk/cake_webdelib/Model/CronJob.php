@@ -78,8 +78,11 @@ class CronJob extends AppModel {
                 if (!empty($blaze) && !in_array($blaze, $users))
                     $users[] = $blaze;
                 //Envoi notification
-                foreach ($targets as $target)
-                    $this->User->notifier($target, $user, 'retard_validation');
+                foreach ($targets as $target){
+                    if($this->Deliberation->exists($target)){
+                        $this->User->notifier($target, $user, 'retard_validation');
+                    }
+                }
             }
 
             if (empty($users))
