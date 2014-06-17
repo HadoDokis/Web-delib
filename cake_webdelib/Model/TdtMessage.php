@@ -23,13 +23,19 @@ class TdtMessage extends AppModel {
             'foreignKey' => 'delib_id',
         )
     );
+    public $hasMany = array(
+        'Reponse' => array(
+            'className' => 'TdtMessage',
+            'foreignKey' => 'parent_id',
+            'order' => 'tdt_id ASC',
+            'dependent' => true),
+    );
 
     public function existe($message_id) {
         $message = $this->find('count', array(
             'conditions' => array(
                 'TdtMessage.message_id' => $message_id
-            )));
+        )));
         return !empty($message);
     }
-
 }

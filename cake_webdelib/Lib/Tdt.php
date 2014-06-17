@@ -160,22 +160,19 @@ class Tdt extends Connecteur {
         $tdt_id=$acte['Deliberation']['tdt_id'];
         $tdt_messages = array();
         $result = $this->S2low->getNewFlux($tdt_id);
+		
         if (!empty($result)){
             $result_array = explode("\n", trim($result));
             if ($result_array[0] != 'KO'){
-                foreach ($result_array as $result) {
+                foreach ($result_array as $line) {
                     if (!empty($result)) {
-                        $tdt_message = array();
-                        $infos = explode('-', $result);
-                        $tdt_message['TdtMessage']['type_message'] = $infos[0];
-                        $tdt_message['TdtMessage']['type_reponse'] = $infos[1];
-                        $tdt_message['TdtMessage']['message_id'] = $infos[2];
-                        $tdt_message['TdtMessage']['data'] = $this->S2low->getDocument($infos[2]);
-                        $tdt_messages[] = $tdt_message;
+                        list($type, $status, $id) = explode("-",$line);
+                        $tdt_messages[] = array('type'=>$type,'status'=>$status,'id'=>$id,'data'=>$this->S2low->getDocument($id));
                     }
                 }
             }
         }
+        
         return $tdt_messages;
     }
 

@@ -1930,12 +1930,37 @@ class Deliberation extends AppModel {
             $infos = $Tdt->getReponses($acte);
             $this->TdtMessage->begin();
             foreach ($infos as $info) {
-                $message=$this->TdtMessage->findByMessage_id($info['TdtMessage']['message_id']);
-                if(empty($message)){
-                    $this->TdtMessage->create();
-                    $info['TdtMessage']['delib_id'] = $acte['Deliberation']['id'];
-                    $this->TdtMessage->save($info);
+                //Si Le message existe déjà ne rien faire
+                $message=$this->TdtMessage->find('first', array(
+                    'fields' => array('id','tdt_id'),
+                    'conditions' => array('tdt_id' => $info['id']),
+                    'recursive' => -1,
+                ));
+                
+                if(!empty($message))
+                    continue;
+                
+                //Recherche un parent a ce message
+                $message_parent=$this->TdtMessage->find('first', array(
+                    'fields' => array('id','tdt_id'),
+                    'conditions' => array('tdt_type' => $info['type'],'delib_id' => $acte['Deliberation']['id'], 'parent_id IS NULL'),
+                    'recursive' => -1,
+                ));
+                
+                if (!empty($message_parent) && in_array($info['status'], array(7,8))){
+                    new Exception("Attention, il y a plusieurs messages de même type, cette situation n'est pas traitée par web-delib (num_delib: ".$acte['Deliberation']['id'] . '=>' . $info['type'].')');
                 }
+                
+                $this->TdtMessage->create();
+                $TdtMessage=array(
+                                    'delib_id' => $acte['Deliberation']['id'],
+                                    'tdt_id' => $info['id'],
+                                    'tdt_type' => $info['type'],
+                                    'tdt_etat' => $info['status'],
+                                    'tdt_data' => $info['data'],
+                                    'parent_id' => !empty($message_parent)?$message_parent['TdtMessage']['id']:NULL,
+                                 );
+                $this->TdtMessage->save($TdtMessage);
             }
             $this->TdtMessage->commit();
             return true;

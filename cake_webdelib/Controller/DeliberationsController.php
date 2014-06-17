@@ -1721,7 +1721,9 @@ class DeliberationsController extends AppController
                     'fields' => array('libelle', 'teletransmettre'),
                     'conditions' => array('Typeacte.teletransmettre' => true)),
                 'Circuit' => array('fields' => array('nom')),
-                'TdtMessage' => array('fields' => array('message_id', 'type_message', 'type_reponse')),
+                'TdtMessage' => array('fields' => array('tdt_id', 'tdt_type', 'tdt_etat','parent_id'),
+                    'conditions' => array('parent_id is null'),
+                    'Reponse'=>array('fields' => array('tdt_id', 'tdt_type', 'tdt_etat'))),
             'Deliberationtypeseance' => array('fields' => array('id'),
                     'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
                     )),
@@ -1731,7 +1733,7 @@ class DeliberationsController extends AppController
             'order' => 'Deliberation.id DESC',
             'limit' => 20));
 
-        $this->set('host', Configure::read(Configure::read('TDT').'_HOST'));
+        $this->set('tdt_host', Configure::read(Configure::read('TDT').'_HOST'));
         $this->set('dateClassification', $this->S2low->getDateClassification());
 
         // On affiche que les delibs vote pour.
@@ -4508,26 +4510,27 @@ class DeliberationsController extends AppController
         return $this->redirect($this->referer());
     }
 
-    function downloadTdtMessage($message_id = null) {
+    function downloadTdtMessage($tdt_id = null) {
         
         try
         {
-            if (empty($message_id)) {
+            if (empty($tdt_id)) {
                 throw new Exception('Merci d\indiquer l\'identifiant du message.');
             }
 
             $data = $this->Deliberation->TdtMessage->find('first', array(
-                'fields' => array('data'),
-                'conditions' => array('message_id' => $message_id)
+                'fields' => array('tdt_data'),
+                'conditions' => array('tdt_id' => $tdt_id),
+                'recursive'=>-1
             ));
 
-            if (empty($data['TdtMessage']['data'])) {
+            if (empty($data['TdtMessage']['tdt_data'])) {
                  throw new Exception('Le message est indiponible.');
             }
 
             $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'S2low'), true, 0777);
             $fileTgz = new File($folder->path . DS . 'WD_S2LOW_DOC.tgz', true, 0777);
-            $fileTgz->write($data['TdtMessage']['data']);
+            $fileTgz->write($data['TdtMessage']['tdt_data']);
             $phar = new PharData($fileTgz->pwd());
             $phar->extractTo($folder->path); 
 
@@ -4541,7 +4544,7 @@ class DeliberationsController extends AppController
             $this->response->disableCache();
             $this->response->body($content);
             $this->response->type('application/pdf');
-            $this->response->download('tdt_message_' . $message_id . '.pdf');
+            $this->response->download('tdt_message_' . $tdt_id . '.pdf');
             return $this->response;
         }
         catch (Exception $e)
