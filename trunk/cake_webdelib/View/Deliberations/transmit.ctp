@@ -1,11 +1,3 @@
-<script>
-    $("#pourcentage").hide();
-    $("#progrbar").hide();
-    $("#affiche").hide();
-    $("#contTemp").hide();
-</script>
-
-<?php echo $this->Html->script('utils.js'); ?>
 <div class="deliberations">
     <?php
     echo $this->element('filtre');
@@ -70,14 +62,22 @@
             <td>
                 <?php
                 if (isset($delib['Deliberation']['code_retour'])) {
-                    if ($delib['Deliberation']['code_retour'] == 4)
-                        echo $this->Html->link("Acquittement reçu le " . $delib['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $delib['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
-                    elseif ($delib['Deliberation']['code_retour'] == 3)
-                        echo 'Transmis';
-                    elseif ($delib['Deliberation']['code_retour'] == 2)
-                        echo 'En attente de transmission';
-                    elseif ($delib['Deliberation']['code_retour'] == 1)
-                        echo 'Posté';
+                    switch ($delib['Deliberation']['code_retour']) {
+                        case 4:
+                            echo $this->Html->link("Acquittement reçu le " . $delib['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $delib['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
+                            break;
+                        case 3:
+                            echo 'Transmis';
+                            break;
+                        case 2:
+                            echo 'En attente de transmission';
+                            break;
+                        case 1:
+                            echo 'Posté';
+                            break;
+                        default:
+                            break;
+                    }
                 }else{
                     if (!empty($delib['Deliberation']['tdt_dateAR'])){
                         echo $this->Html->link("Acquittement reçu le " . $delib['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $delib['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
@@ -91,23 +91,38 @@
                 <?php
                 if (!empty($delib['TdtMessage'])) {
                     foreach ($delib['TdtMessage'] as $message) {
-                            $url_newMessage = array('action'=>'downloadTdtMessage', $message['message_id']);
-
-                        $libelle = 'Message ' . $message['message_id'];
-                        if ($message['type_message'] == 2)
-                            $libelle = "Courrier simple";
-                        if ($message['type_message'] == 3){
-                            $libelle = "Demande de pièces complémentaires";
+                        $reponse=false;
+                        switch ($message['tdt_type']) {
+                            case 2:
+                                $libelle = "Courrier simple"; 
+                                $reponse=true;
+                                break;
+                            case 3:
+                                $libelle = "Demande de pièces complémentaires"; 
+                                $reponse=true;
+                                break;
+                            case 4:
+                                $libelle = "Lettre d'observation"; 
+                                break;
+                            case 5:
+                                $libelle = "Déféré au tribunal administratif"; 
+                                break;
+                            default:
+                                break;
                         }
-                        if ($message['type_message'] == 4)
-                            $libelle = "Lettre d'observation";
-                        if ($message['type_message'] == 5)
-                            $libelle = 'Déféré au tribunal administratif';
                         if (!empty($libelle)){
-                            if($message['type_reponse'] == 7
-                                OR $message['type_reponse'] == 8) $libelle .=' (reçu)';
-                            else $libelle .=' (envoyé)';
-                            echo $this->Html->link($libelle, $url_newMessage) . "<br />";
+                            echo '<div style="white-space: nowrap;">';
+                            echo $this->Html->link($libelle.' <i class="fa fa-download"></i>', array('action'=>'downloadTdtMessage', $message['tdt_id']), array('escape'=>false,'title'=> 'Télécharger le document')) ;
+                            if(empty($message['Reponse']) && $reponse && ($message['tdt_etat'] == 7 OR $message['tdt_etat'] == 8)) {
+                                echo " ";
+                                echo $this->Html->link('<i class="fa fa-envelope-o"></i>', $tdt_host.'/modules/actes/actes_transac_show.php?id=' . $message['tdt_id'], array('escape'=>false, 'target' => '_blank','title'=> 'Répondre'));
+                            }
+                            else
+                            foreach ($message['Reponse'] as $reponse) {
+                                echo '<br /><i class="fa fa-long-arrow-right" style="padding-left:10px;"></i> ';
+                                echo $this->Html->link(' Réponse envoyée <i class="fa fa-download"></i>', array('action'=>'downloadTdtMessage', $reponse['tdt_id']), array('escape'=>false,'title'=> 'Télécharger la réponse envoyée')) ;
+                            }
+                            echo '</div>';
                         }
                             
                     }
