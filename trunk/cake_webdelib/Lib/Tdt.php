@@ -136,7 +136,7 @@ class Tdt extends Connecteur {
 
         foreach ($this->echanges as $type => $echange){
             if (!empty($infos['data']['has_'.$echange])){
-                if ($all || !$this->TdtMessage->existe($infos['data'][$echange.'_id'])){
+                if ($all || !$this->TdtMessage->exists($infos['data'][$echange.'_id'])){
                     $tdt_messages[] = array(
                         'TdtMessage' => array(
                             'type_message' => $type,
