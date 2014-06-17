@@ -30,12 +30,4 @@ class TdtMessage extends AppModel {
             'order' => 'tdt_id ASC',
             'dependent' => true),
     );
-
-    public function existe($message_id) {
-        $message = $this->find('count', array(
-            'conditions' => array(
-                'TdtMessage.message_id' => $message_id
-        )));
-        return !empty($message);
-    }
 }
