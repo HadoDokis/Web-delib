@@ -1,5 +1,8 @@
 4.2.01
 ======
+- Correction : Pas d'alertes de retard sur projet supprimé
+- Correction Ajout de la variable "debat_global" lors de la fusion
+- Correction Le Bordereau de signature n'est pas bon quand le dossier comportait une annexe à télétransmettre
 - Correction prise en compte de 5 niveaux sur la classification Tdt
 - Correction le suppléant n'apparaissait pas dans la listes des votants en génération
 - Prise en compte des ods en modification webdav
