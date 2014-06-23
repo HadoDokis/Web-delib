@@ -752,7 +752,7 @@ class DeliberationsController extends AppController
                 if ($canEditAll)
                     $bSeanceok = true;
 
-                if (!$bSeanceok && !empty($seances_selected) && $seances_selected[0] == $seance['Seance']['id'])
+                if (!$bSeanceok && !empty($seances_selected) && in_array($seance['Seance']['id'], $seances_selected))
                     $bSeanceok = true;
 
                 if (!$bSeanceok) {
