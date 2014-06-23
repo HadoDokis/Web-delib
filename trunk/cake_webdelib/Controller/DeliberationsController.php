@@ -1756,8 +1756,6 @@ class DeliberationsController extends AppController
            }
         }
         
-        //debug($deliberations);
-
         $seances = $this->Seance->find('all', array(
             'conditions' => array('Seance.traitee' => 1),
             'recursive' => -1,
@@ -4527,24 +4525,12 @@ class DeliberationsController extends AppController
             if (empty($data['TdtMessage']['tdt_data'])) {
                  throw new Exception('Le message est indiponible.');
             }
-
-            $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'S2low'), true, 0777);
-            $fileTgz = new File($folder->path . DS . 'WD_S2LOW_DOC.tgz', true, 0777);
-            $fileTgz->write($data['TdtMessage']['tdt_data']);
-            $phar = new PharData($fileTgz->pwd());
-            $phar->extractTo($folder->path); 
-
-            $files = $folder->find('.*\.pdf', true);
-            foreach ($files as $file) {
-                $file = new File($folder->pwd() . DS . $file);
-                $content = $file->read();
-            }
-            $folder->delete();
+            $tdt_data=$this->Deliberation->TdtMessage->RecupMessagePdfFromTar($data['TdtMessage']['tdt_data']);
             // envoi au client
             $this->response->disableCache();
-            $this->response->body($content);
+            $this->response->body($tdt_data['content']);
             $this->response->type('application/pdf');
-            $this->response->download('tdt_message_' . $tdt_id . '.pdf');
+            $this->response->download($tdt_data['filename']);
             return $this->response;
         }
         catch (Exception $e)

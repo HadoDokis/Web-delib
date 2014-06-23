@@ -48,7 +48,7 @@ $notif = array('true' => 'Oui', 'false' => 'Non');
         echo $this->Form->input('ged_xml_version', array(
             'type' => 'select',
             'label' => false,
-            'options' => array(1 => 1, 2 => 2),
+            'options' => array(1 => 1, 2 => 2, 3 => 3),
             'selected' => Configure::read('GED_XML_VERSION'),
             'autocomplete' => 'off',
             'before' => '<label>Version du schéma XML</label>'));
