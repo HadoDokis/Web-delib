@@ -1,8 +1,8 @@
 <script type="text/javascript">
 $(document).ready(function() {
         $("div.ouvrable").ouvrable({
-                arrowUp : '<?php echo $this->Html->webroot('img/icons/arrow-right.png');?>',
-                arrowDown : '<?php echo $this->Html->webroot('img/icons/arrow-down.png');?>',
+                arrowUp : '<?php echo $this->Html->webroot('/img/icons/arrow-right.png');?>',
+                arrowDown : '<?php echo $this->Html->webroot('/img/icons/arrow-down.png');?>',
                 });
 });
 </script>
