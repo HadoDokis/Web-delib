@@ -283,9 +283,8 @@ class Tdt extends Connecteur {
      * @param int $message_id
      * @return String
      */
-    public function getDocumentS2low($acte) {
-        $tdt_id=$acte['Deliberation']['tdt_id'];
-        return $this->S2low->getDocument($tdt_id);
+    public function getDocumentS2low($message_id) {
+        return $this->S2low->getDocument($message_id);
     }
     
     /**
