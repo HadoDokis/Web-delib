@@ -10,7 +10,7 @@ class PatchShell extends AppShell {
     public $tasks = array(
         'Sql',
         'Cakeflow',
-        'Tdt', // 4.1.01 => 4.1.02
+        'Tdt', // 4.1.01 => 4.1.02, 4.2 => 4.2.01
         'Gedooo', // 4.1.02 => 4.1.03
         'AjouteSectionAnnexe', // 4.1.xx => 4.2
         'CopyPresidentId' // 4.1.xx => 4.2
@@ -225,6 +225,13 @@ class PatchShell extends AppShell {
                 $success = false;
                 break;
             }
+        }
+        
+        $this->out('Migration des messages Tdt...');
+        if (!$this->Tdt->migrationMessageTdt4201()){
+            $this->out("\n<error>Erreur de la migration des messages Tdt</error>");
+            $this->Sql->rollback();
+            $success = false;
         }
         
         if ($success){
