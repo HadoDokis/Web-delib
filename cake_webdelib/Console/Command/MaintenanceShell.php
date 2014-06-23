@@ -35,20 +35,20 @@ class MaintenanceShell extends AppShell {
 //        ));
 
         $parser->addSubcommand('seance', array(
-            'help' => __('Test les textes de seances webdelib.'),
+            'help' => __('Test dans l\'outil de fusion les documents d\'acte des seances en cours.'),
             'parser' => array(
                 'options' => array(
                     'id' => array(
                         'name' => 'id',
                         'required' => false,
                         'short' => 'i',
-                        'help' => 'Test les textes d\'une séance donnée par son id.'
+                        'help' => 'Test les documents d\'une séance donnée par son id.'
                     ),
                     'group' => array(
                         'name' => 'group',
                         'required' => false,
                         'short' => 'g',
-                        'help' => 'Test les textes d\'un ensemble de séances.',
+                        'help' => 'Test les documents d\'un ensemble de séances.',
                         'choices' => array('all', 'nonaffectees', 'nontraitees'),
 //                        'default' => 'all'
                     )
@@ -71,6 +71,20 @@ class MaintenanceShell extends AppShell {
                         'required' => false,
                         'short' => 'a',
                         'help' => 'Conversion de toute les annexes de la base de donnée.',
+                    )
+                )
+            )
+        ));
+        
+        $parser->addSubcommand('recupDataMessageTdt', array(
+            'help' => __('Récupération des documents des messages Tdt.'),
+            'parser' => array(
+                'options' => array(
+                    'all' => array(
+                        'name' => 'all',
+                        'required' => false,
+                        'short' => 'a',
+                        'help' => 'Récupération de tous les documents des messages Tdt.',
                     )
                 )
             )
@@ -176,6 +190,25 @@ class MaintenanceShell extends AppShell {
             $this->footer('<error>Erreur : un problème est survenu durant les tests !!</error>');
         
     }
+    
+    /**
+     * Met à jour la date d'AR d'une délib
+     * @param array $acte objet Deliberation
+     * @return bool
+     */
+    public function recupDataMessageTdt() {
+        $time_start = microtime(true);
+        try{
+            $this->Tdt->recupDataMessageTdt();
+
+            $time_end = microtime(true);
+            $this->out("Temps pour de recupération : " . round($time_end - $time_start) . ' secondes', 1, Shell::VERBOSE);
+        }
+        catch (Exception $e)
+        {
+            $this->out("ERREUR : " . $e->getMessage());
+        }
+    }
 
     /**
      * Affiche un message entouré de deux barres horizontales
@@ -188,5 +221,3 @@ class MaintenanceShell extends AppShell {
     }
 
 }
-
-?>
