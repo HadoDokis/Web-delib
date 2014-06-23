@@ -207,13 +207,16 @@ class PostseancesController extends AppController {
                 case '404':
                         $message='Ressource non trouvée';
                     break;
+                case '409':
+                        $message='Conflict, la séance existe déjà dans la GED';
+                    break;
                 default:
                     $message=strip_tags($e->getMessage());
                     break;
             }
                 
-            $this->log('Export CMIS: Erreur ' . $e->getCode() . "! \n" . $e->getMessage(), 'error');
-            $this->Session->setFlash('CMIS: Erreur ' . $e->getCode() . '! ' .  $message, 'growl', array('type' => 'erreur'));
+            $this->log('Export CMIS: Erreur ' . $e->getCode() . " ! \n" . $e->getMessage(), 'error');
+            $this->Session->setFlash('CMIS: Erreur ' . $e->getCode() . ' ! ' .  $message, 'growl', array('type' => 'erreur'));
         }
         
        $this->Progress->end('/postseances/index');
@@ -273,10 +276,12 @@ class PostseancesController extends AppController {
     }
 
     function _deletetoGed(&$cmis, $libelle_seance) {
+        
         // Règle de gestion on écrase les documents existants
         try {
             //On recherche le dossier
-            $objet_cmis = $cmis->client->getObjectByPath(Configure::read('GED_REPO').'/'.$libelle_seance);
+                $objet_cmis = $cmis->client->getObjectByPath(Configure::read('CMIS_REPO').'/'.$libelle_seance);
+            
             if (is_object($objet_cmis)) {
                 //On recherche tous les enfants du dossier
                 $children = $cmis->client->getChildren($objet_cmis->id);
@@ -295,36 +300,79 @@ class PostseancesController extends AppController {
 
     function _getTdtMessageForGed($delib_id) {
 
-        App::uses('Tdt', 'Lib'); 
-        $this->Tdt = new Tdt();
-        
-        $messages = $this->TdtMessage->find('all', array(
-            'conditions' => array('TdtMessage.delib_id' => $delib_id),
-            'recursive' => '-1')
-        );
-        foreach ($messages as &$message) {
+        try {
+            //FIX
+            $this->TdtMessage->Behaviors->load('Containable');
+            $messages = $this->TdtMessage->find('all', array(
+                'fields' => array('id','tdt_id', 'tdt_type', 'tdt_etat', 'tdt_data'),
+                'conditions' => array('TdtMessage.delib_id' => $delib_id,'TdtMessage.parent_id is null'),
+                'contain' => array(
+                    'Reponse'=>array('fields' => array('id','tdt_id', 'tdt_type', 'tdt_etat', 'tdt_data'))))
+            );
+            $return=array();
+            foreach ($messages as $message) {
 
-            switch ($message['TdtMessage']['type_message']) {
-                case 2:
-                    $message['TdtMessage']['libelle_message'] = 'Courrier simple';
-                    break;
-                case 3:
-                    $message['TdtMessage']['libelle_message'] = 'Demande de pièces complémentaires';
-                    break;
-                case 4:
-                    $message['TdtMessage']['libelle_message'] = 'Lettre d\'observation';
-                    break;
-                case 5:
-                    $message['TdtMessage']['libelle_message'] = 'Déféré au tribunal administratif';
-                    break;
-                default:
-                    break;
+                switch ($message['TdtMessage']['tdt_type']) {
+                    case 2:
+                        $type = 'courriersimple';
+                        $name = 'courriersimple.pdf';
+                        break;
+                    case 3:
+                        $type = 'piececomplementaire';
+                        $name = 'piececomplementaire.pdf';
+                        $name_reponse = 'reponsepiececomplementaire.pdf';
+                        break;
+                    case 4:
+                        $type = 'lettreobservation';
+                        $name = 'lettreobservation.pdf';
+                        $name_reponse = 'reponselettreobservation.pdf';
+                        break;
+                    case 5:
+                        $type = 'defereTA';
+                        $name = 'defereta.pdf';
+                        break;
+                    case 7:
+                        $type = 'defereTA';
+                        $name = 'courriersimple.pdf';
+                        break;
+                    
+                    default:
+                        throw new Exception('Type de message Tdt inconnu. (num acte id='.$delib_id .')');
+                }
+                $reponses=array();
+                if(!empty($message['Reponse']))
+                foreach ($message['Reponse'] as $reponse) {
+                    if (empty($reponse['tdt_data'])) {
+                     throw new Exception('Le message est indiponible. (num message id='.$reponse['id'] .')');
+                    }
+                    $tdt_data=$this->TdtMessage->RecupMessagePdfFromTar($reponse['tdt_data']);
+                    $reponses[]=array(
+                        'name'=>$name_reponse,
+                        'type'=>$type,
+                        'relname'=>$tdt_data['filename'],
+                        'content_pdf' => $tdt_data['content']
+                    );
+                }
+                
+                if (empty($message['TdtMessage']['tdt_data'])) {
+                     throw new Exception('Le message est indiponible. (num message id='.$message['TdtMessage']['id'] .')');
+                }
+                $tdt_data=$this->TdtMessage->RecupMessagePdfFromTar($message['TdtMessage']['tdt_data']);
+                $return[]=array(
+                    'name'=>$name,
+                    'type'=>$type,
+                    'relname'=>$tdt_data['filename'],
+                    'content_pdf' => $tdt_data['content'],
+                    'reponses' => $reponses
+                );
             }
-            $message['TdtMessage']['reponse'] = 1;
-            $message['TdtMessage']['data_'] = $this->Tdt->getDocument($message['TdtMessage']['message_id']);
+        }
+        catch (Exception $e)
+        {
+            throw new Exception($e->getMessage());
         }
 
-        return $messages;
+        return $return;
     }
 
     /*
@@ -616,7 +664,7 @@ class PostseancesController extends AppController {
 
                         switch ($annex['Annex']['filetype']) {
                             case 'application/pdf' :
-                                $annexe_content = $annex['Annex']['data_pdf'];
+                                $annexe_content = $annex['Annex']['data'];
                                 $annexe_filetype = 'application/pdf';
                                 $annexe_filename = $annex['Annex']['filename'];
                                 break;
@@ -659,8 +707,18 @@ class PostseancesController extends AppController {
             
             return $my_seance_folder;
     }
-
-    function _sendToGedVersion2(&$cmis, &$folderTmp, &$folderSend, $seance_id) {
+    
+    /**
+     * Création des fichiers pour l'export GED en version 2 et 3
+     * @param type $cmis
+     * @param type $folderTmp
+     * @param type $folderSend
+     * @param type $seance_id
+     * @param type $message_tdt
+     * @return type
+     * @throws Exception
+     */
+    function _sendToGedVersion2(&$cmis, &$folderTmp, &$folderSend, $seance_id, $message_tdt=false) {
 
         try
         {
@@ -696,7 +754,7 @@ class PostseancesController extends AppController {
 
             $delibs_id = $this->Seance->getDeliberationsId($seance_id);
 
-            //$this->Progress->at(20, 'Création du fichier XML...');
+            $this->Progress->at(20, 'Création du fichier XML...');
             $dom = new DOMDocument('1.0', 'utf-8');
             $dom->formatOutput = true;
             $idDepot = $seance['Seance']['numero_depot'] + 1;
@@ -766,7 +824,7 @@ class PostseancesController extends AppController {
                     'conditions' => array('Deliberation.id' => $delib_id),
                     'fields' => array('Deliberation.id', 'Deliberation.num_delib', 'Deliberation.objet_delib', 'Deliberation.titre',
                         'Deliberation.delib_pdf', 'Deliberation.tdt_data_pdf', 'Deliberation.tdt_data_bordereau_pdf', 'Deliberation.deliberation',
-                        'Deliberation.deliberation_size', 'Deliberation.signature', 'Deliberation.tdt_dateAR', 'Deliberation.signee', 'Deliberation.parapheur_etat', 'Deliberation.tdt_id'),
+                        'Deliberation.deliberation_size', 'Deliberation.signature', 'Deliberation.tdt_dateAR','Deliberation.tdt_ar', 'Deliberation.signee', 'Deliberation.parapheur_etat', 'Deliberation.tdt_id'),
                     'contain' => array(
                         'Service' => array('fields' => array('libelle')),
                         'Theme' => array('fields' => array('libelle')),
@@ -900,7 +958,7 @@ class PostseancesController extends AppController {
                         //Création du noeud XML <document> de l'annexe
                         $document = $this->_createElement($dom, 'document', null, array(
                             'idDocument' => $aDocuments['Annexe'],
-                            'nom' => $annexe['filename'],
+                            'nom' => $annexe['name'],
                             'relName' => 'Annexes' . DS . $annexe['filename'],
                             'type' => 'Annexe'));
                         $document->appendChild($this->_createElement($dom, 'titre', $annexe['titre']));
@@ -919,27 +977,59 @@ class PostseancesController extends AppController {
                 //Ajout de la signature (XML+ZIP)
                 //
                 //Création du noeud XML
-                if (!empty($delib['Deliberation']['tdt_id'])) {
-                    App::uses('Tdt', 'Lib'); 
-                    $this->Tdt = new Tdt();
+                if (!empty($delib['Deliberation']['tdt_ar'])) {
                     $aDocuments['ARacte'] = $i++;
-                    $sARacte = $this->Tdt->getArActe($delib['Deliberation']['tdt_id']);
                     $document = $this->_createElement($dom, 'document', null, array(
                         'idDocument' => $aDocuments['ARacte'],
                         'nom' => $delib['Deliberation']['id']. '-' .'ARacte.xml',
                         'relname' => 'ARacte/'.$delib['Deliberation']['id'] . '-' .'ARacte.xml',
                         'type' => 'ARacte'));
                     $document->appendChild($this->_createElement($dom, 'mimetype', 'application/xml'));
+                    $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                     $doc->appendChild($document);
                     //Ajout à l'archive
-                    $zip->addFromString('ARacte' . DS . $delib['Deliberation']['id']. '-' .'ARacte.xml', $sARacte);
-                    unset($sARacte);
+                    $zip->addFromString('ARacte' . DS . $delib['Deliberation']['id']. '-' .'ARacte.xml', $delib['Deliberation']['tdt_ar']);
+                }
+                if($message_tdt){
+                    $messages=$this->_getTdtMessageForGed($delib['Deliberation']['id']);
+                    
+                    foreach($messages as $message){
+                        $aDocuments['TdtMessage'] = $i++;
+                        $document = $this->_createElement($dom, 'document', null, array(
+                            'idDocument' => $aDocuments['TdtMessage'],
+                            'nom' => $message['name'],
+                            'relname' => $message['type'].'/'.$message['relname'],
+                            'type' => $message['type']));
+                        $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
+                        $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
+                        $doc->appendChild($document);
+                        //Ajout à l'archive
+                        $zip->addFromString($message['type'].'/'.$message['relname'], $message['content_pdf']);
+                        if(!empty($message['reponses'])){
+                            $aDocuments['TdtMessageReponse']=$aDocuments['TdtMessage'];
+                            foreach($message['reponses'] as $reponse){
+                                $aDocuments['TdtMessageReponse'] = $i++;
+                                $document = $this->_createElement($dom, 'document', null, array(
+                                    'idDocument' => $aDocuments['TdtMessageReponse'],
+                                    'nom' => $reponse['name'],
+                                    'relname' => $reponse['type'].'/'.$reponse['relname'],
+                                    'type' => $reponse['type'],
+                                    'refDocument' => $aDocuments['TdtMessage']));
+                                $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
+                                $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
+                                $doc->appendChild($document);
+                                //Ajout à l'archive
+                                $zip->addFromString($reponse['type'].'/'.$reponse['relname'], $reponse['content_pdf']);
+                            }
+                            $aDocuments['TdtMessage']=$aDocuments['TdtMessageReponse'];
+                        }
+                    }
                 }
             }
 
             $zip->close();
             $dom->appendChild($dom_depot);
-
+            
             $file = new File($folderSend->pwd().DS.'XML_DESC_'.$seance_id.'.xml');
             $file->append($dom->saveXML());
             $file->close();
@@ -956,6 +1046,19 @@ class PostseancesController extends AppController {
         }
         
         return !empty($my_seance_folder)?$my_seance_folder:false;
+    }
+    
+    /**
+     * Création des fichiers pour l'export GED en version 3
+     * @param type $cmis
+     * @param type $folderTmp
+     * @param type $folderSend
+     * @param type $seance_id
+     * @return type
+     */
+    function _sendToGedVersion3(&$cmis, &$folderTmp, &$folderSend, $seance_id) {
+        
+       return $this->_sendToGedVersion2($cmis, $folderTmp, $folderSend, $seance_id, true);
     }
 
 }
