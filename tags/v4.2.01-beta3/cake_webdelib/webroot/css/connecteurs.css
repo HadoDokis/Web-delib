@@ -1,0 +1,34 @@
+label {
+    float: none;
+    padding: 0;
+    text-align: left;
+    width: auto;
+}
+
+#configIdelibre fieldset,
+#configSignature fieldset,
+#configPastell fieldset,
+#configSae fieldset,
+#configTdt fieldset {
+    width: 33%;
+    float: left;
+}
+
+/* Vue connecteurs.ctp */
+table#connecteurs {
+    border: 0;
+    font-size: 1em;
+    font-family: Arial, Helvetica, Tahoma, Verdana, Sans-Serif;
+}
+
+#connecteurs td {
+    border-style: none;
+    vertical-align: middle;
+    padding: 10px;
+    font-size: 1em;
+}
+
+#connecteurs tr {
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+}
