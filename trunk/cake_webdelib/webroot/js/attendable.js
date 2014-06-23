@@ -72,7 +72,7 @@ $.fn.attendable = function (options) {
 function addToken(elt) {
     var token = setToken();
     if ($(elt).get(0).tagName == 'A') {
-        console.log('link');
+        //console.log('link');
         //Ajout du num de cookie en dernier argument url
         var href = $(elt).attr('href');
         if (href) {
@@ -111,7 +111,8 @@ function blockUI(elt, titre) {
             cache: false,
             type: 'GET',
             dataType: 'json',
-            async: false,
+            timeout: 2999,
+            //async: false,
             success: function (response) {
                 if (token.toString() === response.downloadToken) {
                     window.clearInterval(downloadTimer);
@@ -119,7 +120,7 @@ function blockUI(elt, titre) {
                 }
             }
         });
-    }, 500);
+    }, 3000);
 }
 
 function unblockUI(elt, token) {
