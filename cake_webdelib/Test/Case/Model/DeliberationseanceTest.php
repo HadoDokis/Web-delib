@@ -67,7 +67,7 @@ class DeliberationseanceTest extends CakeTestCase {
                         'fields'     => array( 'Deliberationseance.id', 'Deliberationseance.position' ),
                         'order'      => array( 'Deliberationseance.position ASC' )));
 
-         $expected = array(
+        $expected = array(
             array('Deliberationseance' => array('id' => 1, 'position' => '1')),
             array('Deliberationseance' => array('id' => 2, 'position' => '2')),
             array('Deliberationseance' => array('id' => 3, 'position' => '3')),
