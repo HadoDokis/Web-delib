@@ -4,6 +4,8 @@ App::uses('Component', 'Controller');
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
+App::uses('Tdt', 'Lib');
+App::uses('S2lowComponent', 'Controller/Component');
 
 class TdtTask extends Shell {
     
@@ -14,7 +16,6 @@ class TdtTask extends Shell {
     
     public function classification() {
         $collection = new ComponentCollection();
-        App::uses('S2lowComponent', 'Controller/Component');
         $this->S2low = new S2lowComponent($collection);
         
         return $this->S2low->getClassification();
@@ -61,5 +62,36 @@ class TdtTask extends Shell {
         
         return false;
     }
+    
+    
+    
+   /**
+     * Récuperation les documents Tdt
+     * @return bool
+     */
+    public function recupDataMessageTdt() {
+ 
+        try {
+            $collection = new ComponentCollection();
+            $this->S2low = new S2lowComponent($collection);
+        
+            $Tdt = new Tdt;
+            $messages=$this->TdtMessage->find('all', array(
+                'fields' => array('id','tdt_id','delib_id'),
+                'contains'=> 'Deliberation',
+                'conditions' => array('tdt_data NOT' => NULL),
+                'recursive' => -1,
+            ));
+            foreach ($messages as $message) {
+                $this->out('Récupération pour le message Tdt => '.$message['TdtMessage']['id']);
+                $this->TdtMessage->id = $message['TdtMessage']['id'];
+                $this->TdtMessage->saveField('tdt_data', $Tdt->getDocument($message['TdtMessage']['tdt_id']));
+                $this->out('Ok');
+            }
+            return true;
+        } catch (Exception $e) {
+            throw new Exception('Echec lors de la récupération du message Tdt => '.$message['TdtMessage']['id']);
+        }
+        return false;
+    }
 }
-?>
