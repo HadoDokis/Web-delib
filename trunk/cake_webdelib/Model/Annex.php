@@ -227,9 +227,10 @@ class Annex extends AppModel {
 
         if ($annex['Annex']['filetype'] === 'application/pdf')
             return array(
-                'type' => $DOC_TYPE[$annex['Annex']['filetype']]['extention'],
+                'type' => $DOC_TYPE[$annex['Annex']['filetype']]['extension'],
                 'filetype' => 'application/pdf',
-                'filename' => AppTools::getNameFile($annex['Annex']['filename']) . '.pdf',
+                'name' => AppTools::getNameFile($annex['Annex']['filename']) . '.pdf',
+                'filename' => $annex_id. '.pdf',
                 'titre' => $annex['Annex']['titre'],
                 'joindre_ctrl_legalite' => $annex['Annex']['joindre_ctrl_legalite'],
                 'data' => $annex['Annex']['data']);
@@ -238,15 +239,17 @@ class Annex extends AppModel {
             return array(
                 'type' => 'pdf',
                 'filetype' => 'application/pdf',
-                'filename' => AppTools::getNameFile($annex['Annex']['filename']).'.pdf',
+                'name' => AppTools::getNameFile($annex['Annex']['filename']).'.pdf',
+                'filename' => $annex_id.'.pdf',
                 'titre' => $annex['Annex']['titre'],
                 'joindre_ctrl_legalite' => $annex['Annex']['joindre_ctrl_legalite'],
                 'data' => $annex['Annex']['data_pdf']
             );
 
-        return array('type' => $DOC_TYPE[$annex['Annex']['filetype']]['extention'],
+        return array('type' => $DOC_TYPE[$annex['Annex']['filetype']]['extension'],
             'filetype' => $annex['Annex']['filetype'],
-            'filename' => $annex['Annex']['filename'],
+            'name' => $annex['Annex']['filename'],
+            'filename' => $annex_id.'.'.$DOC_TYPE[$annex['Annex']['filetype']]['extension'],
             'titre' => $annex['Annex']['titre'],
             'joindre_ctrl_legalite' => $annex['Annex']['joindre_ctrl_legalite'],
             'data' => $annex['Annex']['data']);

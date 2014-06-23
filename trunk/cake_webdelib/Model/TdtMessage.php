@@ -30,4 +30,22 @@ class TdtMessage extends AppModel {
             'order' => 'tdt_id ASC',
             'dependent' => true),
     );
+    
+    function RecupMessagePdfFromTar($data){
+        $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'Tdt'), true, 0777);
+        $fileTgz = new File($folder->path . DS . 'WD_TDT_DOC.tgz', true, 0777);
+        $fileTgz->write($data);
+        $phar = new PharData($fileTgz->pwd());
+        $phar->extractTo($folder->path); 
+
+        $files = $folder->find('.*\.pdf', true);
+        foreach ($files as $file) {
+            $file = new File($folder->pwd() . DS . $file);
+            $content = $file->read();
+            $name = $file->name;
+        }
+        $folder->delete();
+        
+        return array('filename'=> $name, 'content'=>$content);
+    }
 }
