@@ -14,7 +14,7 @@ App::uses('Collectivite', 'Model');
  *
  * @author splaza
  */
-class Connecteur {
+class Connecteurlib {
     
     /**
      * @var string Protocole de signature (pastell|iparapheur)
