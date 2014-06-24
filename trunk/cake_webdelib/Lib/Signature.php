@@ -11,9 +11,9 @@
  *
  */
 App::uses('IparapheurComponent', 'Controller/Component');
-App::uses('Connecteur', 'Lib');
+App::uses('ConnecteurLib', 'Lib');
 
-class Signature extends Connecteur  {
+class Signature extends ConnecteurLib  {
 
     /**
      * @var Composant IparapheurComponent

@@ -12,13 +12,13 @@
 App::uses('S2lowComponent', 'Controller/Component');
 App::uses('TdtMessage', 'Model');
 App::uses('AppTools', 'Lib');
-App::uses('Connecteur', 'Lib');
+App::uses('ConnecteurLib', 'Lib');
 
 /**
  * Class Tdt
  * @package App.Lib.Tdt
  */
-class Tdt extends Connecteur {
+class Tdt extends ConnecteurLib {
 
     /**
      * @var Component s2lowComponent

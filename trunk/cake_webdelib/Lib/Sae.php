@@ -10,12 +10,12 @@
  *
  */
 App::uses('AppTools', 'Lib');
-App::uses('Connecteur', 'Lib');
+App::uses('ConnecteurLib', 'Lib');
 /**
  * Class Sae
  * @package App.Lib.Sae
  */
-class Sae extends Connecteur {
+class Sae extends ConnecteurLib {
 
     /**
      * @var Component AsalaeComponent
