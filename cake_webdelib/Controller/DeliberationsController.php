@@ -2088,7 +2088,7 @@ class DeliberationsController extends AppController
                             if (empty($delib['Deliberation']['delib_pdf'])) {
                                 throw new Exception($delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Fichier Vide.');
                             }
-                            $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'tdt' . DS . $delib_id), true, 0777);
+                            $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'tdt' . DS), true, 0777);
                             $errors = $folder->errors();
                             if (!empty($errors)) {
                                 throw new Exception($delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : ' . implode($errors) . '.');
