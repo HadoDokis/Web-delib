@@ -78,6 +78,7 @@ class InstallShell extends AppShell {
 
         if (!$clean){
             $sql_files['web-delib v'.$this->version] = APP . 'Config' . DS . 'Schema' . DS . 'webdelib-v4.2.sql';
+            $sql_files['Webdelib4201'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.2_to_4.2.01.sql';
             $sql_files['Plugin : Cakeflow v3.1.01'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'3.1_to_3.1.01.sql';
             $sql_files['Plugin : ModelOdtValidator v1.0.01'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'1.0_to_1.0.01.sql';
         }
