@@ -212,8 +212,8 @@ class PatchShell extends AppShell {
         $this->out("\nPassage des patchs de mise à jour de la base de données...");
         $sql_files = array();
         $sql_files['Webdelib4201'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.2_to_4.2.01.sql';
-        $sql_files['Plugin.Cakeflow3101'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.1_to_v3.1.01.sql';
-        $sql_files['Plugin.ModelOdtValidator1001'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.1_to_v3.1.01.sql';
+        $sql_files['Plugin.Cakeflow3101'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'3.1_to_3.1.01.sql';
+        $sql_files['Plugin.ModelOdtValidator1001'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'1.0_to_1.0.01.sql';
         
         $this->Sql->execute();
         $this->Sql->begin();
@@ -226,9 +226,11 @@ class PatchShell extends AppShell {
                 break;
             }
         }
+        $this->Sql->begin();
+        $this->Sql->commit();
         
         $this->out('Migration des messages Tdt...');
-        if (!$this->Tdt->migrationMessageTdt4201()){
+        if ($success && !$this->Tdt->migrationMessageTdt4201()){
             $this->out("\n<error>Erreur de la migration des messages Tdt</error>");
             $this->Sql->rollback();
             $success = false;
