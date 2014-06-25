@@ -159,40 +159,101 @@ class ConversionComponent extends Component {
     function _PdftoOdt(&$folder, &$fileOrigine) {
 
         //Preparation de la commande ghostscript
+        $PDFTK_EXEC = Configure::read('PDFTK_EXEC');
+        $PDFINFO_EXEC = Configure::read('PDFINFO_EXEC');
         $GS_RESOLUTION = Configure::read('GS_RESOLUTION');
-        try{
+
+        $NbrPage=trim(shell_exec($PDFINFO_EXEC.' '.$fileOrigine->pwd().' | grep Pages: | sed -e "s/ *Pages: *//g"'));
+        
+        if($NbrPage>0){
+            for ($i = 1;  $i <= $NbrPage ; $i++) {
+               $pageName='page_'.  sprintf('%04d', $i);
+               shell_exec($PDFTK_EXEC.' '. $fileOrigine->pwd() .' cat '.$i.' output '.$folder->pwd() . DS . $pageName.'.pdf-orign 2>&1');
+               shell_exec($PDFTK_EXEC.' '. $folder->pwd() . DS . $pageName .'.pdf-orign dump_data output '.$folder->pwd() . DS . $pageName.'.txt 2>&1');
+               shell_exec($PDFTK_EXEC.' '. $folder->pwd() . DS . $pageName.'.pdf-orign update_info '.$folder->pwd() . DS . $pageName.'.txt output '.$folder->pwd() . DS . $pageName.'.pdf 2>&1');
+            }
+        }else
+            return ''; //GESTION DES ERREURS A FAIRE
+        
+        $fileOrigine->delete();
+        $files = $folder->find('.*\.pdf', true);
+        
+        $i = 0;
+        foreach ($files as $file) {
+            $file = new File($folder->pwd() . DS . $file);
+
             $imagick = new Imagick();
             $imagick->setResolution($GS_RESOLUTION, $GS_RESOLUTION);
-            $imagick->readImage($fileOrigine->pwd());
+            $imagick->readImage($file->pwd() . '[0]');
             $imagick->setImageFormat('png');
-            for ($i = 0;  $i < $imagick->getNumberImages() ; $i++) {
-
-                $imagick->setIteratorIndex($i);
-                $imagick->writeImage($folder->pwd() . DS . $i . '.png');
-
-                if ($imagick->getImageHeight() > $imagick->getImageWidth())
-                    $orientaion = 'portrait';
-                else $orientaion = 'landscape';
-
-                $pageParam[$i] = array('path' => $folder->pwd() . DS . $i . '.png',
-                    'name' => $i . '.png',
-                    'orientation' => $orientaion);
-
-                $this->log($folder->pwd() . DS . $i . '.png'.'| orientation='. $orientaion, 'debug');
-            }
+            $imagick->writeImage($folder->pwd() . DS . $i . '.png');
+            
+            if ($imagick->getImageHeight() > $imagick->getImageWidth())
+                $orientaion = 'portrait';
+            else $orientaion = 'landscape';
+            
+            $pageParam[$i] = array('path' => $folder->pwd() . DS . $i . '.png',
+                'name' => $i . '.png',
+                'orientation' => $orientaion);
+            
+            $this->log('page '.$i.'| orientation='. $orientaion, 'debug');
             $imagick->clear();
-            $fileOrigine->delete();
-        }
-        catch (Exception $e)
-        {
-            throw new InternalErrorException($e->getMessage());
+            $file->close();
+            
+            $i++;
         }
 
         //génération du fichier ODT
         if (empty($pageParam))
             throw new InternalErrorException('Impossible de convertir le fichier : paramètres manquants');
-        else
-            $this->generateOdtFileWithImages($folder, $pageParam);
+
+        $this->generateOdtFileWithImages($folder, $pageParam);
+
+        $file = new File($folder->pwd() . DS . 'result.odt');
+        $return = $file->read();
+        $file->close();
+
+        return $return;
+    }
+    
+    /**
+     * @param $folder
+     * @param $fileOrigine
+     * @return mixed
+     * @throws InternalErrorException
+     */
+    function _PdftoOdtGs(&$folder, &$fileOrigine) {
+
+        //Preparation de la commande ghostscript
+        $PDFINFO_EXEC = Configure::read('PDFINFO_EXEC');
+        $GS_RESOLUTION = Configure::read('GS_RESOLUTION');
+
+        $NbrPage=trim(shell_exec($PDFINFO_EXEC.' '.$fileOrigine->pwd().' | grep Pages: | sed -e "s/ *Pages: *//g"'));
+        
+        for ($i = 0;  $i < $NbrPage ; $i++) {
+            $imagick = new Imagick();
+            $imagick->setResolution($GS_RESOLUTION, $GS_RESOLUTION);
+            $imagick->readImage($fileOrigine->pwd() . '['.$i.']');
+            $imagick->setImageFormat('png');
+            $imagick->writeImage($folder->pwd() . DS . $i . '.png');
+            
+            if ($imagick->getImageHeight() > $imagick->getImageWidth())
+                $orientaion = 'portrait';
+            else $orientaion = 'landscape';
+            
+            $pageParam[$i] = array('path' => $folder->pwd() . DS . $i . '.png',
+                'name' => $i . '.png',
+                'orientation' => $orientaion);
+            
+            $this->log('page '.($i+1).'| orientation='. $orientaion, 'debug');
+            $imagick->clear();
+        }
+
+        //génération du fichier ODT
+        if (empty($pageParam))
+            throw new InternalErrorException('Impossible de convertir le fichier : paramètres manquants');
+
+        $this->generateOdtFileWithImages($folder, $pageParam);
 
         $file = new File($folder->pwd() . DS . 'result.odt');
         $return = $file->read();
