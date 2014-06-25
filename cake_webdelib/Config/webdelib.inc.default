@@ -25,6 +25,7 @@ Configure::write('CLOUDOOO_PORT', '8011');
 
 /* Configuration pour la manipulation des pdf */
 Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
+Configure::write('PDFINFO_EXEC', '/usr/bin/pdfinfo');
 
 /* Configuration GhostScript */
 // Chemin vers l'executable
