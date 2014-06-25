@@ -1,5 +1,6 @@
 4.2.01
 ======
+- Correction lors de la modification d'un acte avec une date de séance en retard (plusieurs dates)
 - Correction : Pas d'alertes de retard sur projet supprimé
 - Correction Ajout de la variable "debat_global" lors de la fusion
 - Correction Le Bordereau de signature n'est pas bon quand le dossier comportait une annexe à télétransmettre
