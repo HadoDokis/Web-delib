@@ -327,7 +327,7 @@ class Deliberationseance extends AppModel {
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id id de l'occurence en base
      */
-    function setVariablesFusionPourUnProjet(&$oMainPart, &$modelOdtInfos, $deliberationId) {
+    function setVariablesFusionPourUnProjet(&$oMainPart, &$modelOdtInfos, $deliberationId, $seanceId=null) {
         // lecture en base de données
         $this->Behaviors->load('Containable');
         $deliberationSeances =  $this->find('all', array(
@@ -335,6 +335,7 @@ class Deliberationseance extends AppModel {
             'contain'  => array('Seance.date', 'Seance.Typeseance'),
             'conditions' => array(
                 'Deliberationseance.deliberation_id' => $deliberationId,
+                /*'Deliberationseance.seance_id <>' => $seanceId,*/ //MISE EN PLACE FUTUR
                 'OR' => array(
                     'Deliberationseance.avis <>' => null,
                     'Deliberationseance.commentaire <>' => null))));
@@ -359,6 +360,48 @@ class Deliberationseance extends AppModel {
                 $oDevPart->addElement(new GDO_FieldType("commentaire", $deliberationSeance['Deliberationseance']['commentaire'], "lines"));
             $oIteration->addPart($oDevPart);
         }
+        $oMainPart->addElement($oIteration);
+    }
+    
+    /**
+     * fonction d'initialisation des variables de fusion pour les avis en séance
+     * les bibliothèques Gedooo doivent être inclues par avance
+     * génère une exception en cas d'erreur
+     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param integer $id id de l'occurence en base
+     */
+    function setVariablesFusionAvis(&$oMainPart, &$modelOdtInfos, $acteId, $seanceId) {
+        // lecture en base de données
+        $deliberationSeance =  $this->find('first', array(
+            'fields' => array('id', 'avis', 'commentaire'),
+            'conditions' => array(
+                'Deliberationseance.deliberation_id' => $acteId,
+                'Deliberationseance.seance_id' => $seanceId,
+                'OR' => array(
+                    'Deliberationseance.avis <>' => null,
+                    'Deliberationseance.commentaire <>' => null)),
+            'recursive'=>-1));
+
+        if(empty($deliberationSeance)) return;
+        
+        // fusion des variables
+        $oIteration = new GDO_IterationType("ProjetAvis");
+            $oDevPart = new GDO_PartType();
+            if ($modelOdtInfos->hasUserFieldDeclared('ProjetAvis_avis')) {
+                if ($deliberationSeance['Deliberationseance']['avis'] === true)
+                    $avisTexte = 'A reçu un avis favorable';
+                elseif ($deliberationSeance['Deliberationseance']['avis'] === false)
+                    $avisTexte = 'A reçu un avis défavorable';
+                else
+                    $avisTexte = 'N\'a pas reçu d\'avis';
+                $oDevPart->addElement(new GDO_FieldType("ProjetAvis_avis", $avisTexte, "text"));
+            }
+            if ($modelOdtInfos->hasUserFieldDeclared('ProjetAvis_favorable'))
+                $oDevPart->addElement(new GDO_FieldType("ProjetAvis_favorable", $deliberationSeance['Deliberationseance']['avis'], "text"));
+            if ($modelOdtInfos->hasUserFieldDeclared('ProjetAvis_commentaire'))
+                $oDevPart->addElement(new GDO_FieldType("ProjetAvis_commentaire", $deliberationSeance['Deliberationseance']['commentaire'], "lines"));
+            $oIteration->addPart($oDevPart);
         $oMainPart->addElement($oIteration);
     }
 

@@ -2138,7 +2138,7 @@ class Deliberation extends AppModel {
             $oMainPart->addElement(new GDO_FieldType('commentaire_vote', $delib['Deliberation']['vote_commentaire'], 'lines'));
         if ($modelOdtInfos->hasUserFieldDeclared('date_reception'))
             $oMainPart->addElement(new GDO_FieldType('date_reception',  $delib['Deliberation']['tdt_dateAR'], 'text'));
-
+        
         // variables des multi délibérations
         if ($delib['Deliberation']['is_multidelib'] && $modelOdtInfos->hasUserFieldsDeclared('libelle_multi_delib', 'id_multi_delib')) {
             $multidelibs = $this->find('all', array(
@@ -2241,9 +2241,12 @@ class Deliberation extends AppModel {
             $this->Seance->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $seanceIds, false);
         }
 
+        //avis du projet
+        if (!empty($fusionSeanceId) && $modelOdtInfos->hasUserFieldDeclared('ProjetAvis_avis', 'ProjetAvis_commentaire', 'ProjetAvis_commentaire'))
+            $this->Deliberationseance->setVariablesFusionAvis($oMainPart, $modelOdtInfos, $id, $fusionSeanceId);
         // avis des séances
         if ($modelOdtInfos->hasUserFieldsDeclared('avis', 'avis_favorable', 'commentaire'))
-            $this->Deliberationseance->setVariablesFusionPourUnProjet($oMainPart, $modelOdtInfos, $id);
+            $this->Deliberationseance->setVariablesFusionPourUnProjet($oMainPart, $modelOdtInfos, $id, $fusionSeanceId);
 
         // listes des présents et suppléants, absents, mandatés
         $this->Listepresence->setVariablesFusionPresents($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
