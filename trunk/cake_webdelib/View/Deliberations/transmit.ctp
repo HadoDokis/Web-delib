@@ -113,8 +113,15 @@
                         if (!empty($libelle)){
                             echo '<div style="white-space: nowrap;">';
                             echo $this->Html->link($libelle.' <i class="fa fa-download"></i>', array('action'=>'downloadTdtMessage', $message['tdt_id']), array('escape'=>false,'title'=> 'Télécharger le document')) ;
-                            if(empty($message['Reponse']) && $reponse && ($message['tdt_etat'] == 7 OR $message['tdt_etat'] == 8)) {
+                            if(empty($message['Reponse']) && $reponse && empty($message['parent_id'])) {
                                 echo " ";
+                                //Gestion des réponses Pastell
+                                if(!empty($delib['Deliberation']['pastell_id']) && $tdt=='PASTELL'){
+                                $coll=$this->Session->read('user.Collectivite');   
+                                echo $this->Html->link('<i class="fa fa-envelope-o"></i>', $tdt_host.'/document/detail.php?id_d='.$delib['Deliberation']['pastell_id'].'&id_e='.$coll['Collectivite']['id_entity'], array('escape'=>false, 'target' => '_blank','title'=> 'Répondre'));
+                                }
+                                //Gestion des réponses S2low
+                                if(!empty($delib['Deliberation']['tdt_id']) && $tdt=='S2LOW' ) 
                                 echo $this->Html->link('<i class="fa fa-envelope-o"></i>', $tdt_host.'/modules/actes/actes_transac_show.php?id=' . $message['tdt_id'], array('escape'=>false, 'target' => '_blank','title'=> 'Répondre'));
                             }
                             else
