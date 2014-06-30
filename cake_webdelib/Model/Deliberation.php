@@ -1888,32 +1888,47 @@ class Deliberation extends AppModel {
                 'tdt_id',
                 'pastell_id',
                 'tdt_dateAR',
-                'num_delib'
+                'num_delib',
+                'tdt_ar',
+                'tdt_data_pdf',
+                'tdt_data_bordereau_pdf'
             )
         ));
         foreach ($actes as $acte) {
+        try{    
             $this->id = $acte['Deliberation']['id'];
-            if ($this->majEchangesTdt($acte)) {
-                $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
-            }
+            if(empty($acte['Deliberation']['tdt_ar'])){
             $tdtArActe=$Tdt->getArActe($acte);
             if (!empty($tdtArActe)) {
                 //Récupération de l'ARacte
                 $this->saveField('tdt_ar', $tdtArActe);
                 $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
+            }}
+            if(!empty($acte['Deliberation']['tdt_ar'])){
+                $tdt_data_pdf=$this->findById($this->id,'tdt_data_pdf');
+                if(empty($acte['Deliberation']['tdt_data_pdf'])){
+                $tampon=$Tdt->getTampon($acte);
+                if (!empty($tampon)) {
+                    //Récupération du tampon
+                    $this->saveField('tdt_data_pdf', $tampon);
+                    $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
+                }}
+
+                if(empty($acte['Deliberation']['tdt_data_bordereau_pdf'])){
+                $bordereau=$Tdt->getBordereau($acte);
+                if (!empty($bordereau)) {
+                    //Récupération du bordereau
+                    $this->saveField('tdt_data_bordereau_pdf', $bordereau);
+                    $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
+                }}
+                if ($this->majEchangesTdt($acte)) {
+                    $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
+                }
             }
-            $tampon=$Tdt->getTampon($acte);
-            if (!empty($tampon)) {
-                //Récupération du tampon
-                $this->saveField('tdt_data_pdf', $tampon);
-                $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
-            } 
-            $bordereau=$Tdt->getBordereau($acte);
-            if (!empty($bordereau)) {
-                //Récupération du bordereau
-                $this->saveField('tdt_data_bordereau_pdf', $bordereau);
-                $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
-            }
+        } catch (Exception $e) {
+            continue;
+        }
+
         }
         return $rapport;
     }
@@ -1927,7 +1942,9 @@ class Deliberation extends AppModel {
         App::uses('Tdt', 'Lib');
         try {
             $Tdt = new Tdt;
-            $infos = $Tdt->getReponses($acte);
+            if(!$infos = $Tdt->getReponses($acte))
+                return false;
+            
             $this->TdtMessage->begin();
             foreach ($infos as $info) {
                 //Si Le message existe déjà ne rien faire
@@ -1947,7 +1964,7 @@ class Deliberation extends AppModel {
                     'recursive' => -1,
                 ));
                 
-                if (!empty($message_parent) && in_array($info['status'], array(7,8))){
+                if (!empty($message_parent) && !empty($info['status']) && in_array($info['status'], array(7,8))){
                     new Exception("Attention, il y a plusieurs messages de même type, cette situation n'est pas traitée par web-delib (num_delib: ".$acte['Deliberation']['id'] . '=>' . $info['type'].')');
                 }
                 
@@ -1956,8 +1973,9 @@ class Deliberation extends AppModel {
                                     'delib_id' => $acte['Deliberation']['id'],
                                     'tdt_id' => $info['id'],
                                     'tdt_type' => $info['type'],
-                                    'tdt_etat' => $info['status'],
+                                    'tdt_etat' => empty($info['status'])?NULL:$info['status'],
                                     'tdt_data' => $info['data'],
+                                    'date_message' => empty($info['date_message'])?NULL:$info['date_message'],
                                     'parent_id' => !empty($message_parent)?$message_parent['TdtMessage']['id']:NULL,
                                  );
                 $this->TdtMessage->save($TdtMessage);
@@ -2440,6 +2458,7 @@ class Deliberation extends AppModel {
                 $acte['Deliberation']['parapheur_cible'] = Configure::read('PARAPHEUR');
                 $acte['Deliberation']['parapheur_etat'] = 1;
             }catch (Exception $e){
+                $this->log($e->getMessage(),'debug');
                 $success = false;
             }
         } else $success = false;

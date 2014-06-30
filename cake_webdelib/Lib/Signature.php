@@ -109,12 +109,15 @@ class Signature extends ConnecteurLib  {
             else
                 return false;
 
-        $id_d = $this->Pastell->createDocument($this->id_e, $this->pastell_type);
+            
         try {
+            $id_d = $this->Pastell->createDocument($this->id_e, $this->pastell_type);
+        
             if (!$this->Pastell->editTransmission($this->id_e, $id_d))
-                throw new Exception();
+                throw new Exception('Error editTransmission');
+            
             if (!$this->Pastell->modifDocument($this->id_e, $id_d, $acte, $document, $annexes))
-                throw new Exception();
+                throw new Exception('Error modifDocument');
 
             if (is_numeric($circuit_id)) {
                 $circuits = $this->Pastell->getInfosField($this->id_e, $id_d, $this->config['field']['iparapheur_sous_type']);
@@ -127,11 +130,15 @@ class Signature extends ConnecteurLib  {
             if ($this->Pastell->action($this->id_e, $id_d, $this->config['action']['send-iparapheur']))
                 return $id_d;
             else
-                throw new Exception();
+                throw new Exception('Error action');
+            
         } catch (Exception $e) {
             $this->Pastell->action($this->id_e, $id_d, $this->config['action']['supression']);
-            return false;
+            throw new Exception($e->getMessage());
+            
         }
+        
+        return false;
     }
 
     public function getEtatIparapheur($options) {
@@ -167,7 +174,6 @@ class Signature extends ConnecteurLib  {
      * @return string flux du fichier signature (zip)
      */
     public function getSignaturePastell($id_d) {
-        $signature = $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['signature']);
         return $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['signature']);
     }
 

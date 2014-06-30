@@ -76,11 +76,12 @@ class PastellComponent extends Component {
     public function execute($page, $data = array(), $file_transfert = false) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_FRESH_CONNECT, TRUE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($curl, CURLOPT_USERPWD, $this->login . ":" . $this->pwd);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
         $api = $this->host . "/api/$page";
         curl_setopt($curl, CURLOPT_URL, $api);
         if (!empty($data)) {
@@ -96,6 +97,12 @@ class PastellComponent extends Component {
         }
         
         $response = curl_exec($curl);
+        
+        if($response === false)
+        {
+            throw new Exception(curl_error($curl));
+            $this->log(curl_error($ch), 'pastell');
+        }
         curl_close($curl);
             
         if ($file_transfert) {
