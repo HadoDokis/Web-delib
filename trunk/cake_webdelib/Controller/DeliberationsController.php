@@ -1733,6 +1733,7 @@ class DeliberationsController extends AppController
             'order' => 'Deliberation.id DESC',
             'limit' => 20));
 
+        $this->set('tdt', Configure::read('TDT'));
         $this->set('tdt_host', Configure::read(Configure::read('TDT').'_HOST'));
         $this->set('dateClassification', $this->S2low->getDateClassification());
 
