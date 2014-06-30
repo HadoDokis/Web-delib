@@ -125,25 +125,34 @@ class Tdt extends ConnecteurLib {
      * @param bool $all
      * @return array|bool
      */
-    public function getReponsesPastell($acte, $all = false) {
+    public function getReponsesPastell($acte) {
         $id_d=$acte['Deliberation']['pastell_id'];
+        if(empty($id_d))return false;
         $tdt_messages = array();
         $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-reponse-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
-
         if (empty($infos['data']))
             return false;
 
         foreach ($this->echanges as $type => $echange){
             if (!empty($infos['data']['has_'.$echange])){
-                if ($all || !$this->TdtMessage->exists($infos['data'][$echange.'_id'])){
+                $demande=$this->TdtMessage->findByTdtId($infos['data'][$echange.'_id']);
+                
+                if (empty($demande))
                     $tdt_messages[] = array(
-                        'TdtMessage' => array(
-                            'type_message' => $type,
+                            'type' => $type,
+                            'id' => $infos['data'][$echange.'_id'],
                             'data' => $this->Pastell->getFile($this->id_e, $id_d, $echange),
-                            'message_id' => $infos['data'][$echange.'_id'],
                             'date_message' => $infos['data'][$echange.'_date']
-                        )
+                    );
+                if (!empty($infos['data'][$echange.'_response_transaction_id'])){
+                $reponse=$this->TdtMessage->findByTdtId($infos['data'][$echange.'_response_transaction_id']);
+                if (empty($reponse))
+                    $tdt_messages[] = array(
+                            'type' => $type,
+                            'id' => $infos['data'][$echange.'_response_transaction_id'],
+                            'data' => $this->Pastell->getFile($this->id_e, $id_d, 'reponse_'.$echange),
+                            'date_message' => NULL // Pas de date retour de patell
                     );
                 }
             }
@@ -167,7 +176,10 @@ class Tdt extends ConnecteurLib {
                 foreach ($result_array as $line) {
                     if (!empty($result)) {
                         list($type, $status, $id) = explode("-",$line);
-                        $tdt_messages[] = array('type'=>$type,'status'=>$status,'id'=>$id,'data'=>$this->S2low->getDocument($id));
+                        $tdt_messages[] = array('type'=>$type,
+                                                'status'=>$status,
+                                                'id'=>$id,
+                                                'data'=>$this->S2low->getDocument($id));
                     }
                 }
             }
@@ -255,8 +267,12 @@ class Tdt extends ConnecteurLib {
      */
     public function getTamponPastell($acte) {
         $id_d=$acte['Deliberation']['pastell_id'];
-        $flux = $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['acte_tamponne']);
-        return $flux;
+        if(empty($id_d))return false;
+        $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
+        if (!empty($infos['data']['acte_tamponne']))
+            return $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['acte_tamponne']);
+        else
+            return false;
     }
 
     /**
@@ -264,7 +280,12 @@ class Tdt extends ConnecteurLib {
      */
     public function getBordereauPastell($acte) {
         $id_d=$acte['Deliberation']['pastell_id'];
-        return $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['bordereau']);
+        if(empty($id_d))return false;
+        $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
+        if (!empty($infos['data']['bordereau']))
+            return $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['bordereau']);
+        else
+            return false;
     }
 
     /**
@@ -312,11 +333,11 @@ class Tdt extends ConnecteurLib {
      * @return boolean|String
      */
     public function getArActePastell($acte) {
-        $iTdt=$acte['Deliberation']['tdt_id'];
-        $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-tdt']);
+        $id_d=$acte['Deliberation']['pastell_id'];
+        if(empty($id_d))return false;
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
         if (!empty($infos['data']['aractes']))
-            return $infos['data']['aractes'];
+            return $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['aractes']);
         else
             return false;
     }

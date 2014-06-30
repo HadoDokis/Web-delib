@@ -32,6 +32,11 @@ class TdtMessage extends AppModel {
     );
     
     function RecupMessagePdfFromTar($data){
+        //Vérification si les données ne sont pas déjà du pdf (Message reponse Pastell)
+        $infos=AppTools::FileMime($data);
+        if($infos['mimetype']==='application/pdf')
+            return array('filename'=> 'Reponse.pdf', 'content'=>$data);
+        
         $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'Tdt'), true, 0777);
         $fileTgz = new File($folder->path . DS . 'WD_TDT_DOC.tgz', true, 0777);
         $fileTgz->write($data);
