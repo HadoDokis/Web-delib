@@ -311,6 +311,7 @@ class AppSchema extends CakeSchema {
 		'president_id' => array('type' => 'integer', 'null' => true),
 		'parapheur_cible' => array('type' => 'text', 'null' => true),
 		'parapheur_bordereau' => array('type' => 'binary', 'null' => true),
+		'tdt_ar' => array('type' => 'binary', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'etat' => array('unique' => false, 'column' => 'etat'),
@@ -529,13 +530,14 @@ class AppSchema extends CakeSchema {
 	public $tdt_messages = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
 		'delib_id' => array('type' => 'integer', 'null' => false),
-		'message_id' => array('type' => 'integer', 'null' => false),
-		'type_message' => array('type' => 'integer', 'null' => false),
-		'type_reponse' => array('type' => 'integer', 'null' => true),
+		'tdt_id' => array('type' => 'integer', 'null' => false),
+		'tdt_type' => array('type' => 'integer', 'null' => false),
+		'tdt_etat' => array('type' => 'integer', 'null' => true),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
 		'date_message' => array('type' => 'date', 'null' => true),
-		'data' => array('type' => 'binary', 'null' => true),
+		'tdt_data' => array('type' => 'binary', 'null' => true),
+		'parent_id' => array('type' => 'integer', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'tdtmsg_' => array('unique' => false, 'column' => 'delib_id')
