@@ -416,6 +416,7 @@ class PastellComponent extends Component {
         if (empty($delib) || empty($delib['Typeacte']['nature_id']) || empty($delib['Deliberation']['objet_delib']))
             return false;
 
+        $success = true;
         $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS), true, 0777);
         $file = new File($folder->path . DS . 'arrete.pdf', true, 0777);
         $file->write($document);
@@ -433,13 +434,15 @@ class PastellComponent extends Component {
 
         );
 
-        $success = $this->execute('modif-document.php', $acte);
+        if($this->execute('modif-document.php', $acte)==false)
+            $success = false;
 
-        if (!empty($success) && !empty($annexes))
+        if ($success && !empty($annexes))
             foreach ($annexes as $annex) {
                 $annexeFile = new File($folder->path . DS . $annex['filename'], true, 0777);
                 $annexeFile->write($annex['content']);
-                $success &= $this->sendAnnex($id_e, $id_d, $annexeFile->path);
+                if($this->sendAnnex($id_e, $id_d, $annexeFile->path)==false)
+                    $success = false;
             }
 
         $folder->delete();

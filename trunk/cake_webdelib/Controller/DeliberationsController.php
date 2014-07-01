@@ -2033,8 +2033,8 @@ class DeliberationsController extends AppController
 
                         if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL')) {
                             try {
-                                if(!empty($acte['Deliberation']['pastell_id'])){
-                                    $Tdt->send($delib, $delib['Deliberation']['delib_pdf'], $this->Deliberation->getAnnexesToSend($delib['Deliberation']['id']));
+                                if(empty($acte['Deliberation']['pastell_id'])){
+                                    $sent = $Tdt->send($delib, $delib['Deliberation']['delib_pdf'], $this->Deliberation->getAnnexesToSend($delib['Deliberation']['id']));
                                 }
                                 else
                                     $sent = $Tdt->send($delib);
