@@ -74,7 +74,7 @@ class Tdt extends ConnecteurLib {
     public function sendPastell($acte, $document = null, $annexes = array()) {
         
         if(empty($acte['Deliberation']['pastell_id']))
-            $acte['Deliberation']['pastell_id']=  parent::createPastell($acte, $document = null, $annexes = array());
+            $acte['Deliberation']['pastell_id']=  parent::createPastell($acte, $document = null, $annexes);
         //$this->Pastell->envoiTdt($this->id_e, $id_d, $classification);
         //$acte['Deliberation']['num_pref']
         
