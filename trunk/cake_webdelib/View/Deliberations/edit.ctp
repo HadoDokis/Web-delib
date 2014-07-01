@@ -236,12 +236,12 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
                 echo '<div class="annexesGauche"></div>';
                 if (!$disabled) {
                     echo '<div class="fckEditorProjet">';
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'id' => $fieldId));
                     echo $this->Fck->load($fieldId);
                     echo '</div>';
                     echo '<div class="spacer"></div>';
                 } else {
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'readonly' => true, 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'readonly' => true, 'id' => $fieldId));
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'file') {
                 if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
