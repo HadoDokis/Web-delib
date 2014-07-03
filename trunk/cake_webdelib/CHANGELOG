@@ -1,5 +1,6 @@
 4.2.01
 ======
+- Correction information supplémentaire de texte enrichi de projet en édition
 - Ajout d'une croix de fermeture pour les générations
 - Correction lors de la modification d'un acte avec une date de séance en retard (plusieurs dates)
 - Correction : Pas d'alertes de retard sur projet supprimé
