@@ -1232,7 +1232,6 @@ function checkGED(){
 function checkLDAP(){
     
     $ldapInfos = array();
-    var_dump(Configure::read("LDAP_HOST"));
     $ldapInfos["Serveur"] = Configure::read("LDAP_HOST");
     $ldapInfos["Port"] = Configure::read("LDAP_PORT");
     $ldapInfos["Login"] = Configure::read("LDAP_LOGIN");
