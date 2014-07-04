@@ -178,7 +178,7 @@ class ConversionComponent extends Component {
         $fileOrigine->delete();
         $files = $folder->find('.*\.pdf', true);
         
-        $i = 0;
+        $i = 1;
         foreach ($files as $file) {
             $file = new File($folder->pwd() . DS . $file);
 
