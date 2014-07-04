@@ -1,0 +1,27 @@
+.table{
+    cursor: default;
+}
+.table tr td, .table tr th{
+    vertical-align: middle;
+    padding: 5px;
+}
+.table tr td.actions{
+    min-width: 130px;
+    padding: 0;
+    height: 100%;
+    vertical-align: middle;
+}
+.table th{
+    text-align: center;
+    vertical-align: middle;
+}
+.info{
+    color: inherit;
+    font-style: inherit;
+}
+.btn-group>.btn{
+    float: none;
+}
+.btn-toolbar{
+    text-align: center;
+}

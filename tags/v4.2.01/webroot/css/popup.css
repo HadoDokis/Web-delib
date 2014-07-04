@@ -1,0 +1,16 @@
+body {
+    background: url(../../../img/grid-18px-masked.png) repeat-x 0 40px;
+    padding-left: 40px;
+}
+
+h2 {
+    font-size: 1.8em;
+    border-bottom: 1px solid #e0ef90;
+}
+
+#pied {
+    margin-top: 20px;
+    height: 25px;
+    text-align: center;
+    border-top: 1px solid #999;
+}

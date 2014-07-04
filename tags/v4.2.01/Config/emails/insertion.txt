@@ -1,0 +1,15 @@
+Bonjour #PRENOM# #NOM#,
+
+Un projet vient d'être inséré dans un circuit dont vous êtes valideur.
+
+Id : #IDENTIFIANT_PROJET#
+Objet : #OBJET_PROJET#
+Circuit : #LIBELLE_CIRCUIT#
+
+Vous pouvez le visualiser à l'adresse : #ADRESSE_A_VISUALISER#
+
+Très cordialement.
+
+Webdelib
+
+Ce mail de notification a été envoyé par webdelib pour votre information. Merci de ne pas répondre.
