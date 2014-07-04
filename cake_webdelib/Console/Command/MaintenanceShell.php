@@ -107,19 +107,19 @@ class MaintenanceShell extends AppShell {
                 $this->out($return . "\n", 1, Shell::VERBOSE);
             } else {
                 $annexes = $this->Annex->find('all', array(
-                    'fields' => array('id', 'foreign_key', 'filetype'),
+                    'fields' => array('DISTINCT foreign_key', 'filetype'),
                     'condition' => array('OR' => array('joindre_fusion' => true, 'joindre_ctrl_legalite' => TRUE)),
-                    'order' => 'id ASC',
+                    'order' => 'foreign_key ASC',
                     'recursive' => -1
                 ));
                 $docs_info = Configure::read('DOC_TYPE');
                 $i = 0;
                 foreach ($annexes as $annexe) {
                     $i++;
-                    $this->out('Conversion annexe n°' . $annexe['Annex']['id'] . ' ('.$i.'/'.count($annexes).')...');
+                    $this->out('Conversion Projet n°' . $annexe['Annex']['foreign_key'] . ' ('.$i.'/'.count($annexes).')...');
                     $return = $this->CronJob->convertionAnnexesJob($annexe['Annex']['foreign_key'], true);
                     $this->out($return . "\n");
-                    $this->out('Sauvegarde terminée id: ' . $annexe['Annex']['id'] . "\n");
+                    $this->out('Sauvegarde terminée id: ' . $annexe['Annex']['foreign_key'] . "\n");
                 }
                 $this->out('Conversion des annexes terminée => ' . $i . ' annexes converties');
             }
