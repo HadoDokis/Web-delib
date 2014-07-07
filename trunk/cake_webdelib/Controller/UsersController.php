@@ -528,7 +528,7 @@ class UsersController extends AppController {
         if (empty($this->data)) {
             $this->request->data = $this->User->read(null, $id);
             if (empty($this->data)) {
-                $this->Session->setFlash('Invalide id pour l\'utilisateur');
+                $this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
                 $this->redirect(array('action' => 'index'));
             } else
                 $this->request->data['User']['password'] = '';
@@ -539,12 +539,12 @@ class UsersController extends AppController {
                     'conditions' => array('User.id' => $id),
                     'recursive' => -1));
                 if ($this->User->saveField('password', $this->data['User']['password'])) {
-                    $this->Session->setFlash('Le mot de passe de l\'utilisateur \'' . $user['User']['login'] . '\' a été modifié');
+                    $this->Session->setFlash('Le mot de passe de l\'utilisateur \'' . $user['User']['login'] . '\' a été modifié', 'growl');
                     $this->redirect(array('action' => 'index'));
                 } else
-                    $this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
+                    $this->Session->setFlash('Erreur lors de la saisie des mots de passe.', 'growl');
             } else
-                $this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
+                $this->Session->setFlash('Erreur lors de la saisie des mots de passe.', 'growl');
         }
     }
 
@@ -586,7 +586,7 @@ class UsersController extends AppController {
 		if (empty($this->data)) {
 			$this->request->data = $this->User->read(null, $this->Session->read('user.User.id'));
 			if (empty($this->data)) {
-				$this->Session->setFlash('Invalide id pour l\'utilisateur');
+				$this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
 				$this->redirect(array('action'=>'index'));
 			}
 			else
@@ -595,14 +595,14 @@ class UsersController extends AppController {
 			if ($this->User->validatesPassword($this->data) && $this->User->validOldPassword($this->data)) {
                 $this->User->id = $this->Session->read('user.User.id');
 				if ($this->User->saveField('password', $this->data['User']['password'])) {
-					$this->Session->setFlash('Le mot de passe a été modifié');
+					$this->Session->setFlash('Le mot de passe a été modifié', 'growl');
                     $this->redirect(array('action'=>'index'));
 				}
 				else
-					$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
+					$this->Session->setFlash('Erreur lors de la saisie des mots de passe.', 'growl', array('type'=>'error'));
 			}
 			else
-				$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
+				$this->Session->setFlash('Erreur lors de la saisie des mots de passe.', 'growl', array('type'=>'error'));
 		}
 	}
 
