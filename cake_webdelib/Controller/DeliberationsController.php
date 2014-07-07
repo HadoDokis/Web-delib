@@ -49,6 +49,7 @@ class DeliberationsController extends AppController
         'autreActesAEnvoyer',
         'autreActesEnvoyes',
         'editerTous',
+        'nonTransmis',
     );
     public $commeDroit = array(
         'view' => array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
