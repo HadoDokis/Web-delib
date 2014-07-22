@@ -36,6 +36,7 @@ class Signature extends ConnecteurLib  {
      * Charge le bon protocol de signature et initialise le composant correspondant
      */
     public function __construct() {
+        //FIXME cas où vide => exception levée lors de la tache planifiée
         parent::__construct(Configure::read('PARAPHEUR'));
 
         if (Configure::read('USE_PARAPHEUR')) {
