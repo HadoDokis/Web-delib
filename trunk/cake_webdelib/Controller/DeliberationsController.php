@@ -1,23 +1,25 @@
 <?php
 /**
+ * === Deliberation.etat ===
+ * Deliberation.etat = -1 : Refusé
+ * Deliberation.etat = 0 : En cours de rédaction
+ * Deliberation.etat = 1 : Dans un circuit
+ * Deliberation.etat = 2 : Validé
+ * Deliberation.etat = 3 : Adopté (Voté pour)
+ * Deliberation.etat = 4 : Rejeté (Voté contre)
+ * Deliberation.etat = 5 : Envoyé au TDT
+ *
+ * === Deliberation.avis ===
+ * Deliberation.avis = 0 ou null : Pas d'avis donné
+ * Deliberation.avis = 1 : Avis favorable
+ * Deliberation.avis = 2 : Avis défavorable
+ */
+
+/**
  * Class DeliberationsController
  * @property Deliberation $Deliberation
  */
-class DeliberationsController extends AppController
-{
-    /*
-     * Deliberation.etat = -1 : refusé
-     * Deliberation.etat = 0 : en cours de rédaction
-     * Deliberation.etat = 1 : dans un circuit
-     * Deliberation.etat = 2 : validégenereFusionToClient
-     * Deliberation.etat = 3 : Voté pour
-     * Deliberation.etat = 4 : Voté contre
-     * Deliberation.etat = 5 : envoyé
-     *
-     * Deliberation.avis = 0 ou null : pas d'avis donné
-     * Deliberation.avis = 1 : avis favorable
-     * Deliberation.avis = 2 : avis défavorable
-     */
+class DeliberationsController extends AppController {
 
     public $helpers = array('Fck');
     public $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
