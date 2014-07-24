@@ -2141,7 +2141,7 @@ class Deliberation extends AppModel {
         if ($modelOdtInfos->hasUserFieldDeclared('numero_deliberation'))
             $oMainPart->addElement(new GDO_FieldType('numero_deliberation', $delib['Deliberation']['num_delib'], 'text'));
         if ($modelOdtInfos->hasUserFieldDeclared('acte_adopte'))
-            $oMainPart->addElement(new GDO_FieldType('acte_adopte', (($delib['Deliberation']['etat']==3 && $delib['Deliberation']['vote_nb_oui']==0)?'1':'0'), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('acte_adopte', ($delib['Deliberation']['etat'] == 3 || $delib['Deliberation']['etat'] == 5) ? '1' : '0', 'text'));
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_pour'))
             $oMainPart->addElement(new GDO_FieldType('nombre_pour', $delib['Deliberation']['vote_nb_oui'], 'text'));
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_abstention'))
@@ -2151,7 +2151,7 @@ class Deliberation extends AppModel {
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_sans_participation'))
             $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', $delib['Deliberation']['vote_nb_retrait'], 'text'));
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_votant'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_votant', $delib['Deliberation']['vote_nb_oui']+$delib['Deliberation']['vote_nb_abstention']+$delib['Deliberation']['vote_nb_non'], 'text'));
+            $oMainPart->addElement(new GDO_FieldType('nombre_votant', $delib['Deliberation']['vote_nb_oui'] + $delib['Deliberation']['vote_nb_abstention'] + $delib['Deliberation']['vote_nb_non'], 'text'));
         if ($modelOdtInfos->hasUserFieldDeclared('commentaire_vote'))
             $oMainPart->addElement(new GDO_FieldType('commentaire_vote', $delib['Deliberation']['vote_commentaire'], 'lines'));
         if ($modelOdtInfos->hasUserFieldDeclared('date_reception'))
