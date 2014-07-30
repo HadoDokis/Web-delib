@@ -1545,7 +1545,7 @@ class SeancesController extends AppController {
 
         $this->Progress->at(10, 'Récupération des délibérations de la séance...');
         $i = 0;
-        $delibs = $this->Seance->getDeliberationsId($seance_id, array('Deliberation.etat >' => 0));
+        $delibs = $this->Seance->getDeliberationsId($seance_id);
         $num_delib = count($delibs);
 
         foreach ($delibs as $delib_id) {

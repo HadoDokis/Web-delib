@@ -169,10 +169,8 @@ class Seance extends AppModel
         return in_array($nature_id, $natures);
     }
 
-    function getDeliberations($seance_id, $conditions = array())
+    function getDeliberations($seance_id)
     {
-        $conditions['Deliberationseance.seance_id'] = $seance_id;
-
         $deliberations = $this->Deliberationseance->find(
             'all',
             array(
@@ -191,7 +189,7 @@ class Seance extends AppModel
                     ),
                 ),
                 'recursive' => 2,
-                'conditions' => $conditions,
+                'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
                 'order' => 'Deliberationseance.position ASC',
             )
         );
