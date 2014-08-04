@@ -226,7 +226,7 @@ class PostseancesController extends AppController {
     function _createElement($domObj, $tag_name, $value = NULL, $attributes = NULL) {
         try
         {
-            $element = ($value != NULL ) ? $domObj->createElement($tag_name, $value) : $domObj->createElement($tag_name);
+            $element = ($value != NULL ) ? $domObj->createElement($tag_name, AppTools::xml_entity_encode($value)) : $domObj->createElement($tag_name);
 
             if ($attributes != NULL) {
                 foreach ($attributes as $attr => $val) {

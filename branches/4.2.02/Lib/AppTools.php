@@ -189,5 +189,31 @@ class AppTools {
         $factor = floor((strlen($bytes) - 1) / 3);
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
     }
+
+     public static function xml_entity_encode($_string) {
+        //UTILISER  htmlentities() à partir de php 5.4.0
+        // Set up XML translation table
+        $_xml = array();
+        $_xl8_iso = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+        //Compatibilité php <5.3.3
+        foreach($_xl8_iso as $key=>$value)
+            $_xl8[utf8_encode($key)]=utf8_encode($value);
+            
+        while (list($_key, $_val) = each($_xl8)){
+            $_xml[$_key] = '&#' . AppTools::uniord($_key) . ';';
+        }
+        
+        return strtr($_string, $_xml);
+    }
+    
+    public static function uniord($u) {
+        $k = mb_convert_encoding($u, 'UCS-2LE', 'UTF-8');
+        $k1 = ord(substr($k, 0, 1));
+        $k2 = ord(substr($k, 1, 1));
+        
+        return $k2 * 256 + $k1;
+    } 
 }
+
+
 
