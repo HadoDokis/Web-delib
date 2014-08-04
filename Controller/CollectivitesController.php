@@ -7,7 +7,7 @@
 class CollectivitesController extends AppController {
 
     public $uses = array('Collectivite', 'User');
-    public $components = array('Pastell');
+    public $components = array();
     // Gestion des droits
     public $aucunDroit = array(
         'synchronize',
@@ -34,6 +34,9 @@ class CollectivitesController extends AppController {
     }
 
     function edit() {
+        if (Configure::read('USE_PASTELL')) {
+            $this->Pastell = $this->Components->load('Pastell');
+        }
         if (!empty($this->data)) {
             $this->Collectivite->id = 1;
             if (Configure::read('USE_PASTELL')) {
