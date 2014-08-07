@@ -1,5 +1,6 @@
 4.2.01
 ======
+- Correction de l'extension du nom de fichier pour le téléchargement de la signature (pdf au lieu de zip)
 - Correction des caractères spéciaux pour les informations supplémentaires de texte enrichi n'étaient pas pris en compte lors de l'export CMIS.
 - Correction les projets refusés s'affichaient avec la séance (ordre du jour...)
 
