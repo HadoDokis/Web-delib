@@ -1,11 +1,12 @@
-<div id="vue_cadre">
-<h3>Fiche S&eacute;quence</h3>
-
-<dl>
-
+<?php
+echo $this->Bs->tag('h3', 'Séquence');
+?>
+<div class="panel panel-default">
+    <div class="panel-heading">Fiche S&eacute;quence: <?php echo $sequence['Sequence']['nom'] ?></div>
+    <div class="panel-body">
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Nom</dt>
+		<dt>Libelle</dt>
 		<dd>&nbsp;<?php echo $sequence['Sequence']['nom']?></dd>
 	</div>
 	<div class="droite">
@@ -32,15 +33,13 @@
 	</div>
 </div>
 
-</dl>
+</dl>        </ul>
 
-
-<div class='btn-group' id="actions_fiche">
-	<?php
-                $this->Html2->boutonRetour('index', 'float:none;');
-		if ($Droits->check($this->Session->read('user.User.id'), 'Sequences:edit'))
-                    $this->Html2->boutonModifierUrl('/sequences/edit/' . $sequence['Sequence']['id'], 'Modifier', 'Modifier', 'float:none;', '');
-	?>
-</div>
-
-</div>
+    <br/>
+<?php
+echo $this->Bs->row().
+$this->Bs->col('md4 of5');
+echo $this->Bs->div('btn-group', null,array('id'=>"actions_fiche" )) .
+    $this->Html2->btnCancel(),
+    $this->Bs->btn('Modifier', array('controller' => 'sequences', 'action' => 'edit', $sequence['Sequence']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+    $this->Bs->close(6);

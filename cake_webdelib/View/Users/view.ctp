@@ -1,5 +1,9 @@
-<div id="vue_cadre">
-    <h3>Fiche utilisateur</h3>
+<?php
+echo $this->Bs->tag('h3', 'Utilisateurs');
+?>
+<div class="panel panel-default">
+    <div class="panel-heading">Fiche utilisateur: <?php echo $user['User']['login'].' '.$user['User']['prenom'] ?></div>
+    <div class="panel-body">
     <dl>
         <div class="tiers">
             <dt>Login</dt>
@@ -69,15 +73,13 @@
         </div>
         <div class="spacer"></div>
 
-    </dl>
-    <div style='text-align: center;'>
-        <div class='btn-group'>
-            <?php
-            echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $previous, array('escape' => false, 'class' => 'btn'));
-            if ($canEdit)
-                echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', array('action' => 'edit', $user['User']['id']), array('escape' => false, 'class' => 'btn'));
-            ?>
-        </div>
-    </div>
-    <div class="spacer"></div>
-</div>
+    </dl></ul>
+
+    <br/>
+ <?php
+echo $this->Bs->row().
+$this->Bs->col('md4 of5');
+echo $this->Bs->div('btn-group', null,array('id'=>"actions_fiche" )) .
+    $this->Html2->btnCancel(),
+    $this->Bs->btn('Modifier', array('controller' => 'users', 'action' => 'edit', $user['User']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+    $this->Bs->close(6);

@@ -1,11 +1,12 @@
 <?php
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
+App::uses('CakeTime', 'Utility');
 
 class SeancesController extends AppController {
 
 	var $name = 'Seances';
-	var $helpers = array('Html', 'Form', 'Form2', 'Fck', 'Html2');
+	var $helpers = array('Fck');
 	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
@@ -14,7 +15,7 @@ class SeancesController extends AppController {
 	var $demandeDroit = array(
 			'listerFuturesSeances',
 			'add',
-			'afficherCalendrier',
+			'Calendrier',
 			'listerAnciennesSeances');
 
 	var $commeDroit = array(
@@ -45,14 +46,8 @@ class SeancesController extends AppController {
         if (empty($this->data)) {
             if (isset($timestamp)) $date = date('d/m/Y', $timestamp);
         } else {
-//			$date = date('d/m/Y', strtotime($this->data['date']));
-            $date = $this->data['date'];
-            if (count(explode('/', $date)) != 3) {
-                $this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type' => 'erreur'));
-            } else {
                 $this->Seance->begin();
-                $this->request->data['Seance']['date']['date'] = $this->Utils->FrDateToUkDate($date);
-                $this->request->data['Seance']['date'] = $this->data['Seance']['date']['date'] . ' ' . $this->data['Seance']['date']['hour'] . ':' . $this->data['Seance']['date']['min'];
+                $this->request->data['Seance']['date'] = CakeTime::format( $this->data['date'], '%Y-%m-%d %H:%M:00');
                 if ($success = $this->Seance->save($this->data)) {
                     // sauvegarde des informations supplémentaires
                     if (array_key_exists('Infosup', $this->data)){
@@ -63,7 +58,6 @@ class SeancesController extends AppController {
                     $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
                     $this->Seance->rollback();
                 }
-            }
         }
         if ($success){
             $this->Seance->commit();
@@ -102,7 +96,7 @@ class SeancesController extends AppController {
                 $this->Session->setFlash('Invalide id pour la seance', 'growl', array('type' => 'erreur'));
                 $sortie = true;
             } else {
-                $date = date('d/m/Y', strtotime($this->data['Seance']['date']));
+                $date = date('d/m/Y h:m', strtotime($this->data['Seance']['date']));
                 foreach ($this->data['Infosup'] as $infosup) {
                     $infoSupDef = $this->Infosupdef->find('first', array(
                         'recursive' => -1,
@@ -114,16 +108,9 @@ class SeancesController extends AppController {
                 $this->request->data['Infosup'] = $this->Infosup->compacte($this->request->data['Infosup']);
             }
         } else {
-            $date = $this->data['date'];
-            if (count(explode('/', $date)) != 3) {
-                $this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type' => 'erreur'));
-            } else {
                 $success = true;
                 $this->Seance->begin();
-
-                $this->request->data['Seance']['date']['date'] = $this->Utils->FrDateToUkDate($date);
-                $this->request->data['Seance']['date'] = $this->data['Seance']['date']['date'] . ' ' . $this->data['Seance']['date']['hour'] . ':' . $this->data['Seance']['date']['min'];
-
+                $this->request->data['Seance']['date'] = CakeTime::format( $this->data['date'], '%Y-%m-%d %H:%M:00');
                 $success &= $this->Seance->save($this->data);
                 if ($success) {
                     // sauvegarde des fichiers odt car possibilité modifiés en webdav sur le serveur
@@ -163,7 +150,6 @@ class SeancesController extends AppController {
                     $this->Seance->rollback();
                     $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
                 }
-            }
         }
         if ($sortie)
             $this->redirect(array('action' => 'listerFuturesSeances'));
@@ -214,6 +200,13 @@ class SeancesController extends AppController {
             'fields' => array('name'))));
         if (empty($format))
             $format = 0;
+        
+        //Choix du rendu à appliquer
+        if (isset($this->params['endDiv']))
+             $this->set('endDiv', $this->params['endDiv']);
+        else
+            $this->set('endDiv', false);
+       
         $this->set('format', $format);
 
         if (empty ($this->data)) {
@@ -250,15 +243,13 @@ class SeancesController extends AppController {
 		}
 	}
 
-	function afficherCalendrier ($annee=null){
+	function calendrier ($annee=null){
 		// initialisations
-		require_once(APP.'Vendor'.DS.'Calendar'.DS.'includeCalendarVendor.php');
-		Configure::write('CALENDAR_MONTH_STATE', Configure::read('CALENDAR_USE_MONTH_WEEKDAYS'));
-		$tabJoursSeances = array();
+		$seances_calendrier = array();
 		$annee = empty($annee) ? date('Y') : $annee;
 		$droitAdd = $this->Droits->check($this->Session->read('user.User.id'), 'Seances:add');
 		$droitEdit = $this->Droits->check($this->Session->read('user.User.id'), 'Seances:edit');
-
+                    
 		// lecture des séances non traitées en DB
 		$this->Seance->Behaviors->attach('Containable');
 		$seances = $this->Seance->find('all', array(
@@ -267,96 +258,174 @@ class SeancesController extends AppController {
 			'conditions' => array('Seance.traitee'=> 0),
 			'order' => 'date ASC'));
 		foreach ($seances as $seance) {
-			$date = strtotime(substr($seance['Seance']['date'], 0, 10));
-			$tabJoursSeances[$date][] = array(
-				'seanceId' => $seance['Seance']['id'],
-				'seanceLibelle' => $seance['Typeseance']['libelle'].' à '.date('H\Hi', strtotime($seance['Seance']['date'])));
-		}
-
-		// contruction du html du calendrier
-		$Year = new Calendar_Year($annee);
-		$Year->build();
-		$today = mktime('0','0','0');
-		$i = 0;
-                
-		$calendrier = "<table style=\"width: 100%\" border=0>\n<tr   style=\"vertical-align:top;\">\n";
-		while ( $Month = $Year->fetch() ) {
-
-			$calendrier .= "<td><table class=\"month\">\n" ;
-			$calendrier .= "<caption class=\"month\">".$this->Date->months[$Month->thisMonth('int')]."</caption>\n" ;
-			$calendrier .= "<tr><th>Lu</th><th>Ma</th><th>Me</th><th>Je</th><th>Ve</th><th>Sa</th><th>Di</th></tr>\n";
-			$Month->build();
-
-			while ( $Day = $Month->fetch() ) {
-				if ( $Day->isFirst() == 1 ) {
-					$calendrier .= "<tr>\n" ;
-				}
-				if ( $Day->isEmpty() ) {
-					$calendrier .=  "<td>&nbsp;</td>\n" ;
-				} else {
-					$class="normal";
-					$url = $droitAdd ? 'add/'.$Day->thisDay('timestamp') : ''; 
-					$title = '';
-					$infoPlusDuneSeance = '';
-					if ($today == $Day->thisDay('timestamp')){
-						$class="today";
-					} elseif (!empty($tabJoursSeances[$Day->thisDay('timestamp')]) ) {
-						if ($droitEdit) {
-							$class="seance";
-							foreach($tabJoursSeances[$Day->thisDay('timestamp')] as $jourSeance)
-								$title .= (empty($title)?'':', ').$jourSeance['seanceLibelle'].' ';
-							$infoPlusDuneSeance = count($tabJoursSeances[$Day->thisDay('timestamp')])>1 ? ' *' : ''; 
-							$url = 'edit/'.$tabJoursSeances[$Day->thisDay('timestamp')][0]['seanceId'];
-						}
+                    $seances_calendrier[]=array(
+                       'id'=> $seance['Seance']['id'],
+                       'libelle'=> $seance['Typeseance']['libelle'],
+                       'strtotime' => strtotime($seance['Seance']['date']),
+                    );
 					}
-					if (empty($url))
-						$calendrier .=  "<td>".$Day->thisDay()."</td>\n" ;
-					else
-						$calendrier .=  "<td><a href =\"$url\"><p class=\"$class\" title=\"$title\">".$Day->thisDay()."$infoPlusDuneSeance</p></a></td>\n" ;
-				}
-				if ( $Day->isLast() ) {
-					$calendrier .=  "</tr>\n" ;
-				}
-			}
-
-			$calendrier .= "</table>\n</td>\n" ;
-
-			if ($i==5)
-				$calendrier .= "</tr><tr style=\"vertical-align:top;\">\n" ;
-
-			$i++;
-		}
-		$calendrier .=  "</tr>\n</table>\n" ;
-
+                
+                $this->set('seances', $seances_calendrier);
 		$this->set('annee', $annee);
-		$this->set('calendrier',$calendrier);
 	}
+        /*
+        function getDeliberations($seance_id)
+    {
+        $deliberations = $this->Deliberationseance->find(
+            'all',
+            array(
+                'fields' => array(
+                    'Deliberationseance.seance_id',
+                    'Deliberationseance.deliberation_id',
+                    'Deliberationseance.position',
+                    'Deliberation.*',
+                ),
+                'contain' => array(
+                    'Deliberation'=>array(
+                        'Typeacte.nature_id','Typeacte.libelle',
+                        'Service.libelle',
+                        'Theme.libelle',
+                        'Circuit.nom'
+                    ),
+                ),
+                'recursive' => 2,
+                'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
+                'order' => 'Deliberationseance.position ASC',
+            )
+        );
+        for ($i = 0; $i < count($deliberations); $i++) {
+            if (isset($deliberations[$i]['Deliberation']['theme_id'])) {
+                $theme = $this->Deliberation->Theme->find('first',
+                    array('conditions' => array('Theme.id' => $deliberations[$i]['Deliberation']['theme_id']),
+                        'fields' => array('Theme.id', 'Theme.libelle'),
+                        'recursive' => -1));
+                $deliberations[$i]['Theme']['libelle'] = $theme['Theme']['libelle'];
+            }
+            if (isset ($deliberations[$i]['Deliberation']['rapporteur_id'])) {
+                $rapporteur = $this->Deliberation->Rapporteur->find('first',
+                    array('conditions' => array('Rapporteur.id' => $deliberations[$i]['Deliberation']['rapporteur_id']),
+                        'fields' => array('Rapporteur.id', 'Rapporteur.nom', 'Rapporteur.prenom'),
+                        'recursive' => -1));
+                $deliberations[$i]['Rapporteur']['nom'] = $rapporteur['Rapporteur']['nom'];
+                $deliberations[$i]['Rapporteur']['prenom'] = $rapporteur['Rapporteur']['prenom'];
+            }
+        }
+        return ($deliberations);
+    }*/
+        
+        function sortby($seance_id, $sortby) {
+        $tab_projets = array();
+        $this->Deliberation->Behaviors->load('Containable');
+        $aProjetIds = $this->Seance->getDeliberationsId($seance_id);
+        foreach ($aProjetIds as $projetId)
+            $tab_projets[] = $projet['Deliberation']['id'];
 
-	function afficherProjets ($id=null, $return=null) {
-            if (!isset($return)) {
-		$this->set('lastPosition', $this->Seance->getLastPosition($id) - 1 );
-		$deliberations =  $this->Seance->getDeliberations($id);
-		$lst_pos=array();
-		for ($i=0; $i<count($deliberations); $i++) {
-			$theme = $this->Deliberation->Theme->find('first',
-					array('conditions' => array('Theme.id' => $deliberations[$i]['Deliberation']['theme_id'] ),
-												 'recursive'  => -1));
+        $condition = array("Deliberation.id" => $tab_projets, "Deliberation.etat <>" => "-1");
+        // Critere de tri
+        if ($sortby == 'theme_id')
+            $sortby = 'Theme.order';
+        elseif ($sortby == 'service_id')
+            $sortby = 'Service.order';
+        elseif ($sortby == 'rapporteur_id')
+            $sortby = 'Rapporteur.nom';
+        elseif ($sortby == 'titre')
+            $sortby = 'Deliberation.titre';
 
-			$service = $this->Deliberation->Service->find('first', array('conditions' => array('Service.id' => $deliberations[$i]['Deliberation']['service_id'] ),
-																		  'recursive'  => -1));
-			$deliberations[$i]['Theme'] = $theme['Theme'];
-			$deliberations[$i]['Service'] = $service['Service'];
-			$lst_pos[$i+1] = $i+1;
-		}
-		$this->set('seance_id', $id);
-		$this->set('rapporteurs', $this->Acteur->generateListElus());
-		$this->set('projets', $deliberations);
-		$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->Seance->getDate($id))));
-		$this->set('lst_pos', $lst_pos);
-                $this->set('is_deliberante', $this->Seance->isSeanceDeliberante($id));
-           } 
-	   else
-	       return ($this->Seance->getDeliberationsId($id));
+        $deliberations = $this->Deliberation->find('all', array(
+            'conditions' => $condition,
+            'fields' => array('Deliberation.id'),
+            'contain' => array('Theme.order', 'Service.order', 'Rapporteur.nom'),
+            'order' => array("$sortby  ASC")));
+
+        for ($i = 0; $i < count($deliberations); $i++) {
+            $ds = $this->Deliberationseance->find('first', array(
+                'conditions' => array(
+                    'Deliberationseance.seance_id' => $seance_id,
+                    'Deliberationseance.deliberation_id' => $deliberations[$i]['Deliberation']['id']
+                ),
+                'fields' => array('Deliberationseance.id'),
+                'recursive' => -1));
+
+
+            $this->Deliberationseance->id = $ds['Deliberationseance']['id'];
+            $this->Deliberationseance->saveField('position', $i + 1);
+        }
+        return $this->redirect("/seances/afficherProjets/$seance_id");
+        }
+
+	function afficherProjets ($id=null, $sortby=null) {
+            $this->set('lastPosition', $this->Seance->getLastPosition($id) - 1 );
+
+            // Critere de tri
+            switch ($sortby) {
+                case 'theme_id':
+                    $sortby_champ = 'Theme.order';
+                    break;
+                case 'service_id':
+                    $sortby_champ = 'Service.order';
+                    break;
+                case 'rapporteur_id':
+                    $sortby_champ = 'Rapporteur.nom';
+                    break;
+                case 'titre':
+                    $sortby_champ = 'Deliberation.titre';
+                    break;
+                default:
+                    $sortby_champ = 'Deliberationseance.position';//'Deliberationseance.position';
+                    break;
+            }
+
+            $this->Deliberation->Behaviors->attach('Containable');
+            $aProjetIds = $this->Seance->getDeliberationsId($id);
+            $projets = array();
+            foreach ($aProjetIds as $projet_id) {
+                    $projets[]= $this->Deliberation->find('first', array(
+                    'conditions' => array("Deliberation.id" => $projet_id),
+                    'fields' => array(
+                            'Deliberation.objet_delib',
+                            'Deliberation.titre',
+                            'Deliberation.id',
+                            'Deliberation.etat',
+                            'Deliberation.typeacte_id',
+                            'Deliberation.num_delib',
+                            'Deliberation.rapporteur_id',
+                            'Deliberationseance.position'
+                        ),
+                    'contain' => array(
+                                'Theme'=>array('fields'=>array('order','libelle')), 
+                                'Service'=>array('fields'=>array('order','libelle')),  
+                        ),
+                    'joins' => array($this->Deliberation->join('Deliberationseance',array( 'type' => 'INNER' ))),
+                    'order' => array("$sortby_champ  ASC")));
+            }
+            /*
+             * $conditions[] = 'Deliberation.id IN ('
+            . 'SELECT deliberations_seances.deliberation_id'
+            . ' FROM deliberations_seances '
+            . ' INNER JOIN seances  ON ( seances.id=deliberations_seances.seance_id )'
+            . ' INNER JOIN typeseances ON ( typeseances.id=seances.type_id )'
+            . ' INNER JOIN typeactes  ON ( typeactes.id=Deliberation.typeacte_id )'
+            . ' WHERE typeseances.action = 0 AND Typeacte.teletransmettre = TRUE'
+            . ' )';
+             * $lst_pos=array();
+            for ($i=0; $i<count($projets); $i++) {
+                    $theme = $this->Deliberation->Theme->find('first',
+                                    array('conditions' => array('Theme.id' => $deliberations[$i]['Deliberation']['theme_id'] ),
+                                                                                             'recursive'  => -1));
+
+                    $service = $this->Deliberation->Service->find('first', array('conditions' => array('Service.id' => $deliberations[$i]['Deliberation']['service_id'] ),
+                                                                                                                                              'recursive'  => -1));
+                    $deliberations[$i]['Theme'] = $theme['Theme'];
+                    $deliberations[$i]['Service'] = $service['Service'];
+                    $lst_pos[$i+1] = $i+1;
+            }*/
+            $this->set('seance_id', $id);
+            $this->set('rapporteurs', $this->Acteur->generateListElus());
+            $this->set('projets', $projets);
+            $this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->Seance->getDate($id))));
+            $this->set('aPosition', array_keys($aProjetIds));
+            $this->set('is_deletable', true);
+            $this->set('is_deliberante', $this->Seance->isSeanceDeliberante($id));
 	}
         
         function reportePositionsSeanceDeliberante ($seance_id) {
@@ -1224,211 +1293,49 @@ class SeancesController extends AppController {
         }
     }
 
-    /**
-     * Génération de la convocation ou de l'odre du jour
-     * @param $seance_id
-     * @param $model_id
-     * @param $url_retour
-     */
-    function _generer($seance_id, $model_id, $url_retour) {
+    function genererConvocation($seance_id, $model_id) { 
+        $this->_generer($seance_id,$model_id ,"/seances/sendConvocations/$seance_id/$model_id");
+        exit;
+    }
 
-            $this->Seance->id = $seance_id;
-            $time_start = microtime(true);
-            $annexes_id = array();
 
-            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
-            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
-            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
-            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
-            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
-            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
-            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
-            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
-  
-            $this->Progress->start(200, 100,200, '#FFCC00','#006699');
-           
-            if (($this->Session->read('user.format.sortie')==1)) {
-                $sMimeType = "application/vnd.oasis.opendocument.text";
-                $format    = "odt";
-            
-            } else {
-                $sMimeType = "application/pdf";
-                $format    = "pdf";
+    function genererOrdredujour($seance_id, $model_id) {
+        $this->_generer($seance_id,$model_id, "/seances/sendOrdredujour/$seance_id/$model_id");
+        exit;
+    }
+
+    function downloadZip($seance_id, $model_id) {
+        $dirpath = WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id;
+        if (file_exists($dirpath.DS.'convocations.zip')) 
+            unlink($dirpath.DS.'convocations.zip');
+
+        $dir = new Folder($dirpath);
+        $zip = new ZipArchive;
+
+        $files = $dir->find('.*\.pdf');
+        try{
+            if($zip->open($dirpath.DS.'convocations.zip', ZIPARCHIVE::CREATE))
+            foreach ($files as $file) {
+                $file = new File($dir->pwd() . DS . $file);
+                $acteur_id = $file->name();
+                $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id), 
+                                                             'recursive'  => -1,
+                                                             'fields'     => array('Acteur.nom')));
+                $zip->addFile($file->path, $acteur['Acteur']['nom'].'.pdf');
+                $file->close();
             }
-
-            //*****************************************
-            // Préparation des répertoires pour la création des fichiers
-            //*****************************************
-            $dirpath = WEBROOT_PATH."/files/seances/$seance_id/$model_id/";
-            
-            //Suppression des fichiers éventuellement existants
-            $dir = glob($dirpath."*");
-            foreach ($dir as $fileuri) {
-                if (is_file($fileuri)) unlink($fileuri);
-            }
-
-            if (!$this->Gedooo->checkPath($dirpath))
-                die("Webdelib ne peut pas ecrire dans le repertoire : $dirpath");
-            
-            $this->Progress->at(5, 'Début de préparation du document');
-
-            //*****************************************
-            //Création du model ott
-            //*****************************************
-            $model = $this->Modeltemplate->find('first', array(
-                                        'conditions'=> array('Modeltemplate.id'=> $model_id),
-                                        'recursive' => '-1',
-                                        'fields'    => array('content', 'name')));
-            $oTemplate = new GDO_ContentType("",
-                                             $model['Modeltemplate']['name'],
-                                             "application/vnd.oasis.opendocument.text",
-                                             "binary",
-                                             $model['Modeltemplate']['content']);
-
-            $oMainPart = new GDO_PartType();
-
-            $oMainPart->addElement(new GDO_FieldType('date_jour_courant',utf8_encode($this->Date->frenchDate(strtotime("now"))), 'text'));
-            $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
-
-            // Informations sur la collectivité
-            $this->Collectivite->makeBalise($oMainPart, 1);
-
-            $blocProjets = new GDO_IterationType("Projets");
-            
-            $projets  =  $this->Seance->getDeliberations($seance_id);
-            
-            foreach ($projets as $projet) {
-                $oDevPart = new GDO_PartType();
-                $this->Deliberation->makeBalisesProjet($projet, $oDevPart);
-                $blocProjets->addPart($oDevPart);
-
-                $annexes = array();
-                $tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($projet['Deliberation']['id'], false, true);
-                if (!empty($tmp_annexes))
-                    array_push($annexes_id,  $tmp_annexes);
-
-            }
-            $path_annexes = $dirpath.'annexes/';
-            foreach ($annexes_id as $annex_ids) {
-                foreach($annex_ids as $annex_id) {
-                    $annexFile = $this->Deliberation->Annex->find('first', array('conditions' => array('Annex.id' => $annex_id['Annex']['id']),
-                                                                                 'recursive'  => -1));
-                    if ($annexFile['Annex']['filetype'] == 'application/pdf')
-                        $datAnnex =  $annexFile['Annex']['data_pdf'];
-                    elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
-                        $datAnnex =  $annexFile['Annex']['data_pdf'];
-                    elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet')
-                        $datAnnex =  $annexFile['Annex']['data_pdf'];
-
-                    $fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
-                    array_push($annexes, $fichierAnnex);
-                }
-            }
-            $this->Progress->at(20, 'Fin de préparation du document');
-            $oMainPart->addElement($blocProjets);
-            $this->Seance->makeBalise($seance_id, $oMainPart);
-            $this->Seance->saveField('date_convocation',  date("Y-m-d H:i:s", strtotime("now")));   
-            $typeseance_id = $this->Seance->getType($seance_id);
-            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($typeseance_id);
-            $cpt =2;
-            $nbActeurs = count($acteursConvoques)+3;
-            foreach ($acteursConvoques as $acteur) {
-    
-                $cpt++;
-                $this->Progress->at($cpt*(100/$nbActeurs), 'Génération du document : '.$acteur['Acteur']['nom']." ".$acteur['Acteur']['prenom']);
-                
-                $oMainPart->addElement(new GDO_FieldType("nom_acteur", ($acteur['Acteur']['nom']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("prenom_acteur", ($acteur['Acteur']['prenom']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("salutation_acteur",($acteur['Acteur']['salutation']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("titre_acteur", ($acteur['Acteur']['titre']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("date_naissance_acteur", ($acteur['Acteur']['date_naissance']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("adresse1_acteur", ($acteur['Acteur']['adresse1']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("adresse2_acteur", ($acteur['Acteur']['adresse2']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("cp_acteur", ($acteur['Acteur']['cp']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("ville_acteur", ($acteur['Acteur']['ville']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("email_acteur", ($acteur['Acteur']['email']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("telfixe_acteur",($acteur['Acteur']['telfixe']), "text"));
-                $oMainPart->addElement(new GDO_FieldType("note_acteur", ($acteur['Acteur']['note']), "text"));
-
-                $nomFichier = $acteur['Acteur']['id'];
-
-                try {
-                    Configure::write('debug', 0);
-                    error_reporting(0);
-
-                    $time_end = microtime(true);
-                    $time = $time_end - $time_start;
-                    $this->log("Temps création de requete :". $time );
-
-                    $time_start = microtime(true);
-                    $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
-                    $oFusion->process();
-                    $time_end = microtime(true);
-                    $time = $time_end - $time_start;
-                    $this->log("Temps création de fusion : ". $time );
-
-                    $time_start = microtime(true);
-                    $oFusion->SendContentToFile($dirpath.$nomFichier.".".$format);
-
-                    $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", 'odt', $format);
-
-                    $time_end = microtime(true);
-                    $time = $time_end - $time_start;
-                    $this->log("Temps conversion et concaténation : ". $time );
-                }
-                catch (Exception $e) {
-                    $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
-                }
-            }
-            $this->Progress->at(100, 'Fin de Génération des documents');
-            sleep(1);
-            $this->Progress->end($url_retour);
+            $zip->close();
         }
-        
-        function genererConvocation($seance_id, $model_id) { 
-            $this->_generer($seance_id,$model_id ,"/seances/sendConvocations/$seance_id/$model_id");
-            exit;
-        }
-        
-                
-        function genererOrdredujour($seance_id, $model_id) {
-            $this->_generer($seance_id,$model_id, "/seances/sendOrdredujour/$seance_id/$model_id");
-            exit;
+        catch(Exception $e) {
+             $this->Session->setFlash('Une erreur est survenu lors de la génération de l\'archive', 'growl');
         }
 
-        function downloadZip($seance_id, $model_id) {
-            $dirpath = WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id;
-            if (file_exists($dirpath.DS.'convocations.zip')) 
-                unlink($dirpath.DS.'convocations.zip');
-
-            $dir = new Folder($dirpath);
-            $zip = new ZipArchive;
-            
-            $files = $dir->find('.*\.pdf');
-            try{
-                if($zip->open($dirpath.DS.'convocations.zip', ZIPARCHIVE::CREATE))
-                foreach ($files as $file) {
-                    $file = new File($dir->pwd() . DS . $file);
-                    $acteur_id = $file->name();
-                    $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id), 
-                                                                 'recursive'  => -1,
-                                                                 'fields'     => array('Acteur.nom')));
-                    $zip->addFile($file->path, $acteur['Acteur']['nom'].'.pdf');
-                    $file->close();
-                }
-                $zip->close();
-            }
-            catch(Exception $e) {
-                 $this->Session->setFlash('Une erreur est survenu lors de la génération de l\'archive', 'growl');
-            }
-            
-            $content = file_get_contents($dirpath.DS.'convocations.zip');
-            header('Content-type: application/zip');
-            header('Content-Length: '.strlen($content));
-            header('Content-Disposition: attachment; filename="Convocation.zip"');
-            die ($content);
-        }
+        $content = file_get_contents($dirpath.DS.'convocations.zip');
+        header('Content-type: application/zip');
+        header('Content-Length: '.strlen($content));
+        header('Content-Disposition: attachment; filename="Convocation.zip"');
+        die ($content);
+    }
 
         function multiodj () {
             $this->Progress->start(200, 100,200, '#FFCC00','#006699');
@@ -1545,7 +1452,7 @@ class SeancesController extends AppController {
 
         $this->Progress->at(10, 'Récupération des délibérations de la séance...');
         $i = 0;
-        $delibs = $this->Seance->getDeliberationsId($seance_id, array('Deliberation.etat >' => 0));
+        $delibs = $this->Seance->getDeliberationsId($seance_id);
         $num_delib = count($delibs);
 
         foreach ($delibs as $delib_id) {
@@ -1683,13 +1590,13 @@ class SeancesController extends AppController {
             if ($this->Session->read('user.format.sortie') == 0) {
                 $mimeType = "application/pdf";
                 $filename = $filename . '.pdf';
-                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');
+                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult, 'odt', 'pdf');
             } else {
                 $mimeType = "application/vnd.oasis.opendocument.text";
                 $filename = $filename . '.odt';
-                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'odt');
+                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult, 'odt', 'odt');
             }
-            unset($this->Seance->odtFusionResult->content->binary);
+            unset($this->Seance->odtFusionResult);
 
             // envoi au client
             $this->Session->write('Generer.downloadToken', $cookieToken, false, 3600);

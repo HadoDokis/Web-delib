@@ -1,79 +1,85 @@
 <?php
-echo $this->Html->script('calendrier.js');
+echo $this->Html->script('/libs/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js');
+echo $this->Html->script('/libs/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr.js');
+echo $this->Html->css('/libs/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+
 echo $this->Html->script('ckeditor/ckeditor');
 echo $this->Html->script('ckeditor/adapters/jquery');
 
-if ($this->action == 'add')
-    $titre = 'Ajout d\'une s&eacute;ance';
-else
-    $titre = 'Modification d\'une s&eacute;ance';
-echo $this->Html->tag('h1', $titre);
+$this->Html->addCrumb('Séance à traiter', array($this->request['controller'], 'action'=>'listerFuturesSeances'));
 
-echo $this->Form->create('Seance', array('url' => array('action' => $this->action), 'type' => 'file', 'name' => 'seanceForm'));
-?>
+if ($this->Html->value('Seance.id')) {
+    echo $this->Bs->tag('h3', 'Modification d\'une séance');
+    $this->Html->addCrumb('Modification d\'une séance');
+    echo $this->BsForm->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'edit', $this->Html->value('Seance.id')), 'type' => 'file', 'name' => 'SeanceForm'));
+} else {
+    echo $this->Bs->tag('h3', 'Ajout d\'une séance');
+    $this->Html->addCrumb('Ajout d\'une séance');
+    echo $this->BsForm->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'add'), 'type' => 'file', 'name' => 'SeanceForm'));
+}
 
-<div class='onglet'>
-    <a href="#" id="emptylink" alt=""></a>
-    <a href="javascript:afficheOnglet(1)" id='lienTab1' class="ongletCourant">Date de séance</a>
-    <?php if (!empty($infosupdefs)): ?>
-        <a href="javascript:afficheOnglet(2)" id='lienTab2'>Informations supplémentaires</a>
-    <?php endif; ?>
-</div>
+$onglets=array(
+    'seance' => 'Date de séance',
+    );
+if(!empty($infosupdefs)){
+    $onglets['infosup']='Informations supplémentaires';
+}
+    
+echo $this->Bs->tab($onglets, 
+    array('active' =>'seance', 'class' => '-justified')) .
+ $this->Bs->tabContent();
 
-<div id="tab1">
-    <div class="required">
-        <label>Date : </label>
-        <input name="date" size="9"
-            <?php
-            if (isset($date)) echo("value =\"$date\"");
-            ?>/>&nbsp;
-        <a href="javascript:show_calendar('seanceForm.date','f');">
-            <?php echo $this->Html->image("calendar.png", array('style' => "border:0")); ?>
-        </a> &agrave;
-        <?php echo $this->Form->hour('Seance.date', true, array()); ?>
-        h<?php echo $this->Form->minute('Seance.date', array()); ?>min
-    </div>
-    <br/>
-
-    <div class="required">
-        <?php echo $this->Form->input('Seance.type_id', array('label' => 'Type de s&eacute;ance',
-            'options' => $typeseances,
+echo $this->Bs->tabPane('seance', array('class' => 'active')) .
+ $this->Html->tag(null, '<br />') .
+// $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
+//$this->Html->tag('div', 'Date', array('class' => 'panel-heading')) .
+//$this->Html->tag('div', null, array('class' => 'panel-body')) .
+        $this->BsForm->select('Seance.type_id',$typeseances, array('label' => 'Type de s&eacute;ance',
             'default' => $this->Html->value('Seance.type_id'),
-            'empty' => true));
-        ?>
-    </div>
-
-    <br/>
-
-</div>
-<?php if (!empty($infosupdefs)): ?>
-    <div id="tab2" style="display: none;">
-        <?php
+            'empty' => true)).
+        $this->BsForm->dateTimepicker('Seance.date', //TODO
+                array('language'=>'fr', 
+                    'autoclose'=>'true',
+                    'format' => 'dd/mm/yyyy hh:ii',
+                    'pickerPosition'=>'bottom-right'), 
+                array(
+                        'label' => 'Date',
+                        'title' => 'Choisissez la date et l\'heure de séance',
+                        'style' => 'cursor:pointer',
+                        'help' => 'Cliquez sur le champs ci-dessus pour choisir la date et l\'heure de la séance',
+                        'readonly' => 'readonly',
+                        'value'=>isset($date)?$date:'')
+                ).
+$this->Bs->tabClose();
+     
+if (!empty($infosupdefs))
+{
+    echo $this->Bs->tabPane('infosup') . $this->Html->tag(null, '<br />');
         foreach ($infosupdefs as $infosupdef) {
             $disabled = $infosupdef['Infosupdef']['actif'] == false;
             $fieldName = 'Infosup.' . $infosupdef['Infosupdef']['code'];
             $fieldId = 'Infosup' . Inflector::camelize($infosupdef['Infosupdef']['code']);
             echo "<div class='required'>";
-            echo $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('name' => 'label' . $infosupdef['Infosupdef']['code']));
+            
             if ($infosupdef['Infosupdef']['type'] == 'text') {
-                echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'title' => $infosupdef['Infosupdef']['commentaire']));
+                echo $this->BsForm->input($fieldName, array('label' => $infosupdef['Infosupdef']['nom'], 'type' => 'textarea', 'title' => $infosupdef['Infosupdef']['commentaire']));
             } elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
-                echo $this->Form->input($fieldName, array('label' => false, 'type' => 'checkbox', 'title' => $infosupdef['Infosupdef']['commentaire']));
+                echo $this->BsForm->input($fieldName, array('label' => $infosupdef['Infosupdef']['nom'], 'type' => 'checkbox', 'title' => $infosupdef['Infosupdef']['commentaire']));
             } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
                 $fieldSelector = preg_replace("#[^a-zA-Z]#", "", $fieldId);
-                echo $this->Form->input($fieldName, array('type' => 'text', 'id' => $fieldSelector, 'div' => false, 'label' => false, 'size' => '9', 'title' => $infosupdef['Infosupdef']['commentaire']));
+                echo $this->BsForm->input($fieldName, array('type' => 'text', 'id' => $fieldSelector, 'div' => false, 'label' => false, 'size' => '9', 'title' => $infosupdef['Infosupdef']['commentaire']));
                 echo '&nbsp;';
                 echo $this->Html->link($this->Html->image("calendar.png", array('style' => "border:0")), "javascript:show_calendar('seanceForm.$fieldSelector', 'f');", array('escape' => false), false);
             } elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
                 echo '<div class="annexesGauche"></div>';
                 echo '<div class="fckEditorProjet">';
-                echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea'));
+                echo $this->BsForm->input($fieldName, array('label' => $infosupdef['Infosupdef']['nom'], 'type' => 'textarea'));
                 echo $this->Fck->load($fieldId);
                 echo '</div>';
                 echo '<div class="spacer"></div>';
             } elseif ($infosupdef['Infosupdef']['type'] == 'file') {
                 if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'file', 'size' => '60', 'title' => $infosupdef['Infosupdef']['commentaire']));
+                    echo $this->BsForm->input($fieldName, array('label' => $infosupdef['Infosupdef']['nom'], 'type' => 'file', 'size' => '60', 'title' => $infosupdef['Infosupdef']['commentaire']));
                 else {
                     echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'InputFichier" style="display: none;"></span>';
                     echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'AfficheFichier">';
@@ -87,63 +93,60 @@ echo $this->Form->create('Seance', array('url' => array('action' => $this->actio
                     || empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]['tmp_name'])
                     || isset($errors_Infosup[$infosupdef['Infosupdef']['code']])
                 )
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'file', 'size' => '60', 'title' => $infosupdef['Infosupdef']['commentaire']));
+                    echo $this->BsForm->input($fieldName, array('label' => $infosupdef['Infosupdef']['nom'], 'type' => 'file', 'size' => '60', 'title' => $infosupdef['Infosupdef']['commentaire']));
                 else {
                     echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'InputFichier" style="display: none;"></span>';
                     echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'AfficheFichier">';
                     $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
                     $url = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . "/files/generee/seance/" . $this->data['Seance']['id'] . "/$name";
                     echo "[<a href='$url'>$name</a>] ";
-                    echo $this->Form->hidden($fieldName);
+                    echo $this->BsForm->hidden($fieldName);
                     echo '&nbsp;&nbsp;';
                     echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('" . $infosupdef['Infosupdef']['code'] . "', '" . $infosupdef['Infosupdef']['commentaire'] . "')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
                     echo '</span>';
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-                echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'class' => 'select2 selectone'));
+                echo $this->BsForm->s($fieldName, $infosuplistedefs[$infosupdef['Infosupdef']['code']], array('label' => false, 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'class' => 'select2 selectone'));
             } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
                 if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('selected' => !empty($this->request->data['Infosup'][$infosupdef['Infosupdef']['code']]) ? $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']] : '', 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'multiple' => true, 'class' => 'select2 selectmultiple'));
+                    echo $this->BsForm->select($fieldName, $infosuplistedefs[$infosupdef['Infosupdef']['code']], 
+                            array('selected' => !empty($this->request->data['Infosup'][$infosupdef['Infosupdef']['code']]) ? $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']] : '', 
+                                'label' => $infosupdef['Infosupdef']['nom'], 
+                                'empty' => true, 
+                                'title' => $infosupdef['Infosupdef']['commentaire'], 
+                                'multiple' => true, 
+                                'class' => 'select2 selectmultiple'));
                 } else {
-                    echo $this->Form->input($fieldName, array('selected' => $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
-                    echo $this->Form->input($fieldName, array('value' => implode(',', $selected_values), 'id' => false, 'type' => 'hidden'));
+                    echo $this->BsForm->input($fieldName, array('selected' => $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => $infosupdef['Infosupdef']['nom'], 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
+                    echo $this->BsForm->input($fieldName, array('value' => implode(',', $selected_values), 'id' => false, 'type' => 'hidden'));
                 }
 
             }
-            echo '</div>';
-            echo '<br>';
+            echo $this->Bs->tabClose();
         };
-        ?>
-    </div>
-    <script type="application/javascript">
-        $(document).ready(function () {
-            $(".select2.selectmultiple").select2({
-                width: "resolve",
-                allowClear: true,
-                placeholder: "Liste à choix multiples"
-            });
-            $(".select2.selectone").select2({
-                width: "resolve",
-                allowClear: true,
-                placeholder: "Selectionnez un élément"
-            });
-            $('#SeanceTypeId').select2({
-                width: "resolve"
-            });
+ }
+echo $this->Bs->tabPaneClose();
+
+
+    echo $this->BsForm->hidden('Seance.id');
+    //$this->BsForm->setLeft(0);
+echo $this->Html2->btnSaveCancel('', 'listerFuturesSeances', 'Ajouter la séance').
+$this->BsForm->end();
+?>
+<script type="application/javascript">
+    $(document).ready(function () {
+        $(".select2.selectmultiple").select2({
+            width: "resolve",
+            allowClear: true,
+            placeholder: "Liste à choix multiples"
         });
-    </script>
-<?php endif; ?>
-
-<!--<div class="actions btn-group">
-    <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', '/seances/index', array('escape' => false, 'class' => 'btn')) ?>
-    <?php echo $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer', '/seances/delete/' . $this->Html->value('Seance.id'), array('escape' => false, 'class' => 'btn btn-danger'), 'Etes-vous sur de vouloir supprimer la seance du "' . $this->Html->value('Seance.date') . '" ?'); ?>
-</div>-->
-
-<div class="submit">
-    <?php
-    echo $this->Form->hidden('Seance.id');
-    $this->Html2->boutonsSaveCancel('', 'listerFuturesSeances', 'Ajouter la séance');
-    ?>
-</div>
-
-<?php echo $this->Form->end(); ?>
+        $(".select2.selectone").select2({
+            width: "resolve",
+            allowClear: true,
+            placeholder: "Selectionnez un élément"
+        });
+        $('#SeanceTypeId').select2({
+            width: "resolve"
+        });
+    });
+</script>

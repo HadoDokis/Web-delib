@@ -1,6 +1,9 @@
-<div id="vue_cadre">
-    <h3>Fiche de type d'acte</h3>
-
+<?php
+echo $this->Bs->tag('h3', 'Types d\'acte');
+?>
+<div class="panel panel-default">
+    <div class="panel-heading">Fiche type d'acte: <?php echo $typeacte['Typeacte']['libelle'] ?></div>
+    <div class="panel-body">
     <dl>
         <div class="demi">
             <dt>Libelle</dt>
@@ -65,24 +68,13 @@
                 ?>
             </dd>
         </div>
-    </dl>
+    </dl>        </ul>
 
     <br/>
-
-    <div id="actions_fiche" class="btn-group">
-        <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/typeactes/index', array(
-            'class' => 'btn',
-            'title' => 'Retourner à la liste',
-            'escape' => false)) ?>
-        <?php echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', '/typeactes/edit/' . $typeacte['Typeacte']['id'], array(
-                'class' => 'btn btn-primary',
-                'title' => 'Modifier le type d\'acte',
-                'escape' => false)) ?>
-        </ul>
-    </div>
-</div>
-<style>
-    .btn-group>.btn{
-        float: none;
-    }
-</style>
+<?php
+echo $this->Bs->row().
+$this->Bs->col('md4 of5');
+echo $this->Bs->div('btn-group', null,array('id'=>"actions_fiche" )) .
+    $this->Html2->btnCancel(),
+    $this->Bs->btn('Modifier', array('controller' => 'typeactes', 'action' => 'edit', $typeacte['Typeacte']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+    $this->Bs->close(6);

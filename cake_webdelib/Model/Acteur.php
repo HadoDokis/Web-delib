@@ -75,19 +75,18 @@ class Acteur extends AppModel
 
 	/* retourne la liste des acteurs élus [id]=>[prenom et nom] pour utilisation html->selectTag */
 	function generateListElus($order_by=null) {
-		$generateListElus = array();
-		if ($order_by==null)
-			$acteurs = $this->find('all', array('conditions' => array('Typeacteur.elu'=> 1, 'Acteur.actif' => 1), 
-                                                             'fields'    => array('id', 'nom', 'prenom'),
-                                                             'order'     => 'Acteur.position ASC'));
-		else
-			$acteurs = $this->find('all', array('conditions' => array('Typeacteur.elu'=> 1,  'Acteur.actif' => 1), 
-                                                             'fields'    => array('id', 'nom', 'prenom'),
-                                                             'order'     => "$order_by ASC"));
-		foreach($acteurs as $acteur) {
-			$generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
-		}
-		return $generateListElus;
+            $generateListElus = array();
+            $acteurs = $this->find('all', array(
+                                                'fields'    => array('id', 'nom', 'prenom'),
+                                                'conditions' => array('Typeacteur.elu'=> true,  'Acteur.actif' => true), 
+                                                'order'     => (empty($order_by)?'Acteur.position':$order_by).' ASC',
+                                                'joins' => array($this->join('Typeacteur',array( 'type' => 'INNER' ))),
+                                                'recursive' => -1
+                    ));
+            foreach($acteurs as $acteur) {
+                $generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
+            }
+            return $generateListElus;
 	}
 
 	/* retourne la liste des acteurs [id]=>[prenom et nom] pour utilisation html->selectTag */
@@ -141,29 +140,6 @@ class Acteur extends AppModel
 		return ($ordre == 999) ? ($majuscule ? 'En dernier' : 'en dernier') : $ordre;
 	}
   
-        function makeBalise(&$oMainPart, $acteur_id) {
-                if ($this->exists($acteur_id)){
-                        $acteur = $this->find('first', 
-                                              array('conditions' => array($this->alias.'.id' => $acteur_id),
-                                                    'recursive'  => -1));
-                        $alias = trim(strtolower($this->alias));
-                        $oMainPart->addElement(new GDO_FieldType("salutation_$alias",     ($acteur[$this->alias]['salutation']), 'text'));
-                        $oMainPart->addElement(new GDO_FieldType("prenom_$alias",         ($acteur[$this->alias]['prenom']),     'text'));
-                        $oMainPart->addElement(new GDO_FieldType("nom_$alias",            ($acteur[$this->alias]['nom']),        'text'));
-                        $oMainPart->addElement(new GDO_FieldType("titre_$alias",          ($acteur[$this->alias]['titre']),      'text'));
-                        $oMainPart->addElement(new GDO_FieldType("position_$alias",       ($acteur[$this->alias]['position']),   'text'));
-                        $oMainPart->addElement(new GDO_FieldType("email_$alias",          ($acteur[$this->alias]['email']),      'text'));
-                        $oMainPart->addElement(new GDO_FieldType("telmobile_$alias",      ($acteur[$this->alias]['telmobile']),  'text'));
-                        $oMainPart->addElement(new GDO_FieldType("telfixe_$alias",        ($acteur[$this->alias]['telfixe']),    'text'));
-                        $oMainPart->addElement(new GDO_FieldType("date_naissance_$alias", ($acteur[$this->alias]['date_naissance']), 'text'));
-                        $oMainPart->addElement(new GDO_FieldType("adresse1_$alias",       ($acteur[$this->alias]['adresse1']),   'text'));
-                        $oMainPart->addElement(new GDO_FieldType("adresse2_$alias",       ($acteur[$this->alias]['adresse2']),   'text'));
-                        $oMainPart->addElement(new GDO_FieldType("cp_$alias",             ($acteur[$this->alias]['cp']),         'text'));
-                        $oMainPart->addElement(new GDO_FieldType("ville_$alias",          ($acteur[$this->alias]['ville']),      'text'));
-                        $oMainPart->addElement(new GDO_FieldType("note_$alias",           ($acteur[$this->alias]['note']),       'text'));
-                }
-        }
-
     /**
      * fonction d'initialisation des variables de fusion pour l'allias utilisé pour la liaison (Rapporteur, President, ...)
      * les bibliothèques Gedooo doivent être inclues par avance
@@ -174,7 +150,7 @@ class Acteur extends AppModel
      * @param string $suffixe suffixe des variables de fusion
      * @throws Exception
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $suffixe='') {
+    function setVariablesFusion(&$aData, &$modelOdtInfos, $id, $suffixe='') {
         // initialisations
         if (empty($suffixe))
             $suffixe = trim(strtolower($this->alias));
@@ -197,8 +173,10 @@ class Acteur extends AppModel
         );
 
         // liste des variables présentes dans le modèle d'édition
-        foreach ($variables as $variable)
-            if ($modelOdtInfos->hasUserFieldDeclared($variable.'_'.$suffixe)) $fields[]= $variable;
+        foreach ($variables as $variable){
+            if ($modelOdtInfos->hasUserFieldDeclared($variable.'_'.$suffixe)) 
+                    $fields[]= $variable;
+        }   
         if (empty($fields)) return;
 
         // lecture en base de données
@@ -209,7 +187,7 @@ class Acteur extends AppModel
         if (empty($acteur))
             throw new Exception('acteur '.$suffixe.' id:'.$id.' non trouvé en base de données');
         foreach($acteur[$this->alias] as $field => $val)
-            $oMainPart->addElement(new GDO_FieldType($field.'_'.$suffixe, $val, 'text'));
+            $aData[$field.'_'.$suffixe]=$val;//, 'text'));
     }
 
 }

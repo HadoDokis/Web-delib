@@ -1,7 +1,10 @@
-<div id="vue_cadre">
-<h3>Fiche Compteur param&eacute;trable</h3>
-
-<dl>
+<?php
+echo $this->Bs->tag('h3', 'Compteur');
+?>
+<div class="panel panel-default">
+    <div class="panel-heading">Fiche Compteur: <?php echo $compteur['Compteur']['nom'] ?></div>
+    <div class="panel-body">
+    <dl>
 
 <div class="imbrique">
 	<div class="gauche">
@@ -46,16 +49,13 @@
 		<dd>&nbsp;<?php echo $compteur['Compteur']['modified']?></dd>
 	</div>
 </div>
-</dl>
+</dl>        </ul>
 
-<div id="actions_fiche" class='btn-group' style='text-align: center;'>
-	<?php
-                $this->Html2->boutonRetour('index', 'float:none;');
-		if ($Droits->check($this->Session->read('user.User.id'), 'Compteurs:edit'))
-                    $this->Html2->boutonModifierUrl('/compteurs/edit/' . $compteur['Compteur']['id'], 'Modifier', 'Modifier', 'float:none;', '');
-	?>
-</div>
-
-<div class="spacer"></div>
-
-</div>
+    <br/>
+<?php
+echo $this->Bs->row().
+$this->Bs->col('md4 of5');
+echo $this->Bs->div('btn-group', null,array('id'=>"actions_fiche" )) .
+    $this->Html2->btnCancel().
+    $this->Bs->btn('Modifier', array('controller' => 'compteurs', 'action' => 'edit', $compteur['Compteur']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+    $this->Bs->close(6);

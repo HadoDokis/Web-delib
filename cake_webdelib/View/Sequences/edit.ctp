@@ -1,9 +1,9 @@
 <?php
 if ($this->Html->value('Sequence.id')) {
-    echo "<h2>Modification d'une s&eacute;quence</h2>";
+    echo $this->Bs->tag('h3', 'Modification d\'une séquence');
     echo $this->Form->create('Sequence', array('url' => '/sequences/edit/' . $this->Html->value('Sequence.id'), 'type' => 'post'));
 } else {
-    echo "<h2>Ajout d'une s&eacute;quence</h2>";
+    echo $this->Bs->tag('h3', 'Ajout d\'une séquence');
     echo $this->Form->create('Sequence', array('url' => '/sequences/add/', 'type' => 'post'));
 }
 ?>
@@ -29,9 +29,8 @@ if ($this->Html->value('Sequence.id')) {
 <br/><br/>
 <div class="submit">
     <?php
-    if ($this->action == 'edit')
-        echo $this->Form->hidden('Sequence.id');
-    $this->Html2->boutonsSaveCancel();
+    echo $this->Form->hidden('Typeacte.id');
+    echo $this->Html2->btnSaveCancel('', array('action' => 'index'));
     ?>
 </div>
 

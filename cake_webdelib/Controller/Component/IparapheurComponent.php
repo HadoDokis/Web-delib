@@ -200,7 +200,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 								         <ns:TypeTechnique>' . $typetech . '</ns:TypeTechnique>
 								         <ns:SousType>' . $soustype . '</ns:SousType>
 								         <ns:DossierID></ns:DossierID>
-								         <ns:DossierTitre>' . $this->_xml_entity_encode($this->reformatNameForIparapheur($titre)) . '</ns:DossierTitre>
+								         <ns:DossierTitre>' . AppTools::xml_entity_encode($this->reformatNameForIparapheur($titre)) . '</ns:DossierTitre>
 								         <ns:DocumentPrincipal xm:contentType="application/pdf">
 								         	<xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:fichierPDF"></xop:Include>
 								         </ns:DocumentPrincipal>';
@@ -216,7 +216,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         for ($i = 0; $i < count($docsannexes); $i++) {
             $encoding = !empty($docsannexes[$i]['encoding']) ? $docsannexes[$i]['encoding'] : 'UTF-8';
             $request .= '<ns:DocAnnexe>
-		               <ns:nom>' . $this->_xml_entity_encode($docsannexes[$i]['filename']) . '</ns:nom>
+		               <ns:nom>' . AppTools::xml_entity_encode($docsannexes[$i]['filename']) . '</ns:nom>
 		               <ns:fichier xm:contentType="' . $docsannexes[$i]['mimetype'] . '">
 		               <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:annexe_' . $i . '"></xop:Include>
 		               </ns:fichier>
@@ -457,28 +457,4 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             $objetDossier[strlen($objetDossier) - 1] = null;
         return (trim($objetDossier));
     }
-
-    function _xml_entity_encode($_string) {
-        //UTILISER  htmlentities() à partir de php 5.4.0
-        // Set up XML translation table
-        $_xml = array();
-        $_xl8_iso = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
-        //Compatibilité php <5.3.3
-        foreach($_xl8_iso as $key=>$value)
-            $_xl8[utf8_encode($key)]=utf8_encode($value);
-            
-        while (list($_key, $_val) = each($_xl8)){
-            $_xml[$_key] = '&#' . $this->uniord($_key) . ';';
-        }
-        
-        return strtr($_string, $_xml);
-    }
-    
-    function uniord($u) {
-        $k = mb_convert_encoding($u, 'UCS-2LE', 'UTF-8');
-        $k1 = ord(substr($k, 0, 1));
-        $k2 = ord(substr($k, 1, 1));
-        
-        return $k2 * 256 + $k1;
-    } 
 }

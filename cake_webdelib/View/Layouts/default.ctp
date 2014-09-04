@@ -35,6 +35,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->css('/libs/bootstrap/css/bootstrap.min');
     echo $this->Html->css('/libs/font-awesome/css/font-awesome.min');
     echo $this->Html->css('/libs/select2/select2');
+    echo $this->Html->css('/libs/select2/select2-bootstrap');
     echo $this->Html->css('/libs/jstree/style.min');
     echo $this->Html->css('/libs/scrollup/scrollup.css');
     echo $this->Html->css('treeview');
@@ -43,7 +44,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->css('global');
     //Scripts JS
     echo $this->Html->script('/libs/modernizr/modernizr.min');
-    echo $this->Html->script('/libs/jquery/jquery-1.10.2.min');
+    echo $this->Html->script('/libs/jquery/jquery-1.11.1.min');
+    echo $this->Html->script('/libs/jquery/jquery-migrate-1.2.1.js');
     echo $this->Html->script('/libs/bootstrap/js/bootstrap.min');
     echo $this->Html->script('/libs/jgrowl/jquery.jgrowl.min');
     echo $this->Html->script('/libs/select2/select2.min');
@@ -62,7 +64,78 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     ?>
 </head>
 <body>
-<div class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+        <?php
+        echo $this->Html->link(
+            $this->Html->image('webdelib_petit.png', array('id' => 'logo', 'class' => 'logo', 'alt' => 'Webdelib')), array('controller' => 'pages', 'action' => 'home'), array('escape' => false, 'title' => 'Bienvenue dans Webdelib', 'class' => 'navbar-brand')
+        );
+        ?>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active" style='margin-left: 230px'>
+            <?php echo $this->Html->link($Collectivite['nom'], array('controller' => 'pages', 'action' => 'home')); ?>
+        </li>
+      </ul>
+    <?php
+    echo $this->Form->create('User', array(
+        'id' => 'quickSearch',
+        'role'=>'search',
+        'class' => 'navbar-form navbar-right',
+        'url' => array(
+            'plugin' => null,
+            'controller' => 'deliberations',
+            'action' => 'quicksearch')));
+    ?><div class="form-group"><?php
+    echo $this->Form->input('User.search', array(
+        'class' => 'form-control span2',
+        'div' => false,
+        'label' => false,
+        'id' => 'searchInput',
+        'placeholder' => 'Rechercher',
+        'autocomplete' => 'off'));
+    ?></div><?php
+    echo $this->Form->end();
+    ?>
+        
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $infoUser; ?> <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+                <li>
+                    <?php echo $this->Html->link('Changer le format de sortie des éditions', array('plugin' => null, 'controller' => 'pages', 'action' => 'format')); ?>
+                </li>
+                <li>
+                    <?php echo $this->Html->link('Changer le service émetteur', array('plugin' => null, 'controller' => 'pages', 'action' => 'service')); ?>
+                </li>
+                <li>
+                    <?php echo $this->Html->link('Changer de mot de passe', array('plugin' => null, 'controller' => 'users', 'action' => 'changeUserMdp')); ?>
+                </li>
+                <li>
+                    <?php echo $this->Html->link('Changer de thême', array('plugin' => null, 'controller' => 'users', 'action' => 'changeTheme')); ?>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <?php echo $this->Html->link('Se déconnecter', array('plugin' => null, 'controller' => 'users', 'action' => 'logout')); ?>
+                </li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+    
+<!--<nav class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
     <div class="navbar-inner">
         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
@@ -75,17 +148,18 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         );
         ?>
         <div class="nav-collapse collapse" style='margin-left: 260px'>
-            <ul class="nav">
+            <ul class="nav  navbar-nav">
                 <li class="active">
                     <?php echo $this->Html->link($Collectivite['nom'], array('controller' => 'pages', 'action' => 'home')); ?>
                 </li>
             </ul>
         </div>
-        <!--/.nav-collapse -->
+        /.nav-collapse 
         <div class="nav-collapse collapse pull-right" style="margin-right: 30px;">
             <?php
             echo $this->Form->create('User', array(
                 'id' => 'quickSearch',
+                'role'=>'search',
                 'class' => 'navbar-search pull-right',
                 'url' => array(
                     'plugin' => null,
@@ -101,7 +175,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
             echo $this->Form->end();
             ?>
         </div>
-        <!--/.nav-collapse -->
+        /.nav-collapse 
         <div class="nav-collapse collapse pull-right">
             <ul class="nav">
                 <li class="dropdown pull-right">
@@ -130,9 +204,9 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                 </li>
             </ul>
         </div>
-        <!--/.nav-collapse -->
+        /.nav-collapse 
     </div>
-</div>
+</div>-->
 <?php
 App::uses('Debugger', 'Utility');
 if (Configure::read('debug') > 0):
@@ -159,16 +233,13 @@ endif;
                 $title = $items['title'];
             }
             echo("<li $classDropdown>");
-            if ($libelle == "Accueil")
-                echo $this->Html->link($libelle, $items['link']);
-            else
-                echo $this->Html->link("$libelle $carret", $items['link'], array(
-                    'escape' => false,
-                    'class' => 'dropdown-toggle',
-                    'data-toggle' => 'dropdown',
-                    'data-target' => '#',
-                    'title' => $title
-                ));
+            echo $this->Html->link("$libelle $carret", $items['link'], array(
+                'escape' => false,
+                'class' => 'dropdown-toggle',
+                'data-toggle' => 'dropdown',
+                'data-target' => '#',
+                'title' => $title
+            ));
             if (isset($items['subMenu'])) {
                 echo $this->Html->tag('ul', null, array('class' => 'dropdown-menu'));
                 foreach ($items['subMenu'] as $key => $url) {
@@ -185,8 +256,11 @@ endif;
     }
     ?>
 </ul>
+
 <!-- Contents -->
-<div id="principal">
+<div id="principal" class="container-fluid">
+    <?php 
+    echo $this->Html->getCrumbList(array('class'=>'breadcrumb'), __('Mon tableau de bord')); ?>
     <?php echo $this->Session->flash(); ?>
     <?php echo $this->fetch('content'); ?>
 </div>

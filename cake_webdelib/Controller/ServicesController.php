@@ -3,7 +3,7 @@
 class ServicesController extends AppController {
 
     public $name = 'Services';
-    public $helpers = array('Session', 'Tree', 'Html2');
+    public $helpers = array('Tree');
     public $uses = array('Service', 'Cakeflow.Circuit');
 
     // Gestion des droits

@@ -1,8 +1,10 @@
-<div id="vue_cadre">
-    <h3>Fiche Type d'acteur</h3>
-
-    <dl>
-
+<?php
+echo $this->Bs->tag('h3', 'Types d\'acte');
+?>
+<div class="panel panel-default">
+    <div class="panel-heading">Fiche type d'acteur: <?php echo $typeacteur['Typeacteur']['nom'] ?></div>
+    <div class="panel-body">
+        <dl>
         <div class="demi">
             <dt>Nom</dt>
             <dd>&nbsp;<?php echo $typeacteur['Typeacteur']['nom'] ?></dd>
@@ -32,22 +34,13 @@
 
         <div class="spacer"></div>
 
-    </dl>
+    </dl>        </ul>
 
-    <div id="actions_fiche" class="btn-group">
-        <?php
-        echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', array('action' => 'index'), array('class' => 'btn', 'title' => 'Retourner à la liste', 'escape' => false));
-        if ($Droits->check($this->Session->read('user.User.id'), 'Typeacteurs:edit'))
-            echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', array('action' => 'edit', $typeacteur['Typeacteur']['id']), array('class' => 'btn btn-primary', 'title' => 'Modifier', 'escape' => false));
-        ?>
-    </div>
-</div>
-<style>
-    #actions_fiche {
-        text-align: center;
-    }
-    .btn-group>.btn{
-        float: none;
-        text-align: center;
-    }
-</style>
+    <br/>
+<?php
+echo $this->Bs->row().
+$this->Bs->col('md4 of5');
+echo $this->Bs->div('btn-group', null,array('id'=>"actions_fiche" )) .
+    $this->Html2->btnCancel(),
+    $this->Bs->btn('Modifier', array('action' => 'edit', $typeacteur['Typeacteur']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+    $this->Bs->close(6);

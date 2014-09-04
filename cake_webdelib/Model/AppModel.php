@@ -38,7 +38,8 @@
  * @subpackage    cake.cake
  */
 class AppModel extends Model {
-    //var $actsAs=array('Containable');
+    
+    public $actsAs = array( 'Containable', 'DatabaseTable' );
 
     /**
      * Validation du format de fichier par FIDO

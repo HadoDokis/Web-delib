@@ -14,14 +14,16 @@ echo $this->Html->div('filtre');
 		echo $this->Html->tag('div', null, array('class' => 'filtreFonc'));
 			// affichage du bouton afficher-masquer le filtre
 			if ($this->Session->read('Filtre.Fonctionnement.affiche')) {
-				$iconeBoutonBasculeCriteres = 'icons/filtreDown.png';
+				$iconeBoutonBasculeCriteres = 'glyphicon glyphicon-filter';
 				echo $this->Form->hidden('filtreFonc.affiche', array('value'=>true));
 			} else {
-				$iconeBoutonBasculeCriteres = 'icons/filtreUp.png';
+				$iconeBoutonBasculeCriteres = 'glyphicon glyphicon-filter';
 				echo $this->Form->hidden('filtreFonc.affiche', array('value'=>false));
 			}
-			echo $this->Html->image($iconeBoutonBasculeCriteres, array(
+			echo $this->Bs->btn('filtrer', '#', array('type'=>'default',
+                                'icon'=> $iconeBoutonBasculeCriteres,
 				'id'=>'boutonBasculeCriteres',
+                                'escape'=> false,
 				'title'=>__('Afficher-masquer les critères du filtre', true),
 				'onClick'=>"basculeCriteres();"));
 			// affichage du bouton on/off
@@ -59,7 +61,8 @@ echo $this->Html->div('filtre');
 
                             break;
                         case 'date':
-                            echo $this->Html->div($critere['classeDiv'], $datePicker->picker('Critere.'.$nom, $options));
+                            //TODO à faire
+                            //echo $this->Html->div($critere['classeDiv'], $datePicker->picker('Critere.'.$nom, $options));
                             break;
                         default:
                             echo $this->Html->div($critere['classeDiv'], $this->Form->input('Critere.'.$nom, $options));

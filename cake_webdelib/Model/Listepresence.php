@@ -47,15 +47,16 @@ class Listepresence extends AppModel {
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $deliberationId id de la délibération
      */
-    function setVariablesFusionPresents(&$oMainPart, &$modelOdtInfos, $deliberationId) {
+    function setVariablesFusionPresents(&$aData ,&$modelOdtInfos, $deliberationId) {
         // initialisations
         $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
         $conditions = array('Listepresence.delib_id' => $deliberationId, 'Listepresence.present' => true);
 
         // nombre d'acteurs présents
         $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
-        $oMainPart->addElement(new GDO_FieldType('nombre_acteur_present', $nbActeurs, 'text'));
-
+        if ($modelOdtInfos->hasUserFieldDeclared('nombre_acteur_present')) {
+            $aData['nombre_acteur_present']= $nbActeurs;//, 'text'));
+        }
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = array();
         foreach($fusionVariables as $fusionVariable)
@@ -74,8 +75,6 @@ class Listepresence extends AppModel {
             'order' => 'Acteur.position ASC'));
 
         // itérations sur les acteurs présents
-        $oStyleIteration = new GDO_IterationType("ActeursPresents");
-        
         if ($nbActeurs==0){
            /* $oDevPart = new GDO_PartType();
             foreach($acteurFields as $fieldname)
@@ -99,12 +98,12 @@ class Listepresence extends AppModel {
             // traitement de la date de naissance
             if (!empty($acteur['Acteur']['date_naissance']))
                 $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
-            $oDevPart = new GDO_PartType();
+            $aActeursPresents=array();
             foreach($acteurFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_present', $acteur['Acteur'][$fieldname], "text"));
-            $oStyleIteration->addPart($oDevPart);
+                $aActeursPresents[$fieldname.'_acteur_present']=$acteur['Acteur'][$fieldname];//, "text"));
         }
-        $oMainPart->addElement($oStyleIteration);
+        
+        $aData['ActeursPresents']=$aActeursPresents;
     }
 
     /**
@@ -115,15 +114,17 @@ class Listepresence extends AppModel {
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $deliberationId id de la délibération
      */
-    function setVariablesFusionAbsents(&$oMainPart, &$modelOdtInfos, $deliberationId) {
+    function setVariablesFusionAbsents(&$aData ,&$modelOdtInfos, $deliberationId) {
         // initialisations
         $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
         $conditions = array('Listepresence.delib_id'=>$deliberationId, 'Listepresence.present'=>false, 'Listepresence.mandataire'=>null);
 
         // nombre d'acteurs absents
         $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
-        $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', $nbActeurs, 'text'));
         
+        if ($modelOdtInfos->hasUserFieldDeclared('nombre_acteur_absent')) {
+            $aData['nombre_acteur_absent']= $nbActeurs;//, 'text'));
+        }
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = array();
         foreach($fusionVariables as $fusionVariable)
@@ -141,9 +142,6 @@ class Listepresence extends AppModel {
             'conditions' => $conditions,
             'order' => 'Acteur.position ASC'));
 
-        // itérations sur les acteurs absents
-        $oStyleIteration = new GDO_IterationType("ActeursAbsents");
-        
         if ($nbActeurs==0){
             /*$oDevPart = new GDO_PartType();
             foreach($acteurFields as $fieldname)
@@ -157,12 +155,11 @@ class Listepresence extends AppModel {
             // traitement de la date de naissance
             if (!empty($acteur['Acteur']['date_naissance']))
                 $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
-            $oDevPart = new GDO_PartType();
+            $aActeursAbsents = array();
             foreach($acteurFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_absent', $acteur['Acteur'][$fieldname], "text"));
-            $oStyleIteration->addPart($oDevPart);
+                $aActeursAbsents[$fieldname.'_acteur_absent']=$acteur['Acteur'][$fieldname];//, "text"));
         }
-        $oMainPart->addElement($oStyleIteration);
+        $aData['ActeursAbsents']=$aActeursAbsents;
     }
 
     /**
@@ -173,15 +170,16 @@ class Listepresence extends AppModel {
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $deliberationId id de la délibération
      */
-    function setVariablesFusionMandates(&$oMainPart, &$modelOdtInfos, $deliberationId) {
+    function setVariablesFusionMandates(&$aData ,&$modelOdtInfos, $deliberationId) {
         // initialisations
         $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
         $conditions = array('Listepresence.delib_id'=>$deliberationId, 'Listepresence.present'=>false, 'Listepresence.mandataire <>'=>null);
 
         // nombre d'acteurs mandatés
         $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
-        $oMainPart->addElement(new GDO_FieldType('nombre_acteur_mandataire', $nbActeurs, 'text'));
-
+        if ($modelOdtInfos->hasUserFieldDeclared('nombre_acteur_mandataire')) {
+            $aData['nombre_acteur_mandataire']= $nbActeurs;//, 'text'));
+        }
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = $mandateFields = $aliasMandateFields = array();
         foreach($fusionVariables as $fusionVariable)  {
@@ -204,9 +202,6 @@ class Listepresence extends AppModel {
             'conditions' => $conditions,
             'order' => 'Acteur.position ASC'));
 
-        // itérations sur les acteurs mandatés
-        $oStyleIteration = new GDO_IterationType("ActeursMandates");
-        
         if ($nbActeurs==0){
            /* $oDevPart = new GDO_PartType();
             foreach($acteurFields as $fieldname)
@@ -224,14 +219,16 @@ class Listepresence extends AppModel {
                 $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
             if (!empty($acteur['Mandataire']['date_naissance']))
                 $acteur['Mandataire']['date_naissance'] = date("d/m/Y", strtotime($acteur['Mandataire']['date_naissance']));
-            $oDevPart = new GDO_PartType();
+            
+            $aActeursMandates=array();
             foreach($acteurFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandataire', $acteur['Acteur'][$fieldname], "text"));
+                $aActeursMandates[$fieldname.'_acteur_mandataire']=$acteur['Acteur'][$fieldname];//, "text"));
             foreach($mandateFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandate', $acteur['Mandataire'][$fieldname], "text"));
+                $aActeursMandates[$fieldname.'_acteur_mandate'] = $acteur['Mandataire'][$fieldname];// "text"));
             $oStyleIteration->addPart($oDevPart);
         }
-        $oMainPart->addElement($oStyleIteration);
+        
+        $aData['ActeursMandates']=$aActeursMandates;
     }
 }
 ?>

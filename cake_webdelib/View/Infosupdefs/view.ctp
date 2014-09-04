@@ -1,6 +1,10 @@
-<div id="vue_cadre">
-    <dl>
-        <h3><?php echo $titre; ?></h3>
+<?php
+echo $this->Bs->tag('h3',  $titre);
+?>
+<div class="panel panel-default">
+    <div class="panel-heading">Fiche : <?php echo $this->data['Infosupdef']['nom'] ?></div>
+    <div class="panel-body">
+        <dl>
         <div class="imbrique">
             <dt>Nom</dt>
             <dd><?php echo $this->data['Infosupdef']['nom']; ?></dd>
@@ -30,18 +34,14 @@
         <dt>Active</dt>
         <dd><?php echo $this->data['Infosupdef']['libelleActif']; ?></dd>
 
-    </dl>
-    <div class="text-center">
-        <div class="btn-group">
-            <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $lienRetour, array('class' => 'btn', 'escape' => false)) ?>
-            <?php
-            if ($Droits->check($this->Session->read('user.User.id'), 'Infosupdefs:edit'))
-                echo $this->Html->link('<i class="fa fa-edit"></i> Modifier',
-                    array('controller' => 'infosupdefs', 'action' => 'edit', $this->data['Infosupdef']['id']),
-                    array('class' => 'btn  btn-primary', 'escape' => false)
-                )
-            ?>
-        </div>
-    </div>
-</div>
+    </dl> 
+
+    <br/>
+<?php
+echo $this->Bs->row().
+$this->Bs->col('md4 of5');
+echo $this->Bs->div('btn-group', null,array('id'=>"actions_fiche" )) .
+    $this->Html2->btnCancel($lienRetour),
+    $this->Bs->btn('Modifier', array('controller' => 'infosupdefs', 'action' => 'edit', $this->data['Infosupdef']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+    $this->Bs->close(6);
 

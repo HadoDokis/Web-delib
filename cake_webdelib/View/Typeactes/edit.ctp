@@ -1,9 +1,9 @@
 <?php
 if ($this->Html->value('Typeacte.id')) {
-    echo "<h2>Modification d'un type d'acte</h2>";
+    echo $this->Bs->tag('h3', 'Modification d\'un type d\'acte');
     echo $this->Form->create('Typeacte', array('url' => '/typeactes/edit/' . $this->Html->value('Typeacte.id'), 'type' => 'file'));
 } else {
-    echo "<h2>Ajout d'un type d'acte</h2>";
+    echo $this->Bs->tag('h3', 'Ajout d\'un type d\'acte');
     echo $this->Form->create('Typeacte', array('url' => '/typeactes/add/', 'type' => 'file'));
 }
 ?>
@@ -75,7 +75,7 @@ if ($this->Html->value('Typeacte.id')) {
 <div class="submit">
     <?php
     echo $this->Form->hidden('Typeacte.id');
-    $this->Html2->boutonsSaveCancel('', array('action' => 'index'));
+    echo $this->Html2->btnSaveCancel('', array('action' => 'index'));
     ?>
 </div>
 <?php $this->Form->end(); ?>

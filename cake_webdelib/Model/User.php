@@ -198,20 +198,6 @@ class User extends AppModel
             return $this->data['User']['prenom'] . ' ' . $this->data['User']['nom'] . ' (' . $this->data['User']['login'] . ')';
     }
 
-    function makeBalise(&$oMainPart, $user_id)
-    {
-        $user = $this->find('first', array(
-            'conditions' => array($this->alias . '.id' => $user_id),
-            'recursive' => -1
-        ));
-        $oMainPart->addElement(new GDO_FieldType('prenom_redacteur', ($user[$this->alias]['prenom']), 'text'));
-        $oMainPart->addElement(new GDO_FieldType('nom_redacteur', ($user[$this->alias]['nom']), 'text'));
-        $oMainPart->addElement(new GDO_FieldType('email_redacteur', ($user[$this->alias]['email']), 'text'));
-        $oMainPart->addElement(new GDO_FieldType('telmobile_redacteur', ($user[$this->alias]['telmobile']), 'text'));
-        $oMainPart->addElement(new GDO_FieldType('telfixe_redacteur', ($user[$this->alias]['telfixe']), 'text'));
-        $oMainPart->addElement(new GDO_FieldType('note_redacteur', ($user[$this->alias]['note']), 'text'));
-    }
-
     function getCircuits($user_id)
     {
         $this->Behaviors->load('Containable');
@@ -329,7 +315,7 @@ class User extends AppModel
      * @param string $suffixe suffixe des variables de fusion
      * @throws Exception
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $suffixe='') {
+    function setVariablesFusion(&$aData, &$modelOdtInfos, $id, $suffixe='') {
         // initialisations
         if (empty($suffixe))
             $suffixe = trim(strtolower($this->alias));
@@ -357,6 +343,6 @@ class User extends AppModel
         if (empty($user))
             throw new Exception('user '.$suffixe.' id:'.$id.' non trouvé en base de données');
         foreach($user[$this->alias] as $field => $val)
-            $oMainPart->addElement(new GDO_FieldType($field.'_'.$suffixe, $val, 'text'));
+            $aData[$field.'_'.$suffixe]= $val;//, 'text'));
     }
 }

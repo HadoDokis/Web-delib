@@ -410,7 +410,7 @@ class Infosup extends AppModel {
      * @param string $modelName nom du modele lié
      * @param integer $id id du modèle lié
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $modelName, $id) {
+    function setVariablesFusion(&$aData, &$modelOdtInfos, $modelName, $id) {
         // lecture de la définition des infosup
         $allInfoSupDefs = $this->Infosupdef->find('all', array(
             'recursive' => -1,

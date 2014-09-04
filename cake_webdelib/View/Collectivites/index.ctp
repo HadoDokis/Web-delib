@@ -1,25 +1,19 @@
-<div class="seances">
-    <h2>Information de votre collectivité</h2>
-
-    <table cellpadding="0" cellspacing="0" width="100%">
-        <tr>
-            <th>Collectivité</th>
-            <th>Logo</th>
-            <th>Actions</th>
-        </tr>
-        <tr height='36px'>
-            <td style="text-align:center"><?php echo $collectivite['Collectivite']['nom']; ?>
-                <br/><br/><?php echo $collectivite['Collectivite']['adresse']; ?>
-                <br/><?php echo $collectivite['Collectivite']['CP'] . ' ' . $collectivite['Collectivite']['ville']; ?>
-                <br/><br/><?php echo $collectivite['Collectivite']['telephone']; ?>
-            </td>
-            <td class="text-center"><?php echo $this->Html->image($logo_path, array('alt' => 'logo de la collectivité', 'style' => 'max-width: 500px')); ?></td>
-            <td class="actions">
-                <?php echo $this->Html->link(SHY, '/collectivites/edit', array('class' => 'link_modifier', 'escape' => false, 'title' => 'Modifier'), false) ?>
-                <?php echo $this->Html->link(SHY, '/collectivites/setLogo', array('class' => 'link_inserer_logo', 'escape' => false, 'title' => 'Changer de logo (page de connexion)'), false) ?>
-            </td>
-
-        </tr>
-    </table>
-
-</div>
+<?php
+echo $this->Bs->tag('h3', 'Information de votre collectivité') .
+ $this->Bs->table(array(array('title' => 'Collectivité'),
+    array('title' => 'Logo'),
+    array('title' => 'Actions'),
+)) .
+ $this->Bs->tableCells(array(
+    $collectivite['Collectivite']['nom'] . $this->Html->tag(null, '<br />') .
+    $collectivite['Collectivite']['adresse'] . $this->Html->tag(null, '<br />') .
+    $collectivite['Collectivite']['CP'] . ' ' . $collectivite['Collectivite']['ville'] . $this->Html->tag(null, '<br />') .
+    $collectivite['Collectivite']['telephone'],
+    $this->Html->image($logo_path, array('alt' => 'logo de la collectivité', 'style' => 'max-width: 500px')),
+    $this->Bs->div('btn-group').
+    $this->Bs->btn( null, array('controller' => 'collectivites', 'action' => 'edit'), array('type' => 'primary', 'icon'=>'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+    $this->Bs->btn( null, array('controller' => 'collectivites', 'action' => 'setLogo'), array('type' => 'default', 'icon'=>'glyphicon glyphicon-picture', 'title' => 'Changer de logo (page de connexion)')).
+    $this->Bs->close()
+)).
+$this->Bs->endTable();
+?>

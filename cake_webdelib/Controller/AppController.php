@@ -32,8 +32,8 @@ App::uses('Controller', 'Controller');
  */
 class AppController extends Controller {
     public $theme = "Webdelib";
-    public $components = array('Utils', 'Acl', 'Droits', 'Session');
-    public $helpers = array('Html', 'Form', 'Session', 'DatePicker', 'Html2');
+    public $components = array('Acl', 'Droits', 'Session','DebugKit.Toolbar');
+    public $helpers = array('Html', 'Form', 'Session', 'Html2','Bs','BsForm');
     public $aucunDroit = array('Pages:format', 'Pages:service');
     public $previous;
     public $user_id;
@@ -92,7 +92,7 @@ class AppController extends Controller {
                 $this->theme = $this->Session->read('user.User.theme');
         }
         // ????
-        if (CRON_DISPATCHER) return true;
+        //if (CRON_DISPATCHER) return true;
         // Exception pour le bon déroulement de cron
         $action_accepted = array('runCrons', 'majTraitementsParapheur', 'traiterDelegationsPassees', 'generer');
 
@@ -138,29 +138,6 @@ class AppController extends Controller {
                     $this->Session->write('user.User.lasturl', $this->referer());
                 }
             }
-        }
-    }
-
-    function externLogin($login = null, $password = null) {
-        $user = $this->User->findByLogin($login);
-
-        //si le mdp n'est pas vide et correspond a celui de la bdd
-        if (!empty($password) && ($user['User']['password'] == md5($password))) {
-            //on stocke l'utilisateur en session
-            $this->Session->write('user', $user);
-            //services auquels appartient l'agent
-            if (empty ($user['Service'])) {
-                $this->Session->write('user.User.service', $user['ServiceElu']['id']);
-            } else {
-                $services = $this->Utils->simplifyArray($user['Service']);
-                foreach ($services as $key => $service) {
-                    $service = $this->requestAction("services/doList/$key");
-                    $services[$key] = $service;
-                }
-                $this->Session->write('user.Service', $services);
-                $this->Session->write('user.User.service', key($services));
-            }
-            $this->redirect('/');
         }
     }
 

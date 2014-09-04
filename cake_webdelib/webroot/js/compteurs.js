@@ -1,10 +1,10 @@
 /******************************************************************************/
-/* Insère la valeur de l'élément sélectionné du champ select 'select_element' */
+/* InsÃ¨re la valeur de l'Ã©lÃ©ment sÃ©lectionnÃ© du champ select 'select_element' */
 /* dans le champ input 'input_name' du formulaire 'form_name'                 */
-/* a l'endroit du curseur ou remplace le texte sélectionné                    */
+/* a l'endroit du curseur ou remplace le texte sÃ©lectionnÃ©                   */
 /*                                                                            */
 /* @param select_element Objet champ select                                   */
-/* @param form_name Nom du formulaire contenant le champ input concerné       */
+/* @param form_name Nom du formulaire contenant le champ input concernÃ©      */
 /* @param input_name Nom du champ input                                       */
 /* @access public                                                             */
 /******************************************************************************/
@@ -21,7 +21,7 @@ function InsertSelectedValueInToInput(select_element, form_name, input_name){
 		/* Ajustement de la position du curseur */
 		range.select();
 	}
-	/* pour navigateurs basés sur Gecko*/
+	/* pour navigateurs basÃ©s sur Gecko*/
 	else if(typeof input_element.selectionStart != 'undefined')
 	{
 		/* Insertion du code de formatage */
@@ -36,7 +36,7 @@ function InsertSelectedValueInToInput(select_element, form_name, input_name){
 	/* pour les autres navigateurs */
 	else
 	{
-		alert("Fonction non implémentée pour votre navigateur");
+		alert("Fonction non implÃ©mentÃ©e pour votre navigateur");
 	};
 
 	select_element.selectedIndex = 0;

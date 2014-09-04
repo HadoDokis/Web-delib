@@ -1,4 +1,3 @@
-<?php echo $this->Html->script('calendrier.js'); ?>
 <h2><?php echo $titreVue; ?></h2>
 <?php echo $this->Form->create('Deliberation', array('type' => 'file', 'url' => $action, 'name' => 'Deliberation', 'class' => 'waiter', 'data-modal' => 'Recherche en cours')); ?>
 

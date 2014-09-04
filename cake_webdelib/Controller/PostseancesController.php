@@ -2,7 +2,7 @@
 
 class PostseancesController extends AppController {
 	var $name = 'Postseances';
-	var $helpers = array('Html', 'Form', 'Fck', 'Html2' );
+	var $helpers = array('Fck');
 	var $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion');
 	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Typeseance', 'Typeacte', 'Nature', 'TdtMessage');
 
@@ -226,7 +226,7 @@ class PostseancesController extends AppController {
     function _createElement($domObj, $tag_name, $value = NULL, $attributes = NULL) {
         try
         {
-            $element = ($value != NULL ) ? $domObj->createElement($tag_name, $value) : $domObj->createElement($tag_name);
+            $element = ($value != NULL ) ? $domObj->createElement($tag_name, AppTools::xml_entity_encode($value)) : $domObj->createElement($tag_name);
 
             if ($attributes != NULL) {
                 foreach ($attributes as $attr => $val) {

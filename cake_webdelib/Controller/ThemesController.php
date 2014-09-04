@@ -3,7 +3,7 @@
 class ThemesController extends AppController {
 
     public $name = 'Themes';
-    public $helpers = array('Html', 'Form', 'Session', 'Tree');
+    public $helpers = array('Tree');
     public $components = array('Droits');
 
     // Gestion des droits

@@ -1,71 +1,151 @@
-<div class="deliberations">
-<?php if (isset($message)) echo $message; ?>
-<?php
+<?php if (isset($message)) echo $message; 
 echo $this->element('filtre');
-echo "<h2>$titreVue</h2>";
-echo $this->Form->create('Deliberation', array('url' => array('controller'=>'deliberations', 'action'=>'sendActesToSignature'), 'type' => 'file'));
-?>
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <?php if ($this->action != "autresActesAValider" && !empty($actes)) : ?>
-            <th style="width: 2px;"><input type='checkbox' id='masterCheckbox'/></th>
-        <?php endif; ?>
-        <th>Identifiant</th>
-        <th>Type d'acte</th>
-        <th>Libellé de l'acte</th>
-        <th>Titre</th>
-        <th>Classification</th>
-        <th>Circuit</th>
-        <th>État</th>
-        <?php if ($this->action == 'autreActesValides'): ?>
-            <th>État parapheur</th>
-        <?php endif; ?>
-        <th style='width: 65px;'>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <?php
-    $numLigne = 1;
-    foreach ($actes as $acte) {
-        echo $this->Html->tag('tr', null);
-        $numLigne++;
 
-        if ($this->action != "autresActesAValider") {
-            $options = array();
-            if (empty($acte['Deliberation']['signee'])
-                && in_array($acte['Deliberation']['parapheur_etat'], array(null, 0, -1))
-                && $acte['Deliberation']['etat'] >= 2
-            )
-                $options['checked'] = true;
-            else
-                $options['disabled'] = true;
+$projet_etat_libelle=array(
+    0=>"<i class='fa fa-pencil'></i> En cours de rédaction",
+    1=>"<i class='fa fa-clock-o'></i> Dans un circuit",
+    2=>"<i class='fa fa-check'></i> Validé",
+    3=>"<i class='fa fa-thumbs-up'></i> Adopté",
+    4=>"<i class='fa fa-thumbs-down'></i> Refusé",
+    5=>"<i class='fa fa-certificate'></i> Envoyé au TDT"
+        );
 
-            echo '<td style="text-align:center;">' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], $options) . '</td>';
+echo $this->Bs->tag('h3', $titreVue) .
+
+$this->BsForm->create('Deliberation', array('url' => array('controller'=>'deliberations', 'action'=>'sendActesToSignature'), 'type' => 'file')).
+$this->Bs->table(array(
+    array('title' => $this->action != "autresActesAValider" && !empty($actes)?$this->Bs->checkbox( array('id'=>'masterCheckbox')):''),
+    array('title' => 'Identifiant'),
+    array('title' => 'Type d\'acte'),
+    array('title' => 'Libellé de l\'acte'),
+    array('title' => 'Titre'),
+    array('title' => 'Classification'),
+    array('title' => 'Circuit'),
+    array('title' => 'État'),
+    $this->action == 'autreActesValides' ? array('title' => 'État parapheur') : null,
+    array('title' => 'Actions')
+        ), array('hover', 'striped'));
+foreach ($actes as $acte) {
+    
+    if($this->action == 'autreActesValides'){
+        $signature_etat_libelle='';
+        switch ($acte['Deliberation']['parapheur_etat']) {
+                    case -1 :
+                        $signature_etat_libelle='<i class="fa fa-exclamation-triangle" title="' . $acte['Deliberation']['parapheur_commentaire'] . '"></i>&nbsp;Refusé par le parapheur';
+                        break;
+                    case 1 :
+                        $signature_etat_libelle='<i class="fa fa-clock-o"></i> En cours de signature';
+                        break;
+                    case 2 :
+                        $signature_etat_libelle='<i class="fa fa-check"></i> Approuvé dans le parapheur&nbsp;';
+                        if (!empty($acte['Deliberation']['signature']))
+                            $signature_etat_libelle.= '(Signé&nbsp;<a href="/deliberations/downloadSignature/' . $acte['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;"><i class="fa fa-download"></i></a>)';
+                        else
+                            $signature_etat_libelle.= '(Visa)';
+                        break;
+                    default : //0 ou null
+                        if (!empty($acte['Deliberation']['signee']))
+                            $signature_etat_libelle= '<i class="fa fa-check"></i> Signature manuscrite';
+                        else
+                            $signature_etat_libelle= 'Non envoyé';
+        }
+    }
+    
+       $actions=$this->Bs->div('btn-group') .
+        $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'view', $acte['Deliberation']['id']), 
+                array('type' => 'default', 
+                    'icon' => ' glyphicon glyphicon-eye-open', 
+                    'title' => 'Vue détaillée du projet')) .
+        $this->Bs->close();
+        
+        //if ($acte['Deliberation']['etat'] >= 2 && !empty($acte['Deliberation']['signee']))
+        //   $model_id = $acte['Modeltemplate']['modelefinal_id'];
+//        else
+//            $model_id = $acte['Modeltemplate']['modeleprojet_id'];
+        //
+        $actions.= $this->Bs->div('btn-group') .
+                $this->Bs->btn('Choisir un modèle <span class="caret"></span>', 
+                        array(), 
+                        array('type' => 'default', 
+                            'icon' => 'glyphicon glyphicon-cog', 
+                            'escape'=>false,'class'=>'dropdown-toggle', 
+                            'data-toggle'=>'dropdown')).
+                $this->Bs->nestedList(array(
+                $this->Bs->link('PV sommaire', array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $acte['Deliberation']['id'] , 'pvsommaire'), 
+                    array(
+                            'title' => 'Génération du pv sommaire pour la séance du ',
+                            'class' => 'waiter',
+                            'data-modal' => 'Génération du PV sommaire en cours')),
+                $this->Bs->link('PV complet', array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $acte['Deliberation']['id'] , 'pvdetaille'), 
+                    array(
+                    'title' => 'Génération du pv complet pour la séance du ',
+                    'class' => 'waiter',
+                    'data-modal' => 'Génération du PV complet en cours'))
+                )
+                , array('class'=>'dropdown-menu','role'=>'menu')).
+        $this->Bs->close();
+
+        
+        if($this->action == 'autresActesAValider' && $canGoNext && !empty($acte['Deliberation']['circuit_id']) && $acte['Deliberation']['etat'] == 1) {
+            $actions.=$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'goNext', $acte['Deliberation']['id']), 
+                array('type' => 'default', 
+                    'icon' => ' glyphicon glyphicon-eye-open', 
+                    'title' => 'Sauter une ou plusieurs étapes du circuit'));
+        }
+        if ($this->action == 'autresActesAValider' && $peuxValiderEnUrgence && !empty($acte['Deliberation']['circuit_id']) && $acte['Deliberation']['etat'] == 1) {
+            $actions.=$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'validerEnUrgence', $acte['Deliberation']['id']), 
+                array('type' => 'default', 
+                    'icon' => ' glyphicon glyphicon-eye-open', 
+                    'title' => 'Valider en urgence le projet',
+                    'confirm'=>'Confirmer la validation en urgence du projet ' . $acte['Deliberation']['id'] . ' ?'));
         }
 
-        echo '<td>';
-        if (!empty($acte['Deliberation']['num_delib']))
-            echo $this->Html->link($acte['Deliberation']['num_delib'], array('action' => 'view', $acte['Deliberation']['id']));
-        else
-            echo $this->Html->link('Acte : ' . $acte['Deliberation']['id'], array('action' => 'view', $acte['Deliberation']['id']));
-        echo '</td>';
-        echo '<td>' . $acte['Typeacte']['libelle'] . '</td>';
-        echo '<td>' . $acte['Deliberation']['objet'] . '</td>';
-        echo '<td>' . $acte['Deliberation']['titre'] . '</td>';
-
-        //classification
-        echo '<td style="text-align:center">';
-        if ($this->action != 'autreActesValides')
-            echo !empty($acte['Deliberation']['num_pref']) ? $acte['Deliberation']['num_pref'] . ' - ' . $acte['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>';
-        else {
-            $id_num_pref = $acte['Deliberation']['id'] . '_num_pref';
-            if (Configure::read('TDT') == 'PASTELL') {
-                if (empty($nomenclatures)) $nomenclatures = array();
-                echo $this->Form->input('Deliberation.' . $acte['Deliberation']['id'] . '_num_pref', array(
+        if ($this->action == 'autreActesValides' && $canEdit && !$acte['Deliberation']['signature_encours']) {
+            $actions.=$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'edit', $acte['Deliberation']['id']), 
+                array('type' => 'primary', 
+                    'icon' => ' glyphicon glyphicon-edit', 
+                    'title' => 'Modifier le projet'));
+        }
+        if ($this->action == 'autreActesValides' && !$acte['Deliberation']['signature_encours']) {
+            debug($acte['Deliberation']['signature_encours']);
+            $actions.=$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'attribuercircuit', $acte['Deliberation']['id']), 
+                array('type' => 'default', 
+                    'icon' => 'glyphicon glyphicon-road', 
+                    'title' => 'Attribuer un circuit pour le projet ' . $acte['Deliberation']['objet']));
+        }
+    
+    echo $this->Bs->tableCells(array(
+        ($this->action != "autresActesAValider")?
+        $this->BsForm->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], 
+                ((empty($acte['Deliberation']['signee'])
+                && in_array($acte['Deliberation']['parapheur_etat'], array(null, 0, -1))
+                && $acte['Deliberation']['etat'] >= 2
+            )?
+                $options['checked'] = true
+            :
+                $options['disabled'] = true)
+                ):''
+        ,
+        (!empty($acte['Deliberation']['num_delib'])?
+        $this->Html->link($acte['Deliberation']['num_delib'], array('action' => 'view', $acte['Deliberation']['id']))
+        :
+        $this->Html->link('Acte : ' . $acte['Deliberation']['id'], array('action' => 'view', $acte['Deliberation']['id']))
+        ),
+        $acte['Typeacte']['libelle'],
+        $acte['Deliberation']['objet'],
+        $acte['Deliberation']['titre'],
+        
+        ////////////////////////////////
+        ////classification
+        (($this->action != 'autreActesValides')?
+            !empty($acte['Deliberation']['num_pref']) ? $acte['Deliberation']['num_pref'] . ' - ' . $acte['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>'
+        :
+            //$id_num_pref = $acte['Deliberation']['id'] . '_num_pref';
+            ((Configure::read('TDT') == 'PASTELL') ?
+                $this->BsForm->input('Deliberation.' . $acte['Deliberation']['id'] . '_num_pref', array(
                     'name' => $acte['Deliberation']['id'] . 'classif2',
                     'label' => false,
-                    'options' => $nomenclatures,
+                    'options' => (empty($nomenclatures)? null :$nomenclatures),
                     'default' => $acte['Deliberation']['num_pref'],
                     'readonly' => empty($nomenclatures),
                     'empty' => true,
@@ -73,142 +153,42 @@ echo $this->Form->create('Deliberation', array('url' => array('controller'=>'del
                     'style' => 'width:auto; max-width:400px;',
                     'div' => array('style' => 'text-align:center;font-size: 1.1em;'),
                     'escape' => false
-                ));
-            } else {
-                echo $this->Form->input('Deliberation.' . $acte['Deliberation']['id'] . '_num_pref_libelle', array(
-                    'label' => false,
-                    'div' => false,
-                    'id' => $acte['Deliberation']['id'] . 'classif1',
-                    'style' => 'width: 25em;',
-                    'disabled' => true,
-                    'value' => $acte['Deliberation']['num_pref'] . ' - ' . $acte['Deliberation']['num_pref_libelle']));?>
-                <br/>
-                <a class="list_form" href="#add"
-                   onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification?id=<?php echo $acte['Deliberation']['id']; ?>', 'Classification', 'scrollbars=yes,,width=570,height=450');"
-                   id="<?php echo $acte['Deliberation']['id']; ?> _classification_text">[Choisir la classification]</a>
-                <?php
-                echo $this->Form->hidden('Deliberation.' . $acte['Deliberation']['id'] . '_num_pref', array(
-                    'id' => $acte['Deliberation']['id'] . 'classif2',
-                    'name' => $acte['Deliberation']['id'] . 'classif2',
-                    'value' => $acte['Deliberation']['num_pref']
-                ));
-            }
-        }
-        echo '</td>';
-        echo '<td>' . $acte['Circuit']['nom'] . "</td>";
+                ))
+            :
+//                $this->BsForm->input('Deliberation.' . $acte['Deliberation']['id'] . '_num_pref_libelle', array(
+//                    'label' => false,
+//                    'div' => false,
+//                    'id' => $acte['Deliberation']['id'] . 'classif1',
+//                    'style' => 'width: 25em;',
+//                    'disabled' => true,
+//                    'value' => $acte['Deliberation']['num_pref'] . ' - ' . $acte['Deliberation']['num_pref_libelle']));
+//                <a class="list_form" href="#add"
+//                   onclick="javascript:window.open('// echo $this->base; /deliberations/classification?id= echo $acte['Deliberation']['id']; ', 'Classification', 'scrollbars=yes,,width=570,height=450');
+//                   id='.$acte['Deliberation']['id'].'_classification_text">[Choisir la classification]</a>
+//                $this->BsForm->hidden('Deliberation.' . $acte['Deliberation']['id'] . '_num_pref', array(
+//                    'id' => $acte['Deliberation']['id'] . 'classif2',
+//                    'name' => $acte['Deliberation']['id'] . 'classif2',
+//                    'value' => $acte['Deliberation']['num_pref']
+//                ));
+            '')
+        ),
+        //////////////////////////////////
+        $acte['Circuit']['nom'],
+        $projet_etat_libelle[$acte['Deliberation']['etat']], 
+        (!empty($signature_etat_libelle)?$signature_etat_libelle : null),
+        $actions
+    ));
+}
+echo $this->Bs->endTable();
 
-        echo '<td>'; // Début de la cellule "Etat"
-        switch ($acte['Deliberation']['etat']) {
-            case 0:
-                echo "<i class='fa fa-pencil'></i> En cours de rédaction";
-                break;
-            case 1:
-                echo "<i class='fa fa-clock-o'></i> Dans un circuit";
-                break;
-            case 2:
-                echo "<i class='fa fa-check'></i> Validé";
-                break;
-            case 3:
-                echo "<i class='fa fa-thumbs-up'></i> Adopté";
-                break;
-            case 4:
-                echo "<i class='fa fa-thumbs-down'></i> Refusé";
-                break;
-            case 5:
-                echo "<i class='fa fa-certificate'></i> Envoyé au TDT";
-                break;
-        }
-        echo '</td>'; // Fin de la cellule "Etat"
-        if ($this->action == 'autreActesValides') {
-            echo '<td>'; // Debut de la cellule "Etat parapheur"
-
-            switch ($acte['Deliberation']['parapheur_etat']) {
-                case -1 :
-                    echo '<i class="fa fa-exclamation-triangle" title="' . $acte['Deliberation']['parapheur_commentaire'] . '"></i>&nbsp;Refusé par le parapheur';
-                    break;
-                case 1 :
-                    echo '<i class="fa fa-clock-o"></i> En cours de signature';
-                    break;
-                case 2 :
-                    echo '<i class="fa fa-check"></i> Approuvé dans le parapheur&nbsp;';
-                    if (!empty($acte['Deliberation']['signature']))
-                        echo '(Signé&nbsp;<a href="/deliberations/downloadSignature/' . $acte['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;"><i class="fa fa-download"></i></a>)';
-                    else
-                        echo '(Visa)';
-                    break;
-                default : //0 ou null
-                    if (!empty($acte['Deliberation']['signee']))
-                        echo '<i class="fa fa-check"></i> Signature manuscrite';
-                    else
-                        echo 'Non envoyé';
-            }
-            echo '</td>'; // Fin de la cellule "Etat parapheur"
-        }
-        echo $this->Html->tag('td', null, array('style' => 'padding:0'));
-        echo $this->Html->link(SHY, '/deliberations/view/' . $acte['Deliberation']['id'], array(
-            'class' => 'link_voir',
-            'escape' => false,
-            'title' => 'Vue détaillée du projet'
-        ));
-        if ($acte['Deliberation']['etat'] >= 2 && !empty($acte['Deliberation']['signee']))
-            $model_id = $acte['Modeltemplate']['modelefinal_id'];
-        else
-            $model_id = $acte['Modeltemplate']['modeleprojet_id'];
-        echo $this->Html->link(SHY, array('controller' => 'models', 'action' => 'generer', $acte['Deliberation']['id'], 'null', $model_id, '-1', '0', 'acte_' . $acte['Deliberation']['id'], '0', '0', '0'), array(
-            'class' => 'link_pdf waiter',
-            'escape' => false,
-            'title' => 'Génération du rapport'
-        ));
-
-        if ($this->action == 'autresActesAValider' && $canGoNext && !empty($acte['Deliberation']['circuit_id']) && $acte['Deliberation']['etat'] == 1) {
-            echo $this->Html->link(SHY, "/deliberations/goNext/" . $acte['Deliberation']['id'], array(
-                'class' => "link_jump",
-                'title' => 'Sauter une ou plusieurs étapes du circuit',
-                'escape' => false));
-        }
-        if ($this->action == 'autresActesAValider' && $peuxValiderEnUrgence && !empty($acte['Deliberation']['circuit_id']) && $acte['Deliberation']['etat'] == 1) {
-            echo $this->Html->link(SHY, "/deliberations/validerEnUrgence/" . $acte['Deliberation']['id'], array(
-                'class' => "link_validerenurgence",
-                'alt' => 'Valider en urgence le projet ',
-                'title' => 'Valider en urgence le projet',
-                'escape' => false), 'Confirmer la validation en urgence du projet ' . $acte['Deliberation']['id'] . ' ?');
-        }
-
-        $enCoursSignature = $acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['parapheur_etat'] == 1;
-        if ($this->action == 'autreActesValides' && $canEdit && !$enCoursSignature) {
-            echo $this->Html->link(SHY, '/deliberations/edit/' . $acte['Deliberation']['id'], array(
-                'class' => 'link_modifier',
-                'title' => 'Modifier le projet',
-                'escape' => false
-            ));
-        }
-        if ($this->action == 'autreActesValides' && !$enCoursSignature) {
-            $actionAttribuer = '/deliberations/attribuercircuit/' . $acte['Deliberation']['id'];
-            echo $this->Html->link(SHY, $actionAttribuer, array(
-                'class' => 'link_circuit',
-                'alt' => 'Attribuer un circuit pour le projet ' . $acte['Deliberation']['objet'],
-                'escape' => false,
-                'title' => 'Insérer le projet dans un circuit'
-            ));
-        }
-        echo('</td>');
-        echo $this->Html->tag('/tr', null);
-    }
-    ?>
-    </tbody>
-</table>
-<div class="spacer"></div>
-<?php
 if ($this->action == "autreActesValides" && !empty($actes)) {
     echo '<div id="select-circuit">';
-    echo($this->Form->input('Parapheur.circuit_id', array('class' => 'select-circuit select2', 'options' => $circuits, 'label' => array('text' => 'Circuits disponibles', 'class' => 'circuits_label'), 'div' => false)));
-    echo $this->Form->button('<i class="fa fa-mail-forward"></i> Envoyer', array('class' => 'btn btn-inverse sans-arrondi', 'escape' => false));
+    echo($this->BsForm->input('Parapheur.circuit_id', array('class' => 'select-circuit select2', 'options' => $circuits, 'label' => array('text' => 'Circuits disponibles', 'class' => 'circuits_label'), 'div' => false)));
+    echo $this->BsForm->button('<i class="fa fa-mail-forward"></i> Envoyer', array('class' => 'btn btn-inverse sans-arrondi', 'escape' => false));
     echo '</div>';
 }
-echo $this->Form->end();
+echo $this->BsForm->end();
 ?>
-</div>
-
 <script type="application/javascript">
     /**
      * Actions au chargement de la page
@@ -235,7 +215,6 @@ echo $this->Form->end();
         }
     }
 </script>
-
 <style>
     .select2-container .select2-choice {
         border-radius: 0;

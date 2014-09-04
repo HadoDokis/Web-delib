@@ -1,7 +1,7 @@
 <?php
 class ActeursController extends AppController
 {
-    public $helpers = array('Html', 'Html2', 'Form', 'Form2');
+    public $helpers = array();
     public $components = array('Paginator');
     public $uses = array('Acteur', 'Deliberation', 'Vote');
 
@@ -85,7 +85,7 @@ class ActeursController extends AppController
                 $this->Session->setFlash('Veuillez créer un type d&apos;acteur.', 'growl', array('type' => 'erreur'));
                 $this->redirect(array('controller' => 'typeacteurs', 'action' => 'add'));
             }
-            $this->set('typeacteurs', $typeacteurs);
+            $this->set('typeacteurs', $typeacteurs=Hash::combine($typeacteurs, '{n}.Typeacteur.id', '{n}.Typeacteur.nom'));
             $this->set('services', $this->Acteur->Service->generateTreeList(array('Service.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('selectedServices', null);
             $this->render('edit');
@@ -96,17 +96,24 @@ class ActeursController extends AppController
     {
         $sortie = false;
         if (empty($this->data)) {
-            $this->request->data = $this->Acteur->read(null, $id);
+            $acteur=$this->Acteur->read(null, $id);
+            
+            if (!empty($acteur['Acteur']['date_naissance']))
+                $acteur['Acteur']['date_naissance'] = date('d/m/Y', strtotime($acteur['Acteur']['date_naissance']));
+            
             $this->set('acteurs', $this->Acteur->generateListElus());
-            if ($this->request->data['Acteur']['date_naissance'] != null)
-                $date = date('d/m/Y', strtotime($this->request->data['Acteur']['date_naissance']));
-            if (empty($this->data)) {
+            $this->set('acteur', $acteur);
+            if (empty($acteur)) {
                 $this->Session->setFlash('Invalide id d\'acteur', 'growl');
                 $sortie = true;
             } else
-                $this->set('selectedServices', $this->_selectedArray($this->request->data['Service']));
+                $this->set('selectedServices', $this->_selectedArray($acteur['Service']));
+            
+            if (!$this->request->data) {
+                $this->request->data = $acteur;
+            }
         } else {
-            $this->request->data['Acteur']['date_naissance'] = $this->Utils->FrDateToUkDate($this->data['date']);
+            $this->request->data['Acteur']['date_naissance'] = CakeTime::format( $this->data['date'], '%Y-%m-%d 00:00:00');
             if ($this->_controleEtSauve()) {
                 $this->Session->setFlash('L\'acteur \'' . $this->request->data['Acteur']['prenom'] . ' ' . $this->request->data['Acteur']['nom'] . '\' a été modifié', 'growl');
                 $sortie = true;

@@ -45,27 +45,16 @@ class Collectivite extends AppModel {
         ),
     );
 
-    function makeBalise(&$oMainPart, $collectivite_id) {
-        $collectivite = $this->find('first', array('conditions' => array($this->alias . '.id' => $collectivite_id),
-            'recursive' => -1));
-
-        $oMainPart->addElement(new GDO_FieldType('nom_collectivite', $collectivite['Collectivite']['nom'], "text"));
-        $oMainPart->addElement(new GDO_FieldType('adresse_collectivite', $collectivite['Collectivite']['adresse'], "text"));
-        $oMainPart->addElement(new GDO_FieldType('cp_collectivite', $collectivite['Collectivite']['CP'], "text"));
-        $oMainPart->addElement(new GDO_FieldType('ville_collectivite', $collectivite['Collectivite']['ville'], "text"));
-        $oMainPart->addElement(new GDO_FieldType('telephone_collectivite', $collectivite['Collectivite']['telephone'], "text"));
-    }
-
     /**
      * fonction d'initialisation des variables de fusion pour la collectivité
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $aData variable Gedooo de type maintPart du document à fusionner
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param int $id id des données à fusionner
      * @throws Exception
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id) {
+    function setVariablesFusion(&$aData, &$modelOdtInfos, $id) {
         // lecture de la collectivité en  base de données
         $collectivite = $this->find('first', array(
             'recursive'  => -1,
@@ -76,15 +65,15 @@ class Collectivite extends AppModel {
 
         // initialisation des variables
         if ($modelOdtInfos->hasUserFieldDeclared('nom_collectivite'))
-            $oMainPart->addElement(new GDO_FieldType('nom_collectivite', $collectivite['Collectivite']['nom'], "text"));
+            $aData['nom_collectivite']=$collectivite['Collectivite']['nom'];
         if ($modelOdtInfos->hasUserFieldDeclared('adresse_collectivite'))
-            $oMainPart->addElement(new GDO_FieldType('adresse_collectivite', $collectivite['Collectivite']['adresse'], "text"));
+            $aData['adresse_collectivite']=$collectivite['Collectivite']['adresse'];
         if ($modelOdtInfos->hasUserFieldDeclared('cp_collectivite'))
-            $oMainPart->addElement(new GDO_FieldType('cp_collectivite', $collectivite['Collectivite']['CP'], "text"));
+            $aData['cp_collectivite']= $collectivite['Collectivite']['CP'];
         if ($modelOdtInfos->hasUserFieldDeclared('ville_collectivite'))
-            $oMainPart->addElement(new GDO_FieldType('ville_collectivite', $collectivite['Collectivite']['ville'], "text"));
+            $aData['ville_collectivite']=$collectivite['Collectivite']['ville'];
         if ($modelOdtInfos->hasUserFieldDeclared('telephone_collectivite'))
-            $oMainPart->addElement(new GDO_FieldType('telephone_collectivite', $collectivite['Collectivite']['telephone'], "text"));
+            $aData['telephone_collectivite']=$collectivite['Collectivite']['telephone'];
     }
     
     function checkFormatLogo($data, $extension = null, $required = false) {

@@ -1,32 +1,22 @@
-<div class="seances">
+<?php
 
-<h2>Liste des s&eacute;quences</h2>
-
-<table cellpadding="0" cellspacing="0" width='100%'>
-<tr>
-	<th>Nom</th>
-	<th>Commentaire</th>
-	<th>Num&eacute;ro de s&eacute;quence</th>
-	<th>Actions</th>
-</tr>
-
-<?php foreach ($sequences as $sequence): ?>
-<tr height="36px">
-	<td><?php echo $sequence['Sequence']['nom']; ?></td>
-	<td><?php echo $sequence['Sequence']['commentaire']; ?></td>
-	<td><?php echo $sequence['Sequence']['num_sequence']; ?></td>
-	<td class="actions">
-		<?php echo $this->Html->link(SHY,'/sequences/view/' . $sequence['Sequence']['id'], array('class'=>'link_voir', 'escape' => false, 'title'=>'Voir'), false)?>
-		<?php echo $this->Html->link(SHY,'/sequences/edit/' . $sequence['Sequence']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false)?>
-		<?php if (empty($sequence['Compteur'])) echo $this->Html->link(SHY,'/sequences/delete/' . $sequence['Sequence']['id'], array('class'=>'link_supprimer', 'escape' => false, 'title'=>'Supprimer'), 'Voulez-vous supprimer la séquence \''.$sequence['Sequence']['nom'].'\' ?'); ?>
-	</td>
-</tr>
-<?php endforeach; ?>
-</table>
-
-<?php $this->Html2->boutonAdd("Ajouter une séquence","Ajouter une séquence"); ?>
-<!--<ul class="actions">
-	<li><?php echo $this->Html->link('Ajouter une séquence', '/sequences/add/', array('class'=>'link_add', 'title'=>'Ajouter une séquence')); ?></li>
-</ul>-->
-
-</div>
+echo $this->Bs->tag('h3', 'Liste des séquences') .
+ $this->Bs->table(array(array('title' => 'Libellé'),
+    array('title' => 'Commentaire'),
+    array('title' => 'Numéro de séquence'),
+    array('title' => 'Actions'),
+        ), array('hover', 'striped'));
+foreach ($sequences as $sequence) {
+    echo $this->Bs->tableCells(array(
+        $sequence['Sequence']['nom'],
+        $sequence['Sequence']['commentaire'],
+        $sequence['Sequence']['num_sequence'],
+        $this->Bs->div('btn-group') .
+        $this->Bs->btn(null, array('controller' => 'sequences', 'action' => 'view', $sequence['Sequence']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
+        $this->Bs->btn(null, array('controller' => 'sequences', 'action' => 'edit', $sequence['Sequence']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+        $this->Bs->btn(null, array('controller' => 'sequences', 'action' => 'delete', $sequence['Sequence']['id']), array('type' => 'primary', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => empty($sequence['Compteur']) ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $sequence['Sequence']['nom'] . ' ?') .
+        $this->Bs->close()
+    ));
+}
+echo $this->Bs->endTable() .
+ $this->Html2->btnAdd("Ajouter une séquence", "Ajouter");
