@@ -56,6 +56,7 @@ $(document).ready(function () {
     $(".select2multiple").select2({
         width: 'resolve',
         allowClear: true,
+        width: "100%",
         placeholder: 'Sélection vide'
     });
 });

@@ -1,11 +1,12 @@
-<?php echo $this->Html->script('compteurs.js'); ?>
+<?php 
 
-<?php
+echo $this->Html->script('compteurs.js'); 
 if ($this->Html->value('Compteur.id')) {
-    echo "<h2>Modification d'un compteur paramétrable</h2>";
+    echo $this->Bs->tag('h3', 'Modification d\'un compteur');
     echo $this->Form->create('Compteur', array('url' => '/compteurs/edit/' . $this->Html->value('Compteur.id'), 'type' => 'post', 'id' => 'form_compteur'));
 } else {
     echo "<h2>Ajout d'un compteur paramétrable</h2>";
+    echo $this->Bs->tag('h3', 'Ajout d\'un compteur');
     echo $this->Form->create('Compteur', array('url' => '/compteurs/add/', 'type' => 'post', 'id' => 'form_compteur'));
 }
 ?>
@@ -63,8 +64,10 @@ if ($this->Html->value('Compteur.id')) {
 <br/>
 
 <div class="submit">
-    <?php if ($this->action == 'edit') echo $this->Form->hidden('Compteur.id') ?>
-    <?php $this->Html2->boutonsSaveCancel(); ?>
+    <?php
+    echo $this->Form->hidden('Typeacte.id');
+    echo $this->Html2->btnSaveCancel('', array('action' => 'index'));
+    ?>
 </div>
 
 <?php echo $this->Form->end(); ?>

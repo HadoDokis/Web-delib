@@ -10,12 +10,12 @@
         echo $this->Html->tag('td', $connecteur, array('style' => 'border-right:0;'));
         echo $this->Html->tag('td', null, array('style' => 'text-align:right; border-left:0;'));
         echo $this->Html->tag('div', null, array('class' => 'btn-group'));
-        echo $this->Html->link('<i class="fa fa-edit"></i>', array('action' => 'edit', $id), array(
-            'class' => 'btn',
+        echo $this->Html->link('<span class="fa fa-edit"></span>', array('action' => 'edit', $id), array(
+            'class' => 'btn btn-default',
             'title' => "Modifier le connecteur $connecteur",
             'escape' => false
         ));
-        echo $this->Html->link('<i class="fa fa-check"></i>', '/check/index.php#' . urlencode(strtolower($connecteur)), array(
+        echo $this->Html->link('<span class="fa fa-check"></span>', '/check/index.php#' . urlencode(strtolower($connecteur)), array(
             'class' => 'btn btn-info',
             'title' => "Tester le connecteur $connecteur",
             'escape' => false,

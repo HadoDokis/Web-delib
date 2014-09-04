@@ -27,7 +27,7 @@ class Vote extends AppModel {
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $deliberationId id de la délibération
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $deliberationId) {
+    function setVariablesFusion(&$aData, &$modelOdtInfos, $deliberationId) {
         // initialisations
         $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
         $voteIterations = array(
@@ -43,8 +43,9 @@ class Vote extends AppModel {
 
             // nombre de votes
             $nbVotes = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
-            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_'.$voteIteration['fusionVariableSuffixe'], $nbVotes, 'text'));
-
+            if ($modelOdtInfos->hasUserFieldDeclared('nombre_acteur_'.$voteIteration['fusionVariableSuffixe'])) {
+                $aData['nombre_acteur_'.$voteIteration['fusionVariableSuffixe']]= $nbVotes;//, 'text'));
+            }
             // liste des variables utilisées dans le template
             $acteurFields = $aliasActeurFields = array();
             foreach($fusionVariables as $fusionVariable)
@@ -62,8 +63,6 @@ class Vote extends AppModel {
                 'contain' => $aliasActeurFields,
                 'conditions' => array('Vote.delib_id' => $deliberationId, 'Vote.resultat' => $voteIteration['voteResultat']),
                 'order' => 'Acteur.position ASC'));
-            // itérations sur les acteurs
-            $oStyleIteration = new GDO_IterationType($voteIteration['iterationName']);
             
             if ($nbVotes==0){
                /* $oDevPart = new GDO_PartType();
@@ -92,14 +91,13 @@ class Vote extends AppModel {
                 // traitement de la date de naissance
                 if (!empty($acteur['Acteur']['date_naissance']))
                     $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
-                $oDevPart = new GDO_PartType();
+                
+                $aVotesActeurs=array();
                 foreach($acteurFields as $fieldname){
-                     $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_'.$voteIteration['fusionVariableSuffixe'], $acteur['Acteur'][$fieldname], "text"));
+                     $aVotesActeurs[$fieldname.'_acteur_'.$voteIteration['fusionVariableSuffixe']]=$acteur['Acteur'][$fieldname];//, "text"));
                 }
-                   
-                $oStyleIteration->addPart($oDevPart);
             }
-            $oMainPart->addElement($oStyleIteration);
+            $aData[$voteIteration['iterationName']]=$aVotesActeurs;
         }
     }
 }

@@ -19,7 +19,7 @@
     if (!empty($dateClassification)) {
         echo 'La Classification enregistrée date du ' . $dateClassification;
     } else {
-        echo '<i class="fa fa-warning"></i> Classication non téléchargée';
+        echo '<i class="fa fa-warning"></i> Classification non téléchargée';
     }
     echo "&nbsp;";
     echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action' => 'getClassification'), array('title' => 'Télécharger/Mettre à jour les données de classification', 'escape' => false)) ?>

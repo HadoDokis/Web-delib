@@ -2,7 +2,7 @@
 class TypeacteursController extends AppController
 {
 	var $name = 'Typeacteurs';
-        public $helpers = array('Html2');
+        public $helpers = array();
 	// Gestion des droits : identiques aux droits des acteurs
 	var $commeDroit = array(
 		'add' => 'Typeacteurs:index',
@@ -13,7 +13,7 @@ class TypeacteursController extends AppController
 
 	function index()
 	{
-		$this->set('typeacteurs', $this->Typeacteur->find('all', array('recursive' => -1 )));
+            $this->set('typeacteurs', $this->Typeacteur->find('all', array('recursive' => -1,'order'=>'id ASC' )));
 	}
 
 	function view($id = null) 	{
@@ -46,7 +46,12 @@ class TypeacteursController extends AppController
 	function edit($id = null) {
 		$sortie = false;
 		if (empty($this->request->data)) {
-			$this->request->data = $this->Typeacteur->read(null, $id);
+                    
+                        $this->Typeacteur->recursive = -1;
+                        $acteur=$this->Typeacteur->read( null, $id);
+                        
+			$this->request->data = $acteur;
+                        debug($this->request->data);
 			if (empty($this->request->data)) {
 				$this->Session->setFlash('Invalide id pour le type d\'acteur', 'growl', array('type'=>'erreur'));
 				$sortie = true;
@@ -61,7 +66,7 @@ class TypeacteursController extends AppController
 		if ($sortie)
             $this->redirect(array('action'=>'index'));
 		else
-			$this->set('eluNonElu', array('1'=>'élu','0'=>'non élu'));
+                $this->set('eluNonElu', array('1'=>'élu','0'=>'non élu'));
 	}
 
 	function delete($id = null) {

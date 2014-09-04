@@ -3,6 +3,7 @@
 Configure::write('debug', 0);
 /* URL de Webdelib (pour mails) */
 Configure::write('WEBDELIB_URL', 'http://webdelib.x.x.org');
+Configure::write('Config.language', 'fra');
 
 /* Configuration session default 600 */
 Configure::write('Session.timeout', 600);

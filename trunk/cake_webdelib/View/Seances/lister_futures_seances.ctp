@@ -1,34 +1,47 @@
-<div class="seances">
 <?php
-if (@$this->params['filtre'] == 'hide') {
-    $endDiv = true;
-    echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'seanceATraiter'));
-    echo $this->Html->tag('h2', "Séances à traiter");
-} else {
-    $endDiv = false;
-    echo $this->Html->tag('h2', "Séances à traiter");
-    echo $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'genereFusionMultiSeancesToClient'), 'class' => 'waiter'));
+if(!isset($this->request['render']) || $this->request['render']!='banette')
+if ($this->params['filtre'] != 'hide') {
+    $this->BsForm->setLeft(0);
+    $this->Html->addCrumb(__('Séances à traiter'));
+    echo $this->Html->tag('h3', __('Séances à traiter'));
+    echo $this->Bs->container(array('class'=>'-fluid')).
+        $this->Bs->row().
+            $this->Bs->col('xs12').
+    $this->BsForm->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'genereFusionMultiSeancesToClient'), 'class' => 'waiter form-inliney'));
+  
+} 
+
+if(isset($this->request['render']) && $this->request['render']=='banette'){
+    echo $this->Bs->div('panel panel-default');
+echo $this->Bs->div('panel-heading', __('Séances à traiter').
+        '<span style="float: right">'.$this->Html->link(__('Voir toutes les seances à traiter'), 
+                array('controller'=>$this->request['controller'],'action'=>$this->request['action'])
+                ).'</span>'
+        );
 }
 ?>
-<table class='table table-striped table-middle'>
+<div class="table-responsive">
+<table class='table table-striped table-middle table-bordered table-hover'>
 <thead>
 <tr>
-    <?php if (!$endDiv) echo("<th style='width:2px;'><input type='checkbox' id='masterCheckbox' /></th>"); ?>
+    <?php if (!isset($this->request['render']) || $this->request['render']!='banette') echo("<th style='width:2px;'><input type='checkbox' id='masterCheckbox' /></th>"); ?>
     <th>Type</th>
-    <th style="width:190px;">Date de la séance</th>
-    <th style="width:200px;">Préparation</th>
-    <th style="width:150px;">En cours</th>
-    <th style="width:150px;">Finalisation</th>
+    <th style="width: 15em;">Date de la séance</th>
+    <th style="width: 15em;">Préparation</th>
+    <th style="width: 10em;" >En cours</th>
+    <th style="width: 10em;">Finalisation</th>
     <?php if (!$endDiv) : ?>
-    <th style="width:80px;">Actions
+    <th style="width: 8em;">Actions
     </th> <?php endif; ?>
 </tr>
 </thead>
 <tbody>
-<?php foreach ($seances as $seance) : ?>
+<?php
+    if(!empty($seances))
+    foreach ($seances as $seance) : ?>
     <tr>
     <?php
-    if (!$endDiv)
+    if (!isset($this->request['render']) || $this->request['render']!='banette')
         echo("<td class='text-center table-middle'>"
             . $this->Form->checkbox(
                 'Seance.id_' . $seance['Seance']['id'],
@@ -37,7 +50,7 @@ if (@$this->params['filtre'] == 'hide') {
     ?>
     <td><strong><?php echo $seance['Typeseance']['libelle']; ?></strong></td>
     <?php echo $this->Html->tag('td', $seance['Seance']['date']); ?>
-    <td class="actions">
+    <td class="actions" style="text-align:center;vertical-align: middle">
 
         <!--
         <div class="btn-group">
@@ -47,7 +60,6 @@ if (@$this->params['filtre'] == 'hide') {
             </button>
             <ul class="dropdown-menu">
                 <?php
-
         echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-list"></i> Afficher les projets',
             array('controller' => 'seances', 'action' => 'afficherProjets', $seance['Seance']['id']),
             array(
@@ -95,22 +107,21 @@ if (@$this->params['filtre'] == 'hide') {
             </ul>
         </div>-->
         <?php
-
-        echo $this->Html->link(SHY,
+        echo $this->Html->link(' ',
             array('controller' => 'seances', 'action' => 'afficherProjets', $seance['Seance']['id']),
             array('class' => 'link_classer_odj',
                 'title' => 'Voir l\'ordre des projets de la séance du ' . $seance['Seance']['date'],
                 'escape' => false
             ));
         if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
-            echo $this->Html->link(SHY,
+            echo $this->Html->link(' ',
                 array('action' => 'genereFusionToClient', $seance['Seance']['id'], 'convocation'),
                 array(
                     'class' => 'waiter link_convocation_unique',
                     'title' => "Générer l'apercu d'une convocation pour la séance du " . $seance['Seance']['date'],
                     'escape' => false,
                 ));
-        echo $this->Html->link(SHY,
+        echo $this->Html->link(' ',
             array('controller' => 'seances', 'action' => 'sendConvocations', $seance['Seance']['id'], $seance['Typeseance']['modelconvocation_id']),
             array(
                 'class' => 'link_convocation',
@@ -118,14 +129,14 @@ if (@$this->params['filtre'] == 'hide') {
                 'escape' => false,
             ));
         if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
-            echo $this->Html->link(SHY,
+            echo $this->Html->link(' ',
                 array('action' => 'genereFusionToClient', $seance['Seance']['id'], 'ordredujour'),
                 array(
                     'class' => 'waiter link_ordre_jour_unique',
                     'escape' => false,
                     'title' => "Aperçu de l'ordre jour pour la séance du " . $seance['Seance']['date'],
                 ));
-        echo $this->Html->link(SHY,
+        echo $this->Html->link(' ',
             array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance['Seance']['id'], $seance['Typeseance']['modelordredujour_id']),
             array(
                 'class' => 'link_ordre_jour',
@@ -133,7 +144,7 @@ if (@$this->params['filtre'] == 'hide') {
                 'escape' => false,
             ));
         if (empty($seance['Seance']['idelibre_id']))
-            echo $this->Html->link(SHY,
+            echo $this->Html->link(' ',
                 array('controller' => 'seances', 'action' => 'sendToIdelibre', $seance['Seance']['id']),
                 array(
                     'class' => 'link_tablet',
@@ -141,7 +152,7 @@ if (@$this->params['filtre'] == 'hide') {
                     'escape' => false,
                 ));
         else
-            echo $this->Html->link(SHY,
+            echo $this->Html->link(' ',
             array('controller' => 'seances', 'action' => 'sendToIdelibre', $seance['Seance']['id']),
             array(
                 'class' => 'link_tablet',
@@ -149,7 +160,6 @@ if (@$this->params['filtre'] == 'hide') {
                 'onclick' => "return confirm('Cette séance a déjà été envoyé à i-delibRE !\\n\\nSi vous souhaitez la renvoyer de nouveau,\\nAssurez vous au préalable qu\'elle n\'est plus dans i-delibRE.\\n\\nVoulez vous continuer ?')",
                 'escape' => false,
             ));
-
         ?>
     </td>
     <td class="actions">
@@ -205,14 +215,14 @@ if (@$this->params['filtre'] == 'hide') {
             </ul>
         </div>-->
         <?php
-        echo $this->Html->link(SHY,
+        echo $this->Html->link(' ',
             array('action' => 'saisirSecretaire', $seance['Seance']['id']),
             array(
                 'class' => 'link_secretaire',
                 'title' => 'Choix du président et du secrétaire de la séance du ' . $seance['Seance']['date'],
                 'escape' => false,
             ));
-        echo $this->Html->link(SHY,
+        echo $this->Html->link(' ',
             array('action' => 'saisirDebatGlobal', $seance['Seance']['id']),
             array(
                 'class' => 'link_debat',
@@ -221,7 +231,7 @@ if (@$this->params['filtre'] == 'hide') {
             ));
 
         if ($seance['Typeseance']['action'] == 0)
-            echo $this->Html->link(SHY,
+            echo $this->Html->link(' ',
                 array('action' => 'details', $seance['Seance']['id']),
                 array(
                     'class' => 'link_voter',
@@ -230,7 +240,7 @@ if (@$this->params['filtre'] == 'hide') {
                 ), false);
 
         elseif ($seance['Typeseance']['action'] == 1)
-            echo $this->Html->link(SHY,
+            echo $this->Html->link(' ',
                 array('action' => 'detailsAvis', $seance['Seance']['id']),
                 array(
                     'class' => 'link_donnerAvis',
@@ -238,7 +248,7 @@ if (@$this->params['filtre'] == 'hide') {
                     'escape' => false,
                 ));
         elseif ($seance['Typeseance']['action'] == 2)
-            echo $this->Html->link(SHY,
+            echo $this->Html->link(' ',
                 array('action' => 'details', $seance['Seance']['id']),
                 array(
                     'class' => 'link_actes',
@@ -246,7 +256,7 @@ if (@$this->params['filtre'] == 'hide') {
                     'title' => 'Afficher les projets pour la séance du ' . $seance['Seance']['date']
                 ));
 
-        echo $this->Html->link(SHY,
+        echo $this->Html->link(' ',
             array('action' => 'saisirCommentaire', $seance['Seance']['id']),
             array(
                 'class' => 'link_commentaire_seance',
@@ -257,9 +267,8 @@ if (@$this->params['filtre'] == 'hide') {
     </td>
     <td class="actions">
         <?php
-
         if ($canSign) {
-            echo $this->Html->link(SHY,
+            echo $this->Html->link(' ',
                 array('controller' => 'deliberations', 'action' => 'sendToParapheur', $seance['Seance']['id']),
                 array(
                     'class' => 'link_signer',
@@ -267,21 +276,21 @@ if (@$this->params['filtre'] == 'hide') {
                     'escape' => false
                 ));
         }
-        echo $this->Html->link(SHY,
+        echo $this->Html->link(' ',
             array('action' => 'genereFusionToClient', $seance['Seance']['id'], 'pvsommaire'),
             array(
                 'class' => 'link_pvsommaire waiter',
                 'title' => 'Génération du pv sommaire pour la séance du ' . $seance['Seance']['date'],
                 'escape' => false,
             ));
-        echo $this->Html->link(SHY,
+        echo $this->Html->link(' ',
             array('action' => 'genereFusionToClient', $seance['Seance']['id'], 'pvdetaille'),
             array(
                 'class' => 'link_pvcomplet waiter',
                 'escape' => false,
                 'title' => 'Génération du pv complet pour la séance du ' . $seance['Seance']['date'],
             ));
-        echo $this->Html->link(SHY,
+        echo $this->Html->link(' ',
             array('action' => 'clore', $seance['Seance']['id']),
             array(
                 'class' => 'link_clore_seance',
@@ -319,12 +328,12 @@ if (@$this->params['filtre'] == 'hide') {
                 'escape' => false,
                 'title' => 'Génération du pv complet pour la séance du ' . $seance['Seance']['date'],
             )));
-        echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-times"></i> Clore la séance',
+            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-times"></i> Clore la séance',
             array('action' => 'clore', $seance['Seance']['id']),
             array(
                 'title' => 'Clôture de la séance du ' . $seance['Seance']['date'],
                 'escape' => false,
-            )), 'Confirmer la cloture de la séance ?');
+            ),'Confirmez-vous la cloture de la s&eacute;ance ?'));
         ?>
             </ul>
         </div>-->
@@ -358,14 +367,14 @@ if (@$this->params['filtre'] == 'hide') {
             <!--        </div>-->
             <div class="btn-group">
                 <?php
-                echo $this->Html->link('<i class="fa fa-edit"></i>',
+                echo $this->Html->link('<span class="fa fa-edit"></span>',
                     array('controller' => 'seances', 'action' => 'edit', $seance['Seance']['id']),
                     array(
-                        'class' => 'bouton_modifier btn',
+                        'class' => 'bouton_modifier btn btn-default',
                         'title' => 'Modifier la séance du ' . $seance['Seance']['date'],
                         'escape' => false,
                     ));
-                echo $this->Html->link('<i class="fa fa-trash-o"></i>',
+                echo $this->Html->link('<span class="fa fa-trash-o"></span>',
                     array('controller' => 'seances', 'action' => 'delete', $seance['Seance']['id']),
                     array(
                         'class' => 'bouton_supprimer btn btn-danger',
@@ -381,30 +390,32 @@ if (@$this->params['filtre'] == 'hide') {
 <?php endforeach; ?>
 </tbody>
 </table>
-<?php
-if (!empty($models) && !$endDiv && !empty($seances)) {
-    echo $this->html->tag('fieldset', null, array('id' => 'generation-multiseance'));
-    echo $this->Form->input('Seance.model_id', array(
-        'options' => $models,
-        'empty' => true,
-        'div' => array('class' => 'pull-left'),
-        'label' => false,
-        'after' => '<i class="fa fa-arrow-right" style="margin-left: 10px"></i>'
-    ));
-    echo $this->Form->button('<i class="fa fa-cogs"></i> Générer le document <span id="nbSeancesChecked"></span>', array(
-        'type' => 'submit',
-        'class' => 'btn btn-primary pull-left',
-        'title' => "Générer le document multi-séances (Attention : Cette opération peut durer longtemps)",
-        'id' => 'generer_multi_seance',
-        'style' => 'margin-left: 10px'
-    ));
-    echo $this->html->tag('div', '', array('class' => 'spacer'));
-    echo $this->html->tag('em', 'Note : Pour générer un document multi-séances, cochez les séances souhaitées dans la liste, sélectionnez le modèle d\'édition, puis cliquez sur le bouton "Générer le document".');
-    echo $this->html->tag('/fieldset', null);
-}
-echo $this->Form->end();
-?>
 </div>
+<?php
+if($this->request['render']=='banette')
+    echo('</div>');
+else
+if (!empty($models) && !empty($seances)) {
+    $this->BsForm->setLeft(0);
+    $this->BsForm->setRight(0);
+    echo $this->Bs->row().
+    $this->Bs->col('xs6').
+    $this->BsForm->inputGroup('Seance.model_id', array(
+                                'content'=>'<i class="fa fa-cogs"></i> Générer le document <span id="nbSeancesChecked"></span>',
+                                'id' => 'generer_multi_seance',
+                                'type' => 'button',
+                                'state' => 'primary',
+                                'side'=>'right'), array('class'=>'pull-left')).
+            $this->Bs->close().
+    $this->html->tag('div', '', array('class' => 'spacer')).
+            
+            $this->Bs->col('xs12').
+    $this->html->tag('em', 'Note : Pour générer un document multi-séances, cochez les séances souhaitées dans la liste, sélectionnez le modèle d\'édition, puis cliquez sur le bouton "Générer le document".', array('class'=>'help-block')).
+    $this->Bs->close();
+}
+echo $this->BsForm->end();
+
+?>
 <script type="text/javascript">
     $(document).ready(function () {
         //Lors d'action sur une checkbox :
@@ -427,7 +438,3 @@ echo $this->Form->end();
         $('#nbSeancesChecked').text('(' + nbChecked + ')');
     }
 </script>
-<?php
-if ($endDiv)
-    echo('</div>');
-?>

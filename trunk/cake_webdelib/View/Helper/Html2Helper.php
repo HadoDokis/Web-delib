@@ -10,7 +10,7 @@
 
 class Html2Helper extends HtmlHelper {
 
-    var $helpers = array('Form');
+    var $helpers = array('Form','Bs','BsForm');
 
     /*
      * Retourne deux élements SELECT pour la saisie des heures et des minutes.
@@ -228,24 +228,12 @@ class Html2Helper extends HtmlHelper {
         echo $this->link(SHY, $urlChampTri . '/' . ($inverse ? 'ASC' : 'DESC'), array('class' => 'link_tridesc', 'title' => 'Trier par ordre décroissant'), false, false);
     }
 
-    function boutonAdd($value = "Ajouter", $title = "Ajouter", $action = 'add', $class = 'btn-primary', $center = true, $id='bouton_ajouter') {
-        if ($center)
-            echo $this->tag('div', null, array('style' => 'text-align:center; margin-top:10px;'));
-
-        echo $this->link("<i class='fa fa-plus'></i> $value", array("action" => $action), array('id' => $id, 'class' => "btn $class", 'escape' => false, 'title' => $title));
-
-        if ($center)
-            echo $this->tag('/div', null);
+    function btnAdd($value = "Ajouter", $title = "Ajouter", $action = 'add', $class = 'btn-primary', $id='bouton_ajouter') {
+        return $this->Bs->btn($value, is_array($action)?$action:array("action" => $action), array('id' => $id, 'type' => "primary",'icon'=>'glyphicon glyphicon-plus', 'escape' => false, 'title' => $title));
     }
 
-    function boutonRetour($action = "index", $style = '', $center = false, $value="Retour") {
-        if ($center)
-            echo $this->tag('div', null, array('style' => 'text-align:center;'));
-
-        echo $this->link("<i class='fa fa-arrow-left'></i> $value", array('action'=>$action), array('class' => "btn", 'escape' => false, 'title' => 'Revenir à la page précédente', 'style' => $style));
-
-        if ($center)
-            echo $this->tag('/div', null);
+    function btnCancel($action = "index", $type = 'default', $value="Retour") {
+        return $this->Bs->btn($value, array("action" => $action), array('type' => $type,'icon'=>'glyphicon glyphicon-arrow-left', 'escape' => false, 'title' => 'Revenir à la page précédente'));
     }
 
     function boutonRetourUrl($url = "javascript:history.go(-1)", $style = '', $center = false, $value="Retour") {
@@ -290,18 +278,11 @@ class Html2Helper extends HtmlHelper {
         echo $this->link("<i class='$type'></i> $value", $url, array('class' => "btn $class", 'escape' => false, 'title' => $title, 'style' => $style));
     }
 
-    function boutonsSaveCancel($onclick = '', $urlCancel = "javascript:history.go(-1)", $titleSave = "Sauvegarder", $valueSave = 'Sauvegarder', $center = false) {
-        if ($center) {
-            echo $this->tag("div", null, array("class" => "btn-group", 'style' => 'text-align:center; margin-top:10px;'));
-            echo $this->link('<i class="fa fa-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'style' => 'float:none;'));
-            echo $this->Form->button("<i class='fa fa-save'></i> $valueSave", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick, 'style' => 'float:none;'));
-            echo $this->tag('/div', null);
-        } else {
-            echo $this->tag("div", null, array("class" => "btn-group", 'style' => 'margin-top:10px;'));
-            echo $this->link('<i class="fa fa-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
-            echo $this->Form->button("<i class='fa fa-save'></i> $valueSave", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick));
-            echo $this->tag('/div', null);
-        }
+    function btnSaveCancel($onclick = '', $urlCancel = "javascript:history.go(-1)", $titleSave = "Enregistrer", $valueSave = 'Enregistrer',$urlSave=null) {
+        return $this->Bs->div('btn-group col-md-offset-' . $this->BsForm->getLeft(), null) .
+        $this->Bs->btn('Annuler', $urlCancel, array('type' => 'default','icon'=>'glyphicon glyphicon-arrow-left', 'escape' => false, 'title' => 'Annuler les modifications')) .
+        $this->Bs->btn('Enregistrer', $urlSave, array('tag' => 'button', 'type' => 'primary','id' => 'boutonValider', 'icon' => 'glyphicon glyphicon-floppy-disk', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick)) .
+        $this->Bs->close();
     }
 
     function boutonsSaveCancelUrl($urlCancel="javascript:history.go(-1)", $onclick = '', $titleSave = "Sauvegarder", $valueSave = 'Sauvegarder', $center = false) {

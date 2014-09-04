@@ -1,43 +1,27 @@
-<div class="seances">
+<?php
 
-<h2>Gestion de la liste de l'information supplémentaire : <?php echo $infosupdef['Infosupdef']['nom']; ?></h2>
-<?php echo $this->element('filtre'); ?>
-
-<table cellpadding="0" cellspacing="0" width='100%'>
-<tr>
-	<th>Ordre</th>
-	<th>Nom</th>
-	<th>Actif</th>
-	<th width='150px'>Actions</th>
-</tr>
-
-<?php 
-       $numLigne = 1;
-       foreach ($this->data as $rownum=>$rowElement): 
-       $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
-       echo $this->Html->tag('tr', null, $rowClass);
-       $numLigne++;
-?>
-	<td class="ordre">
-		<?php echo $rowElement['Infosuplistedef']['ordre'].' '; ?>
-		<?php echo $this->Html->link('&#9650;', '/infosuplistedefs/changerOrdre/'.$rowElement['Infosuplistedef']['id'].'/0', array('escape' => false), false); ?>
-		<?php echo $this->Html->link('&#9660;', '/infosuplistedefs/changerOrdre/'.$rowElement['Infosuplistedef']['id'], array('escape' => false), false); ?>
-	</td>
-	<td><?php echo $rowElement['Infosuplistedef']['nom']; ?></td>
-	<td><?php echo $Infosuplistedef->libelleActif($rowElement['Infosuplistedef']['actif']); ?></td>
-	<td class="actions">
-		<?php echo $this->Html->link(SHY,'/infosuplistedefs/edit/'.$rowElement['Infosuplistedef']['id'], array('class'=>'link_modifier',  'escape' => false, 'title'=>'Modifier'), false); ?>
-		<?php echo '&nbsp;&nbsp;'; ?>
-		<?php if ($Infosuplistedef->isDeletable($rowElement['Infosuplistedef']['id']))
-			echo $this->Html->link(SHY,'/infosuplistedefs/delete/'.$rowElement['Infosuplistedef']['id'], array('class'=>'link_supprimer', 'escape' => false, 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'element \''.$rowElement['Infosuplistedef']['nom'].'\' ?'); ?>
-	</td>
-</tr>
-<?php endforeach; ?>
-</table>
-
-<ul class="actions btn-group">
-    <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', array('controller'=>'infosupdefs', 'action'=>'index'), array('class'=>'btn',  'escape' => false), false); ?>
-    <?php echo $this->Html->link('<i class="fa fa-plus"></i> Ajouter un élément', array('action'=>'add', $infosupdef['Infosupdef']['id']), array('class'=>'btn btn-primary', 'escape' => false, 'title'=>'Ajouter un élément'), false); ?>
-</ul>
-
-</div>
+echo $this->Bs->tag('h3', 'Gestion de la liste de l\'information supplémentaire : '.$infosupdef['Infosupdef']['nom']) .
+ $this->element('filtre').
+        $this->Bs->table(array(array('title' => 'Ordre'),
+    array('title' => 'Libellé'),
+    array('title' => 'Actif'),
+    array('title' => 'Actions'),
+        ), array('hover', 'striped'));
+foreach ($this->data  as $infosuplistedef) {
+    echo $this->Bs->tableCells(array(
+        $infosuplistedef['Infosuplistedef']['ordre'].
+                $this->Bs->btn('', array('controller' => 'infosuplistedefs', 'action' => 'changerOrdre', $infosuplistedef['Infosuplistedef']['id'], 0), array('icon'=>'glyphicon glyphicon-chevron-up','escape' => false), false).
+        $this->Bs->btn('', array('controller' => 'infosuplistedefs', 'action' => 'changerOrdre', $infosuplistedef['Infosuplistedef']['id']), array('icon'=>'glyphicon glyphicon-chevron-down','escape' => false), false),
+        $infosuplistedef['Infosuplistedef']['nom'],
+        $Infosuplistedef->libelleActif($infosuplistedef['Infosuplistedef']['actif']),
+        $this->Bs->div('btn-group') .
+        $this->Bs->btn(null, array('controller' => 'infosuplistedefs', 'action' => 'edit', $infosuplistedef['Infosuplistedef']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+        $this->Bs->btn(null, array('controller' => 'infosuplistedefs', 'action' => 'delete', $infosuplistedef['Infosuplistedef']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$Infosuplistedef->isDeletable($infosuplistedef['Infosuplistedef']['id']) ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $infosuplistedef['Infosuplistedef']['nom'] . ' ?') .
+        $this->Bs->close()
+    ));
+}
+echo $this->Bs->endTable().
+         $this->Html2->btnAdd('Ajouter un élément', 'Ajouter', array('action'=>'add', $infosupdef['Infosupdef']['id']));
+//
+//    <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', array('controller'=>'infosupdefs', 'action'=>'index'), array('class'=>'btn',  'escape' => false), false); 
+    //echo $this->Html->link('<i class="fa fa-plus"></i> Ajouter un élément', array('action'=>'add', $infosupdef['Infosupdef']['id']), array('class'=>'btn btn-primary', 'escape' => false, 'title'=>'Ajouter un élément'), false); 

@@ -49,8 +49,9 @@ div.login_form {
     border-radius: 5px;
 }
 
-div.alert-error {
+div.alert-danger {
     text-align: center;
+    margin-top: -0.5em;
     margin-left: 15px;
     margin-right: 15px;
 }

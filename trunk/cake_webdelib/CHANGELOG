@@ -1,5 +1,16 @@
 4.2.01
 ======
+- Mise en place du plugin GEDOOo
+- Nouveau shell d'importation de donnée : informations supplémentaires de type liste
+- Migration de Font-Awesome v4.0.3 vers v4.1.0
+- Migration de jQuery v1.10.2 vers v1.11.1
+- Migration de jGrowl v1.2.13 vers v1.3
+- Migration de bootstrap vers v2.3.2 à v3.2.0
+- Migration de select2 vers v2.1 à v3.5.1
+
+
+4.2.01
+======
 - Correction information supplémentaire de texte enrichi de projet en édition
 - Ajout d'une croix de fermeture pour les générations
 - Correction lors de la modification d'un acte avec une date de séance en retard (plusieurs dates)

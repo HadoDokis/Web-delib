@@ -21,7 +21,6 @@ $webDelib = array(
     'menuClass' => array('menuNiveau0', 'menuNiveau1'),
     'currentItem' => 'menuCourant',
     'items' => array(
-        'Accueil' => array('link' => '/'),
         'Mes projets' => array(
             'link' => 'mes_projets',
             'title' => 'Projets que j\'ai créés ou qui sont dans mes circuits d\'élaboration et de validation',
@@ -93,7 +92,7 @@ $webDelib = array(
                     'Nouvelle...' => array('link' => '/seances/add'),
                     'A traiter' => array('link' => '/seances/listerFuturesSeances'),
                     'Passées' => array('link' => '/seances/listerAnciennesSeances'),
-                    'Calendrier' => array('link' => '/seances/afficherCalendrier')
+                    'Calendrier' => array('link' => '/seances/Calendrier')
                 )
             )
         ),

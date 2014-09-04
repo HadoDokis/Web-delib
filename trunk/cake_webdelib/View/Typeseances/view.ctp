@@ -1,6 +1,9 @@
-<div id="vue_cadre">
-    <h3>Fiche Type de séance</h3>
-
+<?php
+echo $this->Bs->tag('h3', 'Types de séance');
+?>
+<div class="panel panel-default">
+    <div class="panel-heading">Fiche type de séance: <?php echo $typeseance['Typeseance']['libelle'] ?></div>
+    <div class="panel-body">
     <dl>
         <div class="demi">
             <dt>Libellé</dt>
@@ -50,22 +53,13 @@
             <dd>&nbsp;<?php echo $typeseance['Typeseance']['modified'] ?></dd>
         </div>
         <div class="spacer"></div>
-    </dl>
+    </dl>     </ul>
 
     <br/>
-    <ul id="actions_fiche">
-        <li><?php
-            echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/typeseances/index', array(
-                'class' => 'btn',
-                'title' => 'Retourner à la liste',
-                'escape' => false), false);
-            ?></li>
-        <li><?php
-            echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array(
-                    'class' => 'btn',
-                    'title' => 'Modifier',
-                    'escape' => false), false);
-            ?></li>
-    </ul>
-
-</div>
+<?php
+echo $this->Bs->row().
+$this->Bs->col('md4 of5');
+echo $this->Bs->div('btn-group', null,array('id'=>"actions_fiche" )) .
+    $this->Html2->btnCancel(),
+    $this->Bs->btn('Modifier', array('controller' => 'typeseances', 'action' => 'edit', $typeseance['Typeseance']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+    $this->Bs->close(6);

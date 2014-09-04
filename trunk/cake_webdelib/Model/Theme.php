@@ -46,29 +46,6 @@ class Theme extends AppModel {
 
     }
 
-    function makeBalise(&$oMainPart, $theme_id) { 
-        $tab = array();
-        $theme = $this->find('first', array('conditions' => array('Theme.id' => $theme_id),
-                                            'recursive'  => -1,
-                                            'fields'     => array('libelle', 'order', 'parent_id')));
-
-        $arbre = $this->getLibelleParent($theme_id);
-       // $level = $this->getLevel($theme_id);
-        $level = count($arbre);
-        for ($i=$level+1; $i <= 10; $i++) {
-            $oMainPart->addElement(new GDO_FieldType("T".$i."_theme", '', 'text'));
-        } 
-        foreach ($arbre as $index => $libelle) {
-            $tab[$level] = $libelle;
-            $level--; 
-        }
-        for ($i =1; $i <= count($tab); $i++) {
-            $oMainPart->addElement(new GDO_FieldType("T".$i."_theme", $tab[$i], 'text'));
-        }
-        $oMainPart->addElement(new GDO_FieldType('theme_projet', $theme['Theme']['libelle'],  'text'));
-        $oMainPart->addElement(new GDO_FieldType('critere_trie_theme', $theme['Theme']['order'], 'text'));
-    }
-
     /**
      * fonction d'initialisation des variables de fusion pour le thème d'un projet
      * les bibliothèques Gedooo doivent être inclues par avance
@@ -77,16 +54,17 @@ class Theme extends AppModel {
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id id du modèle lié
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id) {
+    function setVariablesFusion(&$aData, &$modelOdtInfos, $id) {
+        $aTheme=array();
         $theme = $this->find('first', array(
             'recursive'  => -1,
             'fields'     => array('libelle', 'order', 'lft', 'rght'),
             'conditions' => array('Theme.id' => $id)));
 
         if ($modelOdtInfos->hasUserFieldDeclared('theme_projet'))
-            $oMainPart->addElement(new GDO_FieldType('theme_projet', $theme['Theme']['libelle'],  'text'));
+            $aData['theme_projet']=$theme['Theme']['libelle'];//,  'text'));
         if ($modelOdtInfos->hasUserFieldDeclared('critere_trie_theme'))
-            $oMainPart->addElement(new GDO_FieldType('critere_trie_theme', $theme['Theme']['order'], 'text'));
+            $aData['critere_trie_theme']=$theme['Theme']['order'];//, 'text'));
 
         // arborescence des thèmes jusqu'au 10eme niveau
         $libelleThemesLevel = array_fill(1, 10, '');
@@ -95,9 +73,12 @@ class Theme extends AppModel {
             'fields' => array('libelle'),
             'conditions' => array('lft <='=>$theme['Theme']['lft'], 'rght >='=>$theme['Theme']['rght']),
             'order' => array('lft')));
-        foreach($themes as $i=>$theme) $libelleThemesLevel[$i+1] = $theme['Theme']['libelle'];
+        foreach($themes as $i=>$theme) 
+            $libelleThemesLevel[$i+1] = $theme['Theme']['libelle'];
         foreach($libelleThemesLevel as $level=>$libelleThemeLevel)
-            $oMainPart->addElement(new GDO_FieldType("T".$level."_theme", $libelleThemeLevel, 'text'));
+            if(!empty($libelleThemeLevel))
+                $aData["T".$level."_theme"]=$libelleThemeLevel;//, 'text'));
+        
     }
 
 }

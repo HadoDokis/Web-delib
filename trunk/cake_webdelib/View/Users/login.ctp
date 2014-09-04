@@ -1,11 +1,6 @@
-<noscript>
-    <div class="alert alert-heading text-center">
-        <strong>Attention!</strong> Vous devez activer JavaScript dans votre navigateur pour pouvoir utiliser le service Webdelib
-    </div>
-</noscript>
 <?php if (!empty($errorMsg)): ?>
-    <div class="alert alert-error">
-        <button type="button" class="close" data-dismiss="alert">×</button>
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <strong>Erreur!</strong> <?php echo $errorMsg; ?>
     </div>
 <?php endif; ?>
@@ -14,29 +9,36 @@
     <div class="spacer"></div>
     <p class="text-center"><strong>Bienvenue !</strong> Veuillez saisir votre identifiant et votre mot de passe.</p>
     <div class="spacer"></div>
-    <?php echo $this->Form->create('User', array('action' => 'login', 'type' => 'post', 'class' => 'form-horizontal', 'inputDefaults' => array(
-        'label' => false,
-        'div' => false
-    ))); ?>
-    <div class="control-group">
-        <label class="control-label" for="User.login">Identifiant</label>
-        <div class="controls">
-            <?php echo $this->Form->input('User.login', array('type' => 'text', 'escape' => false, 'placeholder' => 'Identifiant')); ?>
+    <?php echo $this->Form->create('User', array(
+                                            'action' => 'login', 
+                                            'role'=>'form',
+                                            'type' => 'post', 
+                                            'class' => 'form-horizontal', 
+                                            'inputDefaults' => array(
+                                            'label' => false,
+                                            'div' => false
+                                   ))); ?>
+    
+    <div class="form-group">
+        <label class="col-sm-offset-1 col-sm-3 control-label" for="User.login">Identifiant</label>
+        <div class="col-sm-7">
+            <?php echo $this->Form->input('User.login', array('type' => 'text', 'escape' => false, 'placeholder' => 'Identifiant', 'class'=>'form-control')); ?>
         </div>
     </div>
-    <div class="control-group">
-        <label class="control-label" for="User.password">Mot de passe</label>
-        <div class="controls">
-            <?php echo $this->Form->input('User.password', array('type' => 'password', 'escape' => false, 'placeholder' => 'Mot de passe')); ?>
+    
+    <div class="form-group">
+        <label class="col-sm-offset-1 col-sm-3 control-label" for="User.password">Mot de passe</label>
+        <div class="col-sm-7">
+            <?php echo $this->Form->input('User.password', array('type' => 'password', 'escape' => false, 'placeholder' => 'Mot de passe', 'class'=>'form-control')); ?>
         </div>
     </div>
-    <div class="control-group">
-        <div class="controls">
-            <?php echo $this->Form->button('Connexion', array('div' => false, 'class' => 'btn btn-success')); ?>
+    
+    <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-7">
+            <?php echo $this->Form->button('Connexion', array('div' => false,'type'=>'submit', 'class' => 'btn btn-primary')); ?>
         </div>
     </div>
-    <?php echo $this->Form->end(); ?>
+    
+    <?php echo $this->Form->end(); ?>   
 </div>
 <script>$('input, text').placeholder();</script>
-
-

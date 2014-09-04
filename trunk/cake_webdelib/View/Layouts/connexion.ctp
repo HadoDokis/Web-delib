@@ -36,7 +36,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->css('connexion');
 
     echo $this->Html->script('/libs/modernizr/modernizr.min');
-    echo $this->Html->script('/libs/jquery/jquery-1.10.2.min');
+    echo $this->Html->script('/libs/jquery/jquery-1.11.1.min');
+    echo $this->Html->script('/libs/jquery/jquery-migrate-1.2.1.js');
     echo $this->Html->script('/libs/bootstrap/js/bootstrap.min');
     echo $this->html->script('/libs/jgrowl/jquery.jgrowl.min');
     echo $this->html->script('jquery.placeholder.js');
@@ -54,6 +55,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
             <?php echo $this->Html->image($logo_path, array('id' => 'logo-adullact', 'style' => 'margin-left:10px')); ?>
         </div>
     </div>
+    <noscript>
+    <div class="alert alert-heading text-center">
+        <strong>Attention!</strong> Vous devez activer JavaScript dans votre navigateur pour pouvoir utiliser le service Webdelib
+    </div>
+    </noscript>
     <?php echo $content_for_layout; ?>
 </div>
 <?php echo $this->element('footer'); ?>

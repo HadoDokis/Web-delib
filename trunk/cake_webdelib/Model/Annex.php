@@ -171,7 +171,7 @@ class Annex extends AppModel {
      * @param string $modelName nom du model lié
      * @param integer $foreignKey id du model lié
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $modelName, $foreignKey) {
+    function setVariablesFusion(&$aData, &$modelOdtInfos, $modelName, $foreignKey) {
         // liste des variables de fusion utilisées dans le template
         $fields = array();
         if ($modelOdtInfos->hasUserFieldDeclared('titre_annexe'))
@@ -181,7 +181,7 @@ class Annex extends AppModel {
         if ($modelOdtInfos->hasUserField('fichier')) {
             if (!in_array('filename', $fields)) $fields[] = 'filename';
             $fields[] = 'edition_data';
-            $fields[] = 'edition_data_typemime';
+            //$fields[] = 'edition_data_typemime';
         }
         if (empty($fields)) return;
 
@@ -197,25 +197,21 @@ class Annex extends AppModel {
 
         // nombre d'annexes
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_annexe'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($annexes), 'text'));
+            $aData['nombre_annexe']= count($annexes);//, 'text'));
         if (empty($annexes)) return;
 
         // fusion des variables pour chaque annexe
-        $oIteration = new GDO_IterationType('Annexes');
         foreach($annexes as $annexe) {
-            $oDevPart = new GDO_PartType();
+            $aAnnexe=array();
             if (!empty($annexe['Annex']['titre']))
-                $oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
+                $aAnnexe['titre_annexe']= $annexe['Annex']['titre'];//, 'text'));
             if (!empty($annexe['Annex']['filename']))
-                $oDevPart->addElement(new GDO_FieldType('nom_fichier', $annexe['Annex']['filename'], 'text'));
+                $aAnnexe['nom_fichier']= $annexe['Annex']['filename'];//, 'text'));
             if (!empty($annexe['Annex']['edition_data']))
-                $oDevPart->addElement(new GDO_ContentType('fichier', $annexe['Annex']['filename'],
-                    $annexe['Annex']['edition_data_typemime'],
-                    'binary',
-                    $annexe['Annex']['edition_data']));
-            $oIteration->addPart($oDevPart);
+                $aAnnexe['fileodt.fichier']=$annexe['Annex']['edition_data'];
+            
+            $aData['Annexes'][]=$aAnnexe;
         }
-        $oMainPart->addElement($oIteration);
     }
 
     function getContentToGed($annex_id) {

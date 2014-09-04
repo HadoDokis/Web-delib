@@ -1,10 +1,10 @@
 <?php
 	if($this->Html->value('Typeseance.id')) {
-		echo "<h2>Modification d'un type de séance</h2>";
+                echo $this->Bs->tag('h3', 'Modification d\'un type de séance');
 		echo $this->Form->create('Typeseance', array('url' => '/typeseances/edit/'.$this->Html->value('Typeseance.id'),'type'=>'post'));
 	}
 	else {
-		echo "<h2>Ajout d'un type de séance</h2>";
+                echo $this->Bs->tag('h3', 'Ajout d\'un type de séance');
 		echo $this->Form->create('Typeseance', array('url' => array('action'=>'add'), 'type'=>'post'));
 	}
 ?>
@@ -53,7 +53,8 @@
 </fieldset>
 <div class="spacer"></div>
 <div class="submit">
-    <?php echo $this->Form->hidden('Typeseance.id')?>
-    <?php $this->Html2->boutonsSaveCancel('','/typeseances/index'); ?>
+    <?php echo $this->Form->hidden('Typeseance.id'). 
+            $this->Html2->btnSaveCancel('', array('action' => 'index'));
+     ?>
 </div>
 <?php $this->Form->end(); ?>

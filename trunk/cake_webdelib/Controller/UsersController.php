@@ -97,6 +97,7 @@ class UsersController extends AppController {
         $users = $this->Paginator->paginate('User');
 
         //Chercher les droits (types d'acte et supprimable?)
+        $i=1;
         foreach ($users as &$user) {
             foreach ($user['Aro'] as $aro){
                 $aros_ados = $this->ArosAdo->find('all', array(
@@ -110,10 +111,13 @@ class UsersController extends AppController {
                 foreach ($aros_ados as $aros_ado)
                     $user['Natures'][] = substr($aros_ado['Ado']['alias'], strlen('Typeacte:'), strlen($aros_ado['Ado']['alias']));
             }
-            /*
             // FIXME Optimiser pour diminuer le nombre de requêtes quand grosse bdd!!
             $user['User']['is_deletable'] = $this->_isDeletable($user, $message);
-            */
+            
+            if($i==20)
+                break;
+            
+            $i++;
         }
 
         $this->set('users', $users);
@@ -234,6 +238,11 @@ class UsersController extends AppController {
             if (!empty($this->request->data['Service']['Service']))
                 $this->request->data['Service']['Service'] = explode(',', $this->request->data['Service']['Service']);
 
+            if(!empty($this->data['User']['accept_notif']) && $this->data['User']['accept_notif']==true)
+                $this->data['User']['accept_notif']=false;
+                    else
+                     $this->data['User']['accept_notif']=true;
+                    
             if ($this->User->save($this->data)) {
                 if (!empty($this->data['Nature']))
                     foreach ($this->data['Nature'] as $nature_id => $can) {
@@ -316,24 +325,17 @@ class UsersController extends AppController {
             $this->loadModel('Cakeflow.Traitement');
             //A traiter
             $conditions = array();
-            $conditions['Deliberation.id'] = $this->Traitement->listeTargetId(
+            $nbProjetsATraiter = count($this->Traitement->listeTargetId(
                 $user['User']['id'],
                 array('etat' => 'NONTRAITE',
-                    'traitement' => 'AFAIRE'));
-            $conditions['Deliberation.etat'] = 1;
-            $conditions['Deliberation.parent_id'] = NULL;
-            $nbProjetsATraiter = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
+                    'traitement' => 'AFAIRE')));
             //En cours de validation
-            $conditions = array();
-            $conditions['Deliberation.etat'] = 1;
-            $conditions['Deliberation.parent_id'] = NULL;
-            $conditions['OR']['Deliberation.id'] = $this->Traitement->listeTargetId(
+            $nbProjetsValidation = count($this->Traitement->listeTargetId(
                 $user['User']['id'],
                 array(
                     'etat' => 'NONTRAITE',
-                    'traitement' => 'NONAFAIRE'));
-            $conditions['OR']['Deliberation.redacteur_id'] = $user['User']['id'];
-            $nbProjetsValidation = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
+                    'traitement' => 'NONAFAIRE')));
+            
             $nbProjets = $nbProjetsATraiter + $nbProjetsValidation;
 
             if ($nbProjets > 0) {
@@ -419,7 +421,7 @@ class UsersController extends AppController {
         $this->set('errorMsg', '');
         $collective = $this->Collectivite->read(array('logo','nom'), 1);
         App::uses('File', 'Utility');
-        $file = new File(WEBROOT_PATH . DS . 'files' . DS . 'image' . DS . 'logo');
+        $file = new File(WEBROOT_DIR . DS . 'files' . DS . 'image' . DS . 'logo');
 
         if (empty($collective['Collectivite']['logo']))
             $this->set('logo_path',  $this->base . "/files/image/adullact.png");

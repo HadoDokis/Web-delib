@@ -1,39 +1,27 @@
-<h2>Modification de la collectivit&eacute;</h2>
-<?php echo $this->Form->create('Collectivite', array('url' => array('action' => 'edit', $this->Html->value('Collectivite.id')), 'type' => 'file')); ?>
-<div class="required">
-    <?php
-    if (isset($entities)){
-        echo $this->Form->input('Collectivite.id_entity', array('options' => $entities, 'selected' => $selected, 'label' => 'Nom'));
-        echo '<div class="spacer"></div>';
-    }
-    else
-        echo $this->Form->input('Collectivite.nom', array('label' => 'Nom'));?>
-</div>
-<div class="optional">
-    <?php
-    echo $this->Form->input('Collectivite.adresse', array('label' => 'Adresse', 'size' => '30'));
-    echo $this->Form->input('Collectivite.CP', array('label' => 'Code Postal'));
-    echo $this->Form->input('Collectivite.ville', array('label' => 'Ville'));
-    echo $this->Form->input('Collectivite.telephone', array('label' => 'Num téléphone'));
-    echo $this->Form->hidden('Collectivite.id');
-    ?>
-</div>
-<div class="submit">
-    <?php
-    echo $this->Html->tag('div', null, array('class' => 'btn-group', 'style' => 'margin-top:10px;'));
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $previous, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
-    echo $this->Form->button('<i class="fa fa-save"></i> Enregistrer', array('type' => 'submit', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer les modifications'));
-    echo $this->Html->tag('/div', null);
-    ?>
-</div>
-<?php echo $this->Form->end(); ?>
-<style>
-    label {
-        line-height: 25px;
-    }
-</style>
-<script>
-    $('#CollectiviteIdEntity').select2({
+<?php
+echo $this->Bs->tag('h3', 'Modification de la collectivité');
+echo $this->Bs->container(array('class'=>'-fluid')) .
+ $this->Bs->row() .
+ $this->Bs->col('lg8') .
+ $this->BsForm->create('Collectivite', array('url' => array('action' => 'edit', $this->Html->value('Collectivite.id'))));
+if (isset($entities)) {
+    echo $this->BsForm->input('Collectivite.id_entity', array('options' => $entities, 'selected' => $selected, 'label' => 'Nom'));
+} else
+    echo $this->BsForm->input('Collectivite.nom', array('label' => 'Nom'));
+
+echo $this->BsForm->input('Collectivite.adresse', array('label' => 'Adresse')) .
+$this->BsForm->input('Collectivite.CP', array('label' => 'Code Postal')) .
+$this->BsForm->input('Collectivite.ville', array('label' => 'Ville')) .
+$this->BsForm->input('Collectivite.telephone', array('label' => 'Num téléphone')) .
+$this->BsForm->hidden('Collectivite.id') .
+$this->Bs->div('btn-group col-md-offset-' . $this->BsForm->getLeft()) .
+$this->Bs->btn($this->Bs->icon('arrow-left') . ' Retour', $previous, array('type' => 'default', 'escape' => false, 'title' => 'Annuler les modifications')) .
+$this->Bs->btn('Enregistrer', null, array('tag' => 'button', 'type' => 'primary', 'icon' => 'glyphicon glyphicon-floppy-disk', 'escape' => false, 'title' => 'Enregistrer les modifications')) .
+$this->Bs->close().
+$this->BsForm->end() .
+$this->Bs->close() .
+$this->Bs->close() .
+$this->Bs->close();
+$this->Bs->scriptBlock("$('#CollectiviteIdEntity').select2({
         width: 'resolve'
-    })
-</script>
+    })");

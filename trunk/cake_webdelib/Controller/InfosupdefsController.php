@@ -2,7 +2,7 @@
 class InfosupdefsController extends AppController
 {
 	public $uses = array( 'Infosupdef', 'Profil');
-	public $helpers = array('Html', 'Html2');
+	public $helpers = array();
     public $components = array('Filtre');
 
 	// Gestion des droits : identiques aux droits de l'index
@@ -34,7 +34,7 @@ class InfosupdefsController extends AppController
 			$this->Filtre->addCritere('Actif', array('field' => 'Infosupdef.actif',
 				'inputOptions' => array(
 					'label'=>__('Active', true),
-					'empty' =>'toutes',
+					'empty' =>'Toutes',
 					'options' => array(1 => 'Oui', 0 => 'Non'))));
 			$this->Filtre->setCritere('Actif', 1);
 		}
@@ -153,7 +153,8 @@ class InfosupdefsController extends AppController
 				$codePropose = Inflector::variable($this->request->data['Infosupdef']['code']);
 			}
 		}
-		$lienRetour = '/infosupdefs/'.($this->request->data['Infosupdef']['model']=='Deliberation'?'index':'index_seance');
+		$lienRetour =array('controllers'=>'infosupdefs',
+                    'action' => $this->request->data['Infosupdef']['model']=='Deliberation'?'index':'index_seance');
 		if ($sortie)
 			$this->redirect($lienRetour);
 		else {

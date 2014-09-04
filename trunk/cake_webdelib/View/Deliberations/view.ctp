@@ -1,7 +1,3 @@
-<?php echo $this->Html->script('ckeditor/ckeditor'); ?>
-<?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
-<?php echo $this->Html->script('ouvrable', true); ?>
-
 <?php
 $libelleCible = in_array($this->data['Deliberation']['etat'], array(3, 5)) ? 'la délibération' : 'le projet';
 
@@ -186,7 +182,7 @@ echo $linkBarre;
                         echo '<div class="annexesGauche"></div>';
                         echo '<div class="spacer"></div>';
                         echo '<div class="fckEditorProjet">';
-                        echo $this->Form->input($infosupdef['Infosupdef']['code'], array('label' => false, 'div' => false, 'type' => 'textarea', 'style' => 'display:none;', 'value' => $this->data['Infosup'][$infosupdef['Infosupdef']['code']]));
+                        echo $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
                         echo '</div>';
                         echo '<div class="spacer"></div>';
                     }
@@ -314,27 +310,6 @@ echo $linkBarre;
     ?>
 
     });
-
-    function afficheMasqueTexteEnrichi(lienId, inputId) {
-        var lienAfficherMasquer = $('#' + lienId);
-        if (lienAfficherMasquer.attr('affiche') == 'masque') {
-            var config = {
-                readOnly: true,
-                toolbar: 'Basic',
-                toolbarStartupExpanded: false
-            };
-            $('#' + inputId).ckeditor(config);
-            lienAfficherMasquer.attr('affiche', 'affiche');
-            lienAfficherMasquer.html('[Masquer le texte]');
-        } else {
-            $('#' + inputId).ckeditor(function () {
-                this.destroy();
-            });
-            $('#' + inputId).hide();
-            lienAfficherMasquer.attr('affiche', 'masque');
-            lienAfficherMasquer.html('[Afficher le texte]');
-        }
-    }
 </script>
 <style>
     #Historique dd {

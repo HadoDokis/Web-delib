@@ -1,48 +1,37 @@
-<div class="seances">
-
-<h2><?php echo $titre; ?></h2>
-<?php echo $this->element('filtre'); ?>
-
-<table style='width:100%'>
-<tr>
-	<th>Ordre</th>
-	<th>Nom</th>
-	<th>Commentaire</th>
-	<th>Code</th>
-	<th>Type</th>
-	<th>Recherche</th>
-	<th>Active</th>
-	<th style='width:160px'>Actions</th>
-</tr>
-
-<?php foreach ($this->data as $rownum=>$rowElement): ?>
-<tr style='height:36px;'>
-	<td class="ordre">
-		<?php echo $this->Html->link('&#9650;', '/infosupdefs/changerOrdre/'.$rowElement['Infosupdef']['id'].'/0', array('escape' => false), false); ?>
-		<?php echo $this->Html->link('&#9660;', '/infosupdefs/changerOrdre/'.$rowElement['Infosupdef']['id'], array('escape' => false), false); ?>
-	</td>
-	<td><?php echo $rowElement['Infosupdef']['nom']; ?></td>
-	<td><?php echo $rowElement['Infosupdef']['commentaire']; ?></td>
-	<td><?php echo $rowElement['Infosupdef']['code']; ?></td>
-	<td><?php echo $Infosupdef->libelleType($rowElement['Infosupdef']['type']); ?></td>
-	<td><?php echo $Infosupdef->libelleRecherche($rowElement['Infosupdef']['recherche']); ?></td>
-	<td><?php echo $Infosupdef->libelleActif($rowElement['Infosupdef']['actif']); ?></td>
-	<td class="actions">
 <?php
-	if (in_array($rowElement['Infosupdef']['type'], array('list','listmulti')))
-		echo $this->Html->link(SHY, array('controller'=>'infosuplistedefs', 'action'=>'index', $rowElement['Infosupdef']['id']), array('class'=>'link_liste', 'escape' => false, 'title'=>'Liste'), false);
-	echo $this->Html->link(SHY, array('controller'=>'infosupdefs', 'action'=>'view', $rowElement['Infosupdef']['id']), array('class'=>'link_voir', 'escape' => false, 'title'=>'Voir'), false);
-	echo $this->Html->link(SHY, array('controller'=>'infosupdefs', 'action'=>'edit', $rowElement['Infosupdef']['id']), array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false);
-	if ($Infosupdef->isDeletable($rowElement['Infosupdef']['id']))
-		echo $this->Html->link(SHY, array('controller'=>'infosupdefs', 'action'=>'delete', $rowElement['Infosupdef']['id']), array('class'=>'link_supprimer', 'escape' => false, 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'information \''.$rowElement['Infosupdef']['nom'].'\' ?');
-?>
-	</td>
-</tr>
-<?php endforeach; ?>
-</table>
+echo $this->Bs->tag('h3', $titre) .
+        $this->element('filtre').
+ $this->Bs->table(array(array('title' => 'Ordre'),
+    array('title' => 'Libellé'),
+    array('title' => 'Commentaire'),
+    array('title' => 'Code'),
+    array('title' => 'Type'),
+    array('title' => 'Recherche'),
+    array('title' => 'Active'),
+    array('title' => 'Actions'),
+        ), array('hover', 'striped'));
+foreach ($this->data as $infosupdef) {
+   
+//Bouttons actions
+$actions=$this->Bs->div('btn-group').
+$this->Bs->btn(null, array('controller' => 'infosupdefs', 'action' => 'view', $infosupdef['Infosupdef']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir'));
+ if (in_array($infosupdef['Infosupdef']['type'], array('list','listmulti')))       
+        $actions.=$this->Bs->btn(null, array('controller' => 'infosuplistedefs', 'action' => 'index', $infosupdef['Infosupdef']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-th-list', 'title' => 'Liste'));
+$actions.=$this->Bs->btn(null, array('controller' => 'infosupdefs', 'action' => 'edit', $infosupdef['Infosupdef']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+$this->Bs->btn(null, array('controller' => 'infosupdefs', 'action' => 'delete', $infosupdef['Infosupdef']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$Infosupdef->isDeletable($infosupdef['Infosupdef']['id']) ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $infosupdef['Infosupdef']['nom'] . ' ?') .
+$this->Bs->close();
 
-<ul class="actions">
-	<?php echo $this->Html->link('<i class="fa fa-plus"></i> Ajouter une information suppl&eacute;mentaire', $lienAdd, array('id'=>'bouton_ajouter_infosup', 'class'=>'btn btn-primary', 'escape' => false, 'title'=>'Ajouter une information supplémentaire'), false); ?>
-</ul>
-
-</div>
+    echo $this->Bs->tableCells(array(
+        $this->Bs->btn('', array('controller' => 'infosupdefs', 'action' => 'changerOrdre', $infosupdef['Infosupdef']['id'], 0), array('icon'=>'glyphicon glyphicon-chevron-up','escape' => false), false).
+        $this->Bs->btn('', array('controller' => 'infosupdefs', 'action' => 'changerOrdre', $infosupdef['Infosupdef']['id']), array('icon'=>'glyphicon glyphicon-chevron-down','escape' => false), false),
+        $infosupdef['Infosupdef']['nom'],
+        $infosupdef['Infosupdef']['commentaire'],
+        $infosupdef['Infosupdef']['code'],
+        $Infosupdef->libelleType($infosupdef['Infosupdef']['type']),
+        $Infosupdef->libelleRecherche($infosupdef['Infosupdef']['recherche']),
+        $Infosupdef->libelleActif($infosupdef['Infosupdef']['actif']),
+        $actions
+    ));
+}
+echo $this->Bs->endTable() .
+    $this->Bs->btn('Ajouter une information supplémentaire', $lienAdd, array('id' => 'bouton_ajouter_infosup', 'type' => "primary",'icon'=>'glyphicon glyphicon-plus', 'escape' => false, 'title' => 'Ajouter une information supplémentaire'));

@@ -14,7 +14,11 @@
  *  - modelTemplateOdtInfos : instance de la librairie ModelOdtValidator.Lib.phpOdtApi de manipulation des odt
  *
  */
-class OdtFusionBehavior extends ModelBehavior {
+
+App::import( 'Behavior', 'Gedooo.GedoooFusionConverter' );
+
+
+class OdtFusionBehavior extends GedoooFusionConverterBehavior {
 
     // id de l'occurence en base de données à fusionner
     protected $_id = null;
@@ -165,58 +169,22 @@ class OdtFusionBehavior extends ModelBehavior {
         if (empty($this->_modelTemplateId))
             throw new Exception('détermination du nom de la fusion -> modèle d\'édition indéterminé');
 
-        // chargement des classes php de Gedooo
-        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
-        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
-        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
-        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
-        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
-        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
-        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
-        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
-
-        // nouveau document odt à partir du model
-        $oTemplate = new GDO_ContentType("",
-            $this->_modelTemplateName,
-            "application/vnd.oasis.opendocument.text",
-            "binary",
-            $this->_modelTemplateContent);
-
-        // initialisation de la racine du document
-        $oMainPart = new GDO_PartType();
-
+         // initialisation des datas
+        $aData = array();
+        
         // initialisation des variables communes
-        $this->_setVariablesCommunesFusion($model, $oMainPart);
-
+        $this->_setVariablesCommunesFusion($model, $aData);
+     
         // initialisation des variables du model de données
-        $model->beforeFusion($oMainPart, $model->modelTemplateOdtInfos, $this->_id, $this->_modelOptions);
+        $model->beforeFusion($aData, $model->modelTemplateOdtInfos, $this->_id, $this->_modelOptions);
 
-        // initialisation de la fusion
-        $oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
-
-        // appel du webservice de fusion
-        $oService = new SoapClient(Configure::read('GEDOOO_WSDL'),
-            array("cache_wsdl" => WSDL_CACHE_NONE,
-                "exceptions" => 1,
-                "trace" => 1,
-                "classmap" => array(
-                    "FieldType" => "GDO_FieldType",
-                    "ContentType" => "GDO_ContentType",
-                    "DrawingType" => "GDO_DrawingType",
-                    "FusionType" => "GDO_FusionType",
-                    "IterationType" => "GDO_IterationType",
-                    "PartType" => "GDO_PartType",
-                    "MatrixType" => "GDO_MatrixType",
-                    "MatrixRowType" => "GDO_MatrixRowType",
-                    "MatrixTitleType" => "GDO_MatrixTitleType")));
-        $model->odtFusionResult = $oService->Fusion($oFusion);
+        $model->odtFusionResult = parent::gedFusion($model, $aData, $this->_modelTemplateContent);
+        
+        if(is_array($model->odtFusionResult))
+            throw new Exception($model->odtFusionResult['Message']);
 
         // libération explicite de la mémoire
-        unset($oTemplate);
-        unset($oMainPart);
-        unset($oFusion);
-        unset($oService);
+        unset($aData);
     }
 
     /**
@@ -225,18 +193,18 @@ class OdtFusionBehavior extends ModelBehavior {
      * @param GDO_PartType $oMainPart variable Gedooo de type maintPart du document à fusionner
      * @param Model $model modele du comportement
      */
-    private function _setVariablesCommunesFusion(Model &$model, GDO_PartType &$oMainPart) {
+    private function _setVariablesCommunesFusion(Model &$model, &$aData) {
         // variables des dates du jour
         if ($model->modelTemplateOdtInfos->hasUserFieldDeclared('date_jour_courant')) {
             $myDate = new DateComponent;
-            $oMainPart->addElement(new GDO_FieldType('date_jour_courant', $myDate->frenchDate(strtotime("now")), 'text'));
+            $aData['date_jour_courant']= $myDate->frenchDate(strtotime("now"));
         }
         if ($model->modelTemplateOdtInfos->hasUserFieldDeclared('date_du_jour'))
-            $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
+            $aData['date_du_jour'] = date("d/m/Y", strtotime("now"));
 
         // variables de la collectivité
         $myCollectivite = ClassRegistry::init('Collectivite');
-        $myCollectivite->setVariablesFusion($oMainPart, $model->modelTemplateOdtInfos, 1);
+        $myCollectivite->setVariablesFusion($aData, $model->modelTemplateOdtInfos, 1);
     }
 
 }

@@ -1,36 +1,26 @@
-<div class="seances">
+<?php
 
-<h2>Liste des compteurs param&eacute;trables</h2>
-
-<table cellpadding="0" cellspacing="0" width="100%">
-<tr>
-	<th>Nom</th>
-	<th>Commentaire</th>
-	<th>D&eacute;finition</th>
-	<th>Crit&egrave;re de r&eacute;initialisation</th>
-	<th>S&eacute;quence</th>
-	<th>Actions</th>
-</tr>
-
-<?php foreach ($compteurs as $compteur): ?>
-<tr height="36px">
-	<td><?php echo $compteur['Compteur']['nom']; ?></td>
-	<td><?php echo $compteur['Compteur']['commentaire']; ?></td>
-	<td><?php echo $compteur['Compteur']['def_compteur']; ?></td>
-	<td><?php echo $compteur['Compteur']['def_reinit']; ?></td>
-	<td><?php echo $compteur['Sequence']['nom'].' : '.$compteur['Sequence']['num_sequence']; ?></td>
-	<td class="actions">
-		<?php echo $this->Html->link(SHY,'/compteurs/view/' . $compteur['Compteur']['id'], array('class'=>'link_voir','escape' => false,  'title'=>'Voir'), false)?>
-		<?php echo $this->Html->link(SHY,'/compteurs/edit/' . $compteur['Compteur']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false)?>
-		<?php if (empty($compteur['Typeseance'])) echo $this->Html->link(SHY,'/compteurs/delete/' . $compteur['Compteur']['id'], array('class'=>'link_supprimer', 'escape' => false, 'title'=>'Supprimer'), 'Voulez-vous supprimer le compteur \''.$compteur['Compteur']['nom'].'\' ?')?>
-	</td>
-</tr>
-<?php endforeach; ?>
-</table>
-
-<?php $this->Html2->boutonAdd("Ajouter un compteur", "Ajouter un compteur"); ?>
-<!--<ul class="actions">
-	<li><?php echo $this->Html->link('Ajouter un compteur', '/compteurs/add/', array('class'=>'link_add', 'title'=>'Ajouter un compteur')); ?></li>
-</ul>-->
-
-</div>
+echo $this->Bs->tag('h3', 'Liste des compteurs') .
+ $this->Bs->table(array(array('title' => 'Libellé'),
+    array('title' => 'Commentaire'),
+    array('title' => 'Définition'),
+    array('title' => 'Critère de réinitialisation'),
+    array('title' => 'Séquence'),
+    array('title' => 'Actions'),
+        ), array('hover', 'striped'));
+foreach ($compteurs as $compteur) {
+    echo $this->Bs->tableCells(array(
+        $compteur['Compteur']['nom'],
+        $compteur['Compteur']['commentaire'],
+        $compteur['Compteur']['def_compteur'],
+        $compteur['Compteur']['def_reinit'],
+        $compteur['Sequence']['nom'].' : '.$compteur['Sequence']['num_sequence'],
+        $this->Bs->div('btn-group') .
+        $this->Bs->btn(null, array('controller' => 'compteurs', 'action' => 'view', $compteur['Compteur']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
+        $this->Bs->btn(null, array('controller' => 'compteurs', 'action' => 'edit', $compteur['Compteur']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+        $this->Bs->btn(null, array('controller' => 'compteurs', 'action' => 'delete', $compteur['Compteur']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => empty($compteur['Typeseance'])? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $compteur['Compteur']['nom'] . ' ?') .
+        $this->Bs->close()
+    ));
+}
+echo $this->Bs->endTable() .
+ $this->Html2->btnAdd("Ajouter un type d'acte", "Ajouter");
