@@ -4382,7 +4382,7 @@ class DeliberationsController extends AppController {
 
     function traitementLot()
     {
-        $ids = array();
+        $deliberationIds = array();
         $redirect = $this->referer();
         if (isset($this->data['Deliberation']['action']) && empty($this->data['Deliberation']['action'])) {
             $this->Session->setFlash('Veuillez sélectionner une action.', 'growl', array('type' => 'erreur'));
