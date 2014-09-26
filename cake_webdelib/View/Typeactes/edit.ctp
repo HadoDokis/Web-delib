@@ -1,9 +1,13 @@
 <?php
+$this->Html->addCrumb('Liste des types d\'acte', array('controller'=>$this->request['controller'],'action'=>'index'));
+
 if ($this->Html->value('Typeacte.id')) {
     echo $this->Bs->tag('h3', 'Modification d\'un type d\'acte');
+    $this->Html->addCrumb('Modification d\'un type d\'acte');
     echo $this->Form->create('Typeacte', array('url' => '/typeactes/edit/' . $this->Html->value('Typeacte.id'), 'type' => 'file'));
 } else {
     echo $this->Bs->tag('h3', 'Ajout d\'un type d\'acte');
+    $this->Html->addCrumb('Ajout d\'un type d\'acte');
     echo $this->Form->create('Typeacte', array('url' => '/typeactes/add/', 'type' => 'file'));
 }
 ?>

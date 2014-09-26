@@ -1,4 +1,7 @@
 <?php
+$this->Html->addCrumb('Liste des types d\'acte', array('controller'=>$this->request['controller'],'action'=>'index'));
+$this->Html->addCrumb('Types d\'acte');
+
 echo $this->Bs->tag('h3', 'Types d\'acte');
 ?>
 <div class="panel panel-default">
