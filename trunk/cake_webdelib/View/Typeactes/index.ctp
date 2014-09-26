@@ -1,5 +1,5 @@
 <?php
-
+$this->Html->addCrumb('Liste des types d\'acte');
 echo $this->Bs->tag('h3', 'Liste des types d\'acte') .
  $this->Bs->table(array(array('title' => 'Libellé'),
     array('title' => 'Compteur'),

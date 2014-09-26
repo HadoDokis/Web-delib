@@ -1,12 +1,13 @@
 <?php
 $this->Html->addCrumb('Liste des types de séance', array('controller'=>$this->request['controller'],'action'=>'index'));
-$this->Html->addCrumb('Modification d\'un type de séance');
 
 	if($this->Html->value('Typeseance.id')) {
+            $this->Html->addCrumb('Modification d\'un type de séance');
                 echo $this->Bs->tag('h3', 'Modification d\'un type de séance');
 		echo $this->Form->create('Typeseance', array('url' => '/typeseances/edit/'.$this->Html->value('Typeseance.id'),'type'=>'post'));
 	}
 	else {
+            $this->Html->addCrumb('Ajout d\'un type de séance');
                 echo $this->Bs->tag('h3', 'Ajout d\'un type de séance');
 		echo $this->Form->create('Typeseance', array('url' => array('action'=>'add'), 'type'=>'post'));
 	}
