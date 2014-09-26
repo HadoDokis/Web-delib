@@ -1,4 +1,6 @@
 <?php
+$this->Html->addCrumb('Liste des types de séance');
+
 echo $this->Bs->tag('h3', 'Liste des types de séance') .
  $this->Bs->table(array(array('title' => 'Libellé'),
     array('title' => 'Nb jours avant retard'),

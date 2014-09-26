@@ -1,4 +1,7 @@
 <?php
+$this->Html->addCrumb('Liste des types de séance', array('controller'=>$this->request['controller'],'action'=>'index'));
+$this->Html->addCrumb('Types de séance');
+
 echo $this->Bs->tag('h3', 'Types de séance');
 ?>
 <div class="panel panel-default">
