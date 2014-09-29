@@ -1,4 +1,6 @@
-<?php if (isset($message)) echo $message; 
+<?php 
+
+if (isset($message)) echo $message; 
 echo $this->element('filtre');
 
 $projet_etat_libelle=array(
@@ -11,10 +13,9 @@ $projet_etat_libelle=array(
         );
 
 echo $this->Bs->tag('h3', $titreVue) .
-
 $this->BsForm->create('Deliberation', array('url' => array('controller'=>'deliberations', 'action'=>'sendActesToSignature'), 'type' => 'file')).
 $this->Bs->table(array(
-    array('title' => $this->action != "autresActesAValider" && !empty($actes)?$this->Bs->checkbox( array('id'=>'masterCheckbox')):''),
+    array('title' => $this->action != "autresActesAValider" && !empty($actes)?$this->BsForm->checkbox(null,array('id'=>'masterCheckbox')):''),
     array('title' => 'Identifiant'),
     array('title' => 'Type d\'acte'),
     array('title' => 'Libellé de l\'acte'),
@@ -26,7 +27,7 @@ $this->Bs->table(array(
     array('title' => 'Actions')
         ), array('hover', 'striped'));
 foreach ($actes as $acte) {
-    
+
     if($this->action == 'autreActesValides'){
         $signature_etat_libelle='';
         switch ($acte['Deliberation']['parapheur_etat']) {
@@ -64,7 +65,7 @@ foreach ($actes as $acte) {
 //            $model_id = $acte['Modeltemplate']['modeleprojet_id'];
         //
         $actions.= $this->Bs->div('btn-group') .
-                $this->Bs->btn('Choisir un modèle <span class="caret"></span>', 
+                $this->Bs->btn('Générer <span class="caret"></span>', 
                         array(), 
                         array('type' => 'default', 
                             'icon' => 'glyphicon glyphicon-cog', 
@@ -85,7 +86,6 @@ foreach ($actes as $acte) {
                 , array('class'=>'dropdown-menu','role'=>'menu')).
         $this->Bs->close();
 
-        
         if($this->action == 'autresActesAValider' && $canGoNext && !empty($acte['Deliberation']['circuit_id']) && $acte['Deliberation']['etat'] == 1) {
             $actions.=$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'goNext', $acte['Deliberation']['id']), 
                 array('type' => 'default', 
@@ -113,18 +113,24 @@ foreach ($actes as $acte) {
                     'icon' => 'glyphicon glyphicon-road', 
                     'title' => 'Attribuer un circuit pour le projet ' . $acte['Deliberation']['objet']));
         }
-    
-    echo $this->Bs->tableCells(array(
-        ($this->action != "autresActesAValider")?
-        $this->BsForm->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], 
-                ((empty($acte['Deliberation']['signee'])
+        
+        $chekbox='';
+        if($this->action != "autresActesAValider")
+        {
+            if(empty($acte['Deliberation']['signee'])
                 && in_array($acte['Deliberation']['parapheur_etat'], array(null, 0, -1))
                 && $acte['Deliberation']['etat'] >= 2
-            )?
-                $options['checked'] = true
-            :
-                $options['disabled'] = true)
-                ):''
+            ){
+                $this->BsForm->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], array('checked'=>true)); 
+            }
+            else
+            {
+                $this->BsForm->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], array('disabled'=>true));
+            }
+        }
+
+        echo $this->Bs->tableCells(array(
+        $chekbox
         ,
         (!empty($acte['Deliberation']['num_delib'])?
         $this->Html->link($acte['Deliberation']['num_delib'], array('action' => 'view', $acte['Deliberation']['id']))
@@ -176,7 +182,7 @@ foreach ($actes as $acte) {
         $acte['Circuit']['nom'],
         $projet_etat_libelle[$acte['Deliberation']['etat']], 
         (!empty($signature_etat_libelle)?$signature_etat_libelle : null),
-        $actions
+        $this->Bs->div('btn-group-vertical').$actions.$this->Bs->close()
     ));
 }
 echo $this->Bs->endTable();
