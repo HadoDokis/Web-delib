@@ -29,6 +29,9 @@ foreach ($projets as $projet) {
 }
 echo $this->Bs->endTable() .
  $this->Bs->div('btn-group') .
+ $this->Html2->btnCancel() .
+ $this->Bs->close().
+         $this->Bs->div('btn-group') .
  $this->Bs->btn('Figer les débats', array(
     'controller' => 'postseances',
     'action' => 'changeStatus',
@@ -40,7 +43,4 @@ echo $this->Bs->endTable() .
     'confirm' => 'Etes-vous sur de vouloir figer les débats ?',
     'name' => 'Clore',
     'title' => 'Figer les débats')) .
- $this->Bs->close() .
- $this->Bs->div('btn-group') .
- $this->Html2->btnCancel() .
- $this->Bs->close();
+ $this->Bs->close() ;
