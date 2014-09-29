@@ -16,7 +16,7 @@ foreach ($users as $user) {
         if (is_array($service))
             $services.=$service['libelle'] . $this->Html->tag(null, '<br />');
         $natures='';
-        if(!empty($user['Service']))
+        if(!empty($user['Natures']))
         foreach ($user['Natures'] as $nature)
             $natures.=$nature . $this->Html->tag(null, '<br />');                   
     echo $this->Bs->tableCells(array(
@@ -35,17 +35,12 @@ foreach ($users as $user) {
     ));
 }
 echo $this->Bs->endTable() .
+        $this->Paginator->numbers(array(
+    'before' => '<ul class="pagination">',
+    'separator' => '',
+   'currentClass' => 'active',
+    'currentTag' => 'a',
+    'tag' => 'li',
+    'after' => '</ul><br />'
+)).
  $this->Html2->btnAdd("Ajouter un utilisateur", "Ajouter");
-?>
-
-    <div class='paginate'>
-        <!-- Affiche les numéros de pages -->
-        <?php echo $this->Paginator->numbers(); ?>
-        <!-- Affiche les liens des pages précédentes et suivantes -->
-        <?php
-        echo $this->Paginator->prev('« Précédent ', null, null, array('tag' => 'span', 'class' => 'disabled'));
-        echo $this->Paginator->next(' Suivant »', null, null, array('tag' => 'span', 'class' => 'disabled'));
-        ?>
-        <!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
-        <?php echo $this->Paginator->counter(array('format' => 'Page %page% sur %pages%')); ?>
-    </div>

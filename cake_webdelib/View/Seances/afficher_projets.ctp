@@ -12,126 +12,91 @@ $this->Html->addCrumb(__('Liste des projets pour la séance du '.$date_seance));
 //echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 
 echo $this->Bs->table(array(array('title' => 'Ordre'),
+    array('title' => 'id'),
     array('title' => $this->Html->link('Thème', 
-                                        array('controller'=>'deliberations','sortby',
+                                        array('controller'=>'seances','action'=>'sortby',
                                             $seance_id,'theme_id'), 
                                         array('confirm'=>'Etes-vous sur de vouloir trier par theme ?'))),
     array('title' =>  $this->Html->link('Service émetteur', 
-                                        array('controller'=>'deliberations','sortby',
+                                        array('controller'=>'seances','action'=>'sortby',
                                             $seance_id,'service_id'), 
                                         array('confirm'=>'Etes-vous sur de vouloir trier par service ?'))),
     array('title' =>  $this->Html->link('Rapporteur', 
-                                        array('controller'=>'deliberations','sortby',
+                                        array('controller'=>'seances','action'=>'sortby',
                                             $seance_id,'rapporteur_id'), 
                                         array('confirm'=>'Etes-vous sur de vouloir trier par rapporteur ?'))),
     array('title' => $this->Html->link('Libellé', 
-                                        array('controller'=>'deliberations','sortby',
+                                        array('controller'=>'seances','action'=>'sortby',
                                             $seance_id,'objet'), 
                                         array('confirm'=>'Etes-vous sur de vouloir trier par libelle ?'))),
     array('title' => $this->Html->link('Titre', 
-                                        array('controller'=>'deliberations','sortby',
+                                        array('controller'=>'seances','action'=>'sortby',
                                             $seance_id,'titre'), 
                                         array('confirm'=>'Etes-vous sur de vouloir trier par titre ?'))),
-   array('title' => 'id'),
     array('title' => 'Actions'),
         ), array('hover', 'striped'));
-
+$this->BsForm->setFormType('vertical');
 foreach ($projets as $projet) {
     $delibId=$projet['Deliberation']['id'];
     $delibPosition = $projet['Deliberationseance']['position'];
-    
     echo $this->Bs->tableCells(array(
-        $this->BsForm->select('Deliberationseance.position',$rapporteurs, array(
-            'default' =>$delibPosition,
-            'class'=>'select2 selectone'
+        //$this->Html->link($delibPosition, "javascript:onClickLinkOrdre(".$delibPosition.", ".$delibId.");", array('id'=>'linkOrdre'.$delibPosition))
+        $this->BsForm->select('Deliberationseance.position',$aPosition, array(
+            'value' =>$delibPosition,
+            'autocomplete'=>'off',
+            'label'=>false,
+            'class'=>'input-sm select2 selectone',
+            'id'=>'DelibOrdreId'.$delibId,
+        )).$this->Bs->btn(null,array('controller'=>'seances',
+                                        'action'=>'changePosition',
+                                        $seance_id, $delibId) , array(
+            'style'=>'Display:none',
+            'id'=>'DelibOrdreId'.$delibId.'link',
         )),
-        //$this->Html->link($delibPosition, "javascript:onClickLinkOrdre(".$delibPosition.", ".$delibId.");", array('id'=>'linkOrdre'.$delibPosition)),
+        $delibId/*($delibPosition != 1?
+            $this->Html->link(null, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/-1', array('class' => 'link_monter', 'title' => 'Monter', 'escape' => false), false):'').
+        ($delibPosition != $lastPosition?
+            $this->Html->link(null, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/1', array('class' => 'link_descendre', 'title' => 'Descendre', 'escape' => false), false):'')
+        */,
         '['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle'],
         $projet['Service']['libelle'],
         $this->BsForm->select('deliberation.rapporteur_id',$rapporteurs, array(
             'default' =>$projet['Deliberation']['rapporteur_id'],
-            'class'=>'select2 selectone'
+            'class'=>'input-sm select2 selectone',
+            'id'=>'DelibRappId'.$delibId,
+        )).$this->Bs->btn(null,array('controller'=>'seances',
+                                        'action'=>'changeRapporteur',
+                                        $seance_id, $delibId) , array(
+            'style'=>'Display:none',
+            'id'=>'DelibRappId'.$delibId.'link',
         )),
         $projet['Deliberation']['objet_delib'],
         $projet['Deliberation']['titre'],
-        ($delibPosition != 1?
-            $this->Html->link(null, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/-1', array('class' => 'link_monter', 'title' => 'Monter', 'escape' => false), false):'').
-        ($delibPosition != $lastPosition?
-            $this->Html->link(null, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/1', array('class' => 'link_descendre', 'title' => 'Descendre', 'escape' => false), false):'')
-        ,
         $this->Bs->div('btn-group') .
-        $this->Bs->btn(null, array('controller' => 'users', 'action' => 'view', $projet['Deliberation']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
-        $this->Bs->btn(null, array('controller' => 'users', 'action' => 'edit', $projet['Deliberation']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-        $this->Bs->btn(null, array('controller' => 'users', 'action' => 'delete', $projet['Deliberation']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$is_deletable ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer :' . $projet['Deliberation']['objet_delib'] . ' ?') .
-        $this->Bs->close()
+        $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'view', $projet['Deliberation']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
+        $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'edit', $projet['Deliberation']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+        $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'delete', $projet['Deliberation']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$is_deletable ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer :' . $projet['Deliberation']['objet_delib'] . ' ?') .
+        $this->Bs->close(),
     ));
 }
 echo $this->Bs->endTable() .
          $this->Html2->btnCancel();
 if ($is_deliberante) 
-    echo $this->Bs->btn('<i class="fa fa-clock-o"></i> Reporter l\'ordre du jour', array('action'=>'reportePositionsSeanceDeliberante', $seance_id), 
-            array('type'=>'btn','class'=>'btn-inverse', 'name'=>'Retour', 'escape'=>false, 'style'=>'float:right;'));
-//foreach($projets as $projet):
-//		$delibId=$projet['Deliberation']['id'];
-//		$delibPosition = $projet['Deliberationseance']['position'];
+    echo $this->Bs->btn('<i class="fa fa-clock-o"></i> Reporter l\'ordre du jour', 
+            array('action'=>'reportePositionsSeanceDeliberante', $seance_id), 
+            array('type'=>'success',
+                'class'=>'pull-right', 
+                'name'=>'Retour', 
+                'escape'=>false));
 ?>
 <script type="application/javascript">
 $(document).ready(function() {
     $('.select2.selectone').select2({
-        width: 'resolve',
-        placeholder: 'Sélectionner un rapporteur',
+        width: 'element',
+        placeholder: false,
         allowClear: true
+    }).on('change', function(e) {
+        $(location).attr('href', $('#'+e.target.id+'link').attr('href')+'/'+e.val);
     });
  });
-//        
-//var ordreCourant = null;
-//var curdelibIdOrdre = null;
-//var curdelibIdRapporteur = null;
-//
-//function onClickLinkOrdre(ordre, delibId) {
-//	// initialisations
-//	var jqSelect = $('#selectOrdre');
-//	var jqLink = $('#linkOrdre'+ordre);
-//	var jqTd = jqLink.parent();
-//
-//	// déplacement du select 'ordre des projets' dans la cellule du lien cliqué
-//	jqSelect.val(ordre);
-//	jqSelect.appendTo(jqTd);
-//	jqSelect.show();
-//	// masquage du lien cliqué
-//	jqLink.hide();
-//	// initialisation des variables globales
-//	if (ordreCourant) $('#linkOrdre'+ordreCourant).show();
-//	ordreCourant = ordre;
-//	curdelibIdOrdre = delibId;
-//}
-//
-//function onChangeSelectOrdre(ordre) {
-//    var seanceid = $('#AplicationSeanceid').val();
-//	var url = $('#AplicationUrl').val()+"seances/changePosition/"+seanceid+"/"+ordre+"/"+curdelibIdOrdre;
-//	document.location=url;
-//}
-//
-//function onClickLinkRapporteur(rapporteurId, delibId) {
-//	// initialisations
-//	var jqSelect = $('#selectRapporteur');
-//	var jqLink = $('#linkRapporteur'+delibId);
-//	var jqTd = jqLink.parent();
-//
-//	// déplacement du select 'rapporteur' dans la cellule du lien cliqué
-//	if (rapporteurId) jqSelect.val(rapporteurId);
-//	jqSelect.appendTo(jqTd);
-//	jqSelect.show();
-//	// masquage du lien cliqué
-//	jqLink.hide();
-//	// initialisation des variables globales
-//	if (curdelibIdRapporteur) $('#linkRapporteur'+curdelibIdRapporteur).show();
-//	curdelibIdRapporteur = delibId;
-//}
-//
-//function onChangeSelectRapporteur(rapporteurId) {
-//    var seanceid = $('#AplicationSeanceid').val();
-//	var url = $('#AplicationUrl').val()+"seances/changeRapporteur/"+seanceid+"/"+rapporteurId+"/"+curdelibIdRapporteur;
-//	document.location=url;
-//}
 </script>

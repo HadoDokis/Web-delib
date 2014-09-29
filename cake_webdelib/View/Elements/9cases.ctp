@@ -190,25 +190,31 @@ foreach ($projets as $projet) {
     if (in_array('generer', $projet['Actions'])) {
         if (empty($projet['Deliberation']['delib_pdf']))
         {
-                $actions.= $this->Bs->btn('Générer <rerspan class="caret"></span>', 
+                $actions.=$this->Bs->btn('Générer', 
+                        array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id']), 
+                        array('type' => 'default', 
+                            'icon' => 'glyphicon glyphicon-cog', 
+                            'title' => 'Générer le document du projet ' . $projet['Deliberation']['objet']
+                            ));
+                /*$actions.= $this->Bs->btn('Générer <rerspan class="caret"></span>', 
                         array(), 
                         array('type' => 'default', 
                             'icon' => 'glyphicon glyphicon-cog', 
                             'escape'=>false,'class'=>'dropdown-toggle', 
                             'data-toggle'=>'dropdown')).
                 $this->Bs->nestedList(array(
-                $this->Bs->link('PV sommaire', array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id'] , 'projet'), 
+                $this->Bs->link('Pdf', array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id'] , 'projet'), 
                     array(
                             'title' => 'Générer le document PDF du projet ' . $projet['Deliberation']['objet'],
                             'class' => 'waiter',
                             'data-modal' => 'Génération du PV sommaire en cours')),
-                $this->Bs->link('PV complet', array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id'] , 'deliberation'), 
+                $this->Bs->link('Odt', array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id'] , 'deliberation'), 
                     array(
                     'title' => 'Générer le document PDF du projet ' . $projet['Deliberation']['objet'],
                     'class' => 'waiter',
                     'data-modal' => 'Génération du PV complet en cours'))
                 )
-                , array('class'=>'dropdown-menu','role'=>'menu'));
+                , array('class'=>'dropdown-menu','role'=>'menu'));*/
         }
             else
         {
