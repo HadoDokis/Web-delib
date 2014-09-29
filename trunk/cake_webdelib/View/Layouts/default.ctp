@@ -86,6 +86,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         <li class="active" style='margin-left: 230px'>
             <?php echo $this->Html->link($Collectivite['nom'], array('controller' => 'pages', 'action' => 'home')); ?>
         </li>
+         <li>
+             <?php echo $this->Bs->btn(null, array('controller' => 'pages', 
+                 'action' => 'home'),
+                 array('icon'=>'glyphicon glyphicon-home"')); ?>
+            </li>
       </ul>
     <?php
     echo $this->Form->create('User', array(
