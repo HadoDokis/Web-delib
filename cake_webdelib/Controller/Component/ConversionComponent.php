@@ -163,7 +163,7 @@ class ConversionComponent extends Component {
         $PDFINFO_EXEC = Configure::read('PDFINFO_EXEC');
         $GS_RESOLUTION = Configure::read('GS_RESOLUTION');
 
-        $NbrPage=trim(shell_exec($PDFINFO_EXEC.' '.$fileOrigine->pwd().' | grep Pages: | sed -e "s/ *Pages: *//g"'));
+        $NbrPage=trim(shell_exec($PDFINFO_EXEC.' '.$fileOrigine->pwd().' | grep -a Pages: | sed -e "s/ *Pages: *//g"'));
         
         if($NbrPage>0){
             for ($i = 1;  $i <= $NbrPage ; $i++) {
