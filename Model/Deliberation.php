@@ -2180,59 +2180,59 @@ class Deliberation extends AppModel {
 
         // textes du projet
         if ($modelOdtInfos->hasUserField('texte_projet')) {
-            if (!empty($delib['Deliberation']['texte_projet'])) {
                 $oMainPart->addElement(new GDO_ContentType('texte_projet',
                     'texte_projet.odt' ,
                     'application/vnd.oasis.opendocument.text',
                     'binary',
-                    $delib['Deliberation']['texte_projet']));
-            } else $oMainPart->addElement(new GDO_FieldType("texte_projet", "", "text"));
+                    !empty($delib['Deliberation']['texte_projet'])?
+                    $delib['Deliberation']['texte_projet']:
+                    file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt') ));
         }
         if ($modelOdtInfos->hasUserField('texte_deliberation')) {
-            if (!empty($delib['Deliberation']['deliberation'])) {
                 $oMainPart->addElement(new GDO_ContentType('texte_deliberation',
                     'texte_deliberation.odt',
                     'application/vnd.oasis.opendocument.text' ,
                     'binary',
-                    $delib['Deliberation']['deliberation']));
-            } else $oMainPart->addElement(new GDO_FieldType("texte_deliberation", "", "text"));
+                    !empty($delib['Deliberation']['deliberation'])?
+                    $delib['Deliberation']['deliberation']:
+                    file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt') ));
         }
         if ($modelOdtInfos->hasUserField('texte_acte')) {
-            if (!empty($delib['Deliberation']['deliberation'])) {
                 $oMainPart->addElement(new GDO_ContentType('texte_acte',
                     'texte_acte.odt',
                     'application/vnd.oasis.opendocument.text' ,
                     'binary',
-                    $delib['Deliberation']['deliberation']));
-            } else $oMainPart->addElement(new GDO_FieldType("texte_acte", "", "text"));
+                    !empty($delib['Deliberation']['deliberation'])?
+                    $delib['Deliberation']['deliberation']:
+                    file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt') ));
         }
         if ($modelOdtInfos->hasUserField('note_synthese')) {
-            if (!empty($delib['Deliberation']['texte_synthese'])) {
                 $oMainPart->addElement(new GDO_ContentType('note_synthese',
                     'note_synthese.odt',
                     'application/vnd.oasis.opendocument.text' ,
                     'binary',
-                    $delib['Deliberation']['texte_synthese']));
-            } else $oMainPart->addElement(new GDO_FieldType("note_synthese", "",    "text"));
+                    !empty($delib['Deliberation']['texte_synthese'])?
+                    $delib['Deliberation']['texte_synthese']:
+                    file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt') ));
         }
         // débats
         if ($modelOdtInfos->hasUserField('debat_deliberation')) {
-            if (!empty($delib['Deliberation']['debat'])) {
                 $oMainPart->addElement(new GDO_ContentType('debat_deliberation',
                     'debat.odt',
                     'application/vnd.oasis.opendocument.text' ,
                     'binary',
-                    $delib['Deliberation']['debat']));
-            } else $oMainPart->addElement(new GDO_FieldType("debat_deliberation", "", "text"));
+                    !empty($delib['Deliberation']['debat'])?
+                    $delib['Deliberation']['debat']:
+                    file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt') ));
         }
         if ($modelOdtInfos->hasUserField('debat_commission')) {
-            if (!empty($delib['Deliberation']['commission'])) {
                 $oMainPart->addElement(new GDO_ContentType('debat_commission',
                     'debat_commission.odt',
                     'application/vnd.oasis.opendocument.text',
                     'binary',
-                    $delib['Deliberation']['commission']));
-            } else $oMainPart->addElement(new GDO_FieldType("debat_commission", "", "text"));
+                    !empty($delib['Deliberation']['commission'])?
+                    $delib['Deliberation']['commission']:
+                    file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt') ));
         }
 
         // annexes

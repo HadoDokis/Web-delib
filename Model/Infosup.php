@@ -459,16 +459,21 @@ class Infosup extends AppModel {
                     $oMainPart->addElement(new GDO_FieldType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], implode(', ', $listValues), 'text'));
                     break;
                 case 'richText':
-                    if (empty($infosup['Infosup']['content'])) break;
+                    $name = str_replace(" ", "_", $infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code']);
+                    if (empty($infosup['Infosup']['content'])) 
+                         $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt')));
+                        break;
                     include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/ConversionComponent.php');
                     $this->Conversion = new ConversionComponent(new ComponentCollection());
                     $content = $this->Conversion->convertirFlux($infosup['Infosup']['content'], 'html', 'odt');
-                    $name = str_replace(" ", "_", $infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code']);
                     $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', $content));
                     break;
                 case 'odtFile':
-                    if (empty($infosup['Infosup']['content'])) break;
                     $name = str_replace(" ", "_", $infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code']);
+                    if (empty($infosup['Infosup']['content']))
+                        $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt')));
+                        break;
+                    
                     $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', $infosup['Infosup']['content']));
                     break;
             }
