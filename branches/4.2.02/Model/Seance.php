@@ -188,7 +188,7 @@ class Seance extends AppModel
                         'Circuit.nom'
                     ),
                 ),
-                'recursive' => 2,
+                'recursive' => -1,
                 'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
                 'order' => 'Deliberationseance.position ASC',
             )
@@ -517,13 +517,13 @@ class Seance extends AppModel
         
         if ($modelOdtInfos->hasUserFieldDeclared('debat_'.$suffixe)){
             $debat=$this->findById($id,'debat_global');
-            if (!empty($debat['Seance']['debat_global'])) {
                 $oMainPart->addElement(new GDO_ContentType('debat_seance',
                                 'debat_seance.odt',
                                 'application/vnd.oasis.opendocument.text' ,
                                 'binary',
-                                $debat['Seance']['debat_global']));
-            }else $oMainPart->addElement(new GDO_FieldType("debat_seance", "", "text"));
+                                
+                        !empty($debat['Seance']['debat_global'])?$debat['Seance']['debat_global']:
+                        file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt')));
         }
         
         // projets/délibérations de la séance
@@ -543,6 +543,7 @@ class Seance extends AppModel
                 }
                 $oMainPart->addElement($oSectionIteration);
             }
+            //exit;
         }
     }
 
