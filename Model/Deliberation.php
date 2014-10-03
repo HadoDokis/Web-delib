@@ -1105,6 +1105,7 @@ class Deliberation extends AppModel {
         if (!empty($delib['num_pref']))
         $newDelib['Deliberation']['num_pref'] = $delib['num_pref'];
         $newDelib['Deliberation']['objet'] = $delib['objet_delib'];
+        $newDelib['Deliberation']['theme_id'] = $delib['theme_id'];
         $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
         $newDelib['Deliberation']['titre'] = !empty($delib['titre']) ? $delib['titre'] : null;
 
