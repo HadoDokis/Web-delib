@@ -95,21 +95,14 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                 ?>
             </td>
             <td rowspan="3" class="actions">
-                <br/>
                 <?php
-                if (in_array('view', $deliberation['Actions']))
-                        echo $this->Html->image('icons/find.png', array(
-                        'alt' => 'Voir',
+                if (in_array('view', $deliberation['Actions'])) 
+                echo $this->Html->link(SHY,
+                    array('controller' => 'deliberations', 'action' => 'view', $deliberation['Deliberation']['id']),
+                    array('class' => 'link_voir',
                         'title' => 'Voir le projet ' . $deliberation['Deliberation']['objet'],
-                        'url' => array('controller' => 'deliberations', 'action' => 'view', $deliberation['Deliberation']['id'])
-                    ));
-
-                    /*echo $this->Html->link(SHY,
-                        array('controller' => 'deliberations', 'action' => 'view', $deliberation['Deliberation']['id']),
-                        array('class' => 'link_voir',
-                            'title' => 'Voir le projet ' . $deliberation['Deliberation']['objet'],
-                            'escape' => false),
-                        false);*/
+                        'escape' => false),
+                    false);
 
                 if (in_array('edit', $deliberation['Actions']) && empty($deliberation['Deliberation']['signee']))
                     echo $this->Html->link(SHY,
@@ -167,7 +160,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
 
                 }
                 if (in_array('generer', $deliberation['Actions'])) {
-                    if (empty($deliberation['Deliberation']['delib_pdf']))
+                    if (empty($deliberation['Deliberation']['signee']))
                         echo $this->Html->link(SHY,
                             array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
                             array(
