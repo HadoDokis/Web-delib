@@ -198,7 +198,22 @@ class Annex extends AppModel {
         // nombre d'annexes
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_annexe'))
             $oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($annexes), 'text'));
-        if (empty($annexes)) return;
+        if (empty($annexes)){
+            $oIteration = new GDO_IterationType('Annexes');
+            $oDevPart = new GDO_PartType();
+            if ($modelOdtInfos->hasUserFieldDeclared('titre_annexe'))
+                $oDevPart->addElement(new GDO_FieldType('titre_annexe', '', 'text'));
+            if ($modelOdtInfos->hasUserFieldDeclared('nom_fichier'))
+                $oDevPart->addElement(new GDO_FieldType('nom_fichier', '', 'text'));
+            if ($modelOdtInfos->hasUserFieldDeclared('fichier'))
+                $oDevPart->addElement(new GDO_ContentType('fichier', 'annexe.odt',
+                    'application/vnd.oasis.opendocument.text',
+                    'binary',
+                    file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt')));
+            $oIteration->addPart($oDevPart);
+            $oMainPart->addElement($oIteration);
+            return;
+        } 
 
         // fusion des variables pour chaque annexe
         $oIteration = new GDO_IterationType('Annexes');
