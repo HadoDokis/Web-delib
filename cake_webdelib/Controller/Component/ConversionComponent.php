@@ -204,8 +204,9 @@ class ConversionComponent extends Component {
         }
 
         //génération du fichier ODT
-        if (empty($pageParam))
+        if (empty($pageParam)) {
             throw new InternalErrorException('Impossible de convertir le fichier : paramètres manquants');
+        }
 
         $this->generateOdtFileWithImages($folder, $pageParam);
 
