@@ -2384,7 +2384,7 @@ class DeliberationsController extends AppController {
      */
 
     function mesProjetsRedaction() {
-        if (isset($this->params['filtre']) && ($this->params['filtre'] == 'hide'))
+        if (isset($this->params['render']) && ($this->params['render'] == 'banette'))
             $limit = Configure::read('LIMIT');
         else
             $limit = null;
@@ -2523,7 +2523,7 @@ class DeliberationsController extends AppController {
      */
 
     function mesProjetsValidation() {
-        if (isset($this->params['filtre']) && ($this->params['filtre'] == 'hide'))
+        if (isset($this->params['render']) && ($this->params['render'] == 'banette'))
             $limit = Configure::read('LIMIT');
         else
             $limit = null;
@@ -2584,7 +2584,7 @@ class DeliberationsController extends AppController {
      */
 
     function mesProjetsValides() {
-        if (isset($this->params['filtre']) && ($this->params['filtre'] == 'hide'))
+        if (isset($this->params['render']) && ($this->params['render'] == 'banette'))
             $limit = Configure::read('LIMIT');
         else
             $limit = null;
@@ -3074,7 +3074,7 @@ class DeliberationsController extends AppController {
                 'inputOptions' => array(
                     'label' => __('Circuit de validation', true),
                     'empty' => 'Tous',
-                    'options' => Hash::combine($projets, '{n}.Deliberation.circuit_id', '{n}.Deliberation.Circuit.nom')
+                    'options' => Hash::combine($projets, '{n}.Deliberation.circuit_id[circuit_id!=0]', '{n}.Deliberation.Circuit.nom')
                 )));
         }
     }
@@ -3536,7 +3536,6 @@ class DeliberationsController extends AppController {
         $this->set('seance_id', $seance_id);
 
         if (empty($seance_id)) {
-            $this->Deliberation->Behaviors->load('Containable');
             $conditions['OR']['Deliberation.parapheur_etat >'] = 0;
             $conditions['OR']['Deliberation.signee'] = true;
             $conditions['Deliberation.etat >'] = 2;
@@ -3551,8 +3550,6 @@ class DeliberationsController extends AppController {
                 . ' )';
 
             $order = array('Deliberation.num_delib ASC');
-
-            $this->Deliberation->Behaviors->load('Containable');
             $delibs = $this->Deliberation->find('all', array(
                 'fields' => array('Deliberation.id',
                     'Deliberation.objet_delib',
@@ -3597,10 +3594,8 @@ class DeliberationsController extends AppController {
             $conditions['Deliberation.etat >='] = 0;
             // Formulaire non envoyé
             if (!isset($this->data['Parapheur']['circuit_id'])) {
-                $this->Deliberationseance->Behaviors->load('Containable');
-                $this->Deliberation->Behaviors->load('Containable');
                 $delibs = $this->Deliberationseance->find('all', array(
-                        'recursive' => 2,
+                        'recursive' => -1,
                         'fields' => array(
                             'Deliberationseance.seance_id',
                             'Deliberationseance.deliberation_id',
@@ -4115,7 +4110,7 @@ class DeliberationsController extends AppController {
         $this->set('canEdit', $editerTous);
         $this->set('actes', $actes);
         $this->set('circuits', $circuits);
-        $this->render('autres_actes');
+        //$this->render('autres_actes');
     }
 
     /**
