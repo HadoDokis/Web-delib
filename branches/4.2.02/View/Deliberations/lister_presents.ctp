@@ -35,7 +35,7 @@
             <td>
                 <?php
                 $selected = $present['Listepresence']['present'];
-                echo $this->Form->input('Acteur.' . $present['Acteur']['id'] . '.present', array('label' => false, 'fieldset' => false, 'legend' => false, 'div' => false, 'type' => 'radio', 'value' => $selected, 'options' => array(1 => 'oui', 0 => 'non'), 'onclick' => "javascript: disable('liste_" . $present['Acteur']['id'] . "', $(this).val() );"));
+                echo $this->Form->input('Acteur.' . $present['Acteur']['id'] . '.present', array('label' => false, 'fieldset' => false, 'legend' => false, 'div' => false, 'type' => 'radio', 'value' => $selected, 'options' => array(1 => 'oui', 0 => 'non'), 'onclick' => "javascript: disable_select2('liste_" . $present['Acteur']['id'] . "', $(this).val() );"));
                 ?>
             </td>
             <td>
@@ -87,4 +87,11 @@ $(".select2.selectone").select2({
             return $.trim(object.text);
         }
     });
+function disable_select2(id, val) {
+    if (val == 1)
+        $('#'+id).select2("enable", false);
+    else{
+        $('#'+id).select2("enable", true);
+    }
+}
 </script>
