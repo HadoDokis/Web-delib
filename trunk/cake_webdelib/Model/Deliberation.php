@@ -652,40 +652,28 @@ class Deliberation extends AppModel {
 	 * fonction récursive de suppression de la délibération $delib8d, de ses versions antérieures et de ses délibérations rattachées
 	 * @param integer $delibId id de la délib à supprimer
 	 */
-	function supprimer($delibId) {
-		// lecture de la délib en base
-		$delib = $this->find('first', array(
-				'recursive' => -1,
-				'fields' => array('anterieure_id', 'parent_id'),
-				'conditions' => array('id' => $delibId)));
-		if (empty($delib)) return;
+	function delete($id = null) {
+        $delib = $this->Deliberation->find('first', array(
+            'recursive' => -1,
+            'fields' => array('Deliberation.id', 'Deliberation.redacteur_id', 'Deliberation.etat', 'Deliberation.parapheur_etat'),
+            'conditions' => array('id' => $id)));
 
-		// suppression de la délib
-		$this->delete($delibId);
-		// suppression du répertoire des docs
-		$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
-		$this->rmDir($repFichier);
-		// gestion de la séance
-		if (!empty($delib['Deliberation']['seance_id'])) {
-			$this->reOrdonnePositionSeance($delib['Deliberation']['seance_id']);
-		}
-
-		// pour les délib rattachées, le traitement finit ici
-		if (!empty($delib['Deliberation']['parent_id'])) return;
-
-		// suppression des délib rattachées
-		$delibRattachees = $this->find('all', array(
-				'recursive' => -1,
-				'fields' => array('id'),
-				'conditions' => array('parent_id' => $delibId)));
-		foreach($delibRattachees as $delibRattachee) {
-			$this->supprimer($delibRattachee['Deliberation']['id']);
-		}
-
-		// suppression des délib antérieures
-		if ( $delib['Deliberation']['anterieure_id'] != 0)
-			$this->supprimer($delib['Deliberation']['anterieure_id']);
-	}
+        if (empty($delib)) {
+            $this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type' => 'erreur'));
+        }
+        elseif($delib['Deliberation']['parapheur_etat']==1) {
+                $this->Session->setFlash('Le projet est dans une étape parapheur, il ne peut être supprimé.', 'growl', array('type' => 'erreur'));
+        } else {
+            $canDelete = $this->Droits->check($this->user_id, "Deliberations:delete");
+            if ((($delib['Deliberation']['redacteur_id'] == $this->user_id) && ($delib['Deliberation']['etat'] == 0)) || ($canDelete)) {
+                $this->Deliberation->supprimer($id);
+                $this->Session->setFlash('Le projet \'' . $id . '\' a été supprimé.', 'growl');
+            } else {
+                $this->Session->setFlash('Vous ne pouvez pas supprimer ce projet', 'growl');
+            }
+        }
+        $this->redirect($this->referer());
+    }
 
 	/**
 	 * Supprime un répertoire et son contenu
