@@ -88,13 +88,13 @@ class ThemesController extends AppController {
     function delete($id = null) {
         if (!$id) {
             $this->Session->setFlash('Invalide id pour le Thème', 'growl', array('type' => 'erreur'));
-            $this->redirect($this->referer());
+            $this->redirect(array('controller'=>'themes','action'=>'index'));
         }
         $theme = $this->Theme->read(null, $id);
         $theme['Theme']['actif'] = 0;
         if ($this->Theme->save($theme)) {
             $this->Session->setFlash('Le Thème a été désactivé', 'growl');
-            $this->redirect($this->referer());
+            $this->redirect(array('controller'=>'themes','action'=>'index'));
         }
     }
 
