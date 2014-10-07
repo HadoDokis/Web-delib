@@ -1,4 +1,7 @@
-<?php echo $this->Html->script('utils.js'); ?>
+<?php echo $this->Html->script('utils.js'); 
+$this->Html->addCrumb('Séances à traiter', array('controller'=>'seances','action'=>'listerFuturesSeances'));
+$this->Html->addCrumb('Signature des délibérations');
+?>
 <div class="deliberations">
     <?php if (isset($message)) echo($message); ?>
     <?php if (empty($seance_id)): ?>
@@ -172,7 +175,7 @@
         echo '</div>';
         echo $this->Form->end();
     }
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $previous, array('escape' => false, 'class' => 'btn'));
+    echo $this->Html2->btnCancel(array('controller'=>'seances','action'=>'listerFuturesSeances'));//'<i class="fa fa-arrow-left"></i> Retour', $previous);
     ?>
 </div>
 

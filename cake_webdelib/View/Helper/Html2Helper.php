@@ -233,7 +233,7 @@ class Html2Helper extends HtmlHelper {
     }
 
     function btnCancel($action = "index", $type = 'default', $value="Retour") {
-        return $this->Bs->btn($value, array("action" => $action), array('type' => $type,'icon'=>'glyphicon glyphicon-arrow-left', 'escape' => false, 'title' => 'Revenir à la page précédente'));
+        return $this->Bs->btn($value, is_array($action)?$action:array("action" => $action), array('type' => $type,'icon'=>'glyphicon glyphicon-arrow-left', 'escape' => false, 'title' => 'Revenir à la page précédente'));
     }
 
     function boutonRetourUrl($url = "javascript:history.go(-1)", $style = '', $center = false, $value="Retour") {
