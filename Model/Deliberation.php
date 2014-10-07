@@ -1174,15 +1174,15 @@ class Deliberation extends AppModel {
 				'conditions' => array('id' => $delibId)));
 		if (empty($delib)) return;
 
-		// suppression de la délib
-		$this->delete($delibId);
 		// suppression du répertoire des docs
 		$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
 		$this->rmDir($repFichier);
-		// gestion de la séance
-		if (!empty($delib['Deliberation']['seance_id'])) {
-			$this->reOrdonnePositionSeance($delib['Deliberation']['seance_id']);
-		}
+		
+                // gestion de la séance
+                $aSeanceId=$this->getSeancesid($delibId);
+                foreach ($aSeanceId as $seance_id) {
+                    $this->Deliberationseance->deleteDeliberationseance($delibId, $seance_id);
+                }
 
 		// pour les délib rattachées, le traitement finit ici
 		if (!empty($delib['Deliberation']['parent_id'])) return;
@@ -1194,11 +1194,25 @@ class Deliberation extends AppModel {
 				'conditions' => array('parent_id' => $delibId)));
 		foreach($delibRattachees as $delibRattachee) {
 			$this->supprimer($delibRattachee['Deliberation']['id']);
+                        // gestion de la séance
+                        $aSeanceId=$this->getSeancesid($delibRattachee['Deliberation']['id']);
+                        foreach ($aSeanceId as $seance_id) {
+                            $this->Deliberationseance->deleteDeliberationseance($delibRattachee['Deliberation']['id'], $seance_id);
+                        }
 		}
 
 		// suppression des délib antérieures
-		if ( $delib['Deliberation']['anterieure_id'] != 0)
-			$this->supprimer($delib['Deliberation']['anterieure_id']);
+		if ( $delib['Deliberation']['anterieure_id'] != 0){
+                    $this->supprimer($delib['Deliberation']['anterieure_id']);
+                    // gestion de la séance
+                    $aSeanceId=$this->getSeancesid($delib['Deliberation']['anterieure_id']);
+                    foreach ($aSeanceId as $seance_id) {
+                        $this->Deliberationseance->deleteDeliberationseance($delib['Deliberation']['anterieure_id'], $seance_id);
+                    }
+                }
+                
+                // suppression de la délib
+		$this->delete($delibId);
 	}
 
 	/**
