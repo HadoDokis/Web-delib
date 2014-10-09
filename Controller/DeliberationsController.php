@@ -1342,18 +1342,25 @@ class DeliberationsController extends AppController
                     if (empty($members)) {
                         $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
                         $this->Deliberation->saveField('etat', 2);
-                    } else {
-                        while (in_array($this->user_id, $members)) {
-                            $traitementTermine = $this->Traitement->execute('OK', $this->user_id, $id);
-                            $this->Historique->enregistre($id, $this->user_id, 'Projet visé (auto)');
-                            if ($traitementTermine) {
-                                $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
-                                $this->Deliberation->saveField('etat', 2);
-                                $this->Session->setFlash('Projet inséré dans le circuit et validé', 'growl');
-                                $this->redirect(array('action'=>'mesProjetsValides'));
+                    } else{
+                        if(configure::read('Cakeflow.optimisation')){
+                            while (in_array($this->user_id, $members)) {
+                                $traitementTermine = $this->Traitement->execute('OK', $this->user_id, $id, $options);
+                                $this->Historique->enregistre($id, $this->user_id, 'Projet visé (auto)');
+                                if ($traitementTermine) {
+                                    $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
+                                    $this->Deliberation->saveField('etat', 2);
+                                    $this->Session->setFlash('Projet inséré dans le circuit et validé', 'growl');
+                                    $this->redirect(array('action'=>'mesProjetsValides'));
+                                }
+                                $members = $this->Traitement->whoIs($id, 'current', 'RI');
                             }
+                        }
+                        else
+                        {
                             $members = $this->Traitement->whoIs($id, 'current', 'RI');
                         }
+                        
                         foreach ($members as $destinataire_id)
                             $this->User->notifier($id, $destinataire_id, 'traitement');
 
@@ -1361,8 +1368,8 @@ class DeliberationsController extends AppController
                         foreach ($members as $user_id)
                             $this->User->notifier($id, $user_id, 'insertion');
 
-                        $this->Session->setFlash('Projet inséré dans le circuit et visé', 'growl');
-                        $this->redirect(array('action'=>'mesProjetsRedaction'));
+                        $this->Session->setFlash('Projet inséré dans le circuit', 'growl');
+                        $this->redirect(array('action'=>'mesProjetsValides'));
                     }
                 } else {
                     $this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $this->user_id);
@@ -1471,7 +1478,7 @@ class DeliberationsController extends AppController
         if (empty($this->data)) {
             $etapes = $this->Traitement->listeEtapesPrecedentes($delib['Deliberation']['id']);
             if (empty($etapes)){
-                $this->Session->setFlash('Opération impossible, l&apos;étape courante est la première du circuit.', 'growl', array('type' => 'erreur'));
+                $this->Session->setFlash('Erreur : il n\'existe pas d\'étape précédente dans le circuit.', 'growl', array('type' => 'erreur'));
                 return $this->redirect($this->referer());
             }
             $this->set('delib_id', $delib_id);
