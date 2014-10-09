@@ -130,6 +130,8 @@ Configure::write('IDELIBRE_HOST', '');
 Configure::write('IDELIBRE_LOGIN', '');
 Configure::write('IDELIBRE_PWD', '');
 Configure::write('IDELIBRE_CONN', ''); //Collectivité
+Configure::write('IDELIBRE_USEPROXY', false);
+Configure::write('IDELIBRE_PROXYHOST', '');
 //Certificats pour Idélibre
 Configure::write('IDELIBRE_USE_CERT', false);
 Configure::write('IDELIBRE_CAPATH', APP . 'Config/cert_idelibre/');

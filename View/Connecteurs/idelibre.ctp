@@ -1,5 +1,6 @@
 <div class='spacer'></div>
 <?php
+$true_false = array('true' => 'Oui', 'false' => 'Non');
 echo $this->Form->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'idelibre'), 'type' => 'file'));
 ?>
 <div id="configIdelibre">
@@ -9,7 +10,7 @@ echo $this->Form->create('Connecteur', array('url' => array('controller' => 'con
         echo $this->Form->input('use_idelibre', array(
             'legend' => false,
             'type' => 'radio',
-            'options' => array('true' => 'Oui', 'false' => 'Non'),
+            'options' => $true_false,
             'value' => Configure::read('USE_IDELIBRE') ? 'true' : 'false',
             'div' => true,
             'label' => true,
@@ -57,7 +58,7 @@ echo $this->Form->create('Connecteur', array('url' => array('controller' => 'con
             echo $this->Form->input('idelibre_use_cert', array(
                 'legend' => false,
                 'type' => 'radio',
-                'options' => array('true' => 'Oui', 'false' => 'Non'),
+                'options' => $true_false,
                 'value' => Configure::read('IDELIBRE_USE_CERT') ? 'true' : 'false',
                 'div' => true,
                 'label' => true,
@@ -76,6 +77,28 @@ echo $this->Form->create('Connecteur', array('url' => array('controller' => 'con
                 'label' => 'Mot de passe'));
             echo $this->Html->tag('/div');
             ?>
+        </fieldset>
+        <fieldset id='infos_proxy'>
+            <legend>Proxy</legend>
+            <?php
+                echo $this->Form->input('use_proxy', array(
+                    'legend' => false,
+                    'type' => 'radio',
+                    'options' => $true_false,
+                    'value' => Configure::read('IDELIBRE_USEPROXY') ? 'true' : 'false',
+                    'default' => 'false',
+                    'label' => true,
+                    'onClick' => "if(this.value=='true') $('#proxy_host').show(); else $('#proxy_host').hide(); "));
+                ?>
+                <div class='spacer'></div>
+                <div id="proxy_host" <?php if (!Configure::read('IDELIBRE_USEPROXY')) echo ' style="display: none;"'; ?>>
+                    <?php
+                    echo $this->Form->input('proxy_host', array(
+                        'type' => 'text',
+                        'placeholder' => 'http://x.x.x.x:8080',
+                        'value' => Configure::read('IDELIBRE_PROXYHOST'),
+                        'label' => 'Adresse du proxy'));
+                    ?> </div>
         </fieldset>
     </div>
 </div>

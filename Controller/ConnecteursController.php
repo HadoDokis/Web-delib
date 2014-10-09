@@ -183,6 +183,8 @@ class ConnecteursController extends AppController {
                 $content = $this->_replaceValue($content, 'IDELIBRE_CONN', $this->data['Connecteur']['idelibre_conn']);
                 $content = $this->_replaceValue($content, 'IDELIBRE_LOGIN', $this->data['Connecteur']['idelibre_login']);
                 $content = $this->_replaceValue($content, 'IDELIBRE_PWD', $this->data['Connecteur']['idelibre_pwd']);
+                $content = $this->_replaceValue($content, 'IDELIBRE_USEPROXY', $this->data['Connecteur']['use_proxy']);
+                $content = $this->_replaceValue($content, 'IDELIBRE_PROXYHOST', $this->data['Connecteur']['proxy_host']);
                 $content = $this->_replaceValue($content, 'IDELIBRE_USE_CERT', $this->data['Connecteur']['idelibre_use_cert']);
                 if (file_exists($this->data['Connecteur']['clientcert']['tmp_name'])) {
                     $certs = array();
