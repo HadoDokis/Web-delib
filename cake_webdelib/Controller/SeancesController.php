@@ -1500,6 +1500,8 @@ class SeancesController extends AppController {
         $url = Configure::read('IDELIBRE_HOST') . '/seances.json';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
+        if (Configure::read('S2LOW_USEPROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
