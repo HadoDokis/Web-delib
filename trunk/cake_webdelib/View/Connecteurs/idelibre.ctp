@@ -1,12 +1,14 @@
 <?php
+$true_false = array('true' => 'Oui', 'false' => 'Non');
 echo $this->BsForm->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'idelibre'), 'type' => 'file'));
 ?>
 <div id="configIdelibre">
     <fieldset>
         <legend>Activation du service I-delibRE</legend>
         <?php
-        echo $this->BsForm->radio('use_idelibre',array('true' => 'Oui', 'false' => 'Non'), array(
+        echo $this->BsForm->radio('use_idelibre', $true_false, array(
             'value' => Configure::read('USE_IDELIBRE') ? 'true' : 'false',
+            'autocomplete'=>'off',
             'onChange' => 'changeActivation(this)'
         ));
         ?>
@@ -45,27 +47,47 @@ echo $this->BsForm->create('Connecteur', array('url' => array('controller' => 'c
                 'value' => Configure::read('IDELIBRE_PWD')));
             ?>
         </fieldset>
-<!--        <fieldset id='infos_certificat'>
+        <fieldset id='infos_certificat'>
+            <legend>Proxy</legend>
+            <?php
+                echo $this->BsForm->radio('use_proxy',$true_false, array(
+                    'value' => Configure::read('S2LOW_USEPROXY') ? 'true' : 'false',
+                    'autocomplete'=>'off',
+                    'onClick' => "if(this.value=='true') $('#proxy_host').show(); else $('#proxy_host').hide(); "));
+                ?>
+                <div class='spacer'></div>
+                <div id="proxy_host" <?php if (!Configure::read('S2LOW_USEPROXY')) echo ' style="display: none;"'; ?>>
+                    <?php
+                    echo $this->BsForm->input('proxy_host', array(
+                        'type' => 'text',
+                        'placeholder' => 'http://x.x.x.x:8080',
+                        'value' => Configure::read('S2LOW_PROXYHOST'),
+                        'label' => 'Adresse du proxy'));
+                    ?> </div>
+                <div class='spacer'></div>
+        </fieldset>
+        <fieldset id='infos_certificat'>
             <legend>Certificat de connexion</legend>
             <?php
-//            echo $this->BsForm->radio('idelibre_use_cert',array('true' => 'Oui', 'false' => 'Non'), array(
-//                'value' => Configure::read('IDELIBRE_USE_CERT') ? 'true' : 'false',
-//                'onChange' => 'changeActivationCert(this)'
-//            ));
-//            echo $this->Html->tag('div', null, array('id' => 'idelibre_cert', 'style' => (Configure::read('IDELIBRE_USE_CERT')) ? '':'display:none'));
-//            echo $this->Html->tag('hr', '');
-//            echo $this->BsForm->input('clientcert', array(
-//                'type' => 'file',
-//                'label' => 'Certificat (p12)'
-//            ));
-//            echo $this->BsForm->input('idelibre_certpwd', array(
-//                'type' => 'password',
-//                'placeholder' => "Mot de passe du certificat",
-//                'value' => Configure::read('IDELIBRE_CERTPWD'),
-//                'label' => 'Mot de passe'));
-//            echo $this->Html->tag('/div');
+            echo $this->BsForm->radio('idelibre_use_cert', $true_false, array(
+                'value' => Configure::read('IDELIBRE_USE_CERT') ? 'true' : 'false',
+                'autocomplete'=>'off',
+                'onChange' => 'changeActivationCert(this)'
+            ));
+            echo $this->Html->tag('div', null, array('id' => 'idelibre_cert', 'style' => (Configure::read('IDELIBRE_USE_CERT')) ? '':'display:none'));
+            echo $this->Html->tag('hr', '');
+            echo $this->BsForm->input('clientcert', array(
+                'type' => 'file',
+                'label' => 'Certificat (p12)'
+            ));
+            echo $this->BsForm->input('idelibre_certpwd', array(
+                'type' => 'password',
+                'placeholder' => "Mot de passe du certificat",
+                'value' => Configure::read('IDELIBRE_CERTPWD'),
+                'label' => 'Mot de passe'));
+            echo $this->Html->tag('/div');
             ?>
-        </fieldset>-->
+        </fieldset>
     </div>
 </div>
    <?php

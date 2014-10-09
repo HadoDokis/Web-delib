@@ -45,8 +45,10 @@ Configure::write('SMTP_PASSWORD', '');
 Configure::write('SMTP_CLIENT', '');
 
 /* Configuration GEDOOo */
-Configure::write('GEDOOO_WSDL', 'http://127.0.0.1:8880/ODFgedooo/OfficeService?wsdl');
-
+Configure::write('Gedooo.wsdl', 'http://127.0.0.1:8880/GEDOOo/OfficeService?wsdl');
+Configure::write('Gedooo.method', 'GedoooCloudooo');
+Configure::write('Gedooo.cloudooo_host', '127.0.0.1');
+Configure::write('Gedooo.cloudooo_port', '8011');
 /**
  * Parapheur (Signature électronique, délégation)
  */
@@ -131,6 +133,8 @@ Configure::write('IDELIBRE_HOST', '');
 Configure::write('IDELIBRE_LOGIN', '');
 Configure::write('IDELIBRE_PWD', '');
 Configure::write('IDELIBRE_CONN', ''); //Collectivité
+Configure::write('IDELIBRE_USEPROXY', false);
+Configure::write('IDELIBRE_PROXYHOST', '');
 //Certificats pour Idélibre
 Configure::write('IDELIBRE_USE_CERT', false);
 Configure::write('IDELIBRE_CAPATH', APP . 'Config/cert_idelibre/');
