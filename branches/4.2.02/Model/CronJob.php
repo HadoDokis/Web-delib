@@ -191,7 +191,7 @@ class CronJob extends AppModel {
                 'recursive' => -1
             ));
 
-            if (!empty($annexes))
+            if (!empty($annexes)){
                 foreach ($annexes as $annexe) {
                     if (!empty($annexe['Annex']['data'])) {
                         $this->Annex->id = $annexe['Annex']['id'];
@@ -205,10 +205,14 @@ class CronJob extends AppModel {
                                 $extension = $extension[0];
                             $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $extension, 'pdf');
                         }
+                        elseif ($annexe['Annex']['joindre_ctrl_legalite'] && $DOC_TYPE[$annexe['Annex']['filetype']]['extension']=='pdf') {
+                            $newAnnexe['data_pdf'] = $annexe['Annex']['data'];
+                        }
                         $this->Annex->save($newAnnexe);
                     } else
                         $this->log('Conversion annexe "vide" (data) id:' . $annexe['Annex']['id'], 'error');
                 }
+            }
 
             if (empty($annexes))
                 return Cron::MESSAGE_FIN_EXEC_SUCCES . " Aucune annexe à convertir";
