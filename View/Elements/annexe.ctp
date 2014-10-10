@@ -114,7 +114,13 @@ foreach ($annexes as $rownum => $annexe) {
     if ($mode == 'edit') {
         echo $this->Html->tag('td', null, array('style' => 'text-align:center'));
         echo $this->Html->tag('div', null, array('class' => "btn-group edit-delete-buttons"));
-
+        echo $this->Html->link('<i class="fa fa-eye"></i> Voir', array('controller'=>'annexes','action'=>'download', $annexe['Annex']['id']), array(
+            'title' => 'Voir cette annexe',
+            'escape' => false,
+            'class' => 'btn btn-mini',
+            'id' => 'voirAnnexe' . $annexe['Annex']['id'] . $ref,
+        ));
+        
         echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', 'javascript:void(0);', array(
             'title' => 'Modifier les caractéristiques de cette annexe',
             'escape' => false,
