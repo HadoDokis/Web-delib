@@ -1748,21 +1748,24 @@ class DeliberationsController extends AppController
         // On affiche que les delibs vote pour.
         $deliberations = $this->Paginator->paginate('Deliberation');
         $this->_sortProjetSeanceDate($deliberations);
-        //debug($deliberations);
-        $toutes_seances = array();
-        foreach ($deliberations as $key=>$deliberation) {
-            unset($deliberations[$key]['Deliberationtypeseance']);
-            $deliberations[$key]['Deliberation']['num_pref'] = $deliberation['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($deliberation['Deliberation']['num_pref']);
-            foreach ($deliberations[$key]['Deliberationseance'] as $keyDelib=>$Deliberationseance){
-                if($Deliberationseance['Seance']['Typeseance']['action']==0){
-                    $deliberations[$key]['Seance']['id'] = $Deliberationseance['Seance']['id'];
-                    $deliberations[$key]['Seance']['date'] = $Deliberationseance['Seance']['date'];
-                    $deliberations[$key]['Seance']['type_id'] = $Deliberationseance['Seance']['type_id'];
-               }
-                else{
-                 unset($deliberations[$key]['Deliberationseance'][$keyDelib]);
+        
+
+         // initialisation des séances
+        
+        $listeTypeSeance=array();
+        foreach ($deliberations as $i=>$projet) {
+            $deliberations[$i]['Deliberation']['num_pref'] = $projet['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($projet['Deliberation']['num_pref']);
+        
+            $deliberations[$i]['listeSeances']=array();
+            if (isset($projet['Deliberationseance']) && !empty($projet['Deliberationseance'])) {
+                foreach ($projet['Deliberationseance'] as $keySeance => $seance) {
+                    $deliberations[$i]['listeSeances'][]=array('seance_id' => $seance['Seance']['id'],
+                                                                    'type_id' => $seance['Seance']['type_id'],
+                                                                    'action' => $seance['Seance']['Typeseance']['action'],
+                                                                    'libelle' => $seance['Seance']['Typeseance']['libelle'],
+                                                                    'date' => $seance['Seance']['date']);
                 }
-           }
+            }
         }
         
         $seances = $this->Seance->find('all', array(
@@ -3006,7 +3009,7 @@ class DeliberationsController extends AppController
                 'classeDiv' => 'demi',
                 'inputOptions' => array(
                     'label' => __('Séances', true),
-                    'empty' => 'toutes',
+                    'empty' => 'Toutes',
                     'options' => $Deliberationseances)));
             $typeseances = array();
             foreach ($projets as $projet) {
@@ -3016,6 +3019,7 @@ class DeliberationsController extends AppController
                         $typeseances[$typeseance['Typeseance']['id']] = $typeseance['Typeseance']['libelle'];
                 }
             }
+            
             $this->Filtre->addCritere('DeliberationtypeseanceId', array(
                 'field' => 'Deliberationtypeseance.typeseance_id',
                 'classeDiv' => 'demi',
@@ -3995,7 +3999,8 @@ class DeliberationsController extends AppController
 
         if (isset($conditions['Deliberationtypeseance.typeseance_id'])) {
             $type_id = $conditions['Deliberationtypeseance.typeseance_id'];
-            $typeseances = $this->Deliberationtypeseance->find('all', array('conditions' => array('Deliberationtypeseance.typeseance_id' => $type_id),
+            $typeseances = $this->Deliberationtypeseance->find('all', array(
+                'conditions' => array('Deliberationtypeseance.typeseance_id' => $type_id),
                 'recursive' => -1));
             foreach ($typeseances as $typeseance) {
                 $projet_type_ids[] = $typeseance['Deliberationtypeseance']['deliberation_id'];
