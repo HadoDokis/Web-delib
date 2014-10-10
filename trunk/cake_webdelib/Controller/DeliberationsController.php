@@ -1744,20 +1744,20 @@ class DeliberationsController extends AppController {
         $deliberations = $this->Paginator->paginate('Deliberation');
         $this->_sortProjetSeanceDate($deliberations);
         //debug($deliberations);
-        $toutes_seances = array();
-        foreach ($deliberations as $key=>$deliberation) {
-            unset($deliberations[$key]['Deliberationtypeseance']);
-            $deliberations[$key]['Deliberation']['num_pref'] = $deliberation['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($deliberation['Deliberation']['num_pref']);
-            foreach ($deliberations[$key]['Deliberationseance'] as $keyDelib=>$Deliberationseance){
-                if($Deliberationseance['Seance']['Typeseance']['action']==0){
-                    $deliberations[$key]['Seance']['id'] = $Deliberationseance['Seance']['id'];
-                    $deliberations[$key]['Seance']['date'] = $Deliberationseance['Seance']['date'];
-                    $deliberations[$key]['Seance']['type_id'] = $Deliberationseance['Seance']['type_id'];
-               }
-                else{
-                 unset($deliberations[$key]['Deliberationseance'][$keyDelib]);
+        $listeTypeSeance=array();
+        foreach ($deliberations as $i=>$projet) {
+            $deliberations[$i]['Deliberation']['num_pref'] = $projet['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($projet['Deliberation']['num_pref']);
+        
+            $deliberations[$i]['listeSeances']=array();
+            if (isset($projet['Deliberationseance']) && !empty($projet['Deliberationseance'])) {
+                foreach ($projet['Deliberationseance'] as $keySeance => $seance) {
+                    $deliberations[$i]['listeSeances'][]=array('seance_id' => $seance['Seance']['id'],
+                                                                    'type_id' => $seance['Seance']['type_id'],
+                                                                    'action' => $seance['Seance']['Typeseance']['action'],
+                                                                    'libelle' => $seance['Seance']['Typeseance']['libelle'],
+                                                                    'date' => $seance['Seance']['date']);
                 }
-           }
+            }
         }
         
         $seances = $this->Seance->find('all', array(
@@ -2976,7 +2976,7 @@ class DeliberationsController extends AppController {
                 'classeDiv' => 'demi',
                 'inputOptions' => array(
                     'label' => __('Séances', true),
-                    'empty' => 'toutes',
+                    'empty' => 'Toutes',
                     'options' => $Deliberationseances)));
             $typeseances = array();
             foreach ($projets as $projet) {
