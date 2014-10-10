@@ -139,7 +139,7 @@ class FiltreComponent extends Component
         $inputOptionsDefaut = array();
         if (!array_key_exists('multiple', $params['inputOptions']) || !$params['inputOptions']['multiple'])
             $inputOptionsDefaut = array(
-                'empty' => __('tous', true));
+                'empty' => __('Tous', true));
         $params['inputOptions'] = array_merge($inputOptionsDefaut, $params['inputOptions']);
 
         $this->Session->write('Filtre.Criteres.' . $nomCritere, $params);
