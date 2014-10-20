@@ -149,6 +149,17 @@ class SeancesController extends AppController {
                 } else {
                     $this->Seance->rollback();
                     $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
+                    $msg_error='';
+                    $InfosupErrors=$this->Infosup->invalidFields();
+                    if (!empty($InfosupErrors)) {
+                        foreach ($InfosupErrors as $InfosupName => $InfosupError) {
+                            $msg_error .= "<strong>Information supplémentaire :</strong><br>";
+                            foreach ($InfosupError as $error) {
+                                $msg_error .= "- " . $error . "<br/>";
+                            }
+                        }
+                        $this->Session->setFlash($msg_error, 'growl', array('type' => 'erreur'));
+                    }
                 }
         }
         if ($sortie)

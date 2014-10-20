@@ -98,6 +98,8 @@ class Infosup extends AppModel {
         foreach ($infosups as $code => $valeur) {
             $validator = $this->validator();
             // Retire la règle 'required' de file_type
+            if (isset($validator['text']))
+                unset($validator['text']);
             if (isset($validator['file_type']))
                 unset($validator['file_type']);
 
@@ -130,6 +132,12 @@ class Infosup extends AppModel {
                 case 'text' :
                 case 'boolean' :
                 case 'list' :
+                    // Ajout de la regle de validation
+                    if($infosupdef['Infosupdef']['type']==='text')
+                        $this->validator()->add('text', 'required', array(
+                            'rule' => array('between', 0, 255),
+                            'message' => '\"'.$infosupdef['Infosupdef']['nom'].'\" trop long (255 caractères maximum)', 'growl',
+                        ));
                     $infosup['Infosup']['text'] = $valeur;
                     break;
                 case 'listmulti' :
