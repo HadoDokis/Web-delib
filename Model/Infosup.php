@@ -96,15 +96,18 @@ class Infosup extends AppModel {
     function saveCompacted(&$infosups, $foreignKey, $model) {
         $success = true;
         foreach ($infosups as $code => $valeur) {
+            
             $validator = $this->validator();
             // Retire la règle 'required' de file_type
+            if (isset($validator['text']))
+                unset($validator['text']);
             if (isset($validator['file_type']))
                 unset($validator['file_type']);
 
             // lecture de la définition de l'info sup
             $infosupdef = $this->Infosupdef->find('first', array(
                 'recursive' => -1,
-                'fields' => array('id', 'type'),
+                'fields' => array('id', 'type','nom'),
                 'conditions' => array('code' => $code, 'model' => $model)));
 
             // lecture de l'infosup en base
@@ -130,6 +133,13 @@ class Infosup extends AppModel {
                 case 'text' :
                 case 'boolean' :
                 case 'list' :
+                    //debug($infosupdef['Infosupdef']['nom'].'=======>'.$valeur);
+                    // Ajout de la regle de validation
+                    if($infosupdef['Infosupdef']['type']==='text')
+                        $this->validator()->add('text', 'required', array(
+                            'rule' => array('between', 0, 255),
+                            'message' => '\"'.$infosupdef['Infosupdef']['nom'].'\" trop long (255 caractères maximum)', 'growl',
+                        ));
                     $infosup['Infosup']['text'] = $valeur;
                     break;
                 case 'listmulti' :

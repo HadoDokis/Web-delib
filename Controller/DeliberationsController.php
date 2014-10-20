@@ -1118,17 +1118,28 @@ class DeliberationsController extends AppController
             } else {
                 $this->Deliberation->rollback();
                 $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
+                $msg_error='';
                 if (!empty($annexesErrors)) {
-                    $msg_annexe_error = "";
                     foreach ($annexesErrors as $annexeName => $annexError) {
-                        $msg_annexe_error .= "<strong>Annexe &apos;" . $annexeName . "&apos; :</strong><br>";
+                        $msg_error .= "<strong>Annexe &apos;" . $annexeName . "&apos; :</strong><br>";
                         foreach ($annexError as $error) {
-                            $msg_annexe_error .= "- " . $error . "<br/>";
+                            $msg_error .= "- " . $error . "<br/>";
                         }
                     }
                     $this->Session->setFlash($msg_annexe_error, 'growl', array('type' => 'erreur'));
                 }
-                $this->set('errors_Infosup', $this->Deliberation->Infosup->invalidFields());
+                $InfosupErrors=$this->Deliberation->Infosup->invalidFields();
+                if (!empty($InfosupErrors)) {
+                    foreach ($InfosupErrors as $InfosupName => $InfosupError) {
+                        $msg_error .= "<strong>Information supplémentaire :</strong><br>";
+                        foreach ($InfosupError as $error) {
+                            $msg_error .= "- " . $error . "<br/>";
+                        }
+                    }
+                    
+                }
+                $this->Session->setFlash($msg_error, 'growl', array('type' => 'erreur'));
+                $this->set('errors_Infosup', $InfosupErrors);
                 $sortie = false;
             }
             if ($sortie)
