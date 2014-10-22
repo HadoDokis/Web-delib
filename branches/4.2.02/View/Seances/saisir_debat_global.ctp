@@ -29,7 +29,10 @@ echo $this->Form->hidden('Seance.id');
 <div class="submit">
     <?php
     echo $this->Html->tag("div", null, array("class" => "btn-group"));
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour aux seances', "/seances/listerFuturesSeances", array('class' => 'btn', 'name' => 'Annuler', 'escape' => false));
+    if($this->data['Seance']['traitee'])
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour aux seances passées', array('controller' => 'seances', 'action' => 'listerAnciennesSeances'), array('class' => 'btn', 'name' => 'Annuler', 'escape' => false));
+    else
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour aux seances à traiter', array('controller' => 'seances', 'action' => 'listerFuturesSeances'), array('class' => 'btn', 'name' => 'Annuler', 'escape' => false));
     echo $this->Form->button('<i class="fa fa-save"></i> Enregistrer', array('class' => 'btn btn-primary', 'name' => 'saisir', 'escape' => false));
     echo $this->Form->end();
     echo $this->Html->tag('/div', null);
