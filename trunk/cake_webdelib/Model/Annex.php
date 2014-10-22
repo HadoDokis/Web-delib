@@ -183,6 +183,9 @@ class Annex extends AppModel {
             $fields[] = 'edition_data';
             //$fields[] = 'edition_data_typemime';
         }
+        if ($modelOdtInfos->hasUserFieldDeclared('nombre_annexe'))
+            $fields[] = 'id';
+        
         if (empty($fields)) return;
 
         // lecture en base de données
