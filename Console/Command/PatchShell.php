@@ -38,6 +38,10 @@ class PatchShell extends AppShell {
             case "42to4201": //Modification des modèles, ajout de la section Annexes avec variable fichier
                 $this->Version_42to4201();
                 break;
+            
+            case "4201to4202": //Modification des modèles, ajout de la section Annexes avec variable fichier
+                $this->Version_4201to4202();
+                break;
 
             case null: // Pas de commande
                 $this->out("\n<error>Un nom de patch est nécessaire, tapez 'Console/cake patch -h' pour afficher l'aide.</error>\n");
@@ -64,32 +68,6 @@ class PatchShell extends AppShell {
     {
         $parser = parent::getOptionParser();
         $parser->description(__('Commandes de mise à jour de webdelib.'));
-
-        $parser->addSubcommand('4101to4102', array(
-            'help' => __('Application du patch de mise à jour de 4.1.01 à 4.1.02.'),
-            'parser' => array(
-                'options' => array(
-                    'PDFtoODT' => array(
-                        'help' => __('Conversion PDFtoODT.'),
-                        'required' => false,
-                        'short' => 'o',
-                        'boolean' => true
-                    ),
-                    'classification' => array(
-                        'help' => __('Mise à jour de la classification.'),
-                        'required' => false,
-                        'short' => 'c',
-                        'boolean' => true
-                    ),
-                    'num_pref' => array(
-                        'help' => __('Mise à jour des num_pref'),
-                        'required' => false,
-                        'short' => 'n',
-                        'boolean' => true
-                    )
-                )
-            )
-        ));
 
         $parser->addSubcommand('4103to4104', array(
             'help' => __('Application du patch de mise à jour de 4.1.03 à 4.1.04.'),
@@ -156,94 +134,30 @@ class PatchShell extends AppShell {
                 )
             )
         ));
+        
+        $parser->addSubcommand('4201to4202', array(
+            'help' => __('Application du patch de mise à jour de 4.2.01 à 4.2.02.'),
+            'parser' => array(
+                'options' => array(
+                    'classification' => array(
+                        'name' => 'classification',
+                        'required' => false,
+                        'short' => 'c',
+                        'help' => 'Mise à jour de classification.',
+                        'boolean' => true
+                    ),
+                    'Schema' => array(
+                        'name' => 'Schema',
+                        'required' => false,
+                        'short' => 'u',
+                        'help' => 'Mise à jour du schema de bdd',
+                        'boolean' => true
+                    )
+                )
+            )
+        ));
                 
         return $parser;
-    }
-
-    public function Version_41to42()
-    {
-        $this->out("<important>Mise à jour de Webdelib 4.1.xx => 4.2</important>\n");
-
-        //1° Modification des modèles le necessitant
-        $this->out('Recherche des modèles avec jointure des annexes...');
-        $this->AjouteSectionAnnexe->execute();
-
-        //2° Passage des scripts sql de migration
-        $this->out("\nPassage des patchs de mise à jour de la base de données...");
-        $sql_files = array();
-        $sql_files['Webdelib42'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.1_to_4.2.sql';
-        $sql_files['Plugin.ModelOdtValidator.create'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'create.sql';
-        $sql_files['Plugin.ModelOdtValidator.types'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modeltypes.sql';
-        $sql_files['Plugin.ModelOdtValidator.sections'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelsections.sql';
-        $sql_files['Plugin.ModelOdtValidator.variables'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelvariables.sql';
-        $sql_files['Plugin.ModelOdtValidator.validations'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelvalidations.sql';
-        $sql_files['Plugin.Cakeflow31'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
-        
-        $this->Sql->execute();
-        $this->Sql->begin();
-        $success = true;
-        foreach ($sql_files as $id => $sql){
-            if (!$this->Sql->run($sql)){
-                $this->out("\n<error>Erreur lors du lancement du fichier sql de $id</error>");
-                $this->Sql->rollback();
-                $success = false;
-                break;
-            }
-        }
-        
-        if ($success){
-            $this->Sql->commit();
-            //4° Copier l'attribut president_id des Séances délibérantes dans les Délibérations associées
-            /*$this->out('Copie de l\'attribut president_id des séances vers les délibérations...');
-            $this->CopyPresidentId->execute();*/
-
-            $this->footer('<important>Patch de la version 4.1.xx vers la 4.2 accompli avec succès !</important>');
-        }else
-            $this->footer('<error>Erreur : un problème est survenu lors de l\'application du patch !!</error>');
-
-
-    }
-    
-    public function Version_42to4201()
-    {
-        $this->out("<important>Mise à jour de Webdelib 4.2 => 4.2.01</important>\n");
-
-        //1° Passage des scripts sql de migration
-        $this->out("\nPassage des patchs de mise à jour de la base de données...");
-        $sql_files = array();
-        $sql_files['Webdelib4201'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.2_to_4.2.01.sql';
-        $sql_files['Plugin.Cakeflow3101'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'3.1_to_3.1.01.sql';
-        $sql_files['Plugin.ModelOdtValidator1001'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'1.0_to_1.0.01.sql';
-        
-        $this->Sql->execute();
-        $this->Sql->begin();
-        $success = true;
-        foreach ($sql_files as $id => $sql){
-            if (!$this->Sql->run($sql)){
-                $this->out("\n<error>Erreur lors du lancement du fichier sql de $id</error>");
-                $this->Sql->rollback();
-                $success = false;
-                break;
-            }
-        }
-        $this->Sql->begin();
-        $this->Sql->commit();
-        
-        $this->out('Migration des messages Tdt...');
-        if ($success && !$this->Tdt->migrationMessageTdt4201()){
-            $this->out("\n<error>Erreur de la migration des messages Tdt</error>");
-            $this->Sql->rollback();
-            $success = false;
-        }
-        
-        if ($success){
-            $this->Sql->commit();
-
-            $this->footer('<important>Patch de la version 4.2 vers la 4.2.01 accompli avec succès !</important>');
-        }else
-            $this->footer('<error>Erreur : un problème est survenu lors de l\'application du patch !!</error>');
-
-
     }
 
     /** Mise à jour de la version 4.1.03 à la version 4.1.04
@@ -306,6 +220,120 @@ class PatchShell extends AppShell {
         else
             $this->footer('<error>Erreur : un problème est survenu lors de l\'application du patch !!</error>');
         
+    }
+    
+    public function Version_41to42()
+    {
+        $this->out("<important>Mise à jour de Webdelib 4.1.xx => 4.2</important>\n");
+
+        //1° Modification des modèles le necessitant
+        $this->out('Recherche des modèles avec jointure des annexes...');
+        $this->AjouteSectionAnnexe->execute();
+
+        //2° Passage des scripts sql de migration
+        $this->out("\nPassage des patchs de mise à jour de la base de données...");
+        $sql_files = array();
+        $sql_files['Webdelib42'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.1_to_4.2.sql';
+        $sql_files['Plugin.ModelOdtValidator.create'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'create.sql';
+        $sql_files['Plugin.ModelOdtValidator.types'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modeltypes.sql';
+        $sql_files['Plugin.ModelOdtValidator.sections'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelsections.sql';
+        $sql_files['Plugin.ModelOdtValidator.variables'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelvariables.sql';
+        $sql_files['Plugin.ModelOdtValidator.validations'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelvalidations.sql';
+        $sql_files['Plugin.Cakeflow31'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
+        
+        $this->Sql->execute();
+        $this->Sql->begin();
+        $success = true;
+        foreach ($sql_files as $id => $sql){
+            if (!$this->Sql->run($sql)){
+                $this->out("\n<error>Erreur lors du lancement du fichier sql de $id</error>");
+                $this->Sql->rollback();
+                $success = false;
+                break;
+            }
+        }
+        
+        if ($success){
+            $this->Sql->commit();
+            //4° Copier l'attribut president_id des Séances délibérantes dans les Délibérations associées
+            /*$this->out('Copie de l\'attribut president_id des séances vers les délibérations...');
+            $this->CopyPresidentId->execute();*/
+
+            $this->footer('<important>Patch de la version 4.1.xx vers la 4.2 accompli avec succès !</important>');
+        }else
+            $this->footer('<error>Erreur : un problème est survenu lors de l\'application du patch !!</error>');
+
+    }
+    
+    public function Version_42to4201()
+    {
+        $this->out("<important>Mise à jour de Webdelib 4.2 => 4.2.01</important>\n");
+
+        //1° Passage des scripts sql de migration
+        $this->out("\nPassage des patchs de mise à jour de la base de données...");
+        $sql_files = array();
+        $sql_files['Webdelib4201'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.2_to_4.2.01.sql';
+        $sql_files['Plugin.Cakeflow3101'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'3.1_to_3.1.01.sql';
+        $sql_files['Plugin.ModelOdtValidator1001'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'1.0_to_1.0.01.sql';
+        
+        $this->Sql->execute();
+        $this->Sql->begin();
+        $success = true;
+        foreach ($sql_files as $id => $sql){
+            if (!$this->Sql->run($sql)){
+                $this->out("\n<error>Erreur lors du lancement du fichier sql de $id</error>");
+                $this->Sql->rollback();
+                $success = false;
+                break;
+            }
+        }
+        $this->Sql->begin();
+        $this->Sql->commit();
+        
+        $this->out('Migration des messages Tdt...');
+        if ($success && !$this->Tdt->migrationMessageTdt4201()){
+            $this->out("\n<error>Erreur de la migration des messages Tdt</error>");
+            $this->Sql->rollback();
+            $success = false;
+        }
+        
+        if ($success){
+            $this->Sql->commit();
+
+            $this->footer('<important>Patch de la version 4.2 vers la 4.2.01 accompli avec succès !</important>');
+        }else
+            $this->footer('<error>Erreur : un problème est survenu lors de l\'application du patch !!</error>');
+
+    }
+    
+    public function Version_4201to4202()
+    {
+        $this->out("<important>Mise à jour de Webdelib 4.2.01 => 4.2.02</important>\n");
+
+        //1° Passage des scripts sql de migration
+        $this->out("\nPassage des patchs de mise à jour de la base de données...");
+        $sql_files = array();
+        $sql_files['Webdelib4202'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.2.01_to_4.2.02.sql';
+        
+        $this->Sql->execute();
+        $this->Sql->begin();
+        $success = true;
+        foreach ($sql_files as $id => $sql){
+            if (!$this->Sql->run($sql)){
+                $this->out("\n<error>Erreur lors du lancement du fichier sql de $id</error>");
+                $this->Sql->rollback();
+                $success = false;
+                break;
+            }
+        }
+        
+        if ($success){
+            $this->Sql->commit();
+
+            $this->footer('<important>Patch de la version 4.2.01 vers la 4.2.02 accompli avec succès !</important>');
+        }else
+            $this->footer('<error>Erreur : un problème est survenu lors de l\'application du patch !!</error>');
+
     }
 
     /**
