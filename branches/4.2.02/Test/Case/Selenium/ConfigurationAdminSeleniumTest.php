@@ -1,5 +1,5 @@
 <?php
-
+return;
 App::uses('SeleniumCakeTestCase', 'Lib');
 
 class ConnexionSelenium extends SeleniumCakeTestCase {
