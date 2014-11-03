@@ -188,7 +188,7 @@ class Seance extends AppModel
                         'Circuit.nom'
                     ),
                 ),
-                'recursive' => -1,
+                'recursive' => 1,
                 'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
                 'order' => 'Deliberationseance.position ASC',
             )
