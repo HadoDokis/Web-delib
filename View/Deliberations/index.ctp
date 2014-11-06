@@ -160,20 +160,20 @@ if (isset($traitement_lot) && ($traitement_lot == true))
 
                 }
                 if (in_array('generer', $deliberation['Actions'])) {
-                    if (empty($deliberation['Deliberation']['signee']))
-                        echo $this->Html->link(SHY,
-                            array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
-                            array(
-                                'class' => 'link_pdf delib_pdf',
-                                'escape' => false,
-                                'title' => 'Générer le document PDF du projet ' . $deliberation['Deliberation']['objet']));
-                    else
-                        echo $this->Html->link(SHY,
-                            array('controller' => 'deliberations', 'action' => 'downloadDelib', $deliberation['Deliberation']['id']),
-                            array('class' => 'link_pdf delib_pdf',
-                                'title' => 'Visionner le document PDF du projet ' . $deliberation['Deliberation']['objet'],
-                                'escape' => false),
-                            false);
+                    echo $this->Html->link(SHY,
+                        array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
+                        array(
+                            'class' => 'link_pdf delib_pdf',
+                            'escape' => false,
+                            'title' => 'Générer le document PDF du projet ' . $deliberation['Deliberation']['objet']));
+                }
+                if(in_array('telecharger', $deliberation['Actions'])){
+                    echo $this->Html->link(SHY,
+                        array('controller' => 'deliberations', 'action' => 'downloadDelib', $deliberation['Deliberation']['id']),
+                        array('class' => 'link_pdf',
+                            'title' => 'Visionner le document PDF du projet ' . $deliberation['Deliberation']['objet'],
+                            'escape' => false),
+                        false);
                 }
                 ?>
             </td>

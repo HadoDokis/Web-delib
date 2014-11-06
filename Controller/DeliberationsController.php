@@ -1331,7 +1331,7 @@ class DeliberationsController extends AppController
                 $this->Session->setFlash('Vous ne pouvez pas supprimer ce projet', 'growl');
             }
         }
-        $this->redirect($this->referer());
+        $this->redirect($this->previous);
     }
 
     function addIntoCircuit($id = null) {
@@ -1589,10 +1589,12 @@ class DeliberationsController extends AppController
                         'User.id' => $commentaires[$i]['Commentaire']['agent_id']),
                         'recursive' => -1,
                         'fields' => array('nom', 'prenom')));
-                    if (empty($agent))
+                    if (empty($agent)) {
                         $this->Session->setFlash('Identité de l\'auteur de(s) commentaire(s) inconnue.', 'growl');
-                    $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
-                    $commentaires[$i]['Commentaire']['prenomAgent'] = $agent['User']['prenom'];
+                    } else {
+                        $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
+                        $commentaires[$i]['Commentaire']['prenomAgent'] = $agent['User']['prenom'];
+                    }
                 }
                 $this->set('commentaires', $commentaires);
                 if (!empty($projet['Seance']['date']))
@@ -2747,6 +2749,11 @@ class DeliberationsController extends AppController
             if ($projet['Deliberation']['etat'] < 3 && $editerTous) {
                 $this->request->data[$i]['Actions'][] = 'edit';
             }
+            if (!in_array('generer', $this->request->data[$i]['Actions']) && $projet['Deliberation']['signee']) {
+                $this->request->data[$i]['Actions'][] = 'telecharger';
+            }if(!in_array('generer', $this->request->data[$i]['Actions']))
+                    $this->request->data[$i]['Actions'][] = 'generer';
+            
             // initialisation des dates, modèle et service
             $seances_id = array();
 
@@ -4506,7 +4513,7 @@ class DeliberationsController extends AppController
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
             'order' => $ordre));
         $this->_sortProjetSeanceDate($projets);
-        $this->_afficheProjets($projets, 'R&eacute;sultat de la recherche parmi mes projets', array('view', 'generer'), array());
+        $this->_afficheProjets($projets, 'R&eacute;sultat de la recherche parmi mes projets', array('view'), array());
     }
 
 
