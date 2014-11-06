@@ -95,9 +95,14 @@ class Theme extends AppModel {
             'fields' => array('libelle'),
             'conditions' => array('lft <='=>$theme['Theme']['lft'], 'rght >='=>$theme['Theme']['rght']),
             'order' => array('lft')));
-        foreach($themes as $i=>$theme) $libelleThemesLevel[$i+1] = $theme['Theme']['libelle'];
+        foreach($themes as $i=>$theme) 
+        {
+            $libelleThemesLevel[$i+1] =  $theme['Theme']['libelle'];
+        }
         foreach($libelleThemesLevel as $level=>$libelleThemeLevel)
+        {
             $oMainPart->addElement(new GDO_FieldType("T".$level."_theme", $libelleThemeLevel, 'text'));
+        }
     }
 
 }
