@@ -1787,7 +1787,7 @@ class SeancesController extends AppController {
             $this->log('Fusion :'.$e->getMessage().' File:'.$e->getFile().' Line:'.$e->getLine(), 'error');
             $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
         }
-        $this->redirect($this->referer());
+        $this->redirect($this->here);
     }
 
     /**

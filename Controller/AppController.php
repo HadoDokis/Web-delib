@@ -56,7 +56,7 @@ class AppController extends Controller {
             if (empty($this->params['requested'])
                 && stripos($this->params->here, 'ajax') === false // méthode ajax
                 && stripos($this->params->here, 'download') === false // téléchargement de fichier
-                && stripos($this->params->here, 'genere') === false // méthode de génération
+                && stripos($this->params->here, 'genereToken') === false // méthode de génération
                 && stripos($this->params->here, 'files/') === false // liens vers fichiers
                 && stripos($this->params->here, 'sendToTdt') === false // pas de vue associée
                 && stripos($this->params->here, 'deliberations/getBordereauTdt') === false // pas de vue associée
@@ -80,11 +80,13 @@ class AppController extends Controller {
             }
             $this->Session->write('user.history', $historique);
             if (count($historique) > 1) {
+                $this->here = $historique[0];
                 $this->previous = $historique[1];
                 $this->Session->write('previous_url', $this->previous);
                 $this->set('previous', $this->previous);
             }elseif (count($historique) ==1)  {
-                $this->previous = '/';
+                $this->here = '/';
+                $this->previous = $this->here;
                 $this->Session->write('previous_url', $this->previous);
                 $this->set('previous', $this->previous);
             }
