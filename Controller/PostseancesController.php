@@ -481,7 +481,7 @@ class PostseancesController extends AppController {
             $this->Seance->Behaviors->attach('Containable');
             $seance = $this->Seance->find('first', array(
                 'conditions' => array('Seance.id' => $seance_id),
-                'contain' => array('Typeseance.libelle')));
+                'contain' => array('Typeseance.libelle','Typeseance.modelprojet_id')));
 
             $this->Progress->at(5, 'Recherche de la séance en base de données...');
 
@@ -630,7 +630,7 @@ class PostseancesController extends AppController {
                     $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                     $doc->appendChild($document);
                     // fusion du rapport et ajout au zip
-                    $zip->addFromString('Rapports' . DS . $delib_filename, $this->Deliberation->fusion($delib['Deliberation']['id'], 'rapport'));
+                    $zip->addFromString('Rapports' . DS . $delib_filename, $this->Deliberation->fusion($delib['Deliberation']['id'], 'rapport', $seance['Typeseance']['modelprojet_id']));
                 }
 
                 //Ajout de la signature (XML+ZIP)
@@ -731,7 +731,7 @@ class PostseancesController extends AppController {
             $this->Seance->Behaviors->attach('Containable');
             $seance = $this->Seance->find('first', array(
                 'conditions' => array('Seance.id' => $seance_id),
-                'contain' => array('Typeseance.libelle')));
+                'contain' => array('Typeseance.libelle','Typeseance.modelprojet_id')));
 
             $this->Progress->at(5, 'Recherche de la séance en base de données...');
 
@@ -914,7 +914,7 @@ class PostseancesController extends AppController {
                     $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                     $doc->appendChild($document);
                     // fusion du rapport et ajout au zip
-                    $zip->addFromString('Rapports' . DS . $delib_filename, $this->Deliberation->fusion($delib['Deliberation']['id'], 'rapport'));
+                    $zip->addFromString('Rapports' . DS . $delib_filename, $this->Deliberation->fusion($delib['Deliberation']['id'], 'rapport', $seance['Typeseance']['modelprojet_id']));
                 }
 
                 if (!empty($delib['Deliberation']['signature'])){

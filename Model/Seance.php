@@ -582,7 +582,7 @@ class Seance extends AppModel
      */
     function getModelTemplateId($id, $modelOptions) {
         // initialisation
-        $allowedModelTypes = array('projet', 'deliberation', 'convocation', 'ordredujour', 'pvsommaire', 'pvdetaille');
+        $allowedModelTypes = array('convocation', 'ordredujour', 'pvsommaire', 'pvdetaille');
         if (!in_array($modelOptions['modelTypeName'], $allowedModelTypes))
             throw new Exception('le type de modèle d\'édition '.$modelOptions['modelTypeName'].' n\'est par autorisé');
 
