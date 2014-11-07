@@ -2749,10 +2749,12 @@ class DeliberationsController extends AppController
             if ($projet['Deliberation']['etat'] < 3 && $editerTous) {
                 $this->request->data[$i]['Actions'][] = 'edit';
             }
+            
             if (!in_array('generer', $this->request->data[$i]['Actions']) && $projet['Deliberation']['signee']) {
                 $this->request->data[$i]['Actions'][] = 'telecharger';
-            }if(!in_array('generer', $this->request->data[$i]['Actions']))
-                    $this->request->data[$i]['Actions'][] = 'generer';
+            }
+            if(!in_array('telecharger', $this->request->data[$i]['Actions']))
+                $this->request->data[$i]['Actions'][] = 'generer';
             
             // initialisation des dates, modèle et service
             $seances_id = array();
@@ -3422,7 +3424,7 @@ class DeliberationsController extends AppController
                 $this->_sortProjetSeanceDate($projets);
                 if ($this->data['Deliberation']['generer'] == 0) {
 
-                    $actions = array('view', 'generer');
+                    $actions = array('view');
                     if ($this->Droits->check($this->user_id, "Deliberations:delete"))
                         array_push($actions, 'delete');
 
