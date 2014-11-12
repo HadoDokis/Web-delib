@@ -1065,6 +1065,7 @@ class DeliberationsController extends AppController
                         if (!empty($this->data['Deliberation']['num_pref']))
                             $multidelib['num_pref'] = $this->data['Deliberation']['num_pref'];
                         $multidelib['typeacte_id'] = $this->data['Deliberation']['typeacte_id'];
+                        $multidelib['theme_id'] = $this->data['Deliberation']['theme_id'];
                         $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib);
                         // sauvegarde des nouvelles annexes pour cette delib rattachée
                         if (array_key_exists('Annex', $this->data))
