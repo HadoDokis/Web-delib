@@ -46,10 +46,10 @@
                 <td><?php echo $deliberation['Deliberation']['titre']; ?></td>
                 <td><?php if (!empty($deliberation['Deliberation']['num_delib'])) echo $deliberation['Deliberation']['num_delib']; ?></td>
                 <td class="actions" style="width: 80px;">
-                    <?php echo $this->Html->link(SHY, array('controller' => 'seances', 'action' => 'saisirDebat', $deliberation['Deliberation']['id'], $seance_id), array('class' => 'link_debat', 'escape' => false, 'title' => 'Saisir les debats'), false); ?>
+                    <?php echo $this->Html->link(null, array('controller' => 'seances', 'action' => 'saisirDebat', $deliberation['Deliberation']['id'], $seance_id), array('class' => 'link_debat', 'escape' => false, 'title' => 'Saisir les debats'), false); ?>
                     <?php
                     if ($seance['Typeseance']['action'] < 2 && $deliberation['Deliberation']['is_delib'])
-                        echo $this->Html->link(SHY,
+                        echo $this->Html->link(null,
                             array('controller' => 'seances', 'action' => 'voter', $deliberation['Deliberation']['id'], $seance_id),
                             array(
                                 'class' => 'link_voter',
@@ -59,7 +59,7 @@
                         );
                     ?>
                     <?php
-                    echo $this->Html->link(SHY,
+                    echo $this->Html->link(null,
                         array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
                         array(
                             'class' => 'link_pdf delib_pdf',

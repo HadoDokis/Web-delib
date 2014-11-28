@@ -7,7 +7,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Fck');
-	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido');
+	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
 
@@ -44,10 +44,10 @@ class SeancesController extends AppController {
         $success = false;
         $date = '';
         if (empty($this->data)) {
-            if (isset($timestamp)) $date = date('d/m/Y', $timestamp);
+            if (isset($timestamp)) $date = date('d/m/Y H:i', $timestamp);
         } else {
                 $this->Seance->begin();
-                $this->request->data['Seance']['date'] = CakeTime::format( $this->data['date'], '%Y-%m-%d %H:%M:00');
+                $this->request->data['Seance']['date'] = CakeTime::format( str_replace('/', '-', $this->data['Seance']['date']).':00', '%Y-%m-%d %H:%M:00');
                 if ($success = $this->Seance->save($this->data)) {
                     // sauvegarde des informations supplémentaires
                     if (array_key_exists('Infosup', $this->data)){
@@ -96,7 +96,7 @@ class SeancesController extends AppController {
                 $this->Session->setFlash('Invalide id pour la seance', 'growl', array('type' => 'erreur'));
                 $sortie = true;
             } else {
-                $date = date('d/m/Y h:m', strtotime($this->data['Seance']['date']));
+                $date = date('d/m/Y H:i', strtotime($this->data['Seance']['date']));
                 foreach ($this->data['Infosup'] as $infosup) {
                     $infoSupDef = $this->Infosupdef->find('first', array(
                         'recursive' => -1,
@@ -110,7 +110,7 @@ class SeancesController extends AppController {
         } else {
                 $success = true;
                 $this->Seance->begin();
-                $this->request->data['Seance']['date'] = CakeTime::format( $this->data['date'], '%Y-%m-%d %H:%M:00');
+                $this->request->data['Seance']['date'] = CakeTime::format( str_replace('/', '-', $this->data['Seance']['date']).':00', '%Y-%m-%d %H:%M:00');
                 $success &= $this->Seance->save($this->data);
                 if ($success) {
                     // sauvegarde des fichiers odt car possibilité modifiés en webdav sur le serveur
@@ -221,7 +221,6 @@ class SeancesController extends AppController {
         $this->set('format', $format);
 
         if (empty ($this->data)) {
-            $this->Seance->Behaviors->attach('Containable');
             $seances = $this->Seance->find('all', array('conditions' => array('Seance.traitee' => 0),
                 'order' => array('date ASC'),
                 'fields' => array('id', 'date', 'type_id', 'idelibre_id'),
@@ -637,80 +636,107 @@ class SeancesController extends AppController {
     }
 
     function saisirDebat($delib_id = null, $seance_id = null) {
+        
         $this->set('seance_id', $seance_id);
         $this->set('delib_id', $delib_id);
-        $this->Seance->Behaviors->attach('Containable');
+        
         $seance = $this->Seance->find('first', array(
             'conditions' => array('Seance.id' => $seance_id),
-            'fields' => array('Seance.traitee', 'Seance.pv_figes'),
+            'fields' => array('traitee', 'pv_figes','date'),
             'contain' => array('Typeseance.action')
         ));
+        
+        $seance['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+        $this->set('seance', $seance);
 
         if ($seance['Seance']['pv_figes'] == 1) {
             $this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...', 'growl', array('type' => 'erreur'));
             return $this->redirect(array('controller' => 'postseances', 'action' => 'index'));
         }
+        
         if($this->request->isPost())
         {
-            if (!empty($this->data['Deliberation']['texte_doc']['tmp_name'])) {
-                $this->Deliberation->set($this->data);
-                if ($this->Deliberation->validates(array('fieldList' => array('texte_doc')))) {
-                    $details = $this->Fido->analyzeFile($this->data['Deliberation']['texte_doc']['tmp_name']);
-                    $type = $seance['Typeseance']['action'] ? 'commission' : 'debat';
-                    $deliberation = array(
-                        'Deliberation' => array(
-                            'id' => $delib_id,
-                            $type . '_name' => $this->data['Deliberation']['texte_doc']['name'],
-                            $type . '_size' => $this->data['Deliberation']['texte_doc']['size'],
-                            $type . '_type' => $details['mimetype'],
-                            $type => file_get_contents($this->data['Deliberation']['texte_doc']['tmp_name'])
-                        )
-                    );
-                    if ($this->Deliberation->save($deliberation)) {
-                        return $this->redirect($this->previous);
+            $this->request->data['Deliberation']['id']=$delib_id;
+            if ($this->Deliberation->SaveDebat($this->data['Deliberation'])) {
+                $this->Session->setFlash('Débat global enregistré', 'growl');
+                return $this->redirect($this->previous);
+            }else{
+                $validationErrors = $this->Seance->invalidFields();
+                $msg_error='';
+                if (!empty($validationErrors)) {
+                foreach ($validationErrors as $key => $Error) {
+                    $msg_error .= "<strong>$key</strong><br>";
+                    foreach ($Error as $error) {
+                        $msg_error .= "- " . $error . "<br/>";
                     }
                 }
-                $this->Session->setFlash('Erreur : Format du fichier incorrect', 'growl', array('type' => 'erreur'));
-            }else
-                $this->Session->setFlash('Veuillez mettre un fichier pour enregistrer la saisie des débats.', 'growl', array('type' => 'erreur'));
+
+                }
+                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous : '.$msg_error, 'growl', array('type' => 'erreur'));
+            }
         }
-        $this->request->data = $this->Deliberation->find('first', array(
+        
+        $deliberation = $this->Deliberation->find('first', array(
             'conditions' => array('Deliberation.id' => $delib_id),
             'recursive' => -1));
-        $this->set('seance', $seance);
+        
+        $this->request->data = $deliberation;
+        if(!empty($deliberation['Deliberation']['debat']))
+            $this->set('file_debat', $this->SabreDav->newFileDav('Debat_'.$delib_id.'.odt', $deliberation['Deliberation']['debat']));
     }
 
     public function saisirDebatGlobal($id = null) {
-        $this->Seance->Behaviors->load('Containable');
+        
         $this->set('seance_id', $id);
-        if($this->request->isPost())
-        {
-        if (!empty($this->data['Seance']['texte_doc']['tmp_name'])) {
-            $this->Seance->set($this->data);
-            if ($this->Seance->validates(array('fieldList' => array('texte_doc')))) {
-                $details = $this->Fido->analyzeFile($this->data['Seance']['texte_doc']['tmp_name']);
-                $seance = array(
-                    'Seance' => array(
-                        'id' => $id,
-                        'debat_global_name' => $this->data['Seance']['texte_doc']['name'],
-                        'debat_global_size' => $this->data['Seance']['texte_doc']['size'],
-                        'debat_global_type' => $details['mimetype'],
-                        'debat_global' => file_get_contents($this->data['Seance']['texte_doc']['tmp_name'])
-                    )
-                );
-                if ($this->Seance->save($seance)) {
-                    $this->Session->setFlash('Débat global enregistré', 'growl');
-                    return $this->redirect($this->previous);
+        if($this->request->is('post')) {
+            
+            $this->request->data['Seance']['id']=$id;
+            if ($this->Seance->SaveDebatGen($this->data)) {
+                $this->Session->setFlash('Débat global enregistré', 'growl');
+                return $this->redirect($this->previous);
+            }else{
+                $validationErrors = $this->Seance->invalidFields();
+                $msg_error='';
+                if (!empty($validationErrors)) {
+                foreach ($validationErrors as $key => $Error) {
+                    $msg_error .= "<strong>$key</strong><br>";
+                    foreach ($Error as $error) {
+                        $msg_error .= "- " . $error . "<br/>";
+                    }
                 }
+
+                }
+                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous : '.$msg_error, 'growl', array('type' => 'erreur'));
             }
-            $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous : format de fichier invalide.', 'growl', array('type' => 'erreur'));
         }
-        else
-            $this->Session->setFlash('Veuillez mettre un fichier pour enregistrer la saisie des débats généraux.', 'growl', array('type' => 'erreur'));
-        }
-        $this->request->data = $this->Seance->find('first', array(
-            'conditions' => array('Seance.id' => $id)
+        
+        $seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $id),
+            'recursive' => -1
         ));
+        
+        $this->request->data = $seance;
+        if(!empty($seance['Seance']['debat_global']))
+            $this->set('file_debat', $this->SabreDav->newFileDav('DebatGlobal_'.$id.'.odt', $seance['Seance']['debat_global']));
+    }
+    
+    function deleteDebatGlobal($id){
+        $this->Seance->id = $id;
+        $data = array(
+            'debat_global' => '',
+            'debat_global_name' => '',
+            'debat_global_size' => 0,
+            'debat_global_type' => ''
+        );
+			
+        if ($this->Seance->save($data, false)){
+            $this->Session->setFlash('Débat supprimé !', 'growl');
+            return $this->redirect(array('controller'=>'seances', 'action'=>'SaisirDebatGlobal',$id));
+        }
+        else{
+            $this->Session->setFlash("Problème survenu lors de la suppression des débats généraux", 'growl', array('type' => 'error'));
+            return $this->redirect($this->here);
+        }
     }
 
     function detailsAvis ($seance_id=null) {
@@ -824,7 +850,8 @@ class SeancesController extends AppController {
             'conditions' => array('Seance.id' => $seance_id),
             'recursive'  => -1,
             'fields'     => array('id', 'type_id', 'president_id', 'secretaire_id')));
-		$acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true, array('id', 'nom', 'prenom'));
+                   //Récupération des acteurs convoqué pour la séance
+    		$acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], null, array('id', 'nom', 'prenom'));
         if (empty($acteursConvoques)){
             $this->Session->setFlash('Aucun acteur convoqué.', 'growl', array('type'=>'erreur'));
             $this->redirect(array('action' => 'listerFuturesSeances'));
@@ -903,18 +930,20 @@ class SeancesController extends AppController {
 
 	function download($id=null, $file){
             
-                $objCourant = $this->Seance->find('first', array(
-                                                        'fields'     => array('Seance.'.$file,'Seance.'.$file.'_type'
-                                                            ,'Seance.'.$file.'_size','Seance.'.$file.'_name'),
-                                                        'conditions' => array('Seance.id' => $id),
-                                                        'recursive'=>-1)
-                                                          );
-            
-		header('Content-type: '.$objCourant['Seance'][$file."_type"]);
-		header('Content-Length: '.$objCourant['Seance'][$file."_size"]);
-		header('Content-Disposition: attachment; filename="'.$objCourant['Seance'][$file."_name"].'"');
-		echo $objCourant['Seance'][$file];
-		exit();
+            $this->autoRender = false;
+
+            $fileType = $file . '_type';
+            $fileSize = $file . '_size';
+            $fileName = $file . '_name';
+            $seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $id),
+            'fields' => array($fileType, $fileSize, $fileName, $file),
+            'recursive' => -1
+            ));
+
+            $this->response->type($seance['Seance'][$fileType]);
+            $this->response->download($seance['Seance'][$fileName]);
+            $this->response->body($seance['Seance'][$file]);
 	}
 //Obsolete
 	function getFileType($id=null, $file) {
@@ -1023,25 +1052,6 @@ class SeancesController extends AppController {
         }
         return $this->redirect(array('controller' => 'seances', 'action' => 'listerFuturesSeances'));
     }
-
-	function deleteDebatGlobal($id ){
-        $this->Seance->id = $id;
-        $data = array(
-            'id' => $id,
-            'debat_global' => '',
-            'debat_global_name' => '',
-            'debat_global_size' => 0,
-            'debat_global_type' => ''
-        );
-			
-		if ($this->Seance->save($data, false)){
-            return $this->redirect(array('controller'=>'seances', 'action'=>'SaisirDebatGlobal',$id));
-        }
-		else{
-            $this->Session->setFlash("Suppression impossible !", 'growl', array('type' => 'erreur'));
-            return $this->redirect($this->referer());
-        }
-	}
 
     function sendConvocations($seance_id, $model_id) {
         $this->loadModel('Acteurseance');
@@ -1693,7 +1703,7 @@ class SeancesController extends AppController {
             $this->log('Fusion :'.$e->getMessage().' File:'.$e->getFile().' Line:'.$e->getLine(), 'error');
             $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
         }
-        $this->redirect($this->referer());
+        $this->redirect($this->here);
     }
 
     /**

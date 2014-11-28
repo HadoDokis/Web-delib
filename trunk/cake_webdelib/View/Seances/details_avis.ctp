@@ -1,5 +1,9 @@
+<?php
+$this->Html->addCrumb('Séance à traiter', array($this->request['controller'], 'action' => 'afficherProjets', $seance_id));
+$this->Html->addCrumb( __('Séance du ') . $date_seance);
+echo $this->Html->tag('h3', __('Détails des projets de la séance du ') . $date_seance);
+?>
 <div class="deliberations">
-    <h2>Détails des projets de la séance du <?php echo $date_seance ?></h2>
 
     <table width='100%' cellpadding="0" cellspacing="0">
         <tr>
@@ -30,19 +34,19 @@
                 <td style="text-align: center"><?php echo $deliberation['Deliberation']['id']; ?></td>
                 <td class="actions">
                     <?php
-                    echo $this->Html->link(SHY,
+                    echo $this->Html->link(null,
                         array('controller' => 'seances', 'action' => 'saisirDebat', $deliberation['Deliberation']['id'], $seance_id),
                         array(
                             'class' => 'link_debat',
                             'escape' => false,
                             'title' => 'Saisir les debats'));
-                    echo $this->Html->link(SHY,
+                    echo $this->Html->link(null,
                         array('controller' => 'seances', 'action' => 'donnerAvis', $deliberation['Deliberation']['id'], $seance_id),
                         array(
                             'class' => 'link_donnerAvis',
                             'escape' => false,
                             'title' => 'Donner un avis'));
-                    echo $this->Html->link(SHY,
+                    echo $this->Html->link(null,
                         array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
                         array(
                             'class' => 'link_pdf delib_pdf',
