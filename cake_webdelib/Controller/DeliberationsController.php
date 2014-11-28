@@ -329,7 +329,10 @@ class DeliberationsController extends AppController {
             if (empty($this->data['Deliberation']['objet_delib']))
                 $this->request->data['Deliberation']['objet_delib'] = $this->data['Deliberation']['objet'];
 
-            $this->request->data['Deliberation']['date_limite'] = CakeTime::format( $this->data['date_limite'], '%Y-%m-%d 00:00:00');
+            if (!empty($this->request->data['Deliberation']['date_limite'])) {
+                App::uses('CakeTime', 'Utility');
+                $this->request->data['Deliberation']['date_limite'] = CakeTime::format( $this->data['date_limite'], '%Y-%m-%d 00:00:00');
+            }
             $this->Deliberation->unbindModel(array('hasAndBelongsToMany' => array('Seance')));
             // Si on definit une seance a une delib, on la place en derniere position de la seance
             if (isset($this->data['Seance'])) {
@@ -408,8 +411,8 @@ class DeliberationsController extends AppController {
         }
 
         if ($sortie) {
-            if (isset($this->request->data['lienTab'])) {
-                return $this->redirect(array('controller' => 'deliberations', 'action' => 'edit', $delibId, 'lienTab' => $this->request->data['lienTab']));
+            if (isset($this->request->data['nameTab'])) {
+                return $this->redirect(array('controller' => 'deliberations', 'action' => 'edit', $delibId, 'nameTab' => $this->request->data['nameTab']));
             }
             return $this->redirect($redirect);
         } else {
@@ -526,31 +529,22 @@ class DeliberationsController extends AppController {
         $this->response->body($delib['Deliberation'][$file]);
     }
 
-    function deleteDebat($id, $isCommission, $seance_id) {
-        $this->Deliberation->id = $id;
-        if (!$isCommission)
-            $data = array(
-                'id' => $id,
-                'debat' => '',
-                'debat_name' => '',
-                'debat_size' => 0,
-                'debat_type' => ''
-            );
-        else
-            $data = array(
-                'id' => $id,
-                'commission' => '',
-                'commission_name' => '',
-                'commission_size' => 0,
-                'commission_type' => ''
-            );
+    function deleteDebat($delib_id, $seance_id) {
+        $this->Deliberation->id = $delib_id;
+        $data = array(
+            'debat' => '',
+            'debat_name' => '',
+            'debat_size' => 0,
+            'debat_type' => ''
+        );
 
-        if ($this->Deliberation->save($data)) {
+        if ($this->Deliberation->save($data, false)){
             $this->Session->setFlash('Débat supprimé !', 'growl');
-            return $this->redirect(array('controller' => 'seances', 'action' => 'SaisirDebat', $id, $seance_id));
-        } else {
-            $this->Session->setFlash('Problème survenu lors de la suppression du débat', 'growl', array('type' => 'error'));
-            return $this->redirect($this->referer());
+            return $this->redirect(array('controller'=>'seances', 'action'=>'SaisirDebat',$delib_id, $seance_id));
+        }
+        else{
+            $this->Session->setFlash("Problème survenu lors de la suppression du débat", 'growl', array('type' => 'erreur'));
+            return $this->redirect($this->here);
         }
     }
 
@@ -878,8 +872,8 @@ class DeliberationsController extends AppController {
             $this->set('selectedTypeacteId', $this->request->data['Deliberation']['typeacte_id']);
 
             //Pour l'affichage de l'onglet
-            if (isset($this->request['named']['lienTab']))
-                $this->set('lienTab', $this->request['named']['lienTab']);
+            if (isset($this->request['named']['nameTab']))
+                $this->set('nameTab', $this->request['named']['nameTab']);
 
             $this->set('seances', $seances);
             $this->set('typeseances_selected', $typeseances_selected);
@@ -960,8 +954,10 @@ class DeliberationsController extends AppController {
                 if (empty($this->data['Deliberation']['is_multidelib']) OR (@$this->data['Deliberation']['is_multidelib'] == 0))
                     $this->request->data['Deliberation']['objet_delib'] = $this->data['Deliberation']['objet'];
 
-            $this->request->data['Deliberation']['date_limite'] = CakeTime::format( $this->data['date_limite'], '%Y-%m-%d 00:00:00');
-
+            if (!empty($this->request->data['Deliberation']['date_limite'])) {
+                App::uses('CakeTime', 'Utility');
+                $this->request->data['Deliberation']['date_limite'] = CakeTime::format( $this->data['date_limite'], '%Y-%m-%d 00:00:00');
+            }
             if ($success = $this->Deliberation->save($this->request->data)) {
                 $this->Historique->enregistre($id, $this->user_id, "Modification du projet");
                 $this->Filtre->supprimer();
@@ -1333,7 +1329,7 @@ class DeliberationsController extends AppController {
                 $this->Session->setFlash('Vous ne pouvez pas supprimer ce projet', 'growl');
             }
         }
-        $this->redirect($this->referer());
+        $this->redirect($this->previous);
     }
 
     function addIntoCircuit($id = null) {
@@ -2714,6 +2710,11 @@ class DeliberationsController extends AppController {
             if ($projet['Deliberation']['etat'] < 3 && $editerTous) {
                 $this->request->data[$i]['Actions'][] = 'edit';
             }
+            if (!in_array('generer', $this->request->data[$i]['Actions']) && $projet['Deliberation']['signee']) {
+                $this->request->data[$i]['Actions'][] = 'telecharger';
+            }
+            if(!in_array('telecharger', $this->request->data[$i]['Actions']))
+                $this->request->data[$i]['Actions'][] = 'generer';
             // initialisation des dates, modèle et service
             $seances_id = array();
 
@@ -4477,7 +4478,7 @@ class DeliberationsController extends AppController {
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
             'order' => $ordre));
         $this->_sortProjetSeanceDate($projets);
-        $this->_afficheProjets('index',$projets, 'R&eacute;sultat de la recherche parmi mes projets', array('view', 'generer'), array());
+        $this->_afficheProjets('index',$projets, 'R&eacute;sultat de la recherche parmi mes projets', array('view'), array());
     }
 
 

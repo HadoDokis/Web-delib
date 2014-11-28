@@ -8,7 +8,8 @@ class Seance extends AppModel
         'type_id' => array(
             array(
                 'rule' => 'notEmpty',
-                'message' => 'Entrer le type de seance associé.'
+                'required'   => true,
+                'message' => 'Entrer le type de seance'
             )
         ),
         'avis' => array(
@@ -19,22 +20,19 @@ class Seance extends AppModel
         ),
         'date' => array(
             array(
-                'rule' => 'notEmpty',
-                'message' => 'Entrer une date valide.'
+                'rule'       => array('datetime', 'ymd'),
+                'required'   => true,
+                'allowEmpty' => false,
+                'message'    => 'Entrer une date valide'
             )
         ),
         'commission' => array(
             array(
                 'rule' => 'notEmpty',
-                'message' => 'Entrer le texte de débat.'
+                'allowEmpty' => false,
+                'message' => 'Entrer le texte de débat'
             )
         ),
-        'texte_doc' => array(
-            array(
-                'rule' => array('checkFormat', 'odt', false),
-                'message' => "Format du document invalide. Autorisé : fichier ODT"
-            )
-        )
     );
 
     public $belongsTo = array(
@@ -86,6 +84,41 @@ class Seance extends AppModel
             'deleteQuery' => '',
             'insertQuery' => ''));
 
+    
+    public function beforeSave($options = array()) {
+        if (!empty($this->data['Seance']['texte_doc'])){
+            $analyse=$this->analyzeFile($this->data['Seance']['texte_doc']['tmp_name']);
+            $this->data['Seance']['debat_global_type']=$analyse['mimetype'];
+            $this->data['Seance']['debat_global_name']=$this->data['Seance']['texte_doc']['name'];
+            $this->data['Seance']['debat_global_size']=$this->data['Seance']['texte_doc']['size'];
+            $this->data['Seance']['debat_global']=file_get_contents($this->data['Seance']['texte_doc']['tmp_name']);
+        }
+        return true;
+    }
+    /*
+     * 
+     */
+    public function SaveDebatGen($data)
+    {
+        $this->validate=array();
+        $this->validator()->add('texte_doc', array(
+            'required' => array(
+                'rule' => 'isUploadedFile',
+                'message' => 'Veuillez mettre un fichier pour enregistrer la saisie des débats généraux'
+            ),
+            'upload' => array(
+                'rule' => 'uploadError',
+                'message' => 'Une erreur est survenue lors de l\'upload du document'
+            ),
+            'checkFormat' => array(
+                'rule' => array('checkFormat', 'odt', true),
+                'message'       => 'Format du document invalide. Autorisé : fichier ODT'
+            )
+        ));
+        
+        return parent::save($data);
+    }
+    
     /**
      * retourne la liste des séances futures avec le nom du type de séance
      */
@@ -179,7 +212,7 @@ class Seance extends AppModel
         $deliberations = $this->Deliberationseance->find('all', array(
             'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
             'fields' => array('Deliberationseance.deliberation_id','Deliberationseance.position'),
-            'contain' => array('Deliberation.id', 'Deliberation.etat', 'Seance.id'),
+            'contain' => array('Deliberation.id', 'Deliberation.etat'),
             'order' => 'Deliberationseance.position ASC',
         ));
         foreach ($deliberations as $deliberation)

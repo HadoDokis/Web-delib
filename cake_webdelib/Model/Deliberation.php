@@ -647,33 +647,85 @@ class Deliberation extends AppModel {
         $this->commit();
         return $this->id;
     }
-
+    
+        /*
+     * 
+     */
+    public function SaveDebat($data)
+    {
+        $this->validate=array();
+        $this->validator()->add('texte_doc', array(
+            'required' => array(
+                'rule' => 'isUploadedFile',
+                'message' => 'Veuillez mettre un fichier pour enregistrer la saisie des débats généraux'
+            ),
+            'upload' => array(
+                'rule' => 'uploadError',
+                'message' => 'Une erreur est survenue lors de l\'upload du document'
+            ),
+            'checkFormat' => array(
+                'rule' => array('checkFormat', 'odt', true),
+                'message'       => 'Format du document invalide. Autorisé : fichier ODT'
+            )
+        ));
+        
+        
+        return parent::save($data);
+    }
+    
     /**
 	 * fonction récursive de suppression de la délibération $delib8d, de ses versions antérieures et de ses délibérations rattachées
 	 * @param integer $delibId id de la délib à supprimer
 	 */
-	function delete($id = null) {
-        $delib = $this->Deliberation->find('first', array(
-            'recursive' => -1,
-            'fields' => array('Deliberation.id', 'Deliberation.redacteur_id', 'Deliberation.etat', 'Deliberation.parapheur_etat'),
-            'conditions' => array('id' => $id)));
+	function supprimer($delibId) {
+		// lecture de la délib en base
+		$delib = $this->find('first', array(
+				'recursive' => -1,
+				'fields' => array('anterieure_id', 'parent_id'),
+				'conditions' => array('id' => $delibId)));
+		if (empty($delib)) return;
 
-        if (empty($delib)) {
-            $this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type' => 'erreur'));
-        }
-        elseif($delib['Deliberation']['parapheur_etat']==1) {
-                $this->Session->setFlash('Le projet est dans une étape parapheur, il ne peut être supprimé.', 'growl', array('type' => 'erreur'));
-        } else {
-            $canDelete = $this->Droits->check($this->user_id, "Deliberations:delete");
-            if ((($delib['Deliberation']['redacteur_id'] == $this->user_id) && ($delib['Deliberation']['etat'] == 0)) || ($canDelete)) {
-                $this->Deliberation->supprimer($id);
-                $this->Session->setFlash('Le projet \'' . $id . '\' a été supprimé.', 'growl');
-            } else {
-                $this->Session->setFlash('Vous ne pouvez pas supprimer ce projet', 'growl');
-            }
-        }
-        $this->redirect($this->referer());
-    }
+		// suppression du répertoire des docs
+		$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
+		$this->rmDir($repFichier);
+		
+                // gestion de la séance
+                $aSeanceId=$this->getSeancesid($delibId);
+                foreach ($aSeanceId as $seance_id) {
+                    $this->Deliberationseance->deleteDeliberationseance($delibId, $seance_id);
+                }
+
+		// pour les délib rattachées, le traitement finit ici
+		if (!empty($delib['Deliberation']['parent_id'])) return;
+
+		// suppression des délib rattachées
+		$delibRattachees = $this->find('all', array(
+				'recursive' => -1,
+				'fields' => array('id'),
+				'conditions' => array('parent_id' => $delibId)));
+		foreach($delibRattachees as $delibRattachee) {
+			$this->supprimer($delibRattachee['Deliberation']['id']);
+                        // gestion de la séance
+                        $aSeanceId=$this->getSeancesid($delibRattachee['Deliberation']['id']);
+                        foreach ($aSeanceId as $seance_id) {
+                            $this->Deliberationseance->deleteDeliberationseance($delibRattachee['Deliberation']['id'], $seance_id);
+                        }
+		}
+
+		// suppression des délib antérieures
+		if ( $delib['Deliberation']['anterieure_id'] != 0){
+                    $this->supprimer($delib['Deliberation']['anterieure_id']);
+                    // gestion de la séance
+                    $aSeanceId=$this->getSeancesid($delib['Deliberation']['anterieure_id']);
+                    foreach ($aSeanceId as $seance_id) {
+                        $this->Deliberationseance->deleteDeliberationseance($delib['Deliberation']['anterieure_id'], $seance_id);
+                    }
+                }
+                
+                // suppression de la délib
+		$this->delete($delibId);
+	}
+
 
 	/**
 	 * Supprime un répertoire et son contenu
@@ -1352,12 +1404,16 @@ class Deliberation extends AppModel {
         App::uses('Tdt', 'Lib');
         $Tdt = new Tdt;
         $rapport = '';
+        $conditions = array();
+        $conditions['AND'] = array(
+            'OR' => array(
+                    array('AND' => array('date_envoi_signature >=' => date('Y-m-d', strtotime("-80 days")), 'date_acte' => null)),
+                    array('AND' => array('date_acte >=' => date('Y-m-d', strtotime("-80 days")), 'date_envoi_signature' => null))
+                ),'etat' => 5
+            );
         $actes = $this->find('all', array(
             'recursive' => -1,
-            'conditions' => array(
-                'etat' => 5,
-                'tdt_dateAR >=' => date('Y-m-d', strtotime("-60 days"))
-            ),
+            'conditions' => $conditions,
             'fields' => array(
                 'id',
                 'tdt_id',
@@ -1509,6 +1565,17 @@ class Deliberation extends AppModel {
         return $this->getModelId($id);
     }
 
+    public function beforeSave($options = array()) {
+        if (!empty($this->data['Deliberation']['texte_doc'])){
+            $analyse=$this->analyzeFile($this->data['Deliberation']['texte_doc']['tmp_name']);
+            $this->data['Deliberation']['debat_type']=$analyse['mimetype'];
+            $this->data['Deliberation']['debat_name']=$this->data['Deliberation']['texte_doc']['name'];
+            $this->data['Deliberation']['debat_size']=$this->data['Deliberation']['texte_doc']['size'];
+            $this->data['Deliberation']['debat']=file_get_contents($this->data['Deliberation']['texte_doc']['tmp_name']);
+        }
+        return true;
+    }
+    
     /**
      * fonction de callback du behavior OdtFusion
      * initialise les variables de fusion Gedooo
