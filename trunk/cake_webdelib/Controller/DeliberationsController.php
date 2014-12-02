@@ -1497,7 +1497,6 @@ class DeliberationsController extends AppController {
     }
 
     function traiter($id = null, $valid = null) {
-        $this->Deliberation->Behaviors->load('Containable');
         $projet = $this->Deliberation->find('first', array(
             'fields' => array(
                 'id',
@@ -1544,11 +1543,13 @@ class DeliberationsController extends AppController {
                 'Multidelib.deliberation_name',
                 'Multidelib.Typeacte.libelle',
             ),
-            'conditions' => array('Deliberation.id' => $id)));
+            'conditions' => array('Deliberation.id' => $id),
+            'recursive'=>-1)
+            );
 
         if (empty($projet)){
             $this->Session->setFlash("Le projet n&deg;$id est introuvable !", 'growl');
-            return $this->redirect($this->referer());
+            return $this->redirect($this->previos);
         }
 
         //Si traitement d'une delib "enfant" rediriger vers traitement delib "parent"
@@ -2463,7 +2464,6 @@ class DeliberationsController extends AppController {
      * de validation de l'utilisateur connecté et dont le tour de validation est venu.
      */
     function mesProjetsATraiter() {
-        $this->Deliberation->Behaviors->load('Containable');
         if (isset($this->params['filtre']) && ($this->params['filtre'] == 'hide'))
             $limit = intval(Configure::read('LIMIT'));
         else
