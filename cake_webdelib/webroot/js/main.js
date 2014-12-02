@@ -36,8 +36,9 @@ $(document).ready(function () {
     $('#boutonValider').click(function () {
         var empty_flds = 0;
         $('input,textarea,select').filter('[required]:not(:visible):not(:disabled)').each(function(){
-            if ($.trim($(this).val()) == '')
+            if ($.trim($(this).val()) == ''){
                 empty_flds++;
+            }
         });
         if (empty_flds > 0) {
             if (empty_flds == 1)
