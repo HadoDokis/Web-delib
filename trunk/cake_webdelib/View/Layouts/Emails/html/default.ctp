@@ -28,5 +28,8 @@
 </head>
 <body>
 	<?php echo $content_for_layout;?>
+    
+<p>web-delib</p>
+<p>Ce mail de notification a été envoyé par webdelib pour votre information. Merci de ne pas répondre.</p>
 </body>
 </html>

@@ -23,3 +23,7 @@
 ?>
 <?php echo $content_for_layout;?>
 
+web-delib
+
+Ce mail de notification a été envoyé par webdelib pour votre information. Merci de ne pas répondre.
+

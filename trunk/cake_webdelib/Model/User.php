@@ -223,9 +223,14 @@ class User extends AppModel
      */
     function notifier($delib_id, $user_id, $type)
     {
+        App::uses('Deliberation', 'Model');
+        App::uses('Seance', 'Model');
+        App::uses('CakeEmail', 'Network/Email');
+        
         $user = $this->find('first', array(
+            'field'=>array('nom','prenom','email','accept_notif','mail_' . $type),
+            'conditions' => array('id' => $user_id),
             'recursive' => -1,
-            'conditions' => array('id' => $user_id)
         ));
 
         // utilisateur existe et accepte les mails ?
@@ -235,76 +240,88 @@ class User extends AppModel
             || empty($user['User']["mail_$type"])
         ) return false;
 
-        App::uses('CakeEmail', 'Network/Email');
         $config_mail = Configure::read('SMTP_USE') ? 'smtp' : 'default';
-        $this->Email = new CakeEmail($config_mail);
-        $this->Email->to($user['User']['email']);
+        $Email = new CakeEmail($config_mail);
 
-        App::uses('Deliberation', 'Model');
         $this->Deliberation = new Deliberation();
         $delib = $this->Deliberation->find('first', array(
-            'recursive' => -1,
+            'fields' => array('id', 'objet', 'titre', 'circuit_id'),
             'conditions' => array('id' => $delib_id),
-            'fields' => array('id', 'objet', 'titre', 'circuit_id')
+            'contain'=>array(
+                'Commentaire'=>array(
+                    'fields' => array('texte'),
+                    'order'=>'Commentaire.created DESC',
+                    'limit'=> 1
+                ),
+             ),
+            'recursive' => -1,
         ));
+        
+        $seance_id = $this->Deliberation->getSeanceDeliberanteId($delib_id);
+        $libelle = '';
+        if(!empty($seance_id)){
+            $seance = $this->Deliberation->Seance->find('first', array(
+                'fields' => array('Seance.id', 'date'),
+                'conditions' => array('Seance.id' => $seance_id),
+                'contain'=>array(
+                    'Typeseance'=>array(
+                        'fields' => array('libelle')
+                    ),
+                 ),
+                'recursive' => -1,
+            ));
+            $libelle='['.$seance['Typeseance']['libelle'].'] ';
+            $delib['Deliberation']['SeanceDeliberante']['texte']= $seance['Typeseance']['libelle'] . ' du ' . CakeTime::i18nFormat(strtotime($seance['Seance']['date']), '%A %e %B %Y à %k h %M');
+        }
 
         switch ($type) {
             case 'insertion':
-                $subject = "Vous allez recevoir le projet : $delib_id";
+                $template = 'projet_insertion';
+                $subject = $libelle . "Vous allez recevoir le projet : $delib_id";
                 break;
             case 'traitement':
-                $subject = "Vous avez le projet (id : $delib_id) à traiter";
+                $template = 'projet_traitement';
+                $subject = $libelle . "Vous avez le projet (id : $delib_id) à traiter";
                 break;
             case 'refus':
-                $subject = "Le projet << " . $delib['Deliberation']['objet'] . " >> a été refusé";
+                $template = 'projet_refus';
+                $subject = $libelle . "Le projet \"" . $delib['Deliberation']['objet'] . "\" a été refusé";
                 break;
             case 'modif_projet_cree':
-                $subject = "Votre projet (id : $delib_id) a été modifié";
+                $template = 'projet_modif_cree';
+                $subject = $libelle . "Votre projet (id : $delib_id) a été modifié";
                 break;
             case 'modif_projet_valide':
-                $subject = "Un projet que j'ai visé (id : $delib_id) a été modifié";
+                $template = 'projet_modif_valide';
+                $subject = $libelle . "Un projet que j'ai visé (id : $delib_id) a été modifié";
                 break;
             case 'retard_validation':
-                $subject = "Retard sur le projet : $delib_id";
+                $template = 'projet_insertion';
+                $subject = $libelle . "Retard sur le projet : $delib_id";
                 break;
         }
-        $this->Email->subject($subject);
-        $content = $this->_paramMails($type, $delib['Deliberation'], $user['User']);
-        $this->Email->send($content);
-
-        return true;
-    }
-
-    /**
-     * Détermine le contenu du mail à envoyer en fonction du type de mail, le projet et l'utilisateur
-     * @param string $type
-     * @param array $delib
-     * @param array $acteur
-     * @return string
-     */
-    function _paramMails($type, $delib, $acteur) {
-        $file = new File(APP . "/Config/emails/$type.txt", false);
-        $content = $file->read();
-        $file->close();
-        $addrTraiter = Configure::read('WEBDELIB_URL') . '/deliberations/traiter/' . $delib['id'];
-        $addrView = Configure::read('WEBDELIB_URL') . '/deliberations/view/' . $delib['id'];
-        $addrEdit = Configure::read('WEBDELIB_URL') . '/deliberations/edit/' . $delib['id'];
-
-        $searchReplace = array(
-            "#NOM#" => $acteur['nom'],
-            "#PRENOM#" => $acteur['prenom'],
-            "#IDENTIFIANT_PROJET#" => $delib['id'],
-            "#OBJET_PROJET#" => $delib['objet'],
-            "#TITRE_PROJET#" => $delib['titre'],
-            "#LIBELLE_CIRCUIT#" => $this->Circuit->getLibelle($delib['circuit_id']),
-            "#ADRESSE_A_TRAITER#" => $addrTraiter,
-            "#ADRESSE_A_VISUALISER#" => $addrView,
-            "#ADRESSE_A_MODIFIER#" => $addrEdit,
+        $aVariables = array(
+            'nom' => $user['User']['nom'],
+            'prenom' => $user['User']['prenom'],
+            'projet_identifiant' => $delib['Deliberation']['id'],
+            'projet_objet' => $delib['Deliberation']['objet'],
+            'seance_deliberante' => !empty($delib['Deliberation']['SeanceDeliberante']['texte'])?$delib['Deliberation']['SeanceDeliberante']['texte']:'',
+            'projet_dernier_commentaire' => !empty($delib['Commentaire'][0]['texte'])?$delib['Commentaire'][0]['texte']:'Aucun commentaire',
+            'projet_titre' => $delib['Deliberation']['titre'],
+           // 'LIBELLE_CIRCUIT' => $this->Circuit->getLibelle($delib['Deliberation']['circuit_id']),
+            'projet_url_traiter' => Configure::read('WEBDELIB_URL') . '/deliberations/traiter/' . $delib['Deliberation']['id'],
+            'projet_url_visualiser' => Configure::read('WEBDELIB_URL') . '/deliberations/view/' . $delib['Deliberation']['id'],
+            'projet_url_modifier' => Configure::read('WEBDELIB_URL') . '/deliberations/edit/' . $delib['Deliberation']['id'],
         );
-
-        return str_replace(array_keys($searchReplace), array_values($searchReplace), $content);
+        
+        $Email->viewVars($aVariables);
+        
+        return $Email->template($template, 'default')
+            ->to($user['User']['email'])
+            ->subject($subject)
+            ->send();
     }
-    
+
     /**
      * fonction d'initialisation des variables de fusion pour l'allias utilisé pour la liaison (Redacteur)
      * les bibliothèques Gedooo doivent être inclues par avance

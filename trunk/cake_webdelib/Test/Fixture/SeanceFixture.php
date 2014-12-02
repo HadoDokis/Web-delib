@@ -16,16 +16,22 @@
 
 
 class SeanceFixture extends CakeTestFixture {
-        var $name = 'Seance';
-        var $table = 'seances';
-        var $import = array( 'table' => 'seances', 'connection' => 'default', 'records' => false);
-        var $records = array(
-                array(
-                        'id' => '1',
+    
+    public $import = array('model' => 'Seance', 'records' => false);
+        
+    /**
+    * Définition des enregistrements.
+    *
+    * @var array
+    */
+    public function init() {
+        $this->records = array(
+		array(
+			'id' => '1',
                         'type_id' => '1',
-                        'created' => '2010-05-25 15:44:05',
-                        'modified' => '2010-05-25 15:44:05',
-                        'date' => '2010-05-28 02:02:00',
+                        'created' => date('Y-m-d H:i:s'),
+                        'modified' => date('Y-m-d H:i:s'),
+                        'date' => '2015-01-28 18:30:00',
                         'traitee' => '0',
                         'commentaire' => null,
                         'secretaire_id' => null,
@@ -36,8 +42,10 @@ class SeanceFixture extends CakeTestFixture {
                         'pv_figes' => null,
                         'pv_sommaire' => null,
                         'pv_complet' => null,
-                ),
-        );
+		)
+	);
+        parent::init();
+    }
 }
 
 ?>

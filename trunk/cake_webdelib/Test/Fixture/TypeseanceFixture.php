@@ -29,7 +29,7 @@ class TypeseanceFixture extends CakeTestFixture
 			'id' => 1,
 			'libelle' => 'Conseil municipal',
                         'retard' => 30,
-                        'action' => 2,
+                        'action' => 0,
                         'compteur_id' => 1,
                         'modelprojet_id' => 2,
                         'modeldeliberation_id' => 3,
