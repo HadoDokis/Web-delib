@@ -15,8 +15,8 @@ $linkBarre .= $this->Html->link(
 );
 $linkBarre .= $this->Html->link(
     '<i class="fa fa-file"></i> Générer',
-    array('controller' => 'models', 'action' => 'generer', $deliberation['Deliberation']['id'], 'null', $deliberation['Modeltemplate']['id'], '-1', '0', 'retour', '0', '0', '0'),
-    array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document du projet')
+    array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
+    array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document')
 );
 $linkBarre .= "</div>";
 $linkBarre .= "<div class='btn-group'>";

@@ -1,19 +1,19 @@
 <?php
-if (!empty($typeseances)) :
-    echo $this->Form->input('Typeseance', array(
-        'options' => $typeseances,
-        'id' => 'TypeseanceTypeseance',
-        'name' => 'data[Typeseance][Typeseance]',
-        'label' => 'Types de séance',
-        'onchange' => "updateDatesSeances(this);",
-        'multiple' => true));
-    echo $this->Html->tag('div', '', array('class' => 'spacer'));
-?>
-<script type="text/javascript">
-    $("#TypeseanceTypeseance").select2({
-        width: "80%",
-        allowClear: true,
-        placeholder: "Selection vide"
-    });
-</script>
-<?php endif; ?>
+
+if (!empty($typeseances)){
+ echo $this->BsForm->input('Typeseance', array(
+                 'options' => $typeseances,
+                 'id' => 'TypeseanceTypeseance',
+                 'name' => 'data[Typeseance][Typeseance]',
+                 'type' => 'select',
+                 'label' => 'Types de séance',
+                 'onchange' => "updateDatesSeances(this);",
+                 'multiple' => true));    
+echo $this->Bs->scriptBlock('
+                 $("#TypeseanceTypeseance").select2({
+                     width: "100%",
+                     allowClear: true,
+                     placeholder: "Selection vide"
+                 });
+                   ');
+}

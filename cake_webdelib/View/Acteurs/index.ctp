@@ -11,16 +11,15 @@ echo $this->Bs->tag('h3', 'Liste des acteurs') .
     array('title' => 'Elus'),
     array('title' => $this->Paginator->sort('position', 'N° d\'ordre')),
     array('title' => 'Téléphone'),
-    array('title' => 'Mobile'),
     array('title' => 'Suppléant'),
     array('title' => $this->Paginator->sort('Service.libelle',  'Délégation(s)')),
     array('title' => 'Actions'),
         ), array('hover', 'striped'));
 foreach ($acteurs as $acteur) {
     $service='';
-    foreach ($acteur['Service'] as $service) 
-        $service.=$service['libelle'].$this->Html->tag(null, '<br />');
-            
+    foreach ($acteur['Service'] as $aService) 
+        $service.=$aService['libelle'].$this->Html->tag(null, '<br />');
+          
     echo $this->Bs->tableCells(array(
         $acteur['Acteur']['salutation'],
         $acteur['Acteur']['nom'],
@@ -29,15 +28,16 @@ foreach ($acteurs as $acteur) {
         $acteur['Typeacteur']['nom'],
         $acteur['Typeacteur']['elu'],
         $acteur['Acteur']['libelleOrdre'],
-        $acteur['Acteur']['telfixe'],
-        $acteur['Acteur']['telmobile'],
+        'Fixe :'.$this->Html->tag(null, '<br />').$acteur['Acteur']['telfixe'].$this->Html->tag(null, '<br />').
+        'Mobile :'.$this->Html->tag(null, '<br />').$acteur['Acteur']['telmobile'],
         isset( $acteur['Acteur']['suppleant_id'])? $acteur['Suppleant']['prenom']." ".$acteur['Suppleant']['nom']:'',
         $service,
-        $this->Bs->div('btn-group') .
+        $this->Bs->col() .$this->Bs->row(). 
+        $this->Bs->div('btn-group-vertical') .
         $this->Bs->btn(null, array('controller' => 'acteurs', 'action' => 'view', $acteur['Acteur']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn(null, array('controller' => 'acteurs', 'action' => 'edit', $acteur['Acteur']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
         $this->Bs->btn(null, array('controller' => 'acteurs', 'action' => 'delete', $acteur['Acteur']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer'), 'Êtes vous sur de vouloir supprimer :' . $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'] . ' ?') .
-        $this->Bs->close()
+        $this->Bs->close(3)
     ));
 }
 echo $this->Bs->endTable() .

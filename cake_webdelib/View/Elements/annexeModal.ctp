@@ -7,6 +7,21 @@
  *
  * Description : Fenêtre modale contenant un formulaire pour l'ajout d'annexe
  */
+$body=$this->Form->hidden('Annex.0.ref', array('id' => 'refDelib')).
+$this->Form->hidden('Annex.0.numAnnexe', array('id' => 'numAnnexe')).
+$this->BsForm->input('Annex.0.file', array('label' => 'Document <abbr title="obligatoire">*</abbr>', 'type' => 'file', 'after' => $this->Html->tag('p', 'Document obligatoire !', array('class' => "error-message", 'id' => 'annexe-error-message', 'style' => "display: none")))).
+$this->Html->tag('div', '', array('class' => 'spacer')).
+$this->BsForm->input('Annex.0.titre', array('label' => 'Titre', 'autocomplete' => 'off')).
+$this->Html->tag('div', '', array('class' => 'spacer')).
+$this->BsForm->input('Annex.0.ctrl', array('label' => array('text' => 'Joindre au controle de légalité', 'style' => 'width:auto'), 'type' => 'checkbox', 'checked' => false)).
+$this->Html->tag('div', '', array('class' => 'spacer')).
+$this->BsForm->input('Annex.0.fusion', array('label' => array('text' => 'Joindre à la fusion', 'style' => 'width:auto'), 'type' => 'checkbox', 'checked' => true));
+            
+echo $this->Bs->modal('Nouvelle annexe', $body);
+
+
+
+return;
 ?>
 <div class="modal hide fade" id="annexeModal">
     <div class="modal-header">
@@ -16,15 +31,7 @@
     <div class="modal-body">
         <div id="annexeModalBloc">
             <?php
-            echo $this->Form->hidden('Annex.0.ref', array('id' => 'refDelib'));
-            echo $this->Form->hidden('Annex.0.numAnnexe', array('id' => 'numAnnexe'));
-            echo $this->Form->input('Annex.0.file', array('label' => 'Document <abbr title="obligatoire">*</abbr>', 'type' => 'file', 'after' => $this->Html->tag('p', 'Document obligatoire !', array('class' => "error-message", 'id' => 'annexe-error-message', 'style' => "display: none"))));
-            echo $this->Html->tag('div', '', array('class' => 'spacer'));
-            echo $this->Form->input('Annex.0.titre', array('label' => 'Titre', 'autocomplete' => 'off'));
-            echo $this->Html->tag('div', '', array('class' => 'spacer'));
-            echo $this->Form->input('Annex.0.ctrl', array('label' => array('text' => 'Joindre au controle de légalité', 'style' => 'width:auto'), 'type' => 'checkbox', 'checked' => false));
-            echo $this->Html->tag('div', '', array('class' => 'spacer'));
-            echo $this->Form->input('Annex.0.fusion', array('label' => array('text' => 'Joindre à la fusion', 'style' => 'width:auto'), 'type' => 'checkbox', 'checked' => true));
+           
             ?>
         </div>
     </div>
