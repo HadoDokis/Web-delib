@@ -1,5 +1,6 @@
 4.2.01
 ======
+- Correction des profils en doubles (désactivés) dans l'édition des utilisateurs
 - Mise en place des mails HTML/TEXT pour les alertes et les nouveaux corps de messages
 - Ajout Webdav sur les débats
 - Mise en place de SabreDav
