@@ -70,9 +70,6 @@ Inflector::rules('plural', array('irregular' => array(
                                     'infosuplistedef'=>'infosuplistedefs' 
                                 )));
 
-
-require_once('webdelib.inc');
-               
 /**
  * Plugins need to be loaded manually, you can either load them one by one or all of them in a single call
  * Uncomment one of the lines below, as you need. Make sure you read the documentation on CakePlugin to use more
@@ -126,6 +123,7 @@ CakeLog::config('error', array(
 	'file' => 'error',
 ));
 
+require_once dirname(__DIR__) . '/../vendors/autoload.php';
 
 require_once('webdelib.inc');
 require_once('formats.inc');
@@ -146,9 +144,10 @@ define('VERSION', trim(array_pop($versionFile)));
 //if (file_exists(APP.DS.'Config'.DS.'pastell.inc'))
 //    Configure::load('pastell');
 //
-////appVersion
-//$versionFile = file(APP . DS . 'VERSION.txt');
-//define('VERSION', trim(array_pop($versionFile)));
 
 //dbVersion
 //include_once(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Cakeflow' . DS . 'Config' . DS . 'cakeflow.conf.php');
+
+
+//FIXME Pour la date de séance
+//setlocale(LC_ALL, 'fr_FR.utf8');
