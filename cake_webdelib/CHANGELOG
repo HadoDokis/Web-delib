@@ -1,5 +1,8 @@
 4.2.01
 ======
+- Mise en place des mails HTML/TEXT pour les alertes et les nouveaux corps de messages
+- Ajout Webdav sur les débats
+- Mise en place de SabreDav
 - Mise en place du plugin GEDOOo
 - Nouveau shell d'importation de donnée : informations supplémentaires de type liste
 - Migration de Font-Awesome v4.0.3 vers v4.1.0

@@ -13,10 +13,10 @@
 *
 * @package app.Test.Fixture
 */
-class UserFixture extends CakeTestFixture {
-        var $name = 'User';
-        var $table = 'users';
-        var $import = array( 'table' => 'users', 'connection' => 'default', 'records' => true);
+class CommentaireFixture extends CakeTestFixture {
+        var $name = 'Commentaire';
+        var $table = 'commentaires';
+        var $import = array( 'table' => 'commentaires', 'connection' => 'default', 'records' => false);
          var $records = array(	
         );
 }

@@ -27,9 +27,9 @@ class EmailConfig {
 
     public $default = array(
         'transport' => 'Mail',
-        'emailFormat' => 'text',
-        //'charset' => 'utf-8',
-        //'headerCharset' => 'utf-8',
+        'emailFormat' => 'both',
+        'charset' => 'utf-8',
+        'headerCharset' => 'utf-8',
     );
 
     public $smtp = array(
@@ -38,9 +38,9 @@ class EmailConfig {
         'timeout' => 30,
         'client' => null,
         'log' => false,
-        'emailFormat' => 'text',
-        //'charset' => 'utf-8',
-        //'headerCharset' => 'utf-8',
+        'emailFormat' => 'both',
+        'charset' => 'utf-8',
+        'headerCharset' => 'utf-8',
     );
 
     public function __construct() {

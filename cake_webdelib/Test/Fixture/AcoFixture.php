@@ -154,7 +154,7 @@
 				'parent_id' => '14',
 				'model' => null,
 				'foreign_key' => '0',
-				'alias' => 'Seances:afficherCalendrier',
+				'alias' => 'Seances:Calendrier',
 				'lft' => '32',
 				'rght' => '33',
 			),
