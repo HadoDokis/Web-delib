@@ -239,9 +239,9 @@ class UsersController extends AppController {
                 $this->request->data['Service']['Service'] = explode(',', $this->request->data['Service']['Service']);
 
             if(!empty($this->data['User']['accept_notif']) && $this->data['User']['accept_notif']==true)
-                $this->data['User']['accept_notif']=false;
+                $this->request->data['User']['accept_notif']=false;
                     else
-                     $this->data['User']['accept_notif']=true;
+                     $this->request->data['User']['accept_notif']=true;
                     
             if ($this->User->save($this->data)) {
                 if (!empty($this->data['Nature']))
@@ -280,7 +280,7 @@ class UsersController extends AppController {
             $this->set('services', $this->User->Service->find('threaded', array(
                 'recursive' => -1,
                 'order' => 'libelle ASC',
-                'condition' => array('actif' => 1),
+                'conditions' => array('actif' => 1),
                 'fields' => array('id', 'libelle', 'parent_id')
             )));
             $this->set('profils', $this->User->Profil->find('list'));
