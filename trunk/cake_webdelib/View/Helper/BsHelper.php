@@ -427,7 +427,12 @@ class BsHelper extends HtmlHelper {
  * @var array
  */
 	protected $_tableClassesCells = array();
-
+/**
+ * Visibility of rows
+ *
+ * @var array
+ */
+        protected $_tableAttributesLine = array();
 /**
  * Position of the cell
  *
@@ -451,17 +456,31 @@ class BsHelper extends HtmlHelper {
  * @param array $class classes of the table (hover, striped, etc)
  * @return string
  */
-	public function table($titles, $class = array()) {
+	public function table($titles, $class, $options=array()) {
 		$classes = '';
+                $attributes = '';
 		$out = '<div class="table-responsive">';
 
-		if (!empty($class)) {
-			foreach ($class as $opt) {
-				$classes .= ' table-' . $opt;
-			}
-		}
-
-		$out .= '<table class="table' . $classes . '">';
+                if (!empty($class)) {
+                    foreach ($class as $opt) {
+                            $classes .= ' table-' . $opt;
+                    }
+                }
+                if (!empty($options['class'])) {
+                    foreach ($options['class'] as $opt) {
+                            $classes .= ' ' . $opt;
+                    }
+                }
+                if (!empty($options['attributes'])) {
+                    foreach ($options['attributes'] as $key => $value) {
+                        $attributes .=' '.$key.'="'.$value.'"'; 
+                    }
+                }
+                if (!empty($options['caption'])) {
+                    $out .='<caption>'.$options['caption'].'</caption>';
+                }
+                        
+		$out .= '<table class="table' . $classes . '"'.$attributes.'>';
 
 		if ($titles != null) {
 
@@ -521,10 +540,14 @@ class BsHelper extends HtmlHelper {
 		$cellPos = $this->_cellPos;
 
 		if ($cellPos == 0 && $this->_openLine == 0) {
-			$out .= '<tr>';
+			$out .= '<tr';
+                        foreach ($this->_tableAttributesLine as $key => $value) {
+                           $out .=' '.$key.'="'.$value.'"'; 
+                        }
+                        $out .= '>';
 		}
 
-		$this->_openLine = 0;
+		//$this->_openLine = 0;
 
 		if ($this->_tableClassesCells[$cellPos]) {
 			$classVisibility = $this->_tableClassesCells[$cellPos];
@@ -571,7 +594,16 @@ class BsHelper extends HtmlHelper {
 		$this->_openLine = 1;
 		return $out;
 	}
-
+ 
+        /**
+ * Attributes for a line (<tr>)
+ * 
+ * @param array $color Colorof the line (active, warning, danger or success)
+ * @return string
+ */
+	public function lineAttributes($attributes) {
+            $this->_tableAttributesLine = $attributes;
+	}
 /**
  * Close the table
  * 

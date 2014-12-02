@@ -1,207 +1,195 @@
-<?php echo $this->Html->script('ckeditor/ckeditor'); ?>
-<?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
-<?php echo $this->Html->script('calendrier.js'); ?>
-<?php echo $this->Html->script('utils.js'); ?>
-<?php echo $this->Html->script('deliberation'); ?>
-<?php echo $this->Html->script('multidelib'); ?>
-<?php
-echo $this->Html->tag('h1', "Modification du projet : " . $this->Html->value('Deliberation.id'));
-echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit', $this->Html->value('Deliberation.id')), 'type' => 'file', 'name' => 'Deliberation'));
-?>
+<?php 
+echo $this->Html->script('utils.js'); 
+echo $this->Html->script('deliberation');
 
-<div class='onglet'>
-    <a href="#" id="emptylink"></a>
-    <a href="javascript:afficheOnglet(1)"
-       id='lienTab1' <?php echo !isset($lienTab) || (isset($lienTab) && ($lienTab == 1 || empty($lienTab))) ? 'class="ongletCourant"' : '' ?>>Informations
-        principales</a>
-    <a href="javascript:afficheOnglet(2)"
-       id='lienTab2' <?php echo isset($lienTab) && $lienTab == 2 ? 'class="ongletCourant"' : '' ?>>Textes</a>
-    <a href="javascript:afficheOnglet(3)"
-       id='lienTab3' <?php echo isset($lienTab) && $lienTab == 3 ? 'class="ongletCourant"' : '' ?>>Annexe(s)</a>
-    <?php if (!empty($infosupdefs)): ?>
-        <a href="javascript:afficheOnglet(4)"
-           id='lienTab4' <?php echo isset($lienTab) && $lienTab == 4 ? 'class="ongletCourant"' : '' ?>>Informations
-            supplémentaires</a>
-    <?php endif; ?>
-    <?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
-        <a href="javascript:afficheOnglet(5)" style="display: none"
-           id='lienTab5' <?php echo isset($lienTab) && $lienTab == 5 ? 'class="ongletCourant"' : '' ?>>Délibérations
-            rattachées</a>
-    <?php endif; ?>
-</div>
+if ($DELIBERATIONS_MULTIPLES)
+    echo $this->Html->script('multidelib'); 
 
-<div id="tab1"  <?php echo isset($lienTab) && $lienTab != 1 ? 'style="display:none"' : '' ?>>
+echo $this->Html->script('ckeditor/ckeditor'); 
+echo $this->Html->script('ckeditor/adapters/jquery'); 
 
-    <fieldset id='info'>
-        <div class='demi'>
-            <?php echo '<b><u>Rédacteur</u></b> : <i>' . $this->Html->value('Redacteur.prenom') . ' ' . $this->Html->value('Redacteur.nom') . '</i>'; ?>
-            <br/>
-            <?php echo '<b><u>Service émetteur</u></b> : <i>' . $this->Html->value('Service.libelle') . '</i>'; ?>
-        </div>
-        <div class='demi'>
-            <?php echo '<b><u>Date création</u></b> : <i>' . $this->Html->value('Deliberation.created') . '</i>'; ?>
-            <br/>
-            <?php echo '<b><u>Date de modification</u></b> : <i>' . $this->Html->value('Deliberation.modified') . '</i>'; ?>
-        </div>
-    </fieldset>
-    <div class='spacer'></div>
-    <div class="gauche">
-        <?php echo $this->Form->input('Deliberation.typeacte_id', array(
+echo $this->Html->script('/libs/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js');
+echo $this->Html->script('/libs/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr.js');
+echo $this->Html->css('/libs/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+
+echo $this->Html->script('/libs/bootstrap-filestyle/js/bootstrap-filestyle.min.js');
+echo $this->Html->script('/libs/bootstrap-jquery-sortable/js/jquery-sortable-min.js');
+
+echo $this->Html->css('/libs/bootstrap-table/bootstrap-table.css');
+echo $this->Html->script('/libs/bootstrap-table/bootstrap-table.js');
+
+
+$this->Html->addCrumb('Mes projets', array('controller'=>'deliberations', 'action'=>'mesProjetsRedaction'));
+$this->Html->addCrumb('Modification d\'un projet');
+
+echo $this->Bs->tag('h3', 'Modification du projet : ' . $this->Html->value('Deliberation.id'));
+
+echo $this->BsForm->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'edit'), 'type' => 'file', 'novalidate' => true/*, 'name' => 'Deliberation'*/));
+
+$aTab=array(
+    'infos' => 'Informations principales',
+    'textes' => 'Textes',
+    'annexes' => 'Annexe(s)');
+
+if (!empty($infosupdefs))
+    $aTab['Infos_suppl']='Informations supplémentaires';
+if (Configure::read('DELIBERATIONS_MULTIPLES'))
+    $aTab['multidelib']='Délibérations rattachées';//'style' => 'display: none'
+    
+echo $this->Bs->tab($aTab, array(   'active' => isset($nameTab) ? $nameTab : 'infos', 
+                                    'class' => '-justified')) .
+ $this->Bs->tabContent();
+
+echo $this->Bs->tabPane('infos', array('class' => isset($nameTab) ? $nameTab : 'active'));
+//$this->BsForm->setLeft(0);
+echo $this->Html->tag(null, '<br />') .
+$this->Html->tag('div', null, array('class' => 'well well-lg')) .
+        $this->Bs->row().$this->Bs->col('xs6').
+'<b><u>Rédacteur</u></b> : <i>' . $this->Html->value('Redacteur.prenom') . ' ' . $this->Html->value('Redacteur.nom') . '</i>'.
+$this->Html->tag(null, '<br />') .
+'<b><u>Service émetteur</u></b> : <i>' . $this->Html->value('Service.libelle') . '</i>' .
+$this->Bs->close().
+$this->Bs->col('xs6').
+'<b><u>Date création</u></b> : <i>' . $this->Time->format('d/m/Y H:i',$this->Html->value('Deliberation.created')) . '</i>' .
+$this->Html->tag(null, '<br />') .
+'<b><u>Date de modification</u></b> : <i>' . $this->Time->format('d/m/Y H:i', $this->Html->value('Deliberation.modified')) . '</i>' .
+$this->Bs->close(3);
+
+
+echo $this->Bs->row().
+    $this->Bs->col('xs6');
+echo    $this->BsForm->input('Deliberation.typeacte_id', array(
             'label' => 'Type d\'acte <abbr title="obligatoire">*</abbr>',
             'options' => $this->Session->read('user.Nature'),
-            'empty' => false,
+            'empty' => true,
             'id' => 'listeTypeactesId',
             'onChange' => "updateTypeseances(this);",
             'escape' => false,
-            'class' => 'select2 selectone',
             'required'
-        ));  ?>
-        <div class='spacer'></div>
-        <?php echo $this->Form->input('Deliberation.objet', array('type' => 'textarea', 'label' => 'Libellé <abbr title="obligatoire">*</abbr>', 'cols' => '60', 'rows' => '2', 'required')); ?>
-        <div class='spacer'></div>
-        <?php echo $this->Form->input('Deliberation.titre', array('type' => 'textarea', 'label' => 'Titre', 'cols' => '60', 'rows' => '2')); ?>
-        <div class='spacer'></div>
-        <?php echo $this->Form->input('Deliberation.rapporteur_id', array('label' => 'Rapporteur', 'options' => $rapporteurs, 'empty' => true, 'class' => 'select2 selectone')); ?>
-        <div class='spacer'></div>
-        <?php echo $this->Form->input('Deliberation.theme_id', array('label' => 'Thème <abbr title="obligatoire">*</abbr>', 'options' => $themes, 'default' => $this->Html->value('Deliberation.theme_id'), 'empty' => false, 'escape' => false, 'class' => 'select2 selectone')); ?>
-        <div class='spacer'></div>
+        )).
+$this->BsForm->input('Deliberation.objet', array(
+    'type' => 'textarea', 
+    'label' => 'Libellé <abbr title="obligatoire">*</abbr>', 
+    'rows' => '2', 
+    'required'
+    )).
+$this->BsForm->input('Deliberation.titre', array(
+    'type' => 'textarea', 
+    'label' => 'Titre', 
+    'rows' => '2'
+    )).
+$this->BsForm->input('Deliberation.rapporteur_id', array(
+            'label' => 'Rapporteur',
+            'options' => $rapporteurs,
+            'class' => 'select2 selectone',
+            'empty' => true)).
+ $this->BsForm->input('Deliberation.theme_id', array(
+            'label' => 'Thème <abbr title="obligatoire">*</abbr>',
+            'empty' => true,
+            'class' => 'select2 selectone',
+            'escape' => false));
 
-        <div id="select_classification">
-            <?php
-            if ($USE_PASTELL) {
-                if (empty($nomenclatures)) $nomenclatures = array();
-                echo $this->Form->input('Deliberation.num_pref', array(
-                    'label' => 'Classification',
-                    'options' => $nomenclatures,
-                    'default' => $this->Html->value('Deliberation.num_pref'),
-                    'readonly' => empty($nomenclatures),
-                    'empty' => true,
-                    'class' => 'select2 selectone',
-                    'escape' => false
-                ));
-                echo "<div class='spacer'></div>";
-            } else {
-                echo $this->Form->input('Deliberation.num_pref_libelle', array(
-                    'div' => false,
-                    'label' => 'Classification',
-                    'placeholder' => 'Cliquer ici pour choisir la classification',
-                    'onclick' => "javascript:window.open('" . Router::url(array('controller' => 'deliberations', 'action' => 'classification')) . "', 'Select_attribut', 'scrollbars=yes,width=570,height=450');",
-                    'id' => 'classif1',
-                    'title' => 'Selection de la classification',
-                    'readonly' => 'readonly',
-                    'after' => '&nbsp;<a href="#" title="Déselectionner la classification" id="deselectClassif"><i class="fa fa-eraser"></i></a>'
-                ));
-                echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
-            }
-            ?>
-        </div>
-        <div id="dateLimite">
-            <?php
-            echo $this->Form->label('Deliberation.date_limite', 'Date limite');
-            $value = '';
-            if (!empty($this->data['Deliberation']['date_limite']) && $this->data['Deliberation']['date_limite'] != '01/01/1970')
-                $value = $this->data['Deliberation']['date_limite'];
-            ?>
-            <input name="date_limite" size="9" value="<?php echo $value; ?>" />&nbsp;<a
-                href="javascript:show_calendar('Deliberation.date_limite','f');"
-                id="afficheCalendrier"><?php echo $this->Html->image("calendar.png", array('style' => "border:'0'")); ?></a>
-        </div>
+if ($USE_PASTELL) {
+        echo $this->BsForm->input('Deliberation.num_pref', array(
+            'label' => 'Nomenclature',
+            'options' => $nomenclatures,
+            'default' => $this->Html->value('Deliberation.num_pref'),
+            'disabled' => empty($nomenclatures),
+            'empty' => true,
+            'class' => 'select2 selectone',
+            'escape' => false));
+    } else {
+        echo $this->BsForm->inputGroup('Deliberation.num_pref_libelle', array(
+                            'content'=>'<i class="fa fa-eraser"></i>',
+                            'type' => 'button',
+                            'id'=>'deselectClassif',
+                            'state' => 'primary',
+                            'side'=>'right'), array(
+                                'label' => 'Classification',
+                                'placeholder' => 'Cliquer ici pour choisir la classification',
+                                'onclick' => "javascript:window.open('" . Router::url(array('controller' => 'deliberations', 'action' => 'classification')) . "', 'Select_attribut', 'scrollbars=yes,width=570,height=450');",
+                                'id' => 'classif1',
+                                'title' => 'Selection de la classification',
+                                'readonly' => 'readonly',
+                                'class'=>'pull-left'));
+        echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
 
-        <div class='spacer'></div>
-        <?php
-        if ($DELIBERATIONS_MULTIPLES) :
-            echo $this->Html->tag('label',
-                $this->Form->input('Deliberation.is_multidelib', array(
-                    'type' => 'checkbox',
-                    'autocomplete' => 'off',
-                    'div' => false,
-                    'label' => false,
-                    'disabled' => !empty($this->data['Multidelib']) || !empty($this->data['Deliberation']['parent_id']),
-                    'checked' => !empty($this->data['Multidelib']) || !empty($this->data['Deliberation']['is_multidelib']) || !empty($this->data['Deliberation']['parent_id']),
-                    'after' => 'Multi-Délibération'
-                )), array('class' => 'checkbox'));
-            ?>
-            <div class='spacer'></div>
-        <?php endif; ?>
-    </div>
-    <div class="droite">
-        <div id='selectTypeseances'>
-            <?php
-            if (!empty($typeseances)) :
-                echo $this->Form->input('Typeseance', array(
+    }
+    
+    echo $this->BsForm->datetimepicker('Deliberation.date_limite', array('language'=>'fr', 'autoclose'=>'true','format' => 'dd/mm/yyyy',), array(
+    'label' => 'Date limite',
+    'title' => 'Choisissez une date',
+    'style' => 'cursor:pointer',
+    'help' => 'Cliquez sur le champs ci-dessus pour choisir la date',
+    'readonly' => 'readonly',
+    'value'=>isset($date)?$date:''));
+    
+if ($DELIBERATIONS_MULTIPLES)
+echo $this->BsForm->checkbox('Deliberation.is_multidelib', array(
+     'autocomplete' => 'off',
+     'label' => 'Multi-Délibération',
+ ));
+
+echo $this->Bs->close().
+    $this->Bs->col('xs6');
+   if (!empty($typeseances))
+                echo $this->BsForm->input('Typeseance', array(
                     'options' => $typeseances,
                     'type' => 'select',
                     'label' => 'Types de séance',
                     'onchange' => "updateDatesSeances(this);",
                     'multiple' => true,
-                    'selected' => isset($typeseances_selected) ? $typeseances_selected : ''));
-                ?>
-                <script>
+                    'selected' => isset($typeseances_selected) ? $typeseances_selected : ''));    
+   echo $this->Bs->scriptBlock('
                     $("#TypeseanceTypeseance").select2({
-                        width: "80%",
+                        width: "100%",
                         allowClear: true,
                         placeholder: "Selection vide"
                     });
-                </script>
-                <div class='spacer'></div>
-            <?php endif; ?>
-        </div>
-        <div id='selectDatesSeances'>
-            <?php
-            if (!empty($seances)) :
-                echo $this->Form->input('Seance', array(
+                      ');
+   if (!empty($seances))
+                echo $this->BsForm->input('Seance', array(
                     'options' => $seances,
                     'type' => 'select',
                     'label' => 'Dates de séance',
                     'multiple' => true,
                     'selected' => isset($seances_selected) ? $seances_selected : ''));
-                ?>
-                <script>
+   echo $this->Bs->scriptBlock('
                     $("#SeanceSeance").select2({
                         width: "80%",
                         allowClear: true,
                         placeholder: "Selection vide"
                     });
-                </script>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
+                      ');
+echo $this->Bs->div('','',array('id'=>'selectDatesSeances'));
+echo $this->Bs->close(2);
+echo $this->Bs->tabClose();
 
-<div id="tab2" <?php echo isset($lienTab) && $lienTab == 2 ? '' : 'style="display: none;"' ?>>
-    <?php echo $this->element('texte', array('key' => 'texte_projet')); ?>
-    <div class='spacer'></div>
+echo  $this->Bs->tabPane('textes', array('class' => (isset($nameTab) && $nameTab=='textes' ? 'active' : ''))); 
+echo $this->Html->tag(null, '<br />') .    
+    $this->element('texte', array('type' => 'texte_projet'));    
+    echo $this->element('texte', array('type' => 'texte_synthese')); 
+     
+    echo '<div id="texteDelibOngletTextes"><div id="texteDeliberation">';
+    echo $this->element('texte', array('type' => 'deliberation')); 
+    echo '</div></div>';
+    echo $this->Html->tag('span', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.',array('class'=>'help-block'));
+    
+ echo $this->Bs->tabClose();
 
-    <?php echo $this->element('texte', array('key' => 'texte_synthese')); ?>
-    <div class='spacer'></div>
+    echo  $this->Bs->tabPane('annexes', array('class' => (isset($nameTab) && $nameTab=='annexes' ? 'active' : ''))); 
+    echo $this->Html->tag(null, '<br />') .   
+        '<div id="DelibOngletAnnexes"><div id="DelibPrincipaleAnnexes">';
+    echo $this->element('annexe', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $annexes)));
+    echo '</div></div>';
+    echo $this->Html->tag('span', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.',array('class'=>'help-block'));
+    
+ echo $this->Bs->tabClose();
 
-    <div id='texteDelibOngletTextes'>
-        <div id='texteDeliberation'>
-            <?php echo $this->element('texte', array('key' => 'deliberation')); ?>
-        </div>
-    </div>
-    <?php
-    echo $this->Html->tag('div', '', array('class' => 'spacer'));
-    echo $this->Html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
-    ?>
-    <div class='spacer'></div>
-</div>
+if (!empty($infosupdefs)){
+    echo  $this->Bs->tabPane('Infos_suppl', array('class' => (isset($nameTab) && $nameTab=='Infos_suppl' ? 'active' : ''))); 
+    echo $this->Html->tag(null, '<br />') ; 
 
-<div id="tab3" <?php echo isset($lienTab) && $lienTab == 3 ? '' : 'style="display: none;"' ?>>
-    <div id='DelibOngletAnnexes'>
-        <div id="DelibPrincipaleAnnexes">
-            <?php echo $this->element('annexe', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $annexes))); ?>
-        </div>
-    </div>
-    <?php
-    echo $this->Html->tag('div', '', array('class' => 'spacer'));
-    echo $this->Html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
-    ?>
-</div>
-
-<?php if (!empty($infosupdefs)): ?>
-    <div id="tab4" <?php echo isset($lienTab) && $lienTab == 4 ? '' : 'style="display: none;"' ?>>
-        <?php
         foreach ($infosupdefs as $infosupdef) {
             // Amélioration 4.1 : on ne peut modifier une infosup qu'en fonction du profil
             $disabled = true;
@@ -213,39 +201,72 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
 
             $fieldName = 'Infosup.' . $infosupdef['Infosupdef']['code'];
             $fieldId = 'Infosup' . Inflector::camelize($infosupdef['Infosupdef']['code']);
-            echo "<div class='required'>";
-            echo $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('for' => 'infosup_' . $infosupdef['Infosupdef']['code']));
             if ($infosupdef['Infosupdef']['type'] == 'text') {
-                echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+                
+                echo $this->BsForm->input($fieldName, array(
+                    'label'=> $infosupdef['Infosupdef']['nom'],
+                    'type' => 'textarea',
+                    'rows' => '2',
+                    'title' => $infosupdef['Infosupdef']['commentaire'], 
+                    'readonly' => $disabled, 
+                    'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+            
+                
             } elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
                 if (!$disabled)
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'checkbox', 'title' => $infosupdef['Infosupdef']['commentaire'], 'div' => array('class' => 'input'), 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+                    echo $this->BsForm->checkbox($fieldName, array('label' => false, 
+                        'title' => $infosupdef['Infosupdef']['commentaire'], 
+                        'label'=>$infosupdef['Infosupdef']['nom'],
+                        'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
                 else {
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'checkbox', 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled, 'div' => array('class' => 'input'), 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+                    echo $this->BsForm->checkbox($fieldName, array( 
+                        'title' => $infosupdef['Infosupdef']['commentaire'], 
+                        'label'=>$infosupdef['Infosupdef']['nom'],
+                        'disabled' => $disabled, 
+                        'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
                     echo $this->Form->input($fieldName, array('type' => 'hidden', 'id' => false));
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
-                $fieldSelector = preg_replace("#[^a-zA-Z]#", "", $fieldId);
-                echo $this->Form->input($fieldName, array('type' => 'text', 'readonly' => $disabled, 'div' => false, 'label' => false, 'size' => '9', 'id' => $fieldSelector, 'title' => $infosupdef['Infosupdef']['commentaire']));
-                echo '&nbsp;';
-                if (!$disabled)
-                    echo $this->Html->link($this->Html->image("calendar.png", array('style' => "border:'0'")), "javascript:show_calendar('Deliberation.$fieldSelector', 'f');", array('escape' => false), false);
-                else
-                    echo($this->Html->image("calendar.png", array('style' => "border:'0'")));
+                //$disabled
+                    echo $this->BsForm->datetimepicker($fieldName, array('language'=>'fr', 'autoclose'=>'true','format' => 'dd/mm/yyyy','startView'=>'decade','minView'=>'day'), array(
+                    'label'=>$infosupdef['Infosupdef']['nom'],
+                    'title' => 'Choisissez une date',
+                    'style' => 'cursor:pointer',
+                    'help' => $disabled?'':'Cliquez sur le champs ci-dessus pour choisir la date ',//$infosupdef['Infosupdef']['commentaire'],
+                    'readonly' => 'readonly',
+                    'disabled' => $disabled,
+                    'value'=>isset($date)?$date:''));
+                    
             } elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
+                
+                //TODO rich texte by Webodf
                 echo '<div class="annexesGauche"></div>';
                 if (!$disabled) {
                     echo '<div class="fckEditorProjet">';
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'id' => $fieldId));
+                    echo $this->BsForm->input($fieldName, array(
+                        'label'=>$infosupdef['Infosupdef']['nom'],
+                        'type' => 'textarea', 
+                        'id' => $fieldId));
                     echo $this->Fck->load($fieldId);
                     echo '</div>';
-                    echo '<div class="spacer"></div>';
                 } else {
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'readonly' => true, 'id' => $fieldId));
+                    echo $this->BsForm->input($fieldName, array(
+                        'label'=>$infosupdef['Infosupdef']['nom'],
+                        'type' => 'textarea', 
+                        'readonly' => true, 
+                        'id' => $fieldId));
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'file') {
+                
                 if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'file', 'size' => '60', 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled, 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+                    echo $this->BsForm->input($fieldName, array(
+                        'label'=>$infosupdef['Infosupdef']['nom'],
+                        'type' => 'file', 
+                        'class' => 'filestyle',
+                        'data-buttonText'=>'Choisir un fichier',
+                        'title' => $infosupdef['Infosupdef']['commentaire'], 
+                        'disabled' => $disabled, 
+                        'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
                 else {
                     $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
                     if (is_array($name)) $name = $name['name'];
@@ -258,11 +279,20 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
                     echo '</span>';
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'odtFile') {
+                
                 if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']])
                     || empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]['tmp_name'])
                     || isset($errors_Infosup[$infosupdef['Infosupdef']['code']])
                 )
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'file', 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled, 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+                    echo $this->BsForm->input($fieldName, array(
+                        'label'=>$infosupdef['Infosupdef']['nom'],
+                        'type' => 'file', 
+                        'class' => 'filestyle',
+                        'help' => 'Fichier Odt seulement',
+                        'data-buttonText'=>'Choisir un fichier',
+                        'title' => $infosupdef['Infosupdef']['commentaire'], 
+                        'disabled' => $disabled, 
+                        'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
                 else {
                     echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'InputFichier" style="display: none;"></span>';
                     echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'AfficheFichier">';
@@ -279,32 +309,51 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
                     echo '</span>';
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-                if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'class' => 'select2 selectone', 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
-                } else {
-                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled, 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+                echo $this->BsForm->select($fieldName,array_merge(array(''=>''),$infosuplistedefs[$infosupdef['Infosupdef']['code']]),  array(
+                        'label'=>$infosupdef['Infosupdef']['nom'],
+                        'data-placeholder'=>'Sélectionnez un : '.$infosupdef['Infosupdef']['nom'],
+                        'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 
+                        'disabled' => $disabled, 
+                        'id' => 'infosup_' . $infosupdef['Infosupdef']['code'],
+                        'class'=>'select2 selectone'));
+                
+                if ($disabled) {
                     echo $this->Form->input($fieldName, array('id' => false, 'type' => 'hidden'));
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
                 $selected_values = !empty($this->request->data['Infosup'][$infosupdef['Infosupdef']['code']]) ? $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']] : null;
-                if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('selected' => $selected_values, 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'multiple' => true, 'class' => 'select2 selectmultiple', 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
-                } else {
-                    echo $this->Form->input($fieldName, array('selected' => $selected_values, 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => true, 'multiple' => true, 'class' => 'select2 selectmultiple', 'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
-                    if (!empty($selected_values))
-                        echo $this->Form->input($fieldName, array('selected' => $selected_values, 'id' => false, 'multiple' => true, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'type' => 'select', 'hidden' => false, 'style' => 'display:none;', 'label' => false, 'div' => false));
-                }
+                
+                    echo $this->BsForm->select($fieldName,array_merge(array(''=>''), $infosuplistedefs[$infosupdef['Infosupdef']['code']]), 
+                        array(
+                        'label'=>$infosupdef['Infosupdef']['nom'],
+                        'selected' => $selected_values, 
+                       // 'empty' => true, 
+                        'disabled' => $disabled, 
+                        'help' => $infosupdef['Infosupdef']['commentaire'], 
+                        'multiple' => true, 
+                        'class' => 'select2 selectmultiple', 
+                        'data-placeholder'=>'Sélectionnez un ou plusieurs : '.$infosupdef['Infosupdef']['nom'],
+                        'id' => 'infosup_' . $infosupdef['Infosupdef']['code']));
+                    if (!$disabled)
+                    echo $this->BsForm->select($fieldName, array_merge(array(''=>''), $infosuplistedefs[$infosupdef['Infosupdef']['code']]), 
+                            array(
+                                'selected' => $selected_values, 
+                                'id' => false,
+                                'multiple' => true, 
+                                'hidden' => false, 
+                                'style' => 'display:none;', 
+                                'label'=>false, 'div' => false));
             }
-            echo '</div>';
-            echo "<div class='spacer'></div>";
-        };
-        ?>
-    </div>
-<?php endif; ?>
+        }
+        
+   echo $this->Bs->tabClose();      
+}
 
-<?php if (Configure::read('DELIBERATIONS_MULTIPLES')) : ?>
-    <div id="tab5" <?php echo isset($lienTab) && $lienTab == 5 ? '' : 'style="display: none;"' ?>>
-        <?php
+
+if (Configure::read('DELIBERATIONS_MULTIPLES')) {
+    echo  $this->Bs->tabPane('multidelib', array('class' => (isset($nameTab) && $nameTab=='multidelib' ? 'active' : ''))); 
+    echo $this->Html->tag(null, '<br />') ; 
+    
         if (empty($this->data['Deliberation']['parent_id']))
             echo $this->element('multidelib');
         else {
@@ -315,28 +364,19 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
             echo '</div>';
             echo '<div class="spacer"></div>';
         }
-        ?>
-    </div>
-<?php endif; ?>
+echo  $this->Bs->tabClose();
+}
 
-<div class="spacer" style="border-top: solid 1px #e0ef90;"></div>
+echo $this->Bs->tabPaneClose();
 
-<div class="submit">
-    <?php
-    echo $this->Form->hidden('Deliberation.id');
-    echo $this->Form->hidden('redirect', array('value' => $redirect));
+echo $this->Form->hidden('Deliberation.id');
+echo $this->Form->hidden('redirect', array('value' => $redirect));
+echo $this->Html2->btnSaveCancel('', $previous).
+        $this->BsForm->end();
 
-    echo $this->Html->tag("div", null, array("class" => "btn-group"));
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $redirect, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
-    echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le projet'));
-    echo $this->Html->tag('/div', null);
-    ?>
+ echo $this->element('annexeModal'); 
+?>
 
-</div>
-
-<?php echo $this->Form->end(); ?>
-
-<?php echo $this->element('annexeModal'); ?>
 <script type="text/javascript">
     <?php
     echo "var gabarits = ". json_encode($gabarits_acte). ";\n";

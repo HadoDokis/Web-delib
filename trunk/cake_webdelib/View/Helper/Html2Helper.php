@@ -281,7 +281,7 @@ class Html2Helper extends HtmlHelper {
     function btnSaveCancel($onclick = '', $urlCancel = "javascript:history.go(-1)", $titleSave = "Enregistrer", $valueSave = 'Enregistrer',$urlSave=null) {
         return $this->Bs->div('btn-group col-md-offset-' . $this->BsForm->getLeft(), null) .
         $this->Bs->btn('Annuler', $urlCancel, array('type' => 'default','icon'=>'glyphicon glyphicon-arrow-left', 'escape' => false, 'title' => 'Annuler les modifications')) .
-        $this->Bs->btn('Enregistrer', $urlSave, array('tag' => 'button', 'type' => 'primary','id' => 'boutonValider', 'icon' => 'glyphicon glyphicon-floppy-disk', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick)) .
+        $this->Bs->btn( $valueSave, $urlSave, array('tag' => 'button', 'type' => 'primary','id' => 'boutonValider', 'icon' => 'glyphicon glyphicon-floppy-disk', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick)) .
         $this->Bs->close();
     }
 

@@ -333,6 +333,54 @@ class BsFormHelper extends FormHelper {
 		$out = $this->input($fieldName, $options);
 		return $out;
 	}
+        
+/**
+* Generate a form input element with an addon or button on his side.
+*
+*  ### Addon Options
+*
+* - 'content' - The addon content.
+* - 'side'    - Which side the addon will be. Be default 'left'.
+* - 'class'   - Add HTML class attribute.
+* - 'type'    - Change the type of the addon. Values : 'button', 'submit', 'image'.
+* - 'state'   - Change bootstrap button state. Values : 'default', 'primary', 'secondary', 'warning', 'danger'.
+* - 'src'	   - URL of the image, if 'type' = 'image'.
+*
+* @param string $fieldName    Extends of BsFormHelper::input()
+* @param array  $addonOptions Array of options, see above for more informations
+* @param mixed  $options      Extends of BsFormHelper::input() so get same options
+*
+* @return string Input-group de Bootstrap
+*/
+	public function selectGroup($fieldName, $options = array(), $addonOptions, $attributes = array()) {
+		$between = '<div class="col-md-' . $this->__right . ' col-md-offset-' . $this->__left . '">';
+                if (!isset($attributes['label'])) {
+			$attributes['label'] = false;
+		}
+                else{
+                    
+                    $between .= parent::label($fieldName, $attributes['label']);
+                    $attributes['label']=false;
+                }
+                $between .= '<div class="input-group">';
+                // Check if the addon is on the right
+		if (isset($addonOptions['side']) && $addonOptions['side'] == 'right') {
+			$after = $this->__createAddon($addonOptions) . '</div>' . '</div>';
+			unset($addonOptions['side']);
+		} else {
+			$between .= $this->__createAddon($addonOptions);
+			$after = '</div>' . '</div>';
+		}
+
+		$after .= '</div>';
+		if (!isset($attributes['div'])) {
+			$attributes['div'] = false;
+		}
+                                        
+		$out = $between.$this->select($fieldName, $options, $attributes).$after;
+		return $out;
+	}
+
 
 /**
  * Generate a span element for BsFormHelper::inputGroup() with his content.

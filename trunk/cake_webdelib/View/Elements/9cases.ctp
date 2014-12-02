@@ -188,8 +188,6 @@ foreach ($projets as $projet) {
             'title' => 'Supprimer le projet ' . $projet['Deliberation']['objet'],
         ));
     if (in_array('generer', $projet['Actions'])) {
-        if (empty($projet['Deliberation']['delib_pdf']))
-        {
                 $actions.=$this->Bs->btn('Générer', 
                         array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id']), 
                         array('type' => 'default', 
@@ -216,15 +214,14 @@ foreach ($projets as $projet) {
                 )
                 , array('class'=>'dropdown-menu','role'=>'menu'));*/
         }
-            else
-        {
-            
-                $this->Bs->btn('Télécharger', 
-                        array('controller' => 'deliberations', 'action' => 'downloadDelib', $projet['Deliberation']['id']), 
-                        array('type' => 'default', 
-                            'icon' => 'glyphicon glyphicon-download', 
-                            'title' => 'Visionner le document PDF du projet ' . $projet['Deliberation']['objet']
-                            ));
+    if (in_array('telecharger', $projet['Actions'])) {
+    {
+        $this->Bs->btn('Télécharger', 
+                array('controller' => 'deliberations', 'action' => 'downloadDelib', $projet['Deliberation']['id']), 
+                array('type' => 'default', 
+                    'icon' => 'glyphicon glyphicon-download', 
+                    'title' => 'Visionner le document PDF du projet ' . $projet['Deliberation']['objet']
+                    ));
     }
     
      $actions.= $this->Bs->close(1);

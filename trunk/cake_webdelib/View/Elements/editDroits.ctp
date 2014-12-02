@@ -20,12 +20,13 @@ foreach($listeCtrlAction as $key => $ctrlAction) {
 
       <div class="panel-heading">
         <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion" href="#droit_collapse<?php echo $key; ?>">
             <?php 
             echo $this->BsForm->checkbox('Droits.'.$ctrlAction['acosAlias'], 
-                    array('id' => 'chkBoxDroits'.$key,'label'=>$ctrlAction['title'])
+                    array('id' => 'chkBoxDroits'.$key,'label'=>'')
                     );
              ?>
+          <a data-toggle="collapse" data-parent="#accordion" href="#droit_collapse<?php echo $key; ?>">
+            <?php echo $ctrlAction['title']; ?>
           </a>
         </h4>
       </div><?php

@@ -81,6 +81,7 @@ $this->Html->addCrumb('Signature des délibérations');
                             'readonly' => empty($nomenclatures),
                             'empty' => true,
                             'class' => 'select2 selectone',
+                            'data-placeholder'=>'Sélectionnez une classification',
                             'style' => 'width:auto; max-width:400px;',
                             'div' => array('style' => 'text-align:center;font-size: 1.1em;'),
                             'escape' => false
@@ -102,7 +103,7 @@ $this->Html->addCrumb('Signature des délibérations');
                         echo $this->Form->hidden('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
                             'id' => $delib['Deliberation']['id'] . 'classif2',
                             'name' => $delib['Deliberation']['id'] . 'classif2',
-                            'value' => $delib['Deliberation']['num_pref']
+                            'value' => $delib['Deliberation']['num_pref'],
                         ));
                     }
                 }
@@ -169,11 +170,20 @@ $this->Html->addCrumb('Signature des délibérations');
     </table>
     <?php
     if (!empty($seance_id) && !empty($deliberations)) {
-        echo '<div id="select-circuit">';
-        echo($this->Form->input('Parapheur.circuit_id', array('class' => 'select-circuit select2', 'options' => $circuits, 'label' => array('text' => 'Circuits disponibles', 'class' => 'circuits_label'), 'div' => false)));
-        echo $this->Form->button('<i class="fa fa-mail-forward"></i> Envoyer', array('class' => 'btn btn-inverse sans-arrondi', 'escape' => false));
-        echo '</div>';
-        echo $this->Form->end();
+        $this->BsForm->setLeft(0);
+        $this->BsForm->setRight(0);
+        echo $this->Bs->row().
+        $this->Bs->col('xs4').
+        $this->BsForm->selectGroup('Parapheur.circuit_id', array_merge(array(''=>''), $circuits), array(
+                                'content'=>'<i class="fa fa-mail-forward"></i> Envoyer <span id="nbProjetChecked"></span>',
+                                'type' => 'button',
+                                'state' => 'primary',
+                                'side'=>'right'), array(
+                                'class'=>'select2 selectone',
+                                'data-placeholder'=>'Sélectionnez une action',
+                                'label' => 'Actions disponibles')).$this->BsForm->end().
+        $this->Bs->close(2);
+        echo $this->Html->tag(null, '<br />') ;
     }
     echo $this->Html2->btnCancel(array('controller'=>'seances','action'=>'listerFuturesSeances'));//'<i class="fa fa-arrow-left"></i> Retour', $previous);
     ?>
@@ -184,11 +194,8 @@ $this->Html->addCrumb('Signature des délibérations');
      * Actions au chargement de la page
      */
     $(document).ready(function () {
-        $('#ParapheurCircuitId').select2({ width: 'resolve' });
         $('.selectone').select2({
-            width: 'resolve',
             allowClear: true,
-            placeholder: 'Aucune classification'
         });
         $('input[type="checkbox"]').change(changeSelection);
         changeSelection();
@@ -207,7 +214,7 @@ $this->Html->addCrumb('Signature des délibérations');
 </script>
 
 <style>
-    .select2-container .select2-choice {
+/*    .select2-container .select2-choice {
         border-radius: 0;
-    }
+    }*/
 </style>
