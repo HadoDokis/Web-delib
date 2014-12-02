@@ -1,26 +1,22 @@
 $(document).ready(function () {
     onUnloadEditForm();
-    var file_input_index = 0;
+   /* var file_input_index = 0;
     $('.file-texte').each(function () {
         file_input_index++;
         $(this).wrap('<div id="file_input_container_' + file_input_index + '"></div>');
         $(this).after('<a href="javascript:void(0)" class="purge_file btn btn-mini btn-danger"  onclick="resetUpload(\'file_input_container_' + file_input_index + '\')"><i class="fa fa-eraser"></i> Effacer</a>');
-    });
-    $(".select2.selectmultiple").select2({
-        width: "resolve",
+    });*/
+    $(".selectmultiple").select2({
+        width: "100%",
         allowClear: true,
-        placeholder: "Liste à choix multiples",
         formatSelection: function (object, container) {
             // trim sur la sélection (affichage en arbre)
             return $.trim(object.text);
         }
     });
-    $(".select2.selectone").select2({
-        width: "element",
+    $(".selectone").select2({
+        //width: "element",
         allowClear: true,
-        dropdownCssClass: "selectMaxWidth",
-        dropdownAutoWidth: true,
-        placeholder: "Selectionnez un élément",
         formatSelection: function (object, container) {
             // trim sur la sélection (affichage en arbre)
             return $.trim(object.text);
@@ -29,6 +25,7 @@ $(document).ready(function () {
 
     $("#listeTypeactesId").select2({
         width: "element",
+        dropdownAutoWidth: true,
         placeholder: "Sélection du type d'acte"
     });
 
@@ -228,6 +225,7 @@ function annulerAjoutAnnexe(element) {
  * @param element reference du lien cliqué (gestion du multi-délib)
  */
 function afficherAnnexeModal(element) {
+    console.log('toto');
     $('#annexeModal #refDelib').val($(element).attr('data-ref'));
     if ($(element).attr('data-annexeid') != '')
         $('#annexeModal #numAnnexe').val($(element).attr('data-annexeId'));
@@ -274,41 +272,32 @@ function resetAnnexeModal() {
 function supprimerAnnexe(annexeId) {
     var $bloc = $('#editAnnexe' + annexeId);
     var ref = $bloc.attr('data-ref');
-    $bloc.addClass('error').addClass('aSupprimer').attr('title', 'Annexe à supprimer');
+    $bloc.addClass('danger').addClass('aSupprimer').attr('title', 'Annexe à supprimer');
     var supAnnexe = $(document.createElement('input')).attr({
         id: 'supprimeAnnexe' + annexeId,
         name: 'data[AnnexesASupprimer][' + annexeId + ']',
         type: 'hidden', value: annexeId});
 
     $('#supprimeAnnexes' + ref).append(supAnnexe);
-    $bloc.find('.edit-delete-buttons').hide();
-    $bloc.find('.cancel-delete-annexe').show();
+    $bloc.find('.annexe-edit-btn').hide();
+    $bloc.find('.annexe-delete-btn').show();
 }
 
 // Fonction de d'annulation de suppression d'une annexe
 function annulerSupprimerAnnexe(annexeId) {
     var $bloc = $('#editAnnexe' + annexeId);
-    $bloc.removeClass('error').removeClass('aSupprimer').removeAttr('title');
+    $bloc.removeClass('danger').removeClass('aSupprimer').removeAttr('title');
     $('#supprimeAnnexe' + annexeId).remove();
-    $bloc.find('.cancel-delete-annexe').hide();
-    $bloc.find('.edit-delete-buttons').show();
+    $bloc.find('.annexe-delete-btn').hide();
+    $bloc.find('.annexe-edit-btn').show();
 }
 
 // Fonction de modification de l'annexe
 function modifierAnnexe(annexeId) {
     var $bloc = $('#editAnnexe' + annexeId);
-    $bloc.find('span').each(function () {
-        $(this).hide();
-    });
-    $bloc.find('input').each(function () {
-        $(this).removeAttr('disabled');
-        $(this).show();
-    });
-    $bloc.find('#modifieAnnexeFusion' + annexeId).closest('div.input.checkbox').show();
-    $bloc.find('#modifieAnnexeCtrl' + annexeId).closest('div.input.checkbox').show();
 
     //Activation conditionnelle des checkboxes fusion et ctrl_legalite selon extension annexe
-    var fileext = $bloc.find('.annexefilename').text().split('.').pop().toLowerCase();
+    /*var fileext = $bloc.find('.annexefilename').text().split('.').pop().toLowerCase();
     if ($.inArray(fileext, extensionsFusion) === -1) {
         $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', false).prop('disabled', true);
     } else {
@@ -320,12 +309,18 @@ function modifierAnnexe(annexeId) {
         $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('disabled', false);
     }
 
-    $bloc.find('#urlWebdavAnnexe' + annexeId).show();
+    $bloc.find('#urlWebdavAnnexe' + annexeId).show();*/
 
     $bloc.addClass('warning').addClass('aModifier').attr('title', 'Annexe à modifier');
 
-    $bloc.find('.cancel-edit-annexe').show();
-    $bloc.find('.edit-delete-buttons').hide();
+   /* $bloc.find('.annexe-edit').each(function () {
+       // $(this).removeAttr('disabled');
+        $(this).show();
+    });*/
+    $bloc.find('.annexe-view').hide();
+    $bloc.find('.annexe-edit-btn').hide();
+    $bloc.find('.annexe-edit').show();
+    $bloc.find('.annexe-cancel-btn').show();
 }
 
 // Fonction d'annulation de la modification de l'annexe
@@ -334,23 +329,19 @@ function annulerModifierAnnexe(annexeId) {
     $bloc.find('#modifieAnnexeTitre' + annexeId).val($bloc.find('#afficheAnnexeTitre' + annexeId).attr('data-valeurinit'));
     $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('checked', $bloc.find('#afficheAnnexeCtrl' + annexeId).attr('data-valeurinit') == 1);
     $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', $bloc.find('#afficheAnnexeFusion' + annexeId).attr('data-valeurinit') == 1);
-    $bloc.find('span').each(function () {
-        $(this).show();
-    });
-    $bloc.find('input').each(function () {
-        $(this).prop('disabled', true);
-        $(this).hide();
-    });
-
-    $bloc.find('#modifieAnnexeCtrl' + annexeId).closest('div.input.checkbox').hide();
-    $bloc.find('#modifieAnnexeFusion' + annexeId).closest('div.input.checkbox').hide();
-
-    $bloc.find('#urlWebdavAnnexe' + annexeId).hide();
-
+   
     $bloc.removeClass('warning').removeClass('aModifier').removeAttr('title');
+    
+//    $bloc.find('.annexe-cancel').each(function () {
+//       // $(this).prop('disabled', true);
+//        $(this).hide();
+//    });
 
-    $bloc.find('.cancel-edit-annexe').hide();
-    $bloc.find('.edit-delete-buttons').show();
+    $bloc.find('.annexe-edit').hide();
+    $bloc.find('.annexe-cancel-btn').hide();
+    $bloc.find('.annexe-view').show();
+    $bloc.find('.annexe-edit-btn').show();
+    
 }
 
 // affichage de l'éditeur de texte intégré ckEditor

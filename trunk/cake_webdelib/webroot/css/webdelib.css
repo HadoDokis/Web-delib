@@ -778,9 +778,6 @@ div.aModifier {
     display: block;
     border:  2px outset black;
 }
-.purge_file {
-    margin-left: 20px;
-}
 
 input[type="file"]{width: auto}
 
@@ -839,22 +836,6 @@ table.table-projets-seance tr td:first-child{
 }
 div#connecteurIparapheur input[type='text']{
     width: 500px;
-}
-
-.selectMaxWidth {
-    max-width:80%;
-}
-
-.select-circuit {
-    margin-bottom: 0;
-    width: auto;
-    max-width: 500px;
-}
-label.circuits_label {
-    float: none;
-    padding: 0;
-    text-align: left;
-    width: auto;
 }
 
 /* ----------- modif marine ----------- */
@@ -1113,3 +1094,4 @@ ul.dropdown-menu li a{
 .img-responsive {
     width: 100%
 }
+
