@@ -1,4 +1,6 @@
 <?php
+App::uses('CakeTime', 'Utility');
+
 class ActeursController extends AppController
 {
     public $helpers = array();
