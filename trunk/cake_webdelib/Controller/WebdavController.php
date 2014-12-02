@@ -19,8 +19,17 @@ use Sabre\DAV;
  */
 class WebdavController extends AppController {
     
+    // Gestion des droits
+    public $aucunDroit;
     
     public $demandeDroit = array();
+    
+    /*var $commeDroit = array(
+        'edit' => 'Typeactes:index',
+        'add' => 'Typeactes:index',
+        'delete' => 'Typeactes:index',
+        'view' => 'Typeactes:index',
+    );*/
 
     public function beforeFilter() {
         
