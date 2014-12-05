@@ -1,15 +1,12 @@
-Bonjour #PRENOM# #NOM#,
+Bonjour <?php echo $prenom; ?> <?php echo $nom; ?>,
 
-Un projet dans votre bannette "Mes projets à traiter" est en retard et attend votre validation#SEANCE_DELIBERANTE#.
+Un projet dans votre bannette "Mes projets à traiter" est en retard et attend votre validation.
 
-Id : #IDENTIFIANT_PROJET#
-Objet : #OBJET_PROJET#
-Circuit : #LIBELLE_CIRCUIT#
+Objet : <?php echo $projet_objet; ?>
+Séance : <?php echo $seance_deliberante; ?>
+Nouvel identifiant : <?php echo $projet_identifiant; ?>
+Dernier commentaire : <?php echo $projet_dernier_commentaire; ?>
 
-Vous pouvez traiter ce projet à l'adresse : #ADRESSE_A_TRAITER#
+Vous pouvez le traiter à l'adresse : <?php echo $projet_url_modifier; ?>
 
 Très cordialement.
-
-Webdelib
-
-Ce mail de notification a été envoyé par webdelib pour votre information. Merci de ne pas répondre.
