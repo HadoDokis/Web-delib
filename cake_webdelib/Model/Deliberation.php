@@ -1369,7 +1369,7 @@ class Deliberation extends AppModel {
         foreach ($actes as $acte) {
             if ($ar = $this->majAr($acte)) {
                 $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " reçue le " . date('d/m/Y', strtotime($ar)) . ".\n";
-                $rapport .= $this->majEchangesTdtAll(); //Recuperation du tampon et bordereau initial
+                $rapport .= $this->majEchangesTdtAll($acte['Deliberation']['id']); //Recuperation du tampon et bordereau initial
             } else {
                 $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " en attente de réception.\n";
             }
@@ -1400,10 +1400,15 @@ class Deliberation extends AppModel {
     /**
      * Mise à jour des echange TDT / Préfecture pour les envois de moins de 2 mois
      */
-    public function majEchangesTdtAll() {
+    public function majEchangesTdtAll($delib_id=null) {
         App::uses('Tdt', 'Lib');
         $Tdt = new Tdt;
         $rapport = '';
+        if(!empty($delib_id)){
+            $conditions=array('id' => $delib_id);
+        }
+        else
+        {
         $conditions = array();
         $conditions['AND'] = array(
             'OR' => array(
@@ -1411,6 +1416,7 @@ class Deliberation extends AppModel {
                     array('AND' => array('date_acte >=' => date('Y-m-d', strtotime("-80 days")), 'date_envoi_signature' => null))
                 ),'etat' => 5
             );
+        }
         $actes = $this->find('all', array(
             'recursive' => -1,
             'conditions' => $conditions,

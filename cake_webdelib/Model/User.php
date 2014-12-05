@@ -243,15 +243,19 @@ class User extends AppModel
         $config_mail = Configure::read('SMTP_USE') ? 'smtp' : 'default';
         $Email = new CakeEmail($config_mail);
 
-        $this->Deliberation = new Deliberation();
+        $this->Deliberation = ClassRegistry::init('Deliberation');
         $delib = $this->Deliberation->find('first', array(
-            'fields' => array('id', 'objet', 'titre', 'circuit_id'),
-            'conditions' => array('id' => $delib_id),
+            'fields' => array('Deliberation.id', 'objet', 'titre', 'circuit_id'),
+            'conditions' => array('Deliberation.id' => $delib_id),
             'contain'=>array(
                 'Commentaire'=>array(
                     'fields' => array('texte'),
+                    'conditions' => array('commentaire_auto' => false),
                     'order'=>'Commentaire.created DESC',
                     'limit'=> 1
+                ),
+                'Theme'=>array(
+                    'fields' => array('libelle'),
                 ),
              ),
             'recursive' => -1,
@@ -305,6 +309,7 @@ class User extends AppModel
             'prenom' => $user['User']['prenom'],
             'projet_identifiant' => $delib['Deliberation']['id'],
             'projet_objet' => $delib['Deliberation']['objet'],
+            'projet_theme' => $delib['Theme']['libelle'],
             'seance_deliberante' => !empty($delib['Deliberation']['SeanceDeliberante']['texte'])?$delib['Deliberation']['SeanceDeliberante']['texte']:'',
             'projet_dernier_commentaire' => !empty($delib['Commentaire'][0]['texte'])?$delib['Commentaire'][0]['texte']:'Aucun commentaire',
             'projet_titre' => $delib['Deliberation']['titre'],
