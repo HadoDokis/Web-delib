@@ -150,13 +150,10 @@ class Typeseance extends AppModel {
         switch ($action) {
             case 0:
                 return $majuscule ? 'Voter' : 'voter';
-                break;
             case 1:
                 return ($majuscule ? 'D' : 'd') . 'onner un avis';
-                break;
             case 2:
                 return ($majuscule ? 'S' : 's') . 'ans action';
-                break;
         }
     }
 
@@ -168,34 +165,39 @@ class Typeseance extends AppModel {
     /* - false : les acteurs non élus                                          */
 
     function acteursConvoquesParTypeSeanceId($typeseance_id, $elu = null, $fields=array()) {
-        $this->Behaviors->load('Containable');
+
         $typeseance = $this->find('first', array(
             'contain' => array('Typeacteur.id','Acteur.id'),
             'fields' => array('id'),
             'conditions' => array('Typeseance.id' => $typeseance_id)));
-        if (empty($typeseance))
+        if (empty($typeseance)) {
             return null;
+        }
 
         /* Par type d'acteur */
         $inTypeacteur = array();
-        foreach ($typeseance['Typeacteur'] as $typeacteur)
+        foreach ($typeseance['Typeacteur'] as $typeacteur) {
             $inTypeacteur[] = $typeacteur['id'];
+        }
 
         /* Par acteur */
         $inId = array();
-        foreach ($typeseance['Acteur'] as $acteur)
+        foreach ($typeseance['Acteur'] as $acteur) {
             $inId[] = $acteur['id'];
+        }
 
         $condition['Acteur.actif'] = 1;
-        if ($elu !== null)
+        if ($elu !== null) {
             $condition['Typeacteur.elu'] = $elu;
+        }
         if (!empty($inTypeacteur) && !empty($inId)) {
             $condition['OR']['Acteur.id'] = $inId;
             $condition['OR']['Acteur.typeacteur_id'] = $inTypeacteur;
         } elseif (!empty($inTypeacteur)) {
             $condition['Acteur.typeacteur_id'] = $inTypeacteur;
-        } elseif (!empty($inId))
+        } elseif (!empty($inId)) {
             $condition['Acteur.id'] = $inId;
+        }
 
         return $this->Acteur->find('all', array(
             'recursive' => 0,
@@ -211,10 +213,11 @@ class Typeseance extends AppModel {
             'conditions' => array('Typeseance.id' => $typeseance_id),
             'fields' => array('modelprojet_id', 'modeldeliberation_id'),
             'recursive' => -1));
-        if ($etat >= 3)
+        if ($etat >= 3) {
             return $typeseance['Typeseance']['modeldeliberation_id'];
-        else
+        } else {
             return $typeseance['Typeseance']['modelprojet_id'];
+        }
     }
 
     function getLibelle($type_id) {
@@ -236,5 +239,3 @@ class Typeseance extends AppModel {
     }
 
 }
-
-?>
