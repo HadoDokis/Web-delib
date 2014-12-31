@@ -86,13 +86,12 @@ class DeliberationsController extends AppController {
     );
 
     function view($id = null) {
-        $this->Deliberation->Behaviors->load('Containable');
-        $this->request->data = $this->Deliberation->find('first', array(
+        $projet = $this->Deliberation->find('first', array(
             'fields' => array(
                 'id', 'anterieure_id', 'service_id', 'circuit_id', 'typeacte_id',
                 'etat', 'num_delib', 'titre', 'objet', 'objet_delib', 'num_pref', 'parent_id',
                 'texte_projet_name', 'texte_synthese_name', 'deliberation_name',
-                'created', 'modified', 'deliberation', 'texte_projet', 'texte_synthese'),
+                'Deliberation.created', 'Deliberation.modified', 'deliberation', 'texte_projet', 'texte_synthese'),
             'contain' => array(
                 'Multidelib' => array(
                     'fields' => array('id', 'objet', 'objet_delib', 'num_delib', 'etat', 'deliberation', 'deliberation_name'),
@@ -112,22 +111,18 @@ class DeliberationsController extends AppController {
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
                         'Typeseance' => array('fields' => array('id', 'libelle', 'action'))
                     ))),
-            'conditions' => array('Deliberation.id' => $id)
+            'conditions' => array('Deliberation.id' => $id),
+            'recursive'=>-1
         ));
 
-        if (empty($this->request->data)){
+        if (empty($projet)){
             $this->Session->setFlash("Le projet n&deg;$id est introuvable !", 'growl');
-            return $this->redirect($this->referer());
+            return $this->redirect($this->previous);
         }
 
-        $this->request->data['Deliberationseance'] = Hash::sort($this->request->data['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
+        $projet['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
 
-        $this->request->data['Deliberation']['num_pref'] = $this->data['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
-
-        if (empty($this->data)) {
-            $this->Session->setFlash('Invalide id pour la délibération : affichage de la vue impossible.', 'growl');
-            $this->redirect(array('action' => 'mesProjetsRedaction'));
-        }
+        $projet['Deliberation']['num_pref'] = $projet['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($projet['Deliberation']['num_pref']);
 
         if (!$this->Droits->check($this->user_id, "Pages:tous_les_projets")) {
             $conditions['Deliberation.id'] = $id;
@@ -158,10 +153,11 @@ class DeliberationsController extends AppController {
         }
 
         // Compactage des informations supplémentaires
-        $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup'], false);
-
+        if(!empty($projet['Infosup']))
+            $this->set('infosupdefs', $projet['Infosup'] = $this->Deliberation->Infosup->compacte($projet['Infosup'], false));
         // Lecture des versions anterieures
-        $this->set('tab_anterieure', $this->Deliberation->chercherVersionAnterieure($this->data, 0, array(), 'view'));
+        if(!empty($projet['Deliberation']['anterieure_id']))
+            $this->set('tab_anterieure', $this->Deliberation->chercherVersionAnterieure($projet['Deliberation']['anterieure_id'], 0, array(), 'view'));
 
         //Lecture de la version supérieure
         $this->set('versionsup', $this->Deliberation->chercherVersionSuivante($id));
@@ -170,51 +166,39 @@ class DeliberationsController extends AppController {
 
         $this->set('inBannette', in_array($this->user_id, $this->Traitement->whoIs($id, 'current', 'RI', false)));
 
-        // Lecture et initialisation des commentaires
-        $commentaires = $this->Commentaire->find('all', array(
-            'conditions' => array('Commentaire.delib_id' => $id),
-            'order' => 'created DESC'));
-        for ($i = 0; $i < count($commentaires); $i++) {
-            if ($commentaires[$i]['Commentaire']['agent_id'] == -1) {
-                $commentaires[$i]['Commentaire']['prenomAgent'] = "i-Parapheur";
-                $commentaires[$i]['Commentaire']['nomAgent'] = '';
-            } elseif (!empty($commentaires[$i]['Commentaire']['commentaire_auto'])){
-                $commentaires[$i]['Commentaire']['nomAgent'] = '';
-                $commentaires[$i]['Commentaire']['prenomAgent'] = 'Webdelib';
-            } else {
-                $agent = $this->User->find('first', array(
-                    'conditions' => array('User.id' => $commentaires[$i]['Commentaire']['agent_id']),
-                    'recursive' => -1,
-                    'fields' => array('nom', 'prenom')));
-                if (!empty($agent['User']['nom']) && !empty($agent['User']['prenom'])){
-                    $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
-                    $commentaires[$i]['Commentaire']['prenomAgent'] = $agent['User']['prenom'];
-                }else{
-                    $commentaires[$i]['Commentaire']['nomAgent'] = '';
-                    $commentaires[$i]['Commentaire']['prenomAgent'] = '';
-                }
-            }
-        }
-        $this->set('commentaires', $commentaires);
+        $this->set('commentaires', $this->Commentaire->find('all', array(
+                    'fields'=>array('Commentaire.texte','Commentaire.created'),
+                    'contain'=>array('User.nom','User.prenom'),
+                    'conditions' => array(
+                                'Commentaire.delib_id' => $id,
+                                'Commentaire.pris_en_compte' => 0
+                        ),
+                    'order' => array('Commentaire.created ASC'),
+                    'recursive'=>-1
+                )));
         $this->set('historiques', $this->Historique->find('all', array(
-            'conditions' => array("Historique.delib_id" => $id),
-            'order' => 'Historique.created DESC, Historique.id DESC'
+            'fields'=>array('Historique.commentaire','Historique.created'),
+            'contain'=>array('User.nom','User.prenom'),
+            'conditions' => array('Historique.delib_id' => $id),
+            //'joins' => array($this->Historique->join('User',array( 'type' => 'INNER' ))),
+            'order' => array('Historique.modified DESC'),
+            'recursive'=>-1
         )));
 
         //Récupération du model_id (pour lien bouton generer)
         $model_id = $this->Deliberation->getModelId($id);
-        $this->request->data['Modeltemplate']['id'] = $model_id;
+        $projet['Modeltemplate']['id'] = $model_id;
 
 
         // Mise en forme des données du projet ou de la délibération
-        $this->request->data['Deliberation']['libelleEtat'] = $this->Deliberation->libelleEtat($this->data['Deliberation']['etat']);
+        $projet['Deliberation']['libelleEtat'] = $this->Deliberation->libelleEtat($projet['Deliberation']['etat']);
         if (!empty($this->data['Seance']['date']))
-            $this->request->data['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data['Seance']['date']));
+            $projet['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($projet['Seance']['date']));
         // initialisation des séances
         $listeTypeSeance = array();
-        $this->request->data['listeSeances'] = array();
-        if (isset($this->request->data['Deliberationseance']) && !empty($this->request->data['Deliberationseance'])) {
-            foreach ($this->request->data['Deliberationseance'] as $seance) {
+        $projet['listeSeances'] = array();
+        if (isset($projet['Deliberationseance']) && !empty($projet['Deliberationseance'])) {
+            foreach ($projet['Deliberationseance'] as $seance) {
                 $this->request->data['listeSeances'][] = array(
                     'seance_id' => $seance['Seance']['id'],
                     'type_id' => $seance['Seance']['type_id'],
@@ -236,10 +220,10 @@ class DeliberationsController extends AppController {
                         'date' => NULL);
             }
         }
-        $this->request->data['listeSeances'] = Hash::sort($this->request->data['listeSeances'], '{n}.action', 'asc');
+        $projet['listeSeances'] = Hash::sort($projet['listeSeances'], '{n}.action', 'asc');
 
-        $this->request->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Deliberation']['service_id']);
-        $this->request->data['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
+        $projet['Service']['libelle'] = $this->Deliberation->Service->doList($projet['Deliberation']['service_id']);
+        $projet['Circuit']['libelle'] = $this->Circuit->getLibelle($projet['Deliberation']['circuit_id']);
 
         // Définitions des infosup
         $this->set('infosupdefs', $this->Infosupdef->find('all', array(
@@ -255,7 +239,10 @@ class DeliberationsController extends AppController {
         else
             $this->set('visu', null);
 
-        $this->set('etat', $this->data['Deliberation']['etat']);
+        $this->set('projet', $projet);
+        
+        
+        /******************************/
         //si bloqué à une étape de délégation
         $visa = false;
         $traitement = $this->Traitement->findByTargetId($id);
@@ -292,7 +279,7 @@ class DeliberationsController extends AppController {
         }
         //Afficher bouton MàJ
         $this->set('majDeleg', $visa);
-        return $this->render();
+        /******************************/
     }
 
     function majEtatParapheur($id = null) {
@@ -1281,35 +1268,8 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function recapitulatif($id = null) {
-        if (empty($this->data)) {
-            if (!$id) {
-                $this->Session->setFlash('Invalide id pour la deliberation', 'growl', array('type' => 'erreur'));
-                return $this->redirect(array('action'=>'mesProjetsRedaction'));
-            }
-            $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
-            for ($i = 0; $i < count($delib['Seance']); $i++) {
-                $type = $this->Seance->Typeseance->find('first', array('conditions' => array('Typeseance.id' => $delib['Seance'][$i]['type_id']),
-                    'recursive' => -1,
-                    'fields' => array('libelle')));
-                $delib['Seance'][$i]['Typeseance']['libelle'] = $type['Typeseance']['libelle'];
-            }
-
-            if (!empty($delib['Deliberation']['date_limite']))
-                $delib['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($delib['Deliberation']['date_limite']));
-            $delib['Deliberation']['created'] = $this->Date->frenchDateConvocation(strtotime($delib['Deliberation']['created']));
-            $delib['Deliberation']['modified'] = $this->Date->frenchDateConvocation(strtotime($delib['Deliberation']['modified']));
-            $id_service = $delib['Service']['id'];
-            $delib['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-            $tab_circuit = $delib['Deliberation']['circuit_id'];
-            $delib['Circuit']['libelle'] = $this->Circuit->getLibelle($tab_circuit);
-            //on recupere la position de l'user dans le circuit
-            $this->set('deliberation', $delib);
-            $this->set('visu', $this->requestAction('/cakeflow/circuits/visuCircuit/' . $tab_circuit, array('return')));
-        }
-    }
-
     function delete($id = null) {
+        
         $delib = $this->Deliberation->find('first', array(
             'recursive' => -1,
             'fields' => array('Deliberation.id', 'Deliberation.redacteur_id', 'Deliberation.etat', 'Deliberation.parapheur_etat'),
@@ -1321,6 +1281,8 @@ class DeliberationsController extends AppController {
         elseif($delib['Deliberation']['parapheur_etat']==1) {
                 $this->Session->setFlash('Le projet est dans une étape parapheur, il ne peut être supprimé.', 'growl', array('type' => 'erreur'));
         } else {
+            //$this->request->allowMethod('post');
+            
             $canDelete = $this->Droits->check($this->user_id, "Deliberations:delete");
             if ((($delib['Deliberation']['redacteur_id'] == $this->user_id) && ($delib['Deliberation']['etat'] == 0)) || ($canDelete)) {
                 $this->Deliberation->supprimer($id);
@@ -1332,140 +1294,182 @@ class DeliberationsController extends AppController {
         $this->redirect($this->previous);
     }
 
-    function addIntoCircuit($id = null) {
-        $this->request->data = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
-        // envoi un mail a tous les membres du circuit
-        if (!empty($this->request->data['Deliberation']['circuit_id'])) {
-            // enregistrement de l'historique
-            $message = "Projet injecté au circuit : " . $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
-            $this->Historique->enregistre($id, $this->user_id, $message);
-            $this->request->data['Deliberation']['date_envoi'] = date('Y-m-d H:i:s', time());
-            $this->request->data['Deliberation']['etat'] = '1';
-            $this->Deliberation->id = $id;
-            if ($this->Deliberation->save($this->request->data)) {
-                // insertion dans le circuit de traitement
-                if ($this->Traitement->targetExists($id)) {
-                    $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $this->user_id);
-                    $this->Traitement->Visa->replaceDynamicTrigger($id, $this->user_id);
-                    $members = $this->Traitement->whoIs($id, 'current', 'RI');
-                    if (empty($members)) {
-                        $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
-                        $this->Deliberation->saveField('etat', 2);
-                    } else {
-                        while (in_array($this->user_id, $members)) {
-                            $traitementTermine = $this->Traitement->execute('OK', $this->user_id, $id);
-                            $this->Historique->enregistre($id, $this->user_id, 'Projet visé (auto)');
-                            if ($traitementTermine) {
-                                $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
-                                $this->Deliberation->saveField('etat', 2);
-                                $this->Session->setFlash('Projet inséré dans le circuit et validé', 'growl');
-                                $this->redirect(array('action'=>'mesProjetsValides'));
-                            }
-                            $members = $this->Traitement->whoIs($id, 'current', 'RI');
-                        }
-                        foreach ($members as $destinataire_id)
-                            $this->User->notifier($id, $destinataire_id, 'traitement');
-
-                        $members = $this->Traitement->whoIs($id, 'after', 'RI');
-                        foreach ($members as $user_id)
-                            $this->User->notifier($id, $user_id, 'insertion');
-
-                        $this->Session->setFlash('Projet inséré dans le circuit et visé', 'growl');
-                        $this->redirect(array('action'=>'mesProjetsRedaction'));
-                    }
-                } else {
-                    $this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $this->user_id);
-                    $options = array(
-                        'insertion' => array(
-                            '0' => array(
-                                'Etape' => array(
-                                    'etape_id' => null,
-                                    'etape_nom' => 'Rédacteur',
-                                    'etape_type' => 1,
-                                    'cpt_retard' => null
-                                ),
-                                'Visa' => array(
-                                    '0' => array(
-                                        'trigger_id' => $this->user_id,
-                                        'type_validation' => 'V'
-                                    )
-                                ),
-                            )
-                        ),
-                        'optimisation'=> configure::read('Cakeflow.optimisation')
-                    );
-                    $traitementTermine = $this->Traitement->execute('IN', $this->user_id, $id, $options);
-
-                    //FIX Devrait enregistrer un historique des actions effectés en optimisation et autre mais pas que sur l'état final
+    function _addIntoCircuit($id = null) {
+        
+        try{
+        // enregistrement de l'historique
+        $message = "Projet injecté au circuit : " . $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
+        $this->Historique->enregistre($id, $this->user_id, $message);
+        
+        $data = array(
+                    'id' => $id, 
+                    'date_envoi' => date('Y-m-d H:i:s'),
+                    'etat' => '1', 
+            );
+        
+        if (!$this->Deliberation->save($data)) {
+            new Exception('Problème de sauvegarde.', 'error');
+        }
+        // insertion dans le circuit de traitement
+        if ($this->Traitement->targetExists($id)) {
+            $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $this->user_id);
+            $this->Traitement->Visa->replaceDynamicTrigger($id, $this->user_id);
+            $members = $this->Traitement->whoIs($id, 'current', 'RI');
+            if (empty($members)) {
+                $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
+                $this->Deliberation->saveField('etat', 2);
+            } else {
+                while (in_array($this->user_id, $members)) {
+                    $traitementTermine = $this->Traitement->execute('OK', $this->user_id, $id);
+                    $this->Historique->enregistre($id, $this->user_id, 'Projet visé (auto)');
                     if ($traitementTermine) {
                         $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
-                        $this->Deliberation->id = $id;
                         $this->Deliberation->saveField('etat', 2);
+                        $this->Session->setFlash('Projet inséré dans le circuit et validé', 'growl');
+                        $this->redirect(array('action'=>'mesProjetsValides'));
                     }
-                    $this->Traitement->Visa->replaceDynamicTrigger($id, $this->user_id);
-
                     $members = $this->Traitement->whoIs($id, 'current', 'RI');
-                    foreach ($members as $current_id)
-                        $this->User->notifier($id, $current_id, 'traitement');
-
-                    $members = $this->Traitement->whoIs($id, 'after', 'RI');
-                    foreach ($members as $user_id)
-                        $this->User->notifier($id, $user_id, 'insertion');
-
-                    $this->Session->setFlash('Projet inséré dans le circuit', 'growl');
-                    return $this->redirect(array('action'=>'mesProjetsRedaction'));
                 }
-            } else {
-                $this->Session->setFlash('Problème de sauvegarde.', 'growl', array('type' => 'erreur'));
-                return $this->redirect(array('action'=>'attribuercircuit', $id));
+                foreach ($members as $destinataire_id)
+                    $this->User->notifier($id, $destinataire_id, 'traitement');
+
+                $members = $this->Traitement->whoIs($id, 'after', 'RI');
+                foreach ($members as $user_id)
+                    $this->User->notifier($id, $user_id, 'insertion');
+
+                $this->Session->setFlash('Projet inséré dans le circuit et visé', 'growl');
+                $this->redirect(array('action'=>'mesProjetsRedaction'));
             }
         } else {
-            $this->Session->setFlash('Vous devez assigner un circuit au projet de délibération.', 'growl', array('type' => 'erreur'));
-            return $this->redirect(array('action'=>'recapitulatif', $id));
+            $this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $this->user_id);
+            $options = array(
+                'insertion' => array(
+                    '0' => array(
+                        'Etape' => array(
+                            'etape_id' => null,
+                            'etape_nom' => 'Rédacteur',
+                            'etape_type' => 1,
+                            'cpt_retard' => null
+                        ),
+                        'Visa' => array(
+                            '0' => array(
+                                'trigger_id' => $this->user_id,
+                                'type_validation' => 'V'
+                            )
+                        ),
+                    )
+                ),
+                'optimisation'=> configure::read('Cakeflow.optimisation')
+            );
+            $traitementTermine = $this->Traitement->execute('IN', $this->user_id, $id, $options);
+
+            //FIX Devrait enregistrer un historique des actions effectés en optimisation et autre mais pas que sur l'état final
+            if ($traitementTermine) {
+                $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
+                $this->Deliberation->id = $id;
+                $this->Deliberation->saveField('etat', 2);
+            }
+            $this->Traitement->Visa->replaceDynamicTrigger($id, $this->user_id);
+
+            $members = $this->Traitement->whoIs($id, 'current', 'RI');
+            foreach ($members as $current_id)
+                $this->User->notifier($id, $current_id, 'traitement');
+
+            $members = $this->Traitement->whoIs($id, 'after', 'RI');
+            foreach ($members as $user_id)
+                $this->User->notifier($id, $user_id, 'insertion');
+        }
+            
+        
+        }
+        catch(Exception $e){
+            new Exception($e->getMessage(), $e->getCode());
         }
     }
 
-    function attribuercircuit($id = null, $circuit_id = null, $autoAppel = false) {
-        $circuits = $this->User->getCircuits($this->user_id);
-        $this->set('circuits', $circuits);
-
-        if (empty($this->data)) {
-            $this->data = $this->Deliberation->read(null, $id);
-            $this->set('lastPosition', '-1');
-
-            //circuit par défaut de l'utilisateur connecté
-            if ($circuit_id == null || !array_key_exists($circuit_id, $circuits))
-                $circuit_id = $this->User->circuitDefaut($this->user_id, 'id');
-
-            //affichage du circuit existant
-            if ($circuit_id == null)
-                $circuit_id = $this->data['Deliberation']['circuit_id'];
-
-            if (isset($circuit_id)) {
-                $this->set('circuit_id', $circuit_id);
-                $this->set('visu', $this->requestAction('/cakeflow/circuits/visuCircuit/' . $circuit_id, array('return')));
-            } else
-                $this->set('circuit_id', '0');
-            // initalisation du lien de retour
-            if ($autoAppel) {
-                $this->set('lien_retour', $this->Session->read('attribuerCircuit.lienRetour'));
-            } else {
-                $this->Session->write('attribuerCircuit.lienRetour', $this->referer());
-                $this->set('lien_retour', $this->referer());
-            }
-        } else {
-            $this->Deliberation->id = $id;
-            $this->request->data = $this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $id), 'recursive' => -1));
-
-            if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
-                // Cas pour le mode OpenOffice
-                if ($this->data['Deliberation']['texte_projet'] == '')
-                    $this->Session->setFlash('Attention, le texte projet est vide', 'growl', array('type' => 'important'));
-
-                $this->redirect(array('action'=>'recapitulatif', $id));
-            } else
-                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
+    function attribuercircuit($id = null) {
+        
+        if (!$id) {
+                $this->Session->setFlash('Invalide id pour la deliberation', 'growl', array('type' => 'erreur'));
+                return $this->redirect(array('action'=>'mesProjetsRedaction'));
         }
+            
+        $this->set('circuits', $this->User->getCircuits($this->user_id));
+
+        if ($this->request->is('post')) {
+            
+            $this->Deliberation->id=$id;
+            if(!empty($this->request->data['Deliberation']['circuit_id']) && $this->Deliberation->saveField('circuit_id', $this->request->data['Deliberation']['circuit_id'])) {
+            
+               $this->_addIntoCircuit($id);
+               $message = "Projet injecté au circuit : " . $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
+               $this->Session->setFlash($message, 'growl', array('type' => 'success'));
+               
+               return $this->redirect($this->previous);
+            }
+            else// if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
+                $this->Session->setFlash('Veuillez sélectionner un circuit', 'growl', array('type' => 'erreur'));
+        }
+        
+            
+        $projet = $this->Deliberation->find('first', array(
+            'fields'=> array('modified', 'created', 'texte_projet', 'objet', 'num_pref'),
+            'contain' => array(
+                                'Typeacte.libelle',
+                                'Theme.libelle',
+                                'Service.libelle',
+                                'Seance.date',
+                                'Seance.Typeseance.libelle',
+                                'Redacteur.nom',
+                                'Redacteur.prenom',
+                                'Rapporteur.nom',
+                                'Rapporteur.prenom',
+                        ),
+            'conditions' => array('Deliberation.id' => $id),
+            'recursive' => -1
+            )
+        );
+
+        $projet['Deliberation']['num_pref'] = $projet['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($projet['Deliberation']['num_pref']);
+
+         if (empty($projet['Deliberation']['texte_projet']))
+            $this->Session->setFlash('Attention, le texte projet est vide', 'growl', array('type' => 'important'));
+        /*
+        for ($i = 0; $i < count($delib['Seance']); $i++) {
+            $type = $this->Seance->Typeseance->find('first', array('conditions' => array('Typeseance.id' => $delib['Seance'][$i]['type_id']),
+                'recursive' => -1,
+                'fields' => array('libelle')));
+            $delib['Seance'][$i]['Typeseance']['libelle'] = $type['Typeseance']['libelle'];
+        }*/
+        /*
+
+        $id_service = $delib['Service']['id'];
+        $delib['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+        $tab_circuit = $delib['Deliberation']['circuit_id'];
+        $delib['Circuit']['libelle'] = $this->Circuit->getLibelle($tab_circuit);
+        //on recupere la position de l'user dans le circuit
+        $this->set('deliberation', $delib);
+    */
+        $this->set('projet', $projet);
+
+        //circuit par défaut de l'utilisateur connecté
+        $userCircuitDefaultId = $this->User->circuitDefaut($this->user_id, 'id');
+
+        //affichage du circuit &&existant
+        if (empty($userCircuitDefaultId) && !empty($this->data['Deliberation']['circuit_id']))
+            $userCircuitDefaultId = $this->data['Deliberation']['circuit_id'];
+
+        if (isset($circuit_id)) {
+            $this->set('userCircuitDefaultId', $userCircuitDefaultId);
+            $this->set('visu', $this->requestAction(
+                    array('controller' => 'cakeflow', 'action' => 'circuits', 'visuCircuit', $userCircuitDefaultId),
+                    array('return')
+                    )
+                    );
+        }
+
+        // initalisation du lien de retour
+        $this->set('previous', $this->previous);
     }
 
     function retour($delib_id) {
@@ -1497,6 +1501,26 @@ class DeliberationsController extends AppController {
     }
 
     function traiter($id = null, $valid = null) {
+        
+        $this->Deliberation->id = $id;
+        if (!$this->Deliberation->exists()){
+            $this->Session->setFlash("Le projet n&deg;$id est introuvable !", 'growl');
+            return $this->redirect($this->previous);
+        }
+        
+        if ($this->request->is('post') || $this->request->is('put')) {
+            if ($valid == '1') {
+                $this->_accepteDossier($id);
+                $this->Session->setFlash('Vous venez de valider le projet : ' . $id, 'growl');
+            } 
+            else {
+                $this->_refuseDossier($id);
+                $this->Session->setFlash('Vous venez de refuser le projet : ' . $id, 'growl');
+            }
+            
+            return $this->redirect(array('action'=>'mesProjetsATraiter'));
+        }
+        
         $projet = $this->Deliberation->find('first', array(
             'fields' => array(
                 'id',
@@ -1547,11 +1571,6 @@ class DeliberationsController extends AppController {
             'recursive'=>-1)
             );
 
-        if (empty($projet)){
-            $this->Session->setFlash("Le projet n&deg;$id est introuvable !", 'growl');
-            return $this->redirect($this->previos);
-        }
-
         //Si traitement d'une delib "enfant" rediriger vers traitement delib "parent"
         if (!empty($projet['Deliberation']['parent_id'])){
             return $this->redirect(array('action' => 'traiter', $projet['Deliberation']['parent_id']));
@@ -1562,7 +1581,7 @@ class DeliberationsController extends AppController {
 
         if (empty($projet)) {
             $this->Session->setFlash('identifiant invalide pour le projet : ' . $id, 'growl', array('type' => 'erreur'));
-            return $this->redirect(array('action'=>'mesProjetsATraiter'));
+            return $this->redirect($this->previous);
         } else {
             $triggers = $this->Deliberation->Traitement->whoIs($id, 'current', 'RI');
             if (!in_array($this->user_id, $triggers)){
@@ -1571,32 +1590,32 @@ class DeliberationsController extends AppController {
             if ($valid == null) {
                 $nb_recursion = 0;
                 $action = 'view';
-                $this->set('tab_anterieure', $this->Deliberation->chercherVersionAnterieure($projet, $nb_recursion, array(), $action));
-                $commentaires = $this->Commentaire->find('all', array('conditions' => array(
-                    'Commentaire.delib_id' => $id,
-                    'Commentaire.pris_en_compte' => 0),
-                    'order' => 'created ASC'));
-                for ($i = 0; $i < count($commentaires); $i++) {
-                    $agent = $this->User->find('first', array('conditions' => array(
-                        'User.id' => $commentaires[$i]['Commentaire']['agent_id']),
-                        'recursive' => -1,
-                        'fields' => array('nom', 'prenom')));
-                    if (empty($agent))
-                        $this->Session->setFlash('Identité de l\'auteur de(s) commentaire(s) inconnue.', 'growl');
-                    $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
-                    $commentaires[$i]['Commentaire']['prenomAgent'] = $agent['User']['prenom'];
-                }
-                $this->set('commentaires', $commentaires);
+                $this->set('tab_anterieure', $this->Deliberation->chercherVersionAnterieure($projet['Deliberation']['id'], $nb_recursion, array(), $action));
+                
                 if (!empty($projet['Seance']['date']))
                     $projet['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($projet['Seance']['date']));
                 $id_service = $projet['Deliberation']['service_id'];
                 $projet['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
                 $projet['Circuit']['libelle'] = $this->Circuit->getLibelle($projet['Deliberation']['circuit_id']);
                 $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/' . $id, array('return')));
-                $this->set('deliberation', $projet);
+                $this->set('projet', $projet);
+                $this->set('commentaires', $this->Commentaire->find('all', array(
+                    'fields'=>array('Commentaire.texte','Commentaire.created'),
+                    'contain'=>array('User.nom','User.prenom'),
+                    'conditions' => array(
+                                'Commentaire.delib_id' => $id,
+                                'Commentaire.pris_en_compte' => 0
+                        ),
+                    'order' => array('Commentaire.created ASC'),
+                    'recursive'=>-1
+                )));
                 $this->set('historiques', $this->Historique->find('all', array(
-                    'conditions' => array("Historique.delib_id" => $id),
-                    'order' => array('Historique.modified DESC')
+                    'fields'=>array('Historique.commentaire','Historique.created'),
+                    'contain'=>array('User.nom','User.prenom'),
+                    'conditions' => array('Historique.delib_id' => $id),
+                    //'joins' => array($this->Historique->join('User',array( 'type' => 'INNER' ))),
+                    'order' => array('Historique.modified DESC'),
+                    'recursive'=>-1
                 )));
 
                 // Compactage des informations supplémentaires
@@ -1640,15 +1659,6 @@ class DeliberationsController extends AppController {
                 }
                 //Afficher bouton MàJ
                 $this->set('majDeleg', $visa);
-            } else {
-                if ($valid == '1') {
-                    $this->_accepteDossier($id);
-                    $this->Session->setFlash('Vous venez de valider le projet : ' . $id, 'growl');
-                } else {
-                    $this->_refuseDossier($id);
-                    $this->Session->setFlash('Vous venez de refuser le projet : ' . $id, 'growl');
-                }
-                return $this->redirect(array('action'=>'mesProjetsATraiter'));
             }
         }
     }
@@ -3369,7 +3379,6 @@ class DeliberationsController extends AppController {
                 $this->redirect(array('action'=>'tousLesProjetsRecherche'));
             } else {
                 // lecture en base
-                $this->Deliberation->Behaviors->load('Containable');
                 $projets = $this->Deliberation->find('all', array(
                     'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
                         'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',

@@ -1,40 +1,87 @@
 <?php
-echo $this->Html->script('fonctions');
-echo $this->Html->tag('h2', 'Attribuer le projet à un circuit');
-echo $this->Form->create('Deliberation', array('type' => 'post', 'url' => array('plugin' => null, 'controller' => 'deliberations', 'action' => 'attribuercircuit', $this->Html->value('Deliberation.id'), $circuit_id)));
-$loc = $this->Html->url(array('controller' => 'deliberations', 'action' => 'attribuercircuit', $this->Html->value('Deliberation.id')));
-echo $this->Form->input('Deliberation.circuit_id', array('options' => $circuits, "onChange" => "lister_circuits(this, '$loc/');", 'empty' => true, 'selected' => $circuit_id, 'style' => 'float:left;', 'class' => 'select2 selectone'));
-echo $this->Html->tag('div', '', array('class' => 'spacer', 'style' => 'heigth:0px;'));
-echo $this->Html->tag('div', null, array('style' => 'margin-left:69px;'));
+
+$this->Html->addCrumb('Attribuer un circuit');
+echo $this->Bs->tag('h3', 'Attribuer un circuit au projet: ' . $projet['Deliberation']['objet'].' <span class="label label-info">'.$projet['Deliberation']['id'].'</span>');
+
+echo $this->element('projetInfo', array('projet' => $projet));
+
+echo $this->Html->tag('br /');
+
+echo $this->BsForm->create('Deliberation', array('type' => 'post', 'url' => array('plugin' => null, 'controller' => 'deliberations', 'action' => 'attribuercircuit', $projet['Deliberation']['id'])));
+
+echo $this->BsForm->select('Deliberation.circuit_id', $circuits, array(
+    'type' => 'select',
+    'label' => 'Choisir un circuit',
+    'class' => 'select2 selectone',
+    'autocomplete'=>'off',
+    'default'=> isset($userCircuitDefaultId) ? $userCircuitDefaultId : false,
+    'data-placeholder' => 'Sélectionnez un circuit',
+    'empty' => ''
+    ));
+
 // données concernant le circuit selectionné
-if (isset($visu))
-    echo($visu);
-echo $this->Html->tag('div', '', array('class' => 'spacer', 'style' => 'heigth:0px;'));
-echo $this->Html->tag('div', null, array('class' => 'submit btn-group', 'style' => 'margin-left:38px;'));
-echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $lien_retour, array('class' => 'btn', 'escape' => false, 'name' => 'Annuler'));
-echo $this->Form->button('<i class="fa fa-check"></i> Attribuer', array('id'=>'attribuer', 'div' => false, 'class' => 'btn btn-primary', 'type' => 'submit', 'name' => 'ajouter'));
-echo $this->Html->tag('/div', null);
-echo $this->Html->tag('/div', null);
-echo $this->Form->end();
-?>
-<style>
-    label {
-        padding: 6px .5em 0 0;
-    }
-    #DeliberationCircuitId {
-        width: auto;
-        min-width: 200px;
-        max-width: 80%;
-    }
-</style>
-<script type="application/javascript">
-    $("#DeliberationCircuitId").select2({
-        width: "resolve",
-        placeholder: "Selectionnez un élément"
-    });
+echo $this->Bs->row() .
+ $this->Bs->col('xs3')
+ . $this->Bs->close() .
+ $this->Bs->col('xs9') . $this->Bs->div(null, (isset($visu) ? $visu : ''), array('id' => 'selectCircuit'))
+ . $this->Bs->close(2);
+
+echo $this->Bs->div('btn-group', null) .
+ $this->Bs->btn('Annuler', $previous, array(
+    'type' => 'default',
+    'icon' => 'glyphicon glyphicon-arrow-left',
+    'escape' => false,
+    'title' => 'Annuler les modifications')) .
+ $this->Bs->btn('Modifier projet', array('controller' => 'deliberations', 'action' => 'edit', $projet['Deliberation']['id']), array(
+    'type' => 'primary',
+    'icon' => 'glyphicon glyphicon-edit',
+    'escape' => false,
+    'title' => 'Modifier le projet')) .
+ $this->Bs->btn('Insérer le projet dans le circuit', null, array(
+    'tag' => 'button',
+    'type' => 'success',
+    'id' => 'attribuer',
+    'name' => 'attribuer',
+    'icon' => 'glyphicon glyphicon-road',
+    'escape' => false,
+    'title' => 'Insérer le projet dans le circuit')) .
+ $this->Bs->close();
+
+echo $this->BsForm->end();
+
+echo $this->Html->scriptBlock('
     $(document).ready(function(){
-       if ($('.parapheur_error').length > 0){
-           $('#attribuer').remove();
+       if ($(".parapheur_error").length > 0){
+           $("#attribuer").remove();
        }
     });
-</script>
+    
+    $("#DeliberationCircuitId").select2({
+        allowClear: true
+    }).on("select2-removed", 
+    function(e) { 
+        $("#selectCircuit").html(\'\');
+    }).on("change", 
+    
+    function(e) {
+    
+        if($("#DeliberationCircuitId").val() != \'\'){
+            var ajaxUrl = \'' . $this->Html->url(array(
+            'controller' => 'cakeflow',
+            'action' => 'circuits', 'visuCircuit')) . '/\' + $("#DeliberationCircuitId").val();
+            $.ajax({
+                url: ajaxUrl,
+                beforeSend: function () {
+                    $("#selectCircuit").html(\'\');
+                },
+                success: function (result) {
+                    $("#selectCircuit").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(textStatus);
+                }
+            });
+        }
+    });
+
+');

@@ -1,187 +1,191 @@
 <!--<div id="buttons">-->
 <?php
-echo $this->Html->script('utils.js');
-echo $this->Html->script('noback.js');
 echo $this->Html->script('ckeditor/ckeditor');
 echo $this->Html->script('ckeditor/adapters/jquery');
 
-// Initialisation des boutons action de la vue
-$linkBarre = "<div class='btn-toolbar traiterActions' role='toolbar'>";
-$linkBarre .= "<div class='btn-group'>";
-$linkBarre .= $this->Html->link(
-    '<i class="fa fa-arrow-left"></i> Retour',
-    array('action' => 'mesProjetsATraiter'),
-    array('escape' => false, 'class' => 'btn')
-);
-$linkBarre .= $this->Html->link(
-    '<i class="fa fa-file"></i> Générer',
-    array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
-    array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document')
-);
-$linkBarre .= "</div>";
-$linkBarre .= "<div class='btn-group'>";
-if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
-    $linkBarre .= $this->Html->link(
-        '<i class="fa fa-edit"></i> Modifier',
-        array('action' => 'edit', $deliberation['Deliberation']['id']),
-        array('escape' => false, 'class' => 'btn')
-    );
-$linkBarre .= $this->Html->link(
-    '<i class="fa fa-comment"></i> Commenter',
-    array('controller' => 'commentaires', 'action' => 'add', $deliberation['Deliberation']['id']),
-    array('escape' => false, 'class' => 'btn btn-info')
-);
-$linkBarre .= "</div>";
-$linkBarre .= "<div class='btn-group'>";
-$linkBarre .= $this->Html->link(
-    '<i class="fa fa-reply"></i> Retourner à',
-    array('action' => 'retour', $deliberation['Deliberation']['id']),
-    array('escape' => false, 'class' => 'btn')
-);
-if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:rebond'))
-    $linkBarre .= $this->Html->link(
-        '<i class="fa fa-share"></i> Envoyer à',
-        array('action' => 'rebond', $deliberation['Deliberation']['id']),
-        array('escape' => false, 'class' => 'btn')
-    );
-$linkBarre .= "</div>";
-$linkBarre .= "<div class='btn-group'>";
-$linkBarre .= $this->Html->link(
-    '<i class="fa fa-thumbs-up"></i> Valider',
-    array('action' => 'traiter', $deliberation['Deliberation']['id'], '1'),
-    array('escape' => false, 'class' => 'btn btn-success')
-);
-$linkBarre .= $this->Html->link(
-    '<i class="fa fa-thumbs-down"></i> Refuser',
-    array('action' => 'traiter', $deliberation['Deliberation']['id'], '0'),
-    array(  'escape' => false, 
-            'class' => 'btn btn-danger',
-            'onclick' => "return confirm('Vous allez refuser ce projet !\\n\\nSi vous ne souhaitez pas le refuser,\\n Annuler la confirmation.\\n\\nVoulez vous continuer ?')",
-            )
-);
-$linkBarre .= "</div>";
-$linkBarre .= "</div>";
+$this->Html->addCrumb('Validation d\'un projet');
 
-echo $this->Html->tag('div', null, array('id' => "vue_cadre"));
+echo $this->Bs->tag('h3', 'Validation d\'un projet');
+
+// Initialisation des boutons action de la vue
+$linkBarre = $this->Bs->div('btn-toolbar', null, array('role'=>'toolbar'));
+$linkBarre .= $this->Bs->div('btn-group');//
+$linkBarre .= $this->Html2->btnCancel($previous);
+$linkBarre .= $this->Bs->btn('Générer', 
+        array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id']), 
+        array('type' => 'default', 
+            'icon' => 'glyphicon glyphicon-cog', 
+            'title' => 'Générer le document du projet ' . $projet['Deliberation']['objet']
+            ));
+if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
+    $linkBarre .= $this->Bs->btn('Modifier', 
+            array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id']), 
+            array('type' => 'primary', 
+                'icon' => 'glyphicon glyphicon-edit', 
+                'title' => 'Modifier le projet ' . $projet['Deliberation']['objet']
+            ));
+$linkBarre .= $this->Bs->close();
+$linkBarre .= $this->Bs->div('btn-group');
+$linkBarre .= $this->Bs->confirm('Commenter', 
+        array('controller' => 'commentaires', 'action' => 'add', $projet['Deliberation']['id']), 
+        array('type' => 'info', 
+            'icon' => 'glyphicon glyphicon-comment', 
+            'title' => 'Modifier le projet ' . $projet['Deliberation']['objet'],
+            'texte' => $this->BsForm->create('Commentaire',array(
+                'url' => array('controller' => 'commentaires', 'action' => 'add', $projet['Deliberation']['id'])))
+                . $this->Form->hidden('Commentaire.delib_id', array('value' => $projet['Deliberation']['id']))
+                . $this->BsForm->input('Commentaire.texte', array('type' => 'textarea', 'label' => 'Commentaire', 'cols' => '3', 'cols' => '3'))
+                . $this->BsForm->end()
+                ,
+                'header' => 'Nouveau commentaire (projet '.$projet['Deliberation']['id'].')',
+                'style'=>array(
+                    'border-bottom-right-radius'=> '4px',
+                    'border-top-right-radius'=> '4px',
+                )
+            ), array('form'=>true));
+$linkBarre .= $this->Bs->close();
+
+$linkBarre .= $this->Bs->div('btn-group');
+$linkBarre .= $this->Bs->btn('Retourner à', 
+            array('controller' => 'deliberations', 'action' => 'retour', $projet['Deliberation']['id']), 
+            array('type' => 'primary', 
+                'icon' => 'glyphicon glyphicon-retweet', 
+                'title' => 'Modifier le projet ' . $projet['Deliberation']['objet']
+            ));
+if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:rebond'))
+$linkBarre .= $this->Bs->btn('Envoyer à', 
+            array('controller' => 'deliberations', 'action' => 'rebond', $projet['Deliberation']['id']), 
+            array('type' => 'primary', 
+                'icon' => 'glyphicon glyphicon-retweet', 
+                'title' => 'Modifier le projet ' . $projet['Deliberation']['objet']
+            ));        
+$linkBarre .= $this->Bs->close();
+$linkBarre .= $this->Bs->div('btn-group');
+$linkBarre .= $this->Bs->confirm('Valider', 
+            array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id'], '1'), 
+            array('type' => 'success', 
+                'icon' => 'glyphicon glyphicon-thumbs-up', 
+                'title' => 'Accepter le projet : ' . $projet['Deliberation']['objet'],
+                'texte' => $this->BsForm->create(false, array(
+                    'url' => array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id'], true),
+                    'novalidate' => true))
+                .'<p>Si vous ne souhaitez pas Valider le projet, Fermer la confirmation.</p>'
+                .'<p>Voulez vous continuer ?</p>'
+                .$this->BsForm->input('Commentaire.texte', array('type' => 'textarea', 'label' => 'Commentaire', 'cols' => '3', 'cols' => '3'))
+                .$this->BsForm->end()
+                ,
+                'header' => 'Vous allez Valider ce projet !'
+            ), array('form'=>true)); 
+$linkBarre .= $this->Bs->confirm('Refuser', 
+            array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id'], '0'), 
+            array('type' => 'danger', 
+                'icon' => ' glyphicon glyphicon-thumbs-down', 
+                'title' => 'Refuser le projet : ' . $projet['Deliberation']['objet'],
+                'texte' => $this->BsForm->create(false, array(
+                    'url' => array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id'], false),
+                    'novalidate' => true))
+                .$this->Html->tag('p','Si vous ne souhaitez pas refuser le projet, Fermer la confirmation.')
+                .$this->Html->tag('p','Voulez vous continuer ?')
+                .$this->BsForm->input('Commentaire.texte', array('type' => 'textarea', 'label' => 'Commentaire', 'cols' => '3', 'cols' => '3'))
+                .$this->BsForm->end()
+                ,
+                'header' => 'Vous allez refuser ce projet !',
+                'style'=>array(
+                    'border-bottom-right-radius'=> '4px',
+                    'border-top-right-radius'=> '4px',
+                )
+            ), array('form'=>true)); 
+$linkBarre .= $this->Bs->close(2);
+
 // affichage  du titre
-if (!empty($deliberation['Multidelib'])) {
-    $listeIds = $deliberation['Deliberation']['id'];
-    foreach ($deliberation['Multidelib'] as $delibRattachee) {
+$title = '<span class="label label-default">' . $projet['Typeacte']['libelle'] . '</span> ';
+if (!empty($projet['Multidelib'])) {
+    $listeIds = $projet['Deliberation']['id'];
+    foreach ($projet['Multidelib'] as $delibRattachee) {
         $listeIds .= ', ' . $delibRattachee['id'];
     }
-    echo $this->Html->tag('h2', '<span class="label label-inverse">' . $deliberation['Typeacte']['libelle'] . '</span> Traitement du projet multi-délibérations n&deg;' . $deliberation['Deliberation']['id'] . ' : ' . $deliberation['Deliberation']['objet']);
-    echo $linkBarre;
+    $title .= 'Traitement du projet multi-délibérations n&deg;' . $projet['Deliberation']['id'] . ' : ' . $projet['Deliberation']['objet'];
 } else {
-    echo $this->Html->tag('h2', '<span class="label label-inverse">' . $deliberation['Typeacte']['libelle'] . '</span> Traitement du projet n&deg;' . $deliberation['Deliberation']['id'] . ' : ' . $deliberation['Deliberation']['objet']);
-    echo $linkBarre;
-    echo "<hr style='margin-top: 9px;'/>";
+    $title .= 'Traitement du projet n&deg;' . $projet['Deliberation']['id'] . ' : ' . $projet['Deliberation']['objet'];
 }
-?>
-<dl>
-    <div class="imbrique">
-        <?php if (!empty($deliberation['Multidelib'])) {
-            echo $this->Html->tag('h3', 'Informations globales');
-        } ?>
-        <dt>Libellé</dt>
-        <dd>&nbsp;<?php echo $deliberation['Deliberation']['objet'] ?></dd>
-        <dt>Titre</dt>
-        <dd>&nbsp;<?php echo $deliberation['Deliberation']['titre'] ?></dd>
-    </div>
 
-    <div class="imbrique">
-        <div class="gauche">
-            <dt>Thème</dt>
-            <dd>&nbsp;<?php echo $deliberation['Theme']['libelle'] ?><br></dd>
-        </div>
-        <div class="droite">
-            <dt>Service émetteur</dt>
-            <dd>&nbsp;<?php echo $deliberation['Service']['libelle'] ?></dd>
-        </div>
-    </div>
+echo $this->Bs->div('panel panel-default');
+echo $this->Bs->div('panel-heading', $title);
+echo $this->Bs->div('panel-body');     
+//echo $this->Bs->tabPane($title);
+echo $linkBarre;
+echo $this->Bs->tag('br /');
+
+$aTab=array(
+    'infos' => 'Informations principales',
+    'circuits' => 'Circuit(s)');
+
+if (!empty($commentaires))
+    $aTab['commentaires']='Commentaire(s)';
+if (!empty($infosupdefs))
+    $aTab['Infos_suppl']='Information(s) supplémentaire(s)';
+if (!empty($historiques)) 
+    $aTab['historiques']='Historique(s)';
+if (!empty($projet['Multidelib']))
+    $aTab['Multiprojet']='Multiprojet(s)';
+
+echo $this->Bs->tab($aTab, array('active' => 'infos', 'class' => '-justified')) .
+$this->Bs->tabContent();
+
+echo $this->Bs->tabPane('infos', array('class' =>'active'));
+echo $this->Bs->tag('br /');
+
+echo $this->element('projetInfo', array('projet' => $projet, 'tab_anterieure'=>$tab_anterieure));
+
+if (empty($projet['Multidelib']) && !empty($projet['Annex'])) {
+    echo $this->element('annexe', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $projet['Annex'])));
+}
+
+echo $this->Bs->tabClose();
+
+echo $this->Bs->tabPane('circuits');
+echo $this->Bs->tag('h4', 'Circuit(s)');
+echo $this->Bs->row().
+        $this->Bs->col('xs4').'<b>Circuit :</b> '.$projet['Circuit']['libelle']
+        .$this->Bs->close().
+        $this->Bs->col('xs6').$visu
+.$this->Bs->close(2);
+echo $this->Bs->tabClose();
 
 
-    <div class="imbrique">
-        <div class="gauche">
-            <dt>Num Pref</dt>
-            <dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref'] ?></dd>
-        </div>
-        <div class="droite">
-            <dt>Date Séance</dt>
-            <dd>
-                <?php
-                if (isset($deliberation['Seance'][0])) {
-                    foreach ($deliberation['Seance'] as $seance) {
-                        echo($seance['Typeseance']['libelle'] . " : ");
-                        echo($this->Html2->ukToFrenchDateWithHour($seance['date']) . '<br>');
-                    }
-                }
-                ?>
-            </dd>
-        </div>
-    </div>
-
-    <div class="imbrique">
-        <dt>Circuit : <?php echo $deliberation['Circuit']['libelle'] ?></dt>
-        <dd>
-            <?php echo $visu; ?>
-        </dd>
-    </div>
-
-    <div class="imbrique">
-        <div class="gauche">
-            <dt>Rédacteur</dt>
-            <dd>
-                &nbsp;<?php echo $this->Html->link($deliberation['Redacteur']['prenom'] . ' ' . $deliberation['Redacteur']['nom'], '/users/view/' . $deliberation['Redacteur']['id']) ?></dd>
-        </div>
-        <div class="droite">
-            <dt>Rapporteur</dt>
-            <dd>
-                &nbsp;<?php echo $this->Html->link($deliberation['Rapporteur']['prenom'] . ' ' . $deliberation['Rapporteur']['nom'], '/acteurs/view/' . $deliberation['Rapporteur']['id']) ?></dd>
-        </div>
-    </div>
-
-    <div class="imbrique">
-        <div class="gauche">
-            <dt>Date création</dt>
-            <dd>&nbsp;<?php echo $deliberation['Deliberation']['created'] ?></dd>
-        </div>
-        <div class="droite">
-            <dt>Date modification</dt>
-            <dd>&nbsp;<?php echo $deliberation['Deliberation']['modified'] ?></dd>
-        </div>
-    </div>
-
-    <?php
-    echo $this->Html->tag('div', null, array('id' => 'textes'));
-    echo $this->Html->tag('dt', 'Textes');
-    echo $this->element('viewTexte', array('type' => 'projet', 'delib' => $deliberation['Deliberation']));
-    echo $this->element('viewTexte', array('type' => 'synthese', 'delib' => $deliberation['Deliberation']));
-    if (empty($deliberation['Multidelib']))
-        echo $this->element('viewTexte', array('type' => 'deliberation', 'delib' => $deliberation['Deliberation']));
-    echo $this->Html->tag('/div');
-
-    if ($tab_anterieure != null) {
-        echo "<dt>Versions Antérieures</dt>";
-        foreach ($tab_anterieure as $anterieure) {
-            echo "<dd>&nbsp;<a href=" . $anterieure['lien'] . ">Version du " . $anterieure['date_version'] . "</a></dd>";
-        }
+if (!empty($commentaires)) {
+echo $this->Bs->tabPane('commentaires');
+echo $this->Bs->tag('h4', 'Commentaire(s)');
+    
+    $sLis='';
+    foreach ($commentaires as $commentaire) {
+        /*echo $commentaire['Commentaire']['texte'] . ' ';
+        
+        if ($commentaire['Commentaire']['agent_id'] == $this->Session->read('user.User.id'))
+            echo $this->Html->link('Supprimer', '/commentaires/delete/' . $commentaire['Commentaire']['id'] . '/' . $projet['Deliberation']['id']);
+        else
+            echo $this->Html->link('Prendre en compte', '/commentaires/prendreEnCompte/' . $commentaire['Commentaire']['id'] . '/' . $projet['Deliberation']['id']);
+    */
+$sLis.=$this->Html->link(
+    $this->Bs->tag('h5',
+        '<span class="label label-info">' . $commentaire['User']['prenom'] .' '. $commentaire['User']['nom'] . '</span> '
+        .$this->Time->i18nFormat($commentaire['Commentaire']['created'], '%d/%m/%Y à %k:%M')   
+        , array('class'=>'list-group-item-heading'))
+        .$this->Bs->tag('p',$commentaire['Commentaire']['texte'], array('class'=>'list-group-item-text'))
+    , '#', array('escape' => false, 'class' => 'list-group-item'));
     }
+    echo $this->Bs->row()
+    .$this->Bs->col('xs12')
+    .$this->Bs->tag('div',  $sLis, array('class'=>'list-group'))
+    .$this->Bs->close(2);
+    
+echo $this->Bs->tabClose();
+}
 
-    if (!empty($commentaires)) {
-        echo "<dt>Commentaires</dt><br />";
-        foreach ($commentaires as $commentaire) {
-            echo '<dd>' . $this->Html2->ukToFrenchDateWithHour($commentaire['Commentaire']['created']) . ' [' . $commentaire['Commentaire']['prenomAgent'] . ' ' . $commentaire['Commentaire']['nomAgent'] . ']&nbsp;';
-            echo $commentaire['Commentaire']['texte'] . ' ';
-            if ($commentaire['Commentaire']['agent_id'] == $this->Session->read('user.User.id'))
-                echo $this->Html->link('Supprimer', '/commentaires/delete/' . $commentaire['Commentaire']['id'] . '/' . $deliberation['Deliberation']['id']);
-            else
-                echo $this->Html->link('Prendre en compte', '/commentaires/prendreEnCompte/' . $commentaire['Commentaire']['id'] . '/' . $deliberation['Deliberation']['id']);
-            echo '</dd>';
-        }
-    }
 
-    if (!empty($infosupdefs)) {
-        echo '<dt>Informations Supplémentaires </dt>';
+if (!empty($infosupdefs)) {
+    echo $this->Bs->tabPane('Infos_suppl');
+    echo $this->Bs->tag('h4', 'Informations Supplémentaire(s)');
         echo '<dd><br>';
         foreach ($infosupdefs as $infosupdef) {
             echo $infosupdef['Infosupdef']['nom'] . ' : ';
@@ -205,50 +209,49 @@ if (!empty($deliberation['Multidelib'])) {
             echo '<br>';
         }
         echo '</dd>';
+        echo $this->Bs->tabClose();
     }
 
-    if (!empty($historiques)) {
-        echo $this->Html->tag('div', null, array('id' => 'Historique'));
-        echo $this->Html->tag('dt', "Historique");
 
-        foreach ($historiques as $historique) {
-            echo '<dd>' . $this->Html2->ukToFrenchDateWithHour($historique['Historique']['created']) . ' ' . nl2br($historique['Historique']['commentaire']);
-            echo '</dd>';
-        }
-        echo('</div>');
+
+if (!empty($historiques)) {
+echo $this->Bs->tabPane('historiques');
+echo $this->Bs->tag('h4', 'Historique(s)');
+    echo $this->Bs->table(array(
+            array('title' => 'Date'),
+            array('title' => 'Utilisateur'),
+            array('title' => 'Annotation / observation'),
+        ), array('striped'));
+    
+    foreach ($historiques as $historique) {
+        echo $this->Bs->cell($this->Time->i18nFormat($historique['Historique']['created'], '%d/%m/%Y %k:%M:%S'));
+        echo $this->Bs->cell($historique['User']['prenom'] .' '. $historique['User']['nom']);
+        echo $this->Bs->cell(nl2br($historique['Historique']['commentaire']));
+        
     }
+echo $this->Bs->endTable();
+}
 
-    if (empty($deliberation['Multidelib']) && !empty($deliberation['Annex'])) {
-        echo '<dt>Annexes</dt>';
-        echo '<dd>';
-        foreach ($deliberation['Annex'] as $annexe) {
-            if ($annexe['titre'])
-                echo 'Titre : ' . $annexe['titre'] . '<br>';
-            echo 'Nom fichier : ' . $annexe['filename'] . '<br>';
-            echo 'Joindre au contrôle de légalité : ' . ($annexe['joindre_ctrl_legalite'] ? 'oui' : 'non') . '<br>';
-            echo $this->Html->link('<i class="fa fa-download"></i> Télecharger', array('controller' => 'annexes', 'action' => 'download', $annexe['id']), array('escape' => false, 'title' => 'Télécharger l\'annexe ' . $annexe['titre']));
-            echo '<div class="spacer"></div>';
-        }
-        echo '</dd>';
-    }
-
-    if (!empty($deliberation['Multidelib'])) {
+if (!empty($projet['Multidelib'])) {
+echo $this->Bs->tabPane('Multiprojet(s)');
+    echo $this->element('viewDelibRattachee', array(
+        'delib' => $projet['Deliberation'],
+        'annexes' => $projet['Annex'],
+        'natureLibelle' => $projet['Typeacte']['libelle']));
+    foreach ($projet['Multidelib'] as $delibRattachee) {
         echo $this->element('viewDelibRattachee', array(
-            'delib' => $deliberation['Deliberation'],
-            'annexes' => $deliberation['Annex'],
-            'natureLibelle' => $deliberation['Typeacte']['libelle']));
-        foreach ($deliberation['Multidelib'] as $delibRattachee) {
-            echo $this->element('viewDelibRattachee', array(
-                'delib' => $delibRattachee,
-                'annexes' => $delibRattachee['Annex'],
-                'natureLibelle' => $deliberation['Typeacte']['libelle']));
-        }
+            'delib' => $delibRattachee,
+            'annexes' => $delibRattachee['Annex'],
+            'natureLibelle' => $projet['Typeacte']['libelle']));
     }
-    ?>
-
-</dl>
-<hr/>
-<?php echo $linkBarre; ?>
+echo $this->Bs->tabClose();
+}
+    
+echo $this->Bs->tabPaneClose();
+echo $this->Bs->tag('br /');
+echo $this->Bs->tag('hr /');
+echo $linkBarre.$this->Bs->close(2);
+?>
 </div>
 <script type="text/javascript">
     function afficheMasqueTexteEnrichi(lienId, inputId) {
@@ -278,7 +281,7 @@ if (!empty($deliberation['Multidelib'])) {
         function afficheMAJ() {
             $("div.nomcourante").parent().append('<?php
     echo $this->Html->tag('div',
-     $this->Html->link( $this->Html->tag('i', '', array('class' => 'fa fa-repeat')) . ' Mise à jour', array('controller'=>'deliberations','action'=>'MajEtatParapheur', $deliberation['Deliberation']['id']), array('escape' => false, 'class' => 'btn btn-inverse')),
+     $this->Html->link( $this->Html->tag('i', '', array('class' => 'fa fa-repeat')) . ' Mise à jour', array('controller'=>'deliberations','action'=>'MajEtatParapheur', $projet['Deliberation']['id']), array('escape' => false, 'class' => 'btn btn-inverse')),
      array('class' => 'majDeleg', 'title'=>'Mettre à jour le statut des étapes de délégations'));
     ?>')
         }
@@ -299,21 +302,3 @@ if (!empty($deliberation['Multidelib'])) {
     ?>
     });
 </script>
-<style>
-    #Historique dd {
-        text-indent: 0%;
-    }
-
-    div.majDeleg {
-        border-top: 1px dashed;
-    }
-
-    div.traiterActions {
-        text-align: center;
-        /*margin: 20px;*/
-    }
-
-    h3 {
-        text-align: center;
-    }
-</style>
