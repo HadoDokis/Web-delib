@@ -6,6 +6,15 @@ class Commentaire extends AppModel {
     var $validate = array( 'texte' => array(
                                       array( 'rule'    => 'notEmpty',
                                              'message' => 'Entrer un commentaire.')));
+    
+    public $belongsTo = array(
+        'User' => array(
+            'className' => 'User',
+            'conditions' => '',
+            'order' => '',
+            'dependent' => false,
+            'foreignKey' => 'agent_id'),
+    );
 
     /**
      * fonction d'initialisation des variables de fusion pour les commentaires d'un projet/délibération
@@ -31,6 +40,31 @@ class Commentaire extends AppModel {
         }
         $oMainPart->addElement($oStyleIteration);
     }
+    
+    function beforeFind($query)
+    {
+        // Préparation de la requete pour le afterFind
+        if(isset($query['fields']) && !in_array('Commentaire.agent_id', $query['fields']))
+                $query['fields'][] = 'Commentaire.agent_id';
 
+        if(isset($query['fields']) && !in_array('Commentaire.commentaire_auto', $query['fields']))
+                $query['fields'][] = 'Commentaire.commentaire_auto';
+
+        return $query;
+    }
+    
+    function afterFind($results, $primary = false)
+    {
+        foreach ($results as $key => $val) {
+            if ($val['Commentaire']['agent_id'] == -1) {
+                $results[$key]['User']['prenom'] = "commentaire auto (Parapheur)";
+                $results[$key]['User']['nom'] = '';
+            } elseif ($val['Commentaire']['commentaire_auto']==true){
+                $results[$key]['User']['nom'] = 'commentaire auto';
+                $results[$key]['User']['prenom'] = '';
+            } 
+        }
+            
+        return $results;
+    }
 }
-?>
