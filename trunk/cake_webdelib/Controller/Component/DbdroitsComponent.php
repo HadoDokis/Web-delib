@@ -191,7 +191,8 @@ function litCruDroits($cru=null) {
 
 	// liste des Menu, Controlleur-Action (mca)
 	$listeMca = $this->Menu->listeAliasMenuControlleur();
-	foreach($listeMca as $mca) {
+	foreach($listeMca as $mca)
+ {
             
             $ret[$mca['alias']] = $this->Acl->check($cru, $mca['alias']);
  
@@ -265,4 +266,4 @@ function deleteCruDroits($cru) {
 	}
 }
 
-}?>
+}

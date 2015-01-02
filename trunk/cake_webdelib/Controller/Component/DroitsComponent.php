@@ -41,6 +41,7 @@ class DroitsComponent extends Component
 	/* vérifie si l'utilisateur $userId est autorisée à exécuter l'action $controllerAction */
 	/* vérifie les droits si l'action est dans la liste des actions soumises aux droits */
 	function check($userId, $controllerAction) {
+            
 		// Initialisations
 		$listeActions = array();
 		$listeActionsComme = array();
@@ -50,6 +51,8 @@ class DroitsComponent extends Component
 
 		// Pas de contrôle si controller = App -> Retourne true
 		if ($controller == 'AppController') return true;
+                // Pas de contrôle si controller = Pages:home -> Retourne true
+                if ($controller == 'Pages' && $action=='home') return true;
 
 		// Initialisation de la liste des actions soumises aux droits
 		if ($controller != 'Pages'){
@@ -68,11 +71,12 @@ class DroitsComponent extends Component
 					return false;
 				}
 				else {
-					return $this->Acl->check($aroUser, $listeActionsComme[$action]);
+                                    return $this->Acl->check($aroUser, $listeActionsComme[$action]);
 				}
 			}
-			else
-				return $this->Acl->check($aroUser, $controllerAction);
+			else{
+                            return $this->Acl->check($aroUser, $controllerAction);
+                        }
 		}
 		else
 			return true;

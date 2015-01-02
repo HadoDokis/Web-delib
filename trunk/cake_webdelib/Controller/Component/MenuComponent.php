@@ -44,8 +44,8 @@ class MenuComponent extends Component {
 
     /* retourne le couple Controler:action pour le lien passé en paramètre */
     function _calcAction($lien) {
-        if (empty($lien) or $lien == '/')
-            return 'Pages:home';
+        /*if (empty($lien) or $lien == '/')
+            return 'Pages:home';*/
 
         // le lien n'est pas vide
         if ($lien[0] != '/') $lien = 'pages/' . $lien;
@@ -78,9 +78,9 @@ class MenuComponent extends Component {
     }
 
     function listeAliasMenuControlleur() {
-        // liste des alias du menu
-        $listeAliasMenu = $this->_listeAliasMenu($this->load('webDelib'));
-
+        
+        $listeAliasMenu=$this->_listeAliasMenu($this->load('webDelib'));
+        
         // Ajout des actions de tous les controllers du projet qui ne sont pas référencées par le menu
         $listeAliasCtrl = array();
         $controllerList = $this->_listClasses(APP . "Controller" . DS, '*Controller.php', array('AppController.php', 'PagesController.php'));
@@ -135,7 +135,7 @@ class MenuComponent extends Component {
                 is_array($menuItem['subMenu']) and
                 count($menuItem['subMenu']) > 0
             )
-                $ret = array_merge($ret, $this->_listeAliasMenu($menu['items'][$title]['subMenu'], $alias));
+            $ret = array_merge($ret, $this->_listeAliasMenu($menu['items'][$title]['subMenu'], $alias));
         }
         return $ret;
     }
