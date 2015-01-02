@@ -19,7 +19,7 @@ class Connecteurlib {
     /**
      * @var string Protocole de signature (pastell|iparapheur)
      */
-    private $connecteur;
+    protected $connecteur;
     
     /**
      * @var bool Indique si le connecteur est activé
