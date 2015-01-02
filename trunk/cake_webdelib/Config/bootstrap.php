@@ -123,7 +123,14 @@ CakeLog::config('error', array(
 	'file' => 'error',
 ));
 
-require_once dirname(__DIR__) . '/../vendors/autoload.php';
+// Charger l'autoload de composer.
+require APP . 'Vendor/autoload.php';
+
+// Retire et réajoute l'autoloader de CakePHP puisque Composer pense que
+// c'est le plus important.
+// See http://goo.gl/kKVJO7
+spl_autoload_unregister(array('App', 'load'));
+spl_autoload_register(array('App', 'load'), true, true);
 
 require_once('webdelib.inc');
 require_once('formats.inc');
