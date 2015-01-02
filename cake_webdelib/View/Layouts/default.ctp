@@ -22,7 +22,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     <meta charset="utf-8">
     <title>
         <?php echo $cakeDescription ?>:
-        <?php echo $title_for_layout; ?>
+        <?php echo $this->fetch('title'); ?>
     </title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <?php
@@ -31,27 +31,27 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->meta('icon');
     echo $this->Html->meta(array('name' => 'robots', 'content' => 'noindex, nofollow'));
     //CSS
-    echo $this->Html->css('/libs/jgrowl/jquery.jgrowl');
-    echo $this->Html->css('/libs/bootstrap/css/bootstrap.min');
-    echo $this->Html->css('/libs/font-awesome/css/font-awesome.min');
-    echo $this->Html->css('/libs/select2/select2');
-    echo $this->Html->css('/libs/select2/select2-bootstrap');
-    echo $this->Html->css('/libs/jstree/style.min');
-    echo $this->Html->css('/libs/scrollup/scrollup.css');
+    echo $this->Html->css('/components/jgrowl/jquery.jgrowl');
+    echo $this->Html->css('/components/bootstrap/css/bootstrap.min');
+    echo $this->Html->css('/components/font-awesome/css/font-awesome.min');
+    echo $this->Html->css('/components/select2/select2');
+    echo $this->Html->css('/components/select2/select2-bootstrap');
+    echo $this->Html->css('/components/jstree/style.min');
+    echo $this->Html->css('/components/scrollup/scrollup.css');
     echo $this->Html->css('treeview');
     echo $this->Html->css('webdelib');
     echo $this->Html->css('filtres');
     echo $this->Html->css('global');
     //Scripts JS
-    echo $this->Html->script('/libs/modernizr/modernizr.min');
-    echo $this->Html->script('/libs/jquery/jquery-1.11.1.min');
-    echo $this->Html->script('/libs/jquery/jquery-migrate-1.2.1.js');
-    echo $this->Html->script('/libs/bootstrap/js/bootstrap.min');
-    echo $this->Html->script('/libs/jgrowl/jquery.jgrowl.min');
-    echo $this->Html->script('/libs/select2/select2.min');
-    echo $this->Html->script('/libs/select2/select2_locale_fr');
-    echo $this->Html->script('/libs/scrollup/jquery.scrollUp.min');
-    echo $this->Html->script('/libs/jstree/jstree.min');
+    echo $this->Html->script('/components/modernizr/modernizr');
+    echo $this->Html->script('/components/jquery/jquery.min');
+    echo $this->Html->script('/components/jquery/jquery-migrate.js');
+    echo $this->Html->script('/components/bootstrap/dist/js/bootstrap.min');
+    echo $this->Html->script('/components/jgrowl/jquery.jgrowl.min');
+    echo $this->Html->script('/components/select2/select2.min');
+    echo $this->Html->script('/components/select2/select2_locale_fr');
+    echo $this->Html->script('/components/scrollup/dist/jquery.scrollUp.min');
+    echo $this->Html->script('/components/jstree/jstree.min');
     echo $this->Html->script('jquery.placeholder.js');
     echo $this->Html->script('utils');
     echo $this->Html->script('attendable');
@@ -87,8 +87,10 @@ $cakeDescription = __d('webdelib', 'Webdelib');
             <?php echo $this->Html->link($Collectivite['nom'], array('controller' => 'pages', 'action' => 'home')); ?>
         </li>
          <li>
-             <?php echo $this->Bs->btn(null, array('controller' => 'pages', 
-                 'action' => 'home'),
+             <?php echo $this->Bs->btn(null, array(
+                                                    'controller' => 'pages', 
+                                                    'action' => 'home'
+                                                    ),
                  array('icon'=>'glyphicon glyphicon-home"')); ?>
             </li>
       </ul>
@@ -270,10 +272,10 @@ endif;
     <?php echo $this->fetch('content'); ?>
 </div>
 <!--Footer-->
-<?php echo $this->element('footer'); ?>
-<!--Attendable-->
-<?php echo $this->element('waiter'); ?>
-<!--Dump sql (debug > 1)-->
-<?php echo $this->element('sql_dump'); ?>
+<?php echo $this->element('footer');
+echo '<!--Attendable-->';
+echo $this->element('waiter'); 
+echo '<!--Dump sql (debug > 1)-->';
+echo $this->element('sql_dump'); ?>
 </body>
 </html>

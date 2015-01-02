@@ -1,5 +1,7 @@
 <h2>Nouveau commentaire (projet <?php echo $delib_id; ?>)</h2>
-<?php echo $this->Form->create('Commentaire', array('url' => array('action'=>'add', $delib_id), 'type' => 'post')); ?>
+<?php echo $this->Form->create('Commentaire', array(
+    'url' => array('action'=>'add', $delib_id), 
+    'type' => 'post')); ?>
 <?php echo $this->Form->hidden('Commentaire.delib_id', array('value' => $delib_id)); ?>
 <div class="required">
     <?php echo $this->Form->input('Commentaire.texte', array('type' => 'textarea', 'cols' => '50', 'rows' => '10')); ?>

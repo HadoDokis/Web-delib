@@ -29,18 +29,17 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
     echo $this->Html->meta('icon');
 
-    echo $this->Html->css('/libs/jgrowl/jquery.jgrowl');
-    echo $this->Html->css('/libs/bootstrap/css/bootstrap.min');
-    echo $this->Html->css('/libs/font-awesome/css/font-awesome.min');
+    echo $this->Html->css('/components/jgrowl/jquery.jgrowl');
+    echo $this->Html->css('/components/bootstrap/css/bootstrap.min');
+    echo $this->Html->css('/components/font-awesome/css/font-awesome.min');
     echo $this->Html->css('webdelib');
     echo $this->Html->css('connexion');
 
-    echo $this->Html->script('/libs/modernizr/modernizr.min');
-    echo $this->Html->script('/libs/jquery/jquery-1.11.1.min');
-    echo $this->Html->script('/libs/jquery/jquery-migrate-1.2.1.js');
-    echo $this->Html->script('/libs/bootstrap/js/bootstrap.min');
-    echo $this->html->script('/libs/jgrowl/jquery.jgrowl.min');
-    echo $this->html->script('jquery.placeholder.js');
+    echo $this->Html->script('/components/modernizr/modernizr.min');
+    echo $this->Html->script('/components/jquery/jquery.min');
+    echo $this->Html->script('/components/bootstrap/dist/js/bootstrap.min');
+    echo $this->Html->script('/components/jgrowl/jquery.jgrowl.min');
+    echo $this->html->script('/components/jquery-placeholder/jquery.placeholder.min.js');
     echo $this->Html->script('utils');
 
     echo $this->fetch('meta');
