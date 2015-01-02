@@ -80,8 +80,8 @@ class DeliberationsControllerTest extends CakeTestCase {
         unset($this->DeliberationsController);
         unset($this->Traitement);
     }
-
-    /* public function testaddIntoCircuit() {    
+/*
+    public function testaddIntoCircuit() {    
       $id=499;
       $user_connecte=1;
       $circuit=1;
@@ -120,13 +120,13 @@ class DeliberationsControllerTest extends CakeTestCase {
       }
       }
 
-      // faire des tests utiles ici
-      // $this->assertTrue(is_object($this->BlogPost)); */
+       //faire des tests utiles ici
+       $this->assertTrue(is_object($this->insertDansCircuit));
 
-    //}
+    }*/
 
 
-    public function test_delegToParapheurDocument() {
+   /* public function test_delegToParapheurDocument() {
 
         $this->Deliberation->id = 1;
         $result = $this->Deliberation->_delegToParapheurDocument();
@@ -136,6 +136,6 @@ class DeliberationsControllerTest extends CakeTestCase {
         );
 
         $this->assertEquals($result, $expected, var_export($result, true));
-    }
+    }*/
 
 }
