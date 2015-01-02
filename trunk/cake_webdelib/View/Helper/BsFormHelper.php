@@ -283,7 +283,7 @@ class BsFormHelper extends FormHelper {
 				}
 			}
 		}
-
+                
 		return parent::input($fieldName, $options) . $this->setFormType($formType);
 	}
 
@@ -302,12 +302,19 @@ class BsFormHelper extends FormHelper {
  * @param string $fieldName    Extends of BsFormHelper::input()
  * @param array  $addonOptions Array of options, see above for more informations
  * @param mixed  $options      Extends of BsFormHelper::input() so get same options
+ * @param mixed  $optionsGroup Array of options, see above for more informations for groups
  *
  * @return string Input-group de Bootstrap
  */
-	public function inputGroup($fieldName, $addonOptions, $options = array()) {
-		$between = '<div class="col-md-' . $this->__right . ' col-md-offset-' . $this->__left . '">';
-		$between .= '<div class="input-group">';
+	public function inputGroup($fieldName, $addonOptions, $options = array(), $optionsGroup = array()) {
+		
+                $class = 'input-group';
+		if (isset($optionsGroup['class'])) {
+			$class .= ' ' . $optionsGroup['class'];
+		}
+                                
+                $between = '<div class="col-md-' . $this->__right . ' col-md-offset-' . $this->__left . '">';
+		$between .= '<div class="'.$class.'">';
 
                 // Check if the addon is on the right
 		if (isset($addonOptions['side']) && $addonOptions['side'] == 'right') {

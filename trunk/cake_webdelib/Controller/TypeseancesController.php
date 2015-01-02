@@ -13,7 +13,6 @@ class TypeseancesController extends AppController {
     );
 
     function index() {
-        $this->Typeseance->Behaviors->attach('Containable');
         $typeseances = $this->Typeseance->find('all', array('contain' => array('Modelpvdetaille.name', 'Modelpvdetaille.id',
                 'Modelpvsommaire.name', 'Modelpvsommaire.id',
                 'Modelordredujour.name', 'Modelordredujour.id',
@@ -79,7 +78,6 @@ class TypeseancesController extends AppController {
 
     function edit($id = null) {
         $sortie = false;
-        $this->Typeseance->Behaviors->attach('Containable');
 
         if (empty($this->data)) {
             $this->data = $this->Typeseance->find('first', array('conditions' => array('Typeseance.id' => $id),

@@ -872,7 +872,7 @@ class BsHelper extends HtmlHelper {
 					if (isset($buttons['open']['button']) && $buttons['open']['button'] === false) {
 						$out = $this->icon($buttons['open']['name'], array('open-modal'), array('data-toggle' => 'modal', 'data-target' => '#' . $id));
 					} else {
-						$out = $this->btn(__($buttons['open']['name']), null, array('tag' => 'button', 'class' => $buttons['open']['class'], 'data-toggle' => 'modal', 'data-target' => '#' . $id));
+						$out = $this->btn(__($buttons['open']['name']), null, array_merge( $buttons['open']['options'], array('tag' => 'button', 'class' => $buttons['open']['class'], 'data-toggle' => 'modal', 'data-target' => '#' . $id)));
 					}
 				} else {
 					$out = $this->btn(__($buttons['open']), null, array('tag' => 'button', 'class' => 'btn-primary btn-lg', 'data-toggle' => 'modal', 'data-target' => '#' . $id));
@@ -967,10 +967,13 @@ class BsHelper extends HtmlHelper {
  * @param string $button the name of the button, the header and the confirm button in the modal
  * @param string $link the link to redirect after the confirm
  * @param array $options Options for the confirm (button, texte, header, color)
+ * @param array $options Options for the Modal
  * @return string
  */
-	public function confirm($button, $link, $options = array()) {
-		$buttons = array(
+	public function confirm($button, $link, $options = array(), $optionsModal = array()) {
+		
+                $out='';
+                $buttons = array(
 			'open' => array(
 				'name' => $button
 			),
@@ -979,12 +982,20 @@ class BsHelper extends HtmlHelper {
 				'link' => $link
 			)
 		);
+                if (!empty($options['icon'])) {
+                    $buttons['open']['options']['escapeTitle']  = false;
+                    $buttons['open']['name']='<span class="'.($options['icon']).'"></span>'.(!empty($button)?' '.$button:'');
+                    unset($options['icon']);
+		}
 
-		$buttons['open']['class'] = $buttons['confirm']['class'] = (isset($options['color']) && $options['color'] != '') ? 'btn-' . $options['color'] : 'btn-success';
+		$buttons['open']['class'] = $buttons['confirm']['class'] = (isset($options['type']) && $options['type'] != '') ? 'btn-' . $options['type'] : 'btn-success';
+                $buttons['open']['options']['title'] = !empty($options['title']) ? $options['title'] : '';
 		$buttons['confirm']['name'] = (isset($options['button']) && $options['button'] != '') ? $options['button'] : $button;
 		$body = (isset($options['texte']) && $options['texte'] != '') ? $options['texte'] : 'Voulez-vous vraiment continuer votre action ?';
 		$header = (isset($options['header']) && $options['header'] != '') ? $options['header'] : $button;
-
-		return $this->modal($header, $body, null, $buttons);
+                //Fix border-radius
+                $buttons['open']['options']['style']=!empty($options['style']) ? parent::style($options['style']) : null ;
+                
+		return $this->modal($header, $body, $optionsModal, $buttons).$out;
 	}
 }

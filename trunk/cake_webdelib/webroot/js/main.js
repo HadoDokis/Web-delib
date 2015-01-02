@@ -60,4 +60,22 @@ $(document).ready(function () {
         width: "100%",
         placeholder: 'Sélection vide'
     });
+    
+    $(".selectmultiple").select2({
+        width: "100%",
+        allowClear: true,
+        formatSelection: function (object, container) {
+            // trim sur la sélection (affichage en arbre)
+            return $.trim(object.text);
+        }
+    });
+    
+    $(".selectone").select2({
+        //width: "element",
+        allowClear: true,
+        formatSelection: function (object, container) {
+            // trim sur la sélection (affichage en arbre)
+            return $.trim(object.text);
+        }
+    });
 });

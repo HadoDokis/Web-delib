@@ -224,7 +224,7 @@ class SeancesController extends AppController {
             $seances = $this->Seance->find('all', array('conditions' => array('Seance.traitee' => 0),
                 'order' => array('date ASC'),
                 'fields' => array('id', 'date', 'type_id', 'idelibre_id'),
-                'contain' => array('Typeseance.libelle', 'Typeseance.action',
+                'contain' => array('Typeseance.libelle', 'Typeseance.color', 'Typeseance.action',
                     'Typeseance.modelconvocation_id',
                     'Typeseance.modelordredujour_id',
                     'Typeseance.modelpvsommaire_id',
@@ -385,7 +385,6 @@ class SeancesController extends AppController {
                     break;
             }
 
-            $this->Deliberation->Behaviors->attach('Containable');
             $aProjetIds = $this->Seance->getDeliberationsId($id);
             $projets = array();
             foreach ($aProjetIds as $projet_id) {
@@ -686,7 +685,6 @@ class SeancesController extends AppController {
     }
 
     public function saisirDebatGlobal($id = null) {
-        
         $this->set('seance_id', $id);
         if($this->request->is('post')) {
             
@@ -695,10 +693,9 @@ class SeancesController extends AppController {
                 $this->Session->setFlash('Débat global enregistré', 'growl');
                 return $this->redirect($this->previous);
             }else{
-                $validationErrors = $this->Seance->invalidFields();
                 $msg_error='';
-                if (!empty($validationErrors)) {
-                foreach ($validationErrors as $key => $Error) {
+                if (!empty($this->Seance->validationErrors)) {
+                foreach ($this->Seance->validationErrors as $key => $Error) {
                     $msg_error .= "<strong>$key</strong><br>";
                     foreach ($Error as $error) {
                         $msg_error .= "- " . $error . "<br/>";

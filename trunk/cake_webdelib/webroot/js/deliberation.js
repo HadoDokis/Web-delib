@@ -6,22 +6,6 @@ $(document).ready(function () {
         $(this).wrap('<div id="file_input_container_' + file_input_index + '"></div>');
         $(this).after('<a href="javascript:void(0)" class="purge_file btn btn-mini btn-danger"  onclick="resetUpload(\'file_input_container_' + file_input_index + '\')"><i class="fa fa-eraser"></i> Effacer</a>');
     });*/
-    $(".selectmultiple").select2({
-        width: "100%",
-        allowClear: true,
-        formatSelection: function (object, container) {
-            // trim sur la sélection (affichage en arbre)
-            return $.trim(object.text);
-        }
-    });
-    $(".selectone").select2({
-        //width: "element",
-        allowClear: true,
-        formatSelection: function (object, container) {
-            // trim sur la sélection (affichage en arbre)
-            return $.trim(object.text);
-        }
-    });
 
     $("#listeTypeactesId").select2({
         width: "element",

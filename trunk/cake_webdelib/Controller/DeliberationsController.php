@@ -2451,11 +2451,11 @@ class DeliberationsController extends AppController {
                 'Typeacte' => array('fields' => array('libelle')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
-                    'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
+                    'Typeseance' => array('fields' => array('id', 'libelle','color', 'action'),
                     )),
                 'Deliberationseance' => array('fields' => array('id'),
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
-                        'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
+                        'Typeseance' => array('fields' => array('id', 'libelle','color',  'action'))))),
             'order' => $ordre));
         $this->_sortProjetSeanceDate($projets);
         $this->_ajouterFiltre($projets);
@@ -2520,11 +2520,11 @@ class DeliberationsController extends AppController {
                 'Typeacte' => array('fields' => array('libelle')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
-                    'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
+                    'Typeseance' => array('fields' => array('id', 'libelle','color', 'action'),
                     )),
                 'Deliberationseance' => array('fields' => array('id'),
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
-                        'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
+                        'Typeseance' => array('fields' => array('id', 'libelle','color', 'action'))))),
             'order' => array('Deliberation.id' => 'DESC')));
 
         $this->_sortProjetSeanceDate($projets);
@@ -2581,10 +2581,10 @@ class DeliberationsController extends AppController {
                 'Typeacte' => array('fields' => array('libelle')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
-                    'Typeseance' => array('fields' => array('id', 'libelle', 'action'))),
+                    'Typeseance' => array('fields' => array('id', 'libelle','color', 'action'))),
                 'Deliberationseance' => array('fields' => array('id'),
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
-                        'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
+                        'Typeseance' => array('fields' => array('id', 'libelle','color', 'action'))))),
             'order' => $ordre));
 
         $this->_sortProjetSeanceDate($projets);
@@ -2687,6 +2687,7 @@ class DeliberationsController extends AppController {
                 foreach ($projet['Deliberationseance'] as $keySeance => $seance) {
                     $this->request->data[$i]['listeSeances'][]=array('seance_id' => $seance['Seance']['id'],
                                                                     'type_id' => $seance['Seance']['type_id'],
+                                                                    'color' => $seance['Seance']['Typeseance']['color'],
                                                                     'action' => $seance['Seance']['Typeseance']['action'],
                                                                     'libelle' => $seance['Seance']['Typeseance']['libelle'],
                                                                     'date' => $seance['Seance']['date']);
@@ -2698,6 +2699,7 @@ class DeliberationsController extends AppController {
                     if(!in_array($typeseance['Typeseance']['id'], $listeTypeSeance))
                     $this->request->data[$i]['listeSeances'][]=array('seance_id' => NULL,
                                                                     'type_id' => $typeseance['Typeseance']['id'],
+                                                                    'color' => $typeseance['Typeseance']['color'],
                                                                     'action' => $typeseance['Typeseance']['action'],
                                                                     'libelle' => $typeseance['Typeseance']['libelle'],
                                                                     'date' => NULL);
@@ -2845,12 +2847,12 @@ class DeliberationsController extends AppController {
                                 'Typeacte'=>array('fields'=>array('libelle')),
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
-                                                   'Typeseance'=>array('fields'=>array('id','libelle','action'),
+                                                   'Typeseance'=>array('fields'=>array('id','libelle','color','action'),
                                                                        )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
                                         
-                                        'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
+                                        'Typeseance'=>array('fields'=>array('id','libelle','color','action'))))),
                  'order' => array($ordre)));
         $this->_sortProjetSeanceDate($projets);
         $actions = array('view', 'generer');
