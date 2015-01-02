@@ -26,17 +26,18 @@ class UserTest extends CakeTestCase {
     */
     public $fixtures = array(
                             'app.user',
+                            'app.deliberation',
                             'app.commentaire',
                             'app.deliberationseance',
                             'app.seance',
                             'app.typeseance',
+                            'app.theme',
                             'app.acteur',
                             );
 
     public function setUp() {
         parent::setUp();
         $this->User = ClassRegistry::init('User');
-        
     }
 
     /**

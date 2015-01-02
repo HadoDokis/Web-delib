@@ -11,32 +11,48 @@
 /**
 * Classe ActionFixture.
 *
-* @package app.Test.Fixture
+* @package app.Test.ThemeFixture
 */
 
 class ThemeFixture extends CakeTestFixture {
-    var $import = array( 'table' => 'themes', 'records' => true);
 
-        var $records = array(/*
-                array(
+    public $import = array( 'model' => 'Theme', 'records' => false);
+    
+    public $records;
+    
+    /**
+    * Définition des enregistrements.
+    *
+    * @var array
+    */
+    public function init() {
+        $this->records = array(
+            array(
                         'id' => '1',
                         'parent_id' => '0',
-                        'order' => null,
+                        'order' => 'A',
                         'libelle' => 'Défaut',
-                        'actif' => '1',
-                        'created' => '2010-04-27 12:12:47',
-                        'modified' => '2010-04-27 12:12:47',
+                        'actif' => true,
+                        'created' => date('Y-m-d H:i:s'),
+                        'modified' => date('Y-m-d H:i:s'),
+                        'lft' => 1,
+                        'rght' => 4,
                 ),
                 array(
                         'id' => '2',
                         'parent_id' => '1',
-                        'order' => null,
+                        'order' => 'A1',
                         'libelle' => 'Sous - Défaut',
-                        'actif' => '1',
-                        'created' => '2010-04-27 12:12:52',
-                        'modified' => '2010-04-27 12:12:52',
-                ),*/
+                        'actif' => true,
+                        'created' => date('Y-m-d H:i:s'),
+                        'modified' => date('Y-m-d H:i:s'),
+                        'lft' => 2,
+                        'rght' => 3,
+                ),
         );
+        
+        parent::init();
+    }
 }
 
 ?>

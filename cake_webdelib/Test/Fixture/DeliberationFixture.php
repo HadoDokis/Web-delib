@@ -21,10 +21,7 @@ class DeliberationFixture extends CakeTestFixture
     *
     * @var array
     */
-    //public $import = 'Deliberation';
-    //var $import = array(  'records' => false);
-    var $import = array( 'model' => 'Deliberation', 'records' => false);
-    //var $import = array( 'table' => 'deliberations', 'connection' => 'default', 'records' => true);
+    public $import = array( 'model' => 'Deliberation', 'records' => false);
     
     public $records;
 
