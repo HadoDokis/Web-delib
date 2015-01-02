@@ -43,7 +43,7 @@ echo $this->Bs->tag('h3', 'Types d\'acte');
             <dd>
                 <?php
                 if (!empty($typeacte['Typeacte']['gabarit_projet']))
-                    echo $this->Html->link('gabarit_projet.odt', array('action' => 'downloadgabarit', $typeacte['Typeacte']['id'], 'projet'));
+                    echo $this->Html->link($typeacte['Typeacte']['gabarit_projet_name'], array('action' => 'downloadgabarit', $typeacte['Typeacte']['id'], 'projet'));
                 else
                     echo '-';
                 ?>
@@ -54,7 +54,7 @@ echo $this->Bs->tag('h3', 'Types d\'acte');
             <dd>
                 <?php
                 if (!empty($typeacte['Typeacte']['gabarit_synthese']))
-                    echo $this->Html->link('gabarit_synthese.odt', array('action' => 'downloadgabarit', $typeacte['Typeacte']['id'], 'synthese'));
+                    echo $this->Html->link($typeacte['Typeacte']['gabarit_synthese_name'], array('action' => 'downloadgabarit', $typeacte['Typeacte']['id'], 'synthese'));
                 else
                     echo '-';
                 ?>
@@ -65,7 +65,7 @@ echo $this->Bs->tag('h3', 'Types d\'acte');
             <dd>
                 <?php
                 if (!empty($typeacte['Typeacte']['gabarit_acte']))
-                    echo $this->Html->link('gabarit_acte.odt', array('action' => 'downloadgabarit', $typeacte['Typeacte']['id'], 'acte'));
+                    echo $this->Html->link($typeacte['Typeacte']['gabarit_acte_name'], array('action' => 'downloadgabarit', $typeacte['Typeacte']['id'], 'acte'));
                 else
                     echo '-';
                 ?>
