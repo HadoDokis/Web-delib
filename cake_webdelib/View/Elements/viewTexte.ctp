@@ -28,9 +28,7 @@ switch ($type) {
 }
 
 if (!empty($delib[$textKey])) {
-    echo $this->Html->tag('dd', null, array('style'=>'text-indent:0;'));
     echo $this->Html->tag('span', $libelle);
     echo ' : ';
     echo $this->Html->link($filename, array('action' => 'download', $delib['id'], $textKey));
-    echo $this->Html->tag('/dd');
 }

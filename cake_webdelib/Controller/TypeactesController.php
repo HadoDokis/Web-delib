@@ -229,7 +229,7 @@ class TypeactesController extends AppController {
             $this->response->disableCache();
             $this->response->body($typeacte['Typeacte']['gabarit_' . $type]);
             $this->response->type('application/vnd.oasis.opendocument.text');
-            $this->response->download('gabarit_' . $type . '.odt');
+            $this->response->download($typeacte['Typeacte']['gabarit_' . $type. '_name']);
             return $this->response;
         } else {
             $this->Session->setFlash('Type d\'acte introuvable', 'growl');

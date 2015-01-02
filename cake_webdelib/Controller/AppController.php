@@ -61,6 +61,7 @@ class AppController extends Controller {
                 && stripos($this->params->here, 'files/') === false // liens vers fichiers
                 && stripos($this->params->here, 'sendToTdt') === false // pas de vue associée
                 && stripos($this->params->here, 'deliberations/getBordereauTdt') === false // pas de vue associée
+                && stripos($this->params->here, 'deliberations/attribuercircuit') === false // méthode ajax   
                 && stripos($this->params->here, 'deliberations/getTampon') === false // pas de vue associée
                 && stripos($this->params->here, 'deliberations/classification') === false // popup
             ) {

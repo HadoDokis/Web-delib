@@ -47,8 +47,9 @@ echo $this->Bs->div('panel-heading', __('Séances à traiter').
                 'Seance.id_' . $seance['Seance']['id'],
                 array('checked' => false, 'class' => 'checkbox_seance_generer'))
             . "</td>");
+    $attributes=!empty($seance['Typeseance']['color'])?array('style'=>'color: '.$seance['Typeseance']['color']):array();
     ?>
-    <td><strong><?php echo $seance['Typeseance']['libelle']; ?></strong></td>
+        <td><strong><?php echo $this->Bs->icon('tag', array('lg'), $attributes);?> <?php echo $seance['Typeseance']['libelle']; ?></strong></td>
     <?php echo $this->Html->tag('td', $seance['Seance']['date']); ?>
     <td class="actions" style="text-align:center;vertical-align: middle">
 

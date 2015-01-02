@@ -94,10 +94,9 @@ foreach ($projets as $projet) {
         foreach ($projet['listeSeances'] as $seance)
             $case_seance.= $seance['libelle'] . (isset($seance['date']) && !empty($seance['date']) ? ' : ' . $this->Html2->ukToFrenchDateWithHour($seance['date']) : '') . '<br/>';
     }
-    
-    if (isset($projet['Typeacte']['libelle']))
-        $case_nature = '<b>projet '.strtolower($projet['Typeacte']['libelle']). ' : ' . $projet['Deliberation']['id'].'</b>';
-    
+    if (isset($projet['Typeacte']['libelle'])){
+        $case_nature = '<h4><span class="label label-default" '.(!empty($projet['listeSeances'][0]['color'])?'style="background-color: '.$projet['listeSeances'][0]['color'].'"':'').'>'.strtolower($projet['Typeacte']['libelle']). ' :  '. $projet['Deliberation']['id'].'</span></h4>';
+    }
         $case_theme = '<b>Thème : </b>';
         if (isset($projet['Theme']['libelle']))
                     $case_theme.= $projet['Theme']['libelle'];
@@ -146,7 +145,7 @@ foreach ($projets as $projet) {
             array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id']),
             array(
                 'type' => 'primary',
-                'icon'=>'glyphicon glyphicon-cog',
+                'icon'=>'glyphicon glyphicon-certificate',
                 'title' => 'Traiter le projet ' . $projet['Deliberation']['objet']));
 
     if (in_array('validerEnUrgence', $projet['Actions']))
@@ -169,8 +168,6 @@ foreach ($projets as $projet) {
     
     if (in_array('attribuerCircuit', $projet['Actions']) && empty($projet['Deliberation']['signee'])) {
         $actionAttribuer = array('controller' => 'deliberations', 'action' => 'attribuercircuit', $projet['Deliberation']['id']);
-        if (!empty($projet['Deliberation']['circuit_id']))
-            $actionAttribuer[] = $projet['Deliberation']['circuit_id'];
         $actions.=  $this->Bs->btn('',
             $actionAttribuer,
             array('type' => 'primary',
