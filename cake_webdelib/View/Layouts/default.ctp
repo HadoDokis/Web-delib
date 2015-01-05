@@ -32,7 +32,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->meta(array('name' => 'robots', 'content' => 'noindex, nofollow'));
     //CSS
     echo $this->Html->css('/components/jgrowl/jquery.jgrowl');
-    echo $this->Html->css('/components/bootstrap/css/bootstrap.min');
+    echo $this->Html->css('/components/bootstrap/dist/css/bootstrap.min');
     echo $this->Html->css('/components/font-awesome/css/font-awesome.min');
     echo $this->Html->css('/components/select2/select2');
     echo $this->Html->css('/components/select2/select2-bootstrap');
