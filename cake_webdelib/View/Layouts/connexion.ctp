@@ -30,7 +30,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->meta('icon');
 
     echo $this->Html->css('/components/jgrowl/jquery.jgrowl');
-    echo $this->Html->css('/components/bootstrap/css/bootstrap.min');
+    echo $this->Html->css('/components/bootstrap/dist/css/bootstrap.min');
     echo $this->Html->css('/components/font-awesome/css/font-awesome.min');
     echo $this->Html->css('webdelib');
     echo $this->Html->css('connexion');
