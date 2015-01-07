@@ -35,11 +35,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->css('webdelib');
     echo $this->Html->css('connexion');
 
-    echo $this->Html->script('/components/modernizr/modernizr.min');
+    echo $this->Html->script('/components/modernizr/modernizr');
     echo $this->Html->script('/components/jquery/jquery.min');
     echo $this->Html->script('/components/bootstrap/dist/js/bootstrap.min');
     echo $this->Html->script('/components/jgrowl/jquery.jgrowl.min');
-    echo $this->html->script('/components/jquery-placeholder/jquery.placeholder.min.js');
+    echo $this->html->script('/components/jquery-placeholder/jquery.placeholder.min');
     echo $this->Html->script('utils');
 
     echo $this->fetch('meta');
