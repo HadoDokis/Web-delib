@@ -51,7 +51,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->script('/components/select2/select2_locale_fr');
     echo $this->Html->script('/components/scrollup/dist/jquery.scrollUp.min');
     echo $this->Html->script('/components/jstree/dist/jstree.min');
-    echo $this->Html->script('/components/jquery.placeholder.min');
+    echo $this->html->script('/components/jquery-placeholder/jquery.placeholder.min');
     echo $this->Html->script('utils');
     echo $this->Html->script('attendable');
     echo $this->Html->script('masterCheckbox');
