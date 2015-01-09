@@ -87,6 +87,14 @@ class AppModel extends Model {
         else
             return false;
     }
+    
+    function analyzeFile($data)
+    {
+        App::uses('FidoComponent', 'ModelOdtValidator.Controller/Component');
+        $this->Fido = new FidoComponent();
+        
+        return $this->Fido->analyzeFile($data);
+    }
 
     function listFields($params = array()) {
         // Initialisation des clés manquantes de $params avec les valeurs de $this->$displayFields
