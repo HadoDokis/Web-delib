@@ -1,155 +1,169 @@
-<div class="deliberations">
-    <?php
-    echo $this->element('filtre');
-    ?>
+<?php
+echo $this->element('filtre');
 
-    <?php
+if ($this->action == 'autreActesEnvoyes') {
+    echo $this->Bs->tag('h3', 'Télétransmission des actes');
+} elseif ($this->action == 'transmit') {
+    echo $this->Bs->tag('h3', 'Télétransmission des délibérations');
+}
+echo $this->Bs->div('alert alert-info', __('La Classification enregistrée date du'). ' ' .$dateClassification).
+$this->Bs->div();
+
+
+
+$title=array(
+    array('title' => $this->Paginator->sort('id', 'Id')),
+    array('title' => $this->Paginator->sort('num_delib', 
+            ($this->action == 'autreActesEnvoyes'?__('N° de l\'acte'):__('N° délibération')
+            ))),
+    array('title' => $this->Paginator->sort('objet_delib', __('Libellé de l\'acte'))),
+    array('title' => $this->Paginator->sort('Deliberation.date_acte',
+            ($this->action == 'autreActesEnvoyes'?__('Date de décision'):__('Date de séance')
+            ))), 
+    array('title' => $this->Paginator->sort('num_pref', 'Classification')), 
+    array('title' => 'Annexe(s)'),
+    array('title' => 'Statut TDT'),
+    array('title' => 'Courriers Ministériels'),
+        );
+        
+echo $this->Bs->table($title, array('hover', 'striped'));
+foreach ($deliberations as $deliberation) {
+ 
+    if (!empty($deliberation['Deliberation']['tdt_ar_annexes_status']) 
+            && $deliberation['Deliberation']['tdt_ar_annexes_status']=='danger') {
+        echo $this->Bs->lineColor($deliberation['Deliberation']['tdt_ar_annexes_status']);
+    }
+        
+    
+    echo $this->Bs->cell($this->Html->link($deliberation['Deliberation']['id'], array('action'=>'view', $deliberation['Deliberation']['id'])));
+
+    echo $this->Bs->cell($this->Html->link($deliberation['Deliberation']['num_delib'], array('action'=>'getTampon', $deliberation['Deliberation']['id'])));
+    echo $this->Bs->cell($deliberation['Deliberation']['objet_delib']);
+    $date='';
     if ($this->action == 'autreActesEnvoyes')
-        echo('<h2>Télétransmission des actes</h2>');
-    elseif ($this->action == 'transmit')
-        echo('<h2>Télétransmission des délibérations</h2>');
-    ?>
-    La Classification enregistrée date du <?php echo $dateClassification ?> <br/><br/>
-    <table width="100%">
-        <tr>
-            <th><?php echo $this->Paginator->sort('id', 'Id'); ?></th>
-            <th>
-                <?php
-                if ($this->action == 'autreActesEnvoyes')
-                    echo $this->Paginator->sort('num_delib', 'N° de l\'acte') . '</th>';
-                else
-                    echo $this->Paginator->sort('num_delib', 'N° délibération'); ?>
-            </th>
-            <th><?php echo $this->Paginator->sort('objet_delib', "Libellé de l'acte"); ?></th>
+        $date= $this->Form2->ukToFrenchDateWithHour($deliberation['Deliberation']['date_acte']);
+    else
+         foreach ($deliberation['listeSeances'] as $seance)
+            $date=  $seance['libelle'] . (isset($seance['date']) && !empty($seance['date']) ? ' : ' . $this->Html2->ukToFrenchDateWithHour($seance['date']) : '');
+    
+    
+    echo $this->Bs->cell($date);
+    
+    echo $this->Bs->cell($deliberation['Deliberation']['num_pref']);
+    
+    $annexes='';
+    if(!empty($deliberation['Annex'])){
+    //$annexes=$this->Bs->link('Annexes'.'<span class="badge">'.count($deliberation['Annex']).'</span>', array(), array('escape'=>false));
+    $annexes.='<div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+          Liste des annexes';
+    if (!empty($deliberation['Deliberation']['tdt_ar_annexes_status'])) {
+            $annexes.=' <span class="label label-' . $deliberation['Deliberation']['tdt_ar_annexes_status'] . ' label-as-badge"'
+                    . 'title="'.$deliberation['Deliberation']['tdt_ar_annexes_status_libelle'].'"'
+                    . '>' . count($deliberation['Annex']). '</span>';
+        }
+        else
+        $annexes.=' <span class="label label-info label-as-badge">'.count($deliberation['Annex']).'</span>';
+              
+          $annexes.=' <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">';
+              foreach ($deliberation['Annex'] as $annexe) {
+              $annexes.='<li role="presentation">' .
+              $this->Bs->btn($annexe['filename_pdf'], array('controller' => 'annexes', 'action' => 'download', $annexe['id']), array('icon' => 'glyphicon glyphicon-download-alt',
+                  'role' => 'menuitem',
+                  'tabindex' => -1
+              ))
+              . '</li>';
+          }
 
-            <th>
-                <?php
-                if ($this->action == 'autreActesEnvoyes')
-                    echo $this->Paginator->sort('Deliberation.date_acte', 'Date de décision');
-                else
-                    echo 'Date de séance';
-                ?>
-            </th>
-            <th><?php echo $this->Paginator->sort('num_pref', 'Classification'); ?></th>
-            <th>Statut TDT <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majArTdt'), array('escape'=>false, 'class'=>'waiter')); ?></th>
-            <th>Courriers Ministériels <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majEchangesTdt'), array('escape'=>false, 'class'=>'waiter')); ?></th>
-        </tr>
-        <?php
-        $numLigne = 1;
-        foreach ($deliberations as $delib) {
-            $rowClass = ($numLigne & 1) ? array('height' => '36px') : array('height' => '36px', 'class' => 'altrow');
-            echo $this->Html->tag('tr', null, $rowClass);
-            $numLigne++;
-
-            echo '<td>';
-            echo $this->Html->link($delib['Deliberation']['id'], array('action'=>'view', $delib['Deliberation']['id']));
-            echo '</td>';
-
-            echo '<td>';
-            echo $this->Html->link($delib['Deliberation']['num_delib'], array('action'=>'getTampon', $delib['Deliberation']['id']));
-            echo '</td>';
-            ?>
-            <td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
-            <td>
-                <?php
-                if ($this->action == 'autreActesEnvoyes')
-                    echo $this->Form2->ukToFrenchDateWithHour($delib['Deliberation']['date_acte']);
-                else
-                     foreach ($delib['listeSeances'] as $seance)
-                        echo $seance['libelle'] . (isset($seance['date']) && !empty($seance['date']) ? ' : ' . $this->Html2->ukToFrenchDateWithHour($seance['date']) : '') . '<br/>';
-                ?>
-            </td>
-            <td><?php echo $delib['Deliberation']['num_pref']; ?></td>
-            <td>
-                <?php
-                if (isset($delib['Deliberation']['code_retour'])) {
-                    switch ($delib['Deliberation']['code_retour']) {
-                        case 4:
-                            echo $this->Html->link("Acquittement reçu le " . $delib['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $delib['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
-                            break;
-                        case 3:
-                            echo 'Transmis';
-                            break;
-                        case 2:
-                            echo 'En attente de transmission';
-                            break;
-                        case 1:
-                            echo 'Posté';
-                            break;
-                        default:
-                            break;
+          echo '</ul>
+      </div>';
+    }
+    echo $this->Bs->cell($annexes);
+    
+    $etat='';
+    if (isset($deliberation['Deliberation']['code_retour'])) {
+    switch ($deliberation['Deliberation']['code_retour']) {
+        case 4:
+            $etat = $this->Html->link("Acquittement reçu le " . $deliberation['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $deliberation['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
+            break;
+        case 3:
+            $etat =  'Transmis';
+            break;
+        case 2:
+            $etat =  'En attente de transmission';
+            break;
+        case 1:
+            $etat =  'Posté';
+            break;
+        default:
+            break;
+    }
+}else{
+    if (!empty($deliberation['Deliberation']['tdt_dateAR'])){
+        $etat =  $this->Html->link("Acquittement reçu le " . $deliberation['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $deliberation['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
+    }else{
+        $etat =  'En attente de réception';
+    }
+}
+                
+    echo $this->Bs->cell($etat);
+    
+    $messages='';
+     if (!empty($deliberation['TdtMessage'])) {
+        foreach ($deliberation['TdtMessage'] as $message) {
+            $reponse=false;
+            switch ($message['tdt_type']) {
+                case 2:
+                    $libelle = "Courrier simple"; 
+                    $reponse=true;
+                    break;
+                case 3:
+                    $libelle = "Demande de pièces complémentaires"; 
+                    $reponse=true;
+                    break;
+                case 4:
+                    $libelle = "Lettre d'observation"; 
+                    break;
+                case 5:
+                    $libelle = "Déféré au tribunal administratif"; 
+                    break;
+                default:
+                    break;
+            }
+            if (!empty($libelle)){
+                $messages .=  '<div style="white-space: nowrap;">';
+                $messages .=  $this->Html->link($libelle.' <i class="fa fa-download"></i>', array('action'=>'downloadTdtMessage', $message['tdt_id']), array('escape'=>false,'title'=> 'Télécharger le document')) ;
+                if(empty($message['Reponse']) && $reponse && empty($message['parent_id'])) {
+                    $messages .= ' ';
+                    //Gestion des réponses Pastell
+                    if(!empty($deliberation['Deliberation']['pastell_id']) && $tdt=='PASTELL'){
+                    $coll=$this->Session->read('user.Collectivite');   
+                    $messages .= $this->Html->link('<i class="fa fa-envelope-o"></i>', $tdt_host.'/document/detail.php?id_d='.$deliberation['Deliberation']['pastell_id'].'&id_e='.$coll['Collectivite']['id_entity'], array('escape'=>false, 'target' => '_blank','title'=> 'Répondre'));
                     }
-                }else{
-                    if (!empty($delib['Deliberation']['tdt_dateAR'])){
-                        echo $this->Html->link("Acquittement reçu le " . $delib['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $delib['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
-                    }else{
-                        echo 'En attente de réception';
-                    }
+                    //Gestion des réponses S2low
+                    if(!empty($deliberation['Deliberation']['tdt_id']) && $tdt=='S2LOW' ) 
+                    $messages .=  $this->Html->link('<i class="fa fa-envelope-o"></i>', $tdt_host.'/modules/actes/actes_transac_show.php?id=' . $message['tdt_id'], array('escape'=>false, 'target' => '_blank','title'=> 'Répondre'));
                 }
-                ?>
-            </td>
-            <td>
-                <?php
-                if (!empty($delib['TdtMessage'])) {
-                    foreach ($delib['TdtMessage'] as $message) {
-                        $reponse=false;
-                        switch ($message['tdt_type']) {
-                            case 2:
-                                $libelle = "Courrier simple"; 
-                                $reponse=true;
-                                break;
-                            case 3:
-                                $libelle = "Demande de pièces complémentaires"; 
-                                $reponse=true;
-                                break;
-                            case 4:
-                                $libelle = "Lettre d'observation"; 
-                                break;
-                            case 5:
-                                $libelle = "Déféré au tribunal administratif"; 
-                                break;
-                            default:
-                                break;
-                        }
-                        if (!empty($libelle)){
-                            echo '<div style="white-space: nowrap;">';
-                            echo $this->Html->link($libelle.' <i class="fa fa-download"></i>', array('action'=>'downloadTdtMessage', $message['tdt_id']), array('escape'=>false,'title'=> 'Télécharger le document')) ;
-                            if(empty($message['Reponse']) && $reponse && empty($message['parent_id'])) {
-                                echo " ";
-                                //Gestion des réponses Pastell
-                                if(!empty($delib['Deliberation']['pastell_id']) && $tdt=='PASTELL'){
-                                $coll=$this->Session->read('user.Collectivite');   
-                                echo $this->Html->link('<i class="fa fa-envelope-o"></i>', $tdt_host.'/document/detail.php?id_d='.$delib['Deliberation']['pastell_id'].'&id_e='.$coll['Collectivite']['id_entity'], array('escape'=>false, 'target' => '_blank','title'=> 'Répondre'));
-                                }
-                                //Gestion des réponses S2low
-                                if(!empty($delib['Deliberation']['tdt_id']) && $tdt=='S2LOW' ) 
-                                echo $this->Html->link('<i class="fa fa-envelope-o"></i>', $tdt_host.'/modules/actes/actes_transac_show.php?id=' . $message['tdt_id'], array('escape'=>false, 'target' => '_blank','title'=> 'Répondre'));
-                            }
-                            else
-                            foreach ($message['Reponse'] as $reponse) {
-                                echo '<br /><i class="fa fa-long-arrow-right" style="padding-left:10px;"></i> ';
-                                echo $this->Html->link(' Réponse envoyée <i class="fa fa-download"></i>', array('action'=>'downloadTdtMessage', $reponse['tdt_id']), array('escape'=>false,'title'=> 'Télécharger la réponse envoyée')) ;
-                            }
-                            echo '</div>';
-                        }
-                            
-                    }
+                else
+                foreach ($message['Reponse'] as $reponse) {
+                    $messages .=  '<br /><i class="fa fa-long-arrow-right" style="padding-left:10px;"></i> ';
+                    $messages .=  $this->Html->link(' Réponse envoyée <i class="fa fa-download"></i>', array('action'=>'downloadTdtMessage', $reponse['tdt_id']), array('escape'=>false,'title'=> 'Télécharger la réponse envoyée')) ;
                 }
-                ?>
-            </td>
-            </tr>
-        <?php } ?>
-
-    </table>
-    <div class='paginate'>
-        <!-- Affiche les numéros de pages -->
-        <?php echo $this->Paginator->numbers(); ?>
-        <!-- Affiche les liens des pages précédentes et suivantes -->
-        <?php
-        echo $this->Paginator->prev('« Précédent ', null, null, array('tag' => 'span', 'class' => 'disabled'));
-        echo $this->Paginator->next(' Suivant »', null, null, array('tag' => 'span', 'class' => 'disabled'));
-        ?>
-        <!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
-        <?php echo $this->Paginator->counter(array('format' => 'Page %page% sur %pages%')); ?>
-    </div>
-</div>
+                $messages .=  '</div>';
+            }
+        }                
+    }                    
+    echo $this->Bs->cell($messages);
+            
+}
+echo $this->Bs->endTable().
+        $this->Paginator->numbers(array(
+    'before' => '<ul class="pagination">',
+    'separator' => '',
+   'currentClass' => 'active',
+    'currentTag' => 'a',
+    'tag' => 'li',
+    'after' => '</ul><br />'
+));

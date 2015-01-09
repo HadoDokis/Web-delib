@@ -323,11 +323,6 @@ class Deliberation extends AppModel {
 		return ($position == 1);
 	}
 
-	function changeClassification($delib_id, $classification){
-		$this->id = $delib_id;
-		$this->saveField('num_pref', $classification);
-	}
-
 	function changeDateAR($delib_id, $dateAR){
 		$this->id = $delib_id;
 		$this->saveField('tdt_dateAR', $dateAR);
@@ -1369,7 +1364,7 @@ class Deliberation extends AppModel {
         foreach ($actes as $acte) {
             if ($ar = $this->majAr($acte)) {
                 $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " reçue le " . date('d/m/Y', strtotime($ar)) . ".\n";
-                $rapport .= $this->majEchangesTdtAll($acte['Deliberation']['id']); //Recuperation du tampon et bordereau initial
+                //$rapport .= $this->majEchangesTdtAll($acte['Deliberation']['id']); //Recuperation du tampon et bordereau initial
             } else {
                 $rapport .= "Délibération " . $acte['Deliberation']['num_delib'] . " en attente de réception.\n";
             }
@@ -1412,8 +1407,8 @@ class Deliberation extends AppModel {
         $conditions = array();
         $conditions['AND'] = array(
             'OR' => array(
-                    array('AND' => array('date_envoi_signature >=' => date('Y-m-d', strtotime("-80 days")), 'date_acte' => null)),
-                    array('AND' => array('date_acte >=' => date('Y-m-d', strtotime("-80 days")), 'date_envoi_signature' => null))
+                    array('AND' => array('date_envoi_signature >=' => date('Y-m-d 00:00:00', strtotime("-80 days")))),
+                    array('AND' => array('date_acte >=' => date('Y-m-d 00:00:00', strtotime("-80 days"))))
                 ),'etat' => 5
             );
         }
@@ -1526,21 +1521,21 @@ class Deliberation extends AppModel {
         }
     }
 
-    function chercherVersionAnterieure($tab_delib, $nb_recursion, $listeAnterieure, $action)
+    function chercherVersionAnterieure($anterieure_id, $nb_recursion, $listeAnterieure, $action)
     {
-        $anterieure_id = $tab_delib['Deliberation']['anterieure_id'];
         if ($anterieure_id != 0) {
-            $ant = $this->find('first', array(
+            $projet = $this->find('first', array(
+                'fields' => array('created', 'anterieure_id'),
                 'conditions' => array("Deliberation.id" => $anterieure_id),
                 'recursive' => -1,
-                'fields' => array('created', 'anterieure_id')));
-            $lien = $this->base . '/deliberations/' . $action . '/' . $anterieure_id;
-            $date_version = $ant['Deliberation']['created'];
+                ));
+            $date_version = $projet['Deliberation']['created'];
             $listeAnterieure[$nb_recursion]['id'] = $anterieure_id;
-            $listeAnterieure[$nb_recursion]['lien'] = $lien;
+            
+            $listeAnterieure[$nb_recursion]['lien'] = Router::url(array('controller' => 'deliberations', 'action' => $action, $anterieure_id));
             $listeAnterieure[$nb_recursion]['date_version'] = $date_version;
             //on stocke les id des delibs anterieures
-            $listeAnterieure = $this->chercherVersionAnterieure($ant, $nb_recursion + 1, $listeAnterieure, $action);
+            $listeAnterieure = $this->chercherVersionAnterieure($projet['Deliberation']['anterieure_id'], $nb_recursion + 1, $listeAnterieure, $action);
         }
         return $listeAnterieure;
     }

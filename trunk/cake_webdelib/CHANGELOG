@@ -1,5 +1,6 @@
-4.2.01
+4.3.0
 ======
+- Ajout de la possibilité de voir les annexes lors des télétranmission vers le tdt
 - Correction des profils en doubles (désactivés) dans l'édition des utilisateurs
 - Mise en place des mails HTML/TEXT pour les alertes et les nouveaux corps de messages
 - Ajout Webdav sur les débats
@@ -8,10 +9,31 @@
 - Nouveau shell d'importation de donnée : informations supplémentaires de type liste
 - Migration de Font-Awesome v4.0.3 vers v4.1.0
 - Migration de jQuery v1.10.2 vers v1.11.1
-- Migration de jGrowl v1.2.13 vers v1.3
+- Changement de librairie growl de jGrowl vers bootstap.growl v2.0.1
 - Migration de bootstrap vers v2.3.2 à v3.2.0
 - Migration de select2 vers v2.1 à v3.5.1
 
+4.2.02
+======
+- Correction de la génération des rapports pour l'export CMIS
+- Mise à jour cakeflow vers 3.1.02
+- Correction de la recherche pour ne pas afficher les services émetteurs inactifs
+- Correction du retour après la saisie des débats généraux dans les séances passées
+- Ajout d'un contrôle de caractère (255 max.) sur les informations supplémentaires de type texte
+- Correction de la génération qui ne fonctionnait pas dans le vu de visualisation du projet à traiter
+- Ajout d'un bouton voir l'annexe en modification de projet
+- Correction du filtre pour l'envoi TDT, il ne prennait pas en compte les types de séance 
+- Mise en place de l'optimisation Cakeflow des étapes pour un circuit ajouté à un circuit existant
+- Prise en compte du proxy pour le connecteur i-délibRE
+- Réorganisation des projets dans toutes les séances suite à la suppression d'un projet
+- Correction problème de retour après suppression d'un thème
+- Correction pour ie9 pour l'ajout de mandataire lors d'un vote
+- Correction prise en compte du thème pour les multi-délibérations
+- Prise en compte des variables vide de GEDOOo
+- Correction de la recherche de projet : il n'a plus génération possible si le projet a été signé
+- Correction de l'extension du nom de fichier pour le téléchargement de la signature (pdf au lieu de zip)
+- Correction des caractères spéciaux pour les informations supplémentaires de texte enrichi n'étaient pas pris en compte lors de l'export CMIS.
+- Correction les projets refusés s'affichaient avec la séance (ordre du jour...)
 
 4.2.01
 ======
