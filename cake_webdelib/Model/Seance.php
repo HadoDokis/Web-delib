@@ -208,7 +208,6 @@ class Seance extends AppModel
         App::import('Model', 'Deliberationseance');
         $this->Deliberationseance = new Deliberationseance();
 
-        $this->Deliberationseance->Behaviors->load('Containable');
         $deliberations = $this->Deliberationseance->find('all', array(
             'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
             'fields' => array('Deliberationseance.deliberation_id','Deliberationseance.position'),
@@ -291,12 +290,12 @@ class Seance extends AppModel
     }
 
     function getSeanceDeliberante($tab_seances) {
-        $this->Behaviors->load('Containable');
         foreach ($tab_seances as $seance_id) {
             $seance = $this->find('first', array(
                 'conditions' => array('Seance.id' => $seance_id),
                 'fields' => array('Seance.id'),
-                'contain' => array('Typeseance.action')
+                'contain' => array('Typeseance.action'),
+                'recursive' => -1
             ));
             if ($seance['Typeseance']['action'] == 0) {
                 return $seance['Seance']['id'];
@@ -307,7 +306,6 @@ class Seance extends AppModel
 
     function isSeanceDeliberante($seance_id)
     {
-        $this->Behaviors->load('Containable');
         $seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
             'fields' => array('Seance.id', 'Seance.type_id'),
             'contain' => array('Typeseance.action')));
@@ -316,7 +314,6 @@ class Seance extends AppModel
 
     function getSeancesDeliberantes() {
         $tab_seances = array();
-        $this->Behaviors->load('Containable');
         $seances = $this->find('all', array(
             'conditions' => array(
                 'Typeseance.action' => 0,
