@@ -34,17 +34,17 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->css('/components/font-awesome/css/font-awesome.min');
     echo $this->Html->css('webdelib');
     echo $this->Html->css('connexion');
+    echo $this->Html->css('global');
 
     echo $this->Html->script('/components/modernizr/modernizr');
     echo $this->Html->script('/components/jquery/jquery.min');
     echo $this->Html->script('/components/bootstrap/dist/js/bootstrap.min');
-    echo $this->Html->script('/components/jgrowl/jquery.jgrowl.min');
+    echo $this->Html->script('/components/bootstrap.growl/bootstrap-growl.min');
     echo $this->html->script('/components/jquery-placeholder/jquery.placeholder.min');
     echo $this->Html->script('utils');
-
-    echo $this->fetch('meta');
+        
     echo $this->fetch('css');
-    echo $this->fetch('script');
+    echo $this->fetch('meta');
     ?>
 </head>
 <body>
@@ -61,6 +61,9 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     </noscript>
     <?php echo $content_for_layout; ?>
 </div>
-<?php echo $this->element('footer'); ?>
+<?php 
+echo $this->element('footer'); 
+echo $this->fetch('script');
+?>
 </body>
 </html>

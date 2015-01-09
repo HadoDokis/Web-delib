@@ -46,7 +46,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->script('/components/jquery/jquery.min');
     echo $this->Html->script('/components/jquery/jquery-migrate.js');
     echo $this->Html->script('/components/bootstrap/dist/js/bootstrap.min');
-    echo $this->Html->script('/components/jgrowl/jquery.jgrowl.min');
+    echo $this->Html->script('/components/bootstrap.growl/bootstrap-growl.min');
     echo $this->Html->script('/components/select2/select2.min');
     echo $this->Html->script('/components/select2/select2_locale_fr');
     echo $this->Html->script('/components/scrollup/dist/jquery.scrollUp.min');
@@ -56,10 +56,9 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->script('attendable');
     echo $this->Html->script('masterCheckbox');
     echo $this->Html->script('main');
-
-    echo $this->fetch('meta');
+    
     echo $this->fetch('css');
-    echo $this->fetch('script');
+    echo $this->fetch('meta');
     ?>
 </head>
 <body>
@@ -275,6 +274,8 @@ endif;
 echo '<!--Attendable-->';
 echo $this->element('waiter'); 
 echo '<!--Dump sql (debug > 1)-->';
-echo $this->element('sql_dump'); ?>
+echo $this->element('sql_dump'); 
+echo $this->fetch('script');
+?>
 </body>
 </html>
