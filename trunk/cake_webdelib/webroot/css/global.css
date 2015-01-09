@@ -78,3 +78,17 @@ table.table-middle td, table.table-middle th{
 	width: 38px; /* Width of image */
 	background: url(../img/top.png) no-repeat;
 }
+
+/* hack label bootstrapy */
+.label-as-badge {
+    border-radius: 10px;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 10px;
+    padding: 3px 7px;
+    text-align: center;
+    vertical-align: baseline;
+    white-space: nowrap;
+}
