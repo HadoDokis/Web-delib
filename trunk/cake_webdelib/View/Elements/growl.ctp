@@ -1,4 +1,9 @@
 <?php
+/** Bootstrap Growl
+ * @link https://github.com/mouse0270/bootstrap-growl This is a simple pluging that turns standard Bootstrap alerts into "Growl-like" notifications.
+ * 
+ * 
+ */
 $this->Html->scriptStart(array('inline' => false));
 
 if(empty($settings))
@@ -26,6 +31,15 @@ if (!empty($type)) {
                 'title' => '<strong>'.__('Erreur').'</strong>'
             );
             break;
+        case 'warning' :
+            $type = 'warning';
+            $options = array(
+                'sticky' => 'true',
+                'icon' => 'glyphicon glyphicon-warning-sign',
+                'title' => '<strong>'.__('Attention').'</strong>'
+            );
+            break;
+        case 'warning' :
         case 'error' :
         case 'danger' :
             $type = 'danger';
@@ -58,15 +72,20 @@ echo '},{';
 $settings += array('offset'=> array('x'=>80,'y'=>100));
 foreach ($settings as $key => $setting) {
     if (is_array($setting)) {
-        echo $key . ': {';
+        $params=$key . ': {';
         foreach ($setting as $key_param => $param) {
-            echo $key_param.': \'' . $param . '\',';
+            $params.= $key_param.': \'' . $param . '\',';
         }
-        echo '},';
+        echo substr($params,0,-1).'},';
     } else {
-        echo $key . ': \'' . $setting . '\',';
+        echo $key . ': \'' . $setting . '\', ';
     }
 }
-echo 'type: \'' . $type . '\' });';
-
+echo 'type: \'' . $type . '\', ';
+echo 'template: \'<div data-growl="container" class="alert" role="alert">'
+. '<button type="button" class="close" data-growl="dismiss">'
+        . '<span aria-hidden="true">×</span><span class="sr-only">Close</span></button>'
+        . '<span data-growl="icon"></span>&nbsp;<span data-growl="title"></span><br />'
+        . '<span data-growl="message"></span></div>\'';
+echo '});';
 $this->Html->scriptEnd();
