@@ -16,7 +16,7 @@ $(document).ready(function () {
         $('#masterCheckbox').prop('checked', $('input[type="checkbox"]').not('#masterCheckbox').not(':disabled').not(':checked').length === 0);
     });
     // Si toutes les checkboxes (sauf masterCheckbox) sont cochées, cocher masterCheckbox
-    $("#masterCheckbox").prop('checked', $("input[type=checkbox]").not(':disabled').not(':checked').not("#masterCheckbox") === 0);
+    $("#masterCheckbox").prop('checked', $("input[type=checkbox]").not(':disabled').not(':checked').not("#masterCheckbox"));
     $("#masterCheckbox").prop('disabled', !$("input[type=checkbox]").not(':disabled').not("#masterCheckbox").length);
 
     //Master-checkbox spécifique à la table des droits

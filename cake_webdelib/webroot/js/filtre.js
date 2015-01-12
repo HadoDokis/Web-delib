@@ -11,7 +11,15 @@ $(document).ready(function() {
  * Masque/affiche les critères du filtre
  */
 function basculeCriteres() {
-	$cheminIcone = $('#boutonBasculeCriteres').attr('src');
+    
+    if ($('#filtreCriteres').is( ":hidden" ))
+    {
+        $('#filtreCriteres').slideDown();
+    }
+    else {
+        $('#filtreCriteres').slideUp();
+    }
+	/*$cheminIcone = $('#boutonBasculeCriteres').attr('src');
 	$racine = $cheminIcone.substring(0, $cheminIcone.lastIndexOf('/')+1);
 	$icone = $cheminIcone.substring($cheminIcone.lastIndexOf('/')+1);
 	if ($icone == 'filtreUp.png') {
@@ -23,7 +31,7 @@ function basculeCriteres() {
 		$('#filtreCriteres').slideUp();
 		$('#filtreFoncAffiche').val(0);
 	}
-	$('#boutonBasculeCriteres').attr('src', $racine+$icone);
+	$('#boutonBasculeCriteres').attr('src', $racine+$icone);*/
 }
 
 /**

@@ -454,6 +454,7 @@ class BsHelper extends HtmlHelper {
  * 'width' => width in percent of the cell
  * 'hidden' => layout
  * @param array $class classes of the table (hover, striped, etc)
+ * @param array $options classes of the table (hover, striped, etc)
  * @return string
  */
 	public function table($titles, $class, $options=array()) {
@@ -531,10 +532,11 @@ class BsHelper extends HtmlHelper {
  * 
  * @param string $content Informations in the cell
  * @param string $class Classe(s) of the cell
+ * @param string $options HTML attributes
  * @param bool $autoformat Close or not the cell when it is the last of the line
  * @return string
  */
-	public function cell($content, $class = '', $autoformat = true) {
+	public function cell($content, $class = '', $options=array(), $autoformat = true) {
 		$out = '';
 		$classVisibility = '';
 		$cellPos = $this->_cellPos;
@@ -556,10 +558,15 @@ class BsHelper extends HtmlHelper {
 		if ($classVisibility != '' || $class != '') {
 			$out .= '<td class="' . $class;
 			$out .= ($class != '') ? ' ' : '';
-			$out .= $classVisibility . '">';
+			$out .= $classVisibility . '"';
 		} else {
-			$out .= '<td>';
+			$out .= '<td';
 		}
+                
+		foreach ($options as $key => $value) {
+			$out .= ' ' . $key . '="' . $value . '"';
+		}
+		$out .= '>';
 
 		$out .= $content;
 
@@ -598,7 +605,7 @@ class BsHelper extends HtmlHelper {
         /**
  * Attributes for a line (<tr>)
  * 
- * @param array $color Colorof the line (active, warning, danger or success)
+ * @param array $attributes for the line
  * @return string
  */
 	public function lineAttributes($attributes) {

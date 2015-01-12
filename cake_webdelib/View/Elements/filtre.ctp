@@ -3,15 +3,16 @@
  * Affichage du filtre
  *
 */
+$this->append('filtre');
 
 $criteres = $this->Session->read('Filtre.Criteres');
 if (empty($criteres)) return;
 
-echo $this->Html->script('filtre.js');
-
 echo $this->Html->div('filtre');
-	echo $this->Form->create(null, array('url' => $this->Session->read('Filtre.url'), 'id'=>'filtreForm'));
-		echo $this->Html->tag('div', null, array('class' => 'filtreFonc'));
+
+
+	echo $this->BsForm->create(null, array('url' => $this->Session->read('Filtre.url'), 'id'=>'filtreForm'));
+		/*echo $this->Html->tag('div', null, array('class' => 'filtreFonc'));
 			// affichage du bouton afficher-masquer le filtre
 			if ($this->Session->read('Filtre.Fonctionnement.affiche')) {
 				$iconeBoutonBasculeCriteres = 'glyphicon glyphicon-filter';
@@ -43,21 +44,26 @@ echo $this->Html->div('filtre');
 				'id'=>'filtreButton',
 				'title'=>__('Changer les critères du filtre puis cliquer ici pour appliquer les changements', true)));
 		echo $this->Html->tag('/div');
+                
+                */
+        $filtre='';
+        $note1 = false;
+        $newLine=true;
+        $line=array(1=>'6',2=>'6',3=>'4');
+        foreach($criteres as $nom => $options) {
+            
+            $filtre .= ($newLine==true?$this->Bs->row():'').$this->Bs->col('xs'.(!empty($options['column'])?$line[$options['column']]:$line[2]));
+            //$options['onChange'] = "critereChange(this);";
 
-		echo $this->Html->div('filtreCriteres', null, array('id'=>'filtreCriteres'));
-		echo '<div class="spacer"></div>';
-            $note1 = false;
-			foreach($criteres as $nom => $critere) {
-				$options = $critere['inputOptions'];
-                $options['onChange'] = "critereChange(this);";
-                if (array_key_exists('type', $options)){
-                    switch ($options['type']){
+            if (array_key_exists('type', $options['inputOptions'])) {
+
+                    switch ($options['inputOptions']['type']){
                         case 'text':
-                            $options['onKeyUp'] = "critereChange(this);";
-                            $options['onPaste'] = "critereChange(this);";
-                            $options['label'] .= ' *'; // note
+                            $options['inputOptions']['onKeyUp'] = "critereChange(this);";
+                            $options['inputOptions']['onPaste'] = "critereChange(this);";
+                            $options['inputOptions']['label'] .= ' *'; // note
                             $note1 = true;
-                            echo $this->Html->div($critere['classeDiv'], $this->Form->input('Critere.'.$nom, $options));
+                            $filtre .= $this->BsForm->input('Critere.'.$nom, $options['inputOptions']);
 
                             break;
                         case 'date':
@@ -65,22 +71,29 @@ echo $this->Html->div('filtre');
                             //echo $this->Html->div($critere['classeDiv'], $datePicker->picker('Critere.'.$nom, $options));
                             break;
                         default:
-                            echo $this->Html->div($critere['classeDiv'], $this->Form->input('Critere.'.$nom, $options));
+                            $filtre .=  $this->BsForm->input('Critere.'.$nom, $options['inputOptions']);
                     }
-                }else{
-                    echo $this->Html->div($critere['classeDiv'], $this->Form->input('Critere.'.$nom, $options));
-                }
-				if ($critere['retourLigne'])
-                    echo '<div class="spacer"></div>';
-			}
-            echo '<div class="spacer"></div>';
-//notes
-            if ($note1){
-                echo $this->Html->tag('em',"* Le caractère '%' est employé comme métacaractère (joker), il remplace un ou plusieurs caractères et ignore la casse. Exemple : \"dupon%\" (commence par Dupon)");
-                echo '<div class="spacer"></div>';
+            }   
+            else {
+                $filtre .=  $this->BsForm->input('Critere.'.$nom, $options['inputOptions']);
             }
-			echo $this->Form->submit('Appliquer le filtre');
-		echo '</div>';
-	echo $this->Form->end();
-	echo '<div class="spacer"></div>';
-echo '</div>';
+            $newLine++;  
+            if ($options['retourLigne']) {
+                $filtre .= $this->Bs->close(2);
+                $newLine=true;
+            } else {
+                $filtre .= $this->Bs->close();
+                $newLine=false;
+            }
+    }
+        
+        if ($note1){
+            $filtre .=  $this->Html->tag('em',"* Le caractère '%' est employé comme métacaractère (joker), il remplace un ou plusieurs caractères et ignore la casse. Exemple : \"dupon%\" (commence par Dupon)");
+        }
+        $filtre .=  $this->BsForm->submit('Appliquer le filtre');
+	$filtre .=  $this->BsForm->end().$this->Bs->tag('br /');
+
+
+echo $this->Bs->div('well', $filtre,  array('id'=>'filtreCriteres','style'=>'display: none')).$this->Bs->close();
+
+$this->end();
