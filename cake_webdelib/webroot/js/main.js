@@ -51,8 +51,6 @@ $(document).ready(function () {
     /**
      * Autocomplete
      */
-    // Filtres
-    $("div.filtre select").select2({ width: "300px" });
     // Autres (select multiple)
     $(".select2multiple").select2({
         width: 'resolve',
@@ -64,16 +62,16 @@ $(document).ready(function () {
     $(".selectmultiple").select2({
         width: "100%",
         allowClear: true,
-        formatSelection: function (object, container) {
+        formatSelection: function (object) {
             // trim sur la sélection (affichage en arbre)
             return $.trim(object.text);
         }
     });
     
-    $(".selectone").select2({
+    $(".selectone, #filtreCriteres select").select2({
         //width: "element",
         allowClear: true,
-        formatSelection: function (object, container) {
+        formatSelection: function (object) {
             // trim sur la sélection (affichage en arbre)
             return $.trim(object.text);
         }
