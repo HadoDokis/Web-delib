@@ -54,6 +54,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->script('utils');
     echo $this->Html->script('attendable');
     echo $this->Html->script('masterCheckbox');
+    echo $this->Html->script('filtre.js');
     echo $this->Html->script('main');
     
     echo $this->fetch('css');
@@ -88,8 +89,32 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                                                     'controller' => 'pages', 
                                                     'action' => 'home'
                                                     ),
-                 array('icon'=>'glyphicon glyphicon-home"')); ?>
+                 array('icon'=>'glyphicon glyphicon-home"')); 
+             ?>
             </li>
+      </ul>
+      <ul class="nav navbar-nav">
+        <?php
+        if ($this->fetch('filtre')){
+            echo $this->Bs->btn(__('FILTRER'), '#',
+         array(
+                'id'=>'boutonBasculeCriteres',
+                'class' => 'navbar-btn',
+                'type'=>'primary',
+                'title'=>__('Afficher-masquer les critères du filtre'),
+                'onClick'=>"basculeCriteres(this);",
+                //'escape'=> false,filtreCriteres
+                /*'icon'=>'glyphicon glyphicon-filter"'*/));
+        }  else {
+            echo $this->Bs->btn(__('FILTRER'), '#',
+             array(
+                    'id'=>'boutonBasculeCriteres',
+                    'class' => 'navbar-btn',
+                    'type'=>'primary',
+                    'title'=>__('Afficher-masquer les critères du filtre'),
+                    'disabled'=>"disabled"));
+        }
+        ?>
       </ul>
     <?php
     echo $this->Form->create('User', array(
@@ -222,6 +247,9 @@ endif;
         <strong>Attention!</strong> Vous devez activer JavaScript dans votre navigateur pour pouvoir utiliser le service Webdelib
     </div>
 </noscript>
+<?php
+echo $this->fetch('filtre');
+?>
 <ul class="nav nav-tabs">
     <?php
     if (isset($session_menuPrincipal['items'])) {

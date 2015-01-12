@@ -2438,18 +2438,23 @@ class DeliberationsController extends AppController {
      */
 
     function mesProjetsRedaction() {
-        if (isset($this->params['render']) && ($this->params['render'] == 'banette'))
+        if (isset($this->params['render']) && ($this->params['render'] == 'banette')) {
             $limit = Configure::read('LIMIT');
-        else
+        } else {
             $limit = null;
-        
+        }
+
         //Choix du rendu à appliquer
-        if (isset($this->params['render']))
-            $render=$this->params['render'];
-        else $render='index';
+        if (isset($this->params['render'])) {
+            $render = $this->params['render'];
+        } else {
+            $render = 'index';
+        }
 
         // Gestion par lot
-        $this->set('traitement_lot', true);
+        if($render != 'banette') {
+            $this->set('traitement_lot', true);
+        }
         $this->set('actions_possibles', array('suppression' => 'Suppression'));
         $this->set('modeles', $this->Modeltemplate->find('list', array(
             'recursive' => -1,
@@ -2520,7 +2525,9 @@ class DeliberationsController extends AppController {
             $render=$this->params['render'];
         else $render='index';
 
-        $this->set('traitement_lot', true);
+        if($render != 'banette') {
+            $this->set('traitement_lot', true);
+        }
         $this->set('actions_possibles', array('valider' => 'Valider', 'refuser' => 'Refuser'));
         $this->set('modeles', $this->Modeltemplate->find('list', array(
             'recursive' => -1,
@@ -2706,14 +2713,14 @@ class DeliberationsController extends AppController {
             $this->request->data[$i]['Deliberation']['num_pref'] = $this->request->data[$i]['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($this->request->data[$i]['Deliberation']['num_pref']);
 
             if ($projet['Deliberation']['etat'] == 0 && $projet['Deliberation']['anterieure_id'] != 0)
-                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat(-2);
+                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['id'], -2);
             elseif ($projet['Deliberation']['etat'] == 1) {
                 $estDansCircuit = $this->Traitement->triggerDansTraitementCible($this->user_id, $projet['Deliberation']['id']);
                 $tourDansCircuit = $estDansCircuit ? $this->Traitement->positionTrigger($this->user_id, $projet['Deliberation']['id']) : 0;
                 $estRedacteur = ($this->user_id == $projet['Deliberation']['redacteur_id']);
-                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat(1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
+                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['id'], 1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
             } else {
-                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['etat'], $editerTous);
+                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['id'], $projet['Deliberation']['etat'], $editerTous);
             }
             
             // initialisation des séances
@@ -2827,12 +2834,12 @@ class DeliberationsController extends AppController {
                                 'Typeacte'=>array('fields'=>array('libelle')),
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
-                                                   'Typeseance'=>array('fields'=>array('id','libelle','action'),
+                                                   'Typeseance'=>array('fields'=>array('id','libelle','color','action'),
                                                                        )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
                                         
-                                        'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
+                                        'Typeseance'=>array('fields'=>array('id','libelle','color','action'))))),
                   'order' => array($ordre)));
         $this->_sortProjetSeanceDate($projets);
         $actions = array('view', 'generer');
@@ -3464,14 +3471,16 @@ class DeliberationsController extends AppController {
         }
     }
 
-    /*
-     * retourne un tableau array('image'=>, 'titre'=>) pour l'affichage de l'icône dans les listes en fonction de :
-     *  $etat : état du projet ou de la délibération
-     *  $editerTous : droit d'éditer les projets validés
-     *
-     */
+/**
+ * retourne un tableau array('image'=>, 'titre'=>) pour l'affichage de l'icône dans les listes en fonction de :
+ * 
+ * @param int $id identifiant du projet 
+ * @param $etat état du projet ou de la délibération
+ * @param $editerTous droit d'éditer les projets validés
+ *
+ */
 
-    function _iconeEtat($etat, $editerTous = false, $estDansCircuit = false, $estRedacteur = false, $tourDansCircuit = 0)
+    function _iconeEtat($id, $etat, $editerTous = false, $estDansCircuit = false, $estRedacteur = false, $tourDansCircuit = 0)
     {
         switch ($etat) {
             case -2 : // refusé
@@ -3496,10 +3505,13 @@ class DeliberationsController extends AppController {
                         return array(
                             'image' => 'fini',
                             'titre' => $this->Deliberation->libelleEtat($etat) . ' : traité');
-                    elseif ($tourDansCircuit == 0)
+                    elseif ($tourDansCircuit == 0){
                         return array(
                             'image' => 'atraiter',
-                            'titre' => $this->Deliberation->libelleEtat($etat) . ' : à traiter');
+                            'titre' => $this->Deliberation->libelleEtat($etat) . ' : à traiter',
+                            'status' => $this->Traitement->isDelayStatus($id)
+                            );
+                    }
                     else
                         return array(
                             'image' => 'attente',
@@ -4579,7 +4591,7 @@ class DeliberationsController extends AppController {
         }
         catch (Exception $e)
         {
-            $this->Session->setFlash($e->getMessage(), 'growl', array('type'=>'alert'));
+            $this->Session->setFlash($e->getMessage(), 'growl', array('type'=>'warning'));
             return $this->redirect($this->here);
         }
     }
@@ -4593,7 +4605,7 @@ class DeliberationsController extends AppController {
         ));
 
         if(empty($delib['Deliberation']['tdt_data_pdf'])){
-            $this->Session->setFlash('l\'acte tamponné n\'est pas encore disponible', 'growl', array('type'=>'alert'));
+            $this->Session->setFlash('l\'acte tamponné n\'est pas encore disponible', 'growl', array('type'=>'warning'));
             $this->redirect($this->here);
         }
         // envoi au client
@@ -4615,7 +4627,7 @@ class DeliberationsController extends AppController {
             'recursive' => -1
         ));
         if (empty($delib['Deliberation']['tdt_data_bordereau_pdf'])) {
-            $this->Session->setFlash('le bordereau n\'est pas encore disponible', 'growl', array('type'=>'alert'));
+            $this->Session->setFlash('le bordereau n\'est pas encore disponible', 'growl', array('type'=>'warning'));
             $this->redirect($this->here);
         }
         // envoi au client
