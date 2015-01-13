@@ -1,7 +1,12 @@
-    <?php
-    $true_false = array('true' => 'Oui', 'false' => 'Non');
-    echo $this->BsForm->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'tdt'), 'type' => 'file'));
-    ?>
+<?php
+$this->Html->addCrumb('Mes connecteurs', array('controller'=>'connecteurs'));
+$this->Html->addCrumb($titre);
+
+echo $this->Bs->tag('h3', $titre);
+
+$true_false = array('true' => 'Oui', 'false' => 'Non');
+echo $this->BsForm->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'tdt'), 'type' => 'file'));
+?>
     <fieldset>
         <legend>Activation du TDT</legend>
         <?php
