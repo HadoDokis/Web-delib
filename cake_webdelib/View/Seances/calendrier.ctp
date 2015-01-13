@@ -1,9 +1,9 @@
 <?php
 
-echo $this->Html->script('/libs/bootstrap-calendar/components/underscore/underscore-min.js');
-echo $this->Html->script('/libs/bootstrap-calendar/js/language/fr-FR.js');
-echo $this->Html->script('/libs/bootstrap-calendar/js/calendar.js');
-echo $this->Html->css('/libs/bootstrap-calendar/css/calendar.css');
+echo $this->Html->script('/components/underscore/underscore-min.js');
+echo $this->Html->script('/components/bootstrap-calendar/js/language/fr-FR.js');
+echo $this->Html->script('/components/bootstrap-calendar/js/calendar.min.js');
+echo $this->Html->css('/components/bootstrap-calendar/css/calendar.min.css');
 
 $this->Html->addCrumb('Séance à traiter', array($this->request['controller'], 'action'=>'listerFuturesSeances'));
 
@@ -38,7 +38,7 @@ echo $this->Bs->div(null, null, array('id'=>'calendar'));
             {
                 view: 'year',
                 language: 'fr-FR',
-                tmpl_path: "/libs/bootstrap-calendar/tmpls/",
+                tmpl_path: "/components/bootstrap-calendar/tmpls/",
                 events_source: function(){
                 return  <?php 
                         $seances_calendrier=array();
@@ -46,11 +46,11 @@ echo $this->Bs->div(null, null, array('id'=>'calendar'));
                         {
                             $seances_calendrier[]=array(
                             'id'=> $seance['id'],
-                            'url'=> '/seances/edit/'.$seance['id']/*$this->Html->requestAction(array(
+                            'url'=>  $this->Html->url(array(
                                 'controller'=>'seances', 
                                 'action'=>'edit', $seance['id'])
-                                    )*/,  
-                            'class'=> 'event-warning',
+                                    ), 
+                            'class'=> 'event-important',
                             'title'=> $seance['libelle'].' à '.date('H\Hi', $seance['strtotime']).' le '.date('d/m/Y', $seance['strtotime']),
                             'start' => $seance['strtotime'] . '000',
                             'end' => $seance['strtotime'] . '000'
