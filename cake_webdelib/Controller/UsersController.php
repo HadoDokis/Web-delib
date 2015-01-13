@@ -56,22 +56,21 @@ class UsersController extends AppController {
                 'inputOptions' => array(
                     'label' =>__('Profil', true),
                     'title' => __('Profil', true)." du(des) utilisateur(s) recherché(s)",
-                    'options' => $profils),
-                'classeDiv' => 'spacer'));
+                    'options' => $profils)));
             $this->Filtre->addCritere('Login', array(
                 'field' => 'User.login',
                 'inputOptions' => array(
                     'label' => __('Login', true),
                     'type'  => 'text',
                     'title' => 'Filtre sur les logins des utilisateurs'),
-                'classeDiv' => 'tiers'));
+                'column' => 3));
             $this->Filtre->addCritere('Nom', array(
                 'field' => 'User.nom',
                 'inputOptions' => array(
                     'label' => __('Nom', true),
                     'type'  => 'text',
                     'title' => 'Filtre sur les noms des utilisateurs'),
-                'classeDiv' => 'tiers'));
+                'column' => 3));
             $this->Filtre->addCritere('Prenom', array(
                 'field' => 'User.prenom',
                 'retourLigne' => true,
@@ -79,10 +78,8 @@ class UsersController extends AppController {
                     'label' => __('Prénom', true),
                     'type'  => 'text',
                     'title' => 'Filtre sur les prénoms des utilisateurs'),
-                'classeDiv' => 'tiers'));
+                'column' => 3));
         }
-        $this->User->Behaviors->attach('Containable');
-        $this->ArosAdo->Behaviors->attach('Containable');
         $this->paginate = array('User' => array(
             'conditions' => $conditions,
             'fields' => array('DISTINCT User.id', 'User.login', 'User.nom', 'User.prenom', 'User.telfixe', 'User.telmobile'),
