@@ -2,19 +2,19 @@
 $etat_icon=array(
                 'refuse'=>array(
                     'type'=>'danger',
-                    'icon'=>'glyphicon glyphicon-warning-sign'),
+                    'icon'=>'glyphicon  glyphicon glyphicon-eject'),
                 'versionne'=>array(
                     'type'=>'info',
                     'icon'=>'glyphicon glyphicon-step-backward'),
                 'encours'=>array(
-                    'type'=>'primary',
-                    'icon'=>'glyphicon glyphicon-play'),
+                    'type'=>'default',
+                    'icon'=>'glyphicon glyphicon-pause'),//glyphicon glyphicon-time
                 'fini'=>array(
                     'type'=>'default',
-                    'icon'=>'glyphicon glyphicon-stop'),
+                    'icon'=>'glyphicon glyphicon-lock'),
                 'atraiter'=>array(
-                    'type'=>'warning',
-                    'icon'=>'glyphicon glyphicon-certificate'),
+                    'type'=>'primary',
+                    'icon'=>'glyphicon glyphicon-play'),
                 'attente'=>array(
                     'type'=>'warning',
                     'icon'=>'glyphicon glyphicon-pause'),
@@ -24,7 +24,7 @@ $etat_icon=array(
             );
 
 echo $this->Bs->table(array(array('title' => (!empty($traitement_lot) ?$this->Form->checkbox(null, array('id'=> 'masterCheckbox','autocomplete'=>'off')):'' ).'État'),
-    array('title' => 'Vue synthétique'),
+    array('title' => 'Vue synthétique', array('width'=>'100%')),
     array('title' => 'Actions')
         ), array('hover', 'striped','bordered'));
 
@@ -95,7 +95,7 @@ foreach ($projets as $projet) {
             $case_seance.= $seance['libelle'] . (isset($seance['date']) && !empty($seance['date']) ? ' : ' . $this->Html2->ukToFrenchDateWithHour($seance['date']) : '') . '<br/>';
     }
     if (isset($projet['Typeacte']['libelle'])){
-        $case_nature = '<h4><span class="label label-default" '.(!empty($projet['listeSeances'][0]['color'])?'style="background-color: '.$projet['listeSeances'][0]['color'].'"':'').'>'.strtolower($projet['Typeacte']['libelle']). ' :  '. $projet['Deliberation']['id'].'</span></h4>';
+        $case_nature = strtolower($projet['Typeacte']['libelle']);
     }
         $case_theme = '<b>Thème : </b>';
         if (isset($projet['Theme']['libelle']))
@@ -106,7 +106,7 @@ foreach ($projets as $projet) {
         $etat=$this->Bs->btn(null, null,
                         array(
                             'tag'=>'button',
-                            'type'=>$etat_icon[$projet['iconeEtat']['image']]['type'],
+                            'type'=>empty($projet['iconeEtat']['status'])?$etat_icon[$projet['iconeEtat']['image']]['type']:$projet['iconeEtat']['status'],
                             'class'=>'btn-lg',
                             //'disabled'=>'disabled',
                             'data-toggle'=>'popover',
@@ -117,9 +117,11 @@ foreach ($projets as $projet) {
                     )
                 );
 
+                $etat.= '<h4><span class="label label-default" '.(!empty($projet['listeSeances'][0]['color'])?'style="background-color: '.$projet['listeSeances'][0]['color'].'"':'').'>'.$projet['Deliberation']['id'].'</span></h4>';
+        
                 if (!empty($traitement_lot)){
                     
-           $etat.='<br/>'.$this->Form->checkbox( 'Deliberation.check.id_' . $projet['Deliberation']['id'],
+                    $etat.='<br/>'.$this->Form->checkbox( 'Deliberation.check.id_' . $projet['Deliberation']['id'],
                                 array('checked' => false, 'class'=>'checkbox_deliberation_generer', 'autocomplete'=>'off'));
                 }
                 
@@ -140,13 +142,25 @@ foreach ($projets as $projet) {
             'title' => 'Modifier le projet ' . $projet['Deliberation']['objet'],
         ));
 
-     if (in_array('traiter', $projet['Actions']))
+     if (in_array('traiter', $projet['Actions'])){
+   
+        if(!empty($projet['iconeEtat']['status']))
+        {
+           if ($projet['iconeEtat']['status'] == 'warning') {
+               echo $this->Bs->lineColor('warning');
+           }
+           if ($projet['iconeEtat']['status'] == 'danger') {
+               echo $this->Bs->lineColor('danger');
+           } 
+        }
+
         $actions.=  $this->Bs->btn('',
-            array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id']),
-            array(
-                'type' => 'primary',
-                'icon'=>'glyphicon glyphicon-certificate',
-                'title' => 'Traiter le projet ' . $projet['Deliberation']['objet']));
+        array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id']),
+        array(
+            'type' => 'primary',
+            'icon'=>'glyphicon glyphicon-play',
+            'title' => 'Traiter le projet ' . $projet['Deliberation']['objet']));
+     }
 
     if (in_array('validerEnUrgence', $projet['Actions']))
         $actions.=  $this->Bs->btn('',
@@ -221,14 +235,12 @@ foreach ($projets as $projet) {
                     ));
     }
     
-     $actions.= $this->Bs->close(1);
+    $actions.= $this->Bs->close(1);
     }
     $actions.= $this->Bs->close(2);
-                
-    echo $this->Bs->tableCells(array(
-        $etat,
-        array(
-            //Mettre un tableau 
+
+    echo $this->Bs->cell($etat);
+    echo $this->Bs->cell(
         $this->Bs->row().
         $this->Bs->col('xs4').$case_emetteur.$this->Bs->close().
         $this->Bs->col('xs4').$case_projet_libelle.$this->Bs->close().
@@ -243,17 +255,16 @@ foreach ($projets as $projet) {
         $this->Bs->col('xs4').$case_nature.$this->Bs->close().
         $this->Bs->col('xs4').$case_theme.$this->Bs->close().
         $this->Bs->col('xs4').$case_classification.$this->Bs->close().
-        $this->Bs->close(1),array('style'=>'width: 100%'))
-        ,
-        $actions
-    ));
+        $this->Bs->close(1)/*,array('style'=>'width: 100%')*/
+            , 'max');
+    echo $this->Bs->cell($actions, 'text-right');
 }
 else {
-   echo $this->Bs->tableCells(array(
-        array(
-                array('<span class="glyphicon glyphicon-remove"></span>Aucun projet à afficher', array('colspan' => '3','style'=>'text-align: center'))
-            )
-    ));
+   echo $this->Bs->cell(
+           $this->Bs->tag('p',
+                   $this->Bs->tag('span', '',array('class'=>'glyphicon glyphicon-remove'))
+                   .' '.__('Aucun projet à afficher')), 'text-center', array('colspan'=> 3));
+   
 }
 echo $this->Bs->endTable();
 
