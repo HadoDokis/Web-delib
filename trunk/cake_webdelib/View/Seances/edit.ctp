@@ -1,7 +1,7 @@
 <?php
-echo $this->Html->script('/libs/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js');
-echo $this->Html->script('/libs/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr.js');
-echo $this->Html->css('/libs/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min');
+echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr');
+echo $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
 
 echo $this->Html->script('ckeditor/ckeditor');
 echo $this->Html->script('ckeditor/adapters/jquery');
@@ -130,7 +130,7 @@ echo $this->Bs->tabPaneClose();
 
     echo $this->BsForm->hidden('Seance.id');
     //$this->BsForm->setLeft(0);
-echo $this->Html2->btnSaveCancel('', 'listerFuturesSeances', 'Ajouter la séance').
+echo $this->Html2->btnSaveCancel('', $previous, 'Ajouter la séance').
 $this->BsForm->end();
 ?>
 <script type="application/javascript">

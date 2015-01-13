@@ -8,9 +8,9 @@ if ($DELIBERATIONS_MULTIPLES)
 echo $this->Html->script('ckeditor/ckeditor'); 
 echo $this->Html->script('ckeditor/adapters/jquery'); 
 
-echo $this->Html->script('/libs/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js');
-echo $this->Html->script('/libs/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr.js');
-echo $this->Html->css('/libs/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min');
+echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr');
+echo $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
 
 echo $this->Html->script('/libs/bootstrap-filestyle/js/bootstrap-filestyle.min.js');
 echo $this->Html->script('/libs/bootstrap-jquery-sortable/js/jquery-sortable-min.js');
