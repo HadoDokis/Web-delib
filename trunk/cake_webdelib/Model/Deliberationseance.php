@@ -30,10 +30,14 @@ class Deliberationseance extends AppModel {
      */
     function deleteDeliberationseance($delib_id, $seance_id) {
         //On récupère l'id de Deliberationseance à supprimer
-        $deliberationseance = $this->find('first', array('conditions' => array('seance_id' => $seance_id,
+        $deliberationseance = $this->find('first', array(
+            'fields' => array('Deliberationseance.id'),
+            'joins' => array($this->join('Deliberation',array( 'type' => 'INNER' ))),
+            'conditions' => array('Deliberationseance.seance_id' => $seance_id,
                 'deliberation_id' => $delib_id,
                 'Deliberation.etat !=' => -1),
-            'fields' => array('Deliberationseance.id')));
+                'recursive'=>-1,
+                ));
 
         $this->delete($deliberationseance['Deliberationseance']['id']);
 
@@ -327,9 +331,8 @@ class Deliberationseance extends AppModel {
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id id de l'occurence en base
      */
-    function setVariablesFusionPourUnProjet(&$oMainPart, &$modelOdtInfos, $deliberationId, $seanceId=null) {
+    function setVariablesFusionPourUnProjet(&$aData, &$modelOdtInfos, $deliberationId, $seanceId=null) {
         // lecture en base de données
-        $this->Behaviors->load('Containable');
         $deliberationSeances =  $this->find('all', array(
             'fields' => array('id', 'avis', 'commentaire'),
             'contain'  => array('Seance.date', 'Seance.Typeseance'),
@@ -341,9 +344,7 @@ class Deliberationseance extends AppModel {
                     'Deliberationseance.commentaire <>' => null))));
 
         // fusion des variables
-        $oIteration = new GDO_IterationType("AvisProjet");
         foreach($deliberationSeances as $deliberationSeance) {
-            $oDevPart = new GDO_PartType();
             if ($modelOdtInfos->hasUserFieldDeclared('avis')) {
                 if ($deliberationSeance['Deliberationseance']['avis'] === true)
                     $avisTexte = 'A reçu un avis favorable';
@@ -352,15 +353,14 @@ class Deliberationseance extends AppModel {
                 else
                     $avisTexte = 'N\'a pas reçu d\'avis';
                 $avis = $avisTexte.' en '.$this->Seance->Typeseance->field('libelle', array('id'=>$deliberationSeance['Seance']['type_id'])).' du '.date('d/m/Y', strtotime($deliberationSeance['Seance']['date']));
-                $oDevPart->addElement(new GDO_FieldType("avis", $avis, "text"));
+                $AvisProjet['avis']= $avis;//, "text"));
             }
             if ($modelOdtInfos->hasUserFieldDeclared('avis_favorable'))
-                $oDevPart->addElement(new GDO_FieldType("avis_favorable", $deliberationSeance['Deliberationseance']['avis'], "text"));
+                $AvisProjet['avis_favorable'] =$deliberationSeance['Deliberationseance']['avis'];//, "text"));
             if ($modelOdtInfos->hasUserFieldDeclared('commentaire'))
-                $oDevPart->addElement(new GDO_FieldType("commentaire", $deliberationSeance['Deliberationseance']['commentaire'], "lines"));
-            $oIteration->addPart($oDevPart);
+                $AvisProjet['commentaire'] = $deliberationSeance['Deliberationseance']['commentaire'];//, "lines"));
+            $aData['AvisProjet'][]=$AvisProjet;
         }
-        $oMainPart->addElement($oIteration);
     }
     
     /**
