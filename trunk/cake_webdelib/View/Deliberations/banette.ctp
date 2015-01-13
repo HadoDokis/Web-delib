@@ -3,10 +3,17 @@
     //echo $this->Html->tag('h2', "$titreVue $nb");
 
 echo $this->Bs->div('panel panel-default');
-echo $this->Bs->div('panel-heading', $titreVue . ' (' . $nbProjets .' '. ($nbProjets > 1 ?'projets':'projet').')'.
-        '<span style="float: right">'.$this->Html->link('Voir le contenu de la banette', 
+echo $this->Bs->div('panel-heading', 
+        $this->Bs->row().
+        $this->Bs->col('xs8').
+        $this->Bs->tag('h4', $titreVue . ' (' . $nbProjets .' '. ($nbProjets > 1 ?'projets':'projet').')'
+                ).
+        $this->Bs->close().
+        $this->Bs->col('xs4').
+        $this->Bs->tag('p', $this->Html->link(__('Voir le contenu de la banette'), 
                 array('controller'=>$this->request['controller'],'action'=>$this->request['action'])
-                ).'</span>'
+                ), array('class'=>'text-right')).
+        $this->Bs->close(2)
         );
 
 echo $this->element('9cases',array('projets'=>$this->data)); 
