@@ -1,4 +1,3 @@
-<!--<div id="buttons">-->
 <?php
 echo $this->Html->script('ckeditor/ckeditor');
 echo $this->Html->script('ckeditor/adapters/jquery');
@@ -147,7 +146,7 @@ if(!empty($tab_anterieure)){
 }
 
 if (empty($projet['Multidelib']) && !empty($projet['Annex'])) {
-    echo $this->element('annexe', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $projet['Annex'])));
+    echo $this->element('annexe_view', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $projet['Annex'])));
 }
 
 echo $this->Bs->tabClose();
@@ -261,7 +260,6 @@ echo $this->Bs->tag('br /');
 echo $this->Bs->tag('hr /');
 echo $linkBarre.$this->Bs->close(2);
 ?>
-</div>
 <script type="text/javascript">
     function afficheMasqueTexteEnrichi(lienId, inputId) {
         var lienAfficherMasquer = $('#' + lienId);

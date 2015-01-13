@@ -180,7 +180,7 @@ echo $this->Html->tag(null, '<br />') .
     echo  $this->Bs->tabPane('annexes', array('class' => (isset($nameTab) && $nameTab=='annexes' ? 'active' : ''))); 
     echo $this->Html->tag(null, '<br />') .   
         '<div id="DelibOngletAnnexes"><div id="DelibPrincipaleAnnexes">';
-    echo $this->element('annexe', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $annexes)));
+    echo $this->element('annexe_edit', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $annexes['Annex'])));
     echo '</div></div>';
     echo $this->Html->tag('span', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.',array('class'=>'help-block'));
     
