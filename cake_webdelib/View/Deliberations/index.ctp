@@ -63,12 +63,12 @@ if (!empty($listeLiens)) {
     }
     if (in_array('mesProjetsRecherche', $listeLiens)) {
         echo '<ul class="actions">';
-        echo '<li>' . $this->Html->link('Nouvelle recherche', '/deliberations/mesProjetsRecherche', array('class' => 'btn', 'escape' => false, 'alt' => 'Nouvelle recherche parmi mes projets', 'title' => 'Nouvelle recherche parmi mes projets')) . '</li>';
+        echo '<li>' . $this->Html->link('Nouvelle recherche', array('controller'=>'deliberations','action'=>'mesProjetsRecherche'), array('class' => 'btn', 'escape' => false, 'alt' => 'Nouvelle recherche parmi mes projets', 'title' => 'Nouvelle recherche parmi mes projets')) . '</li>';
         echo '</ul>';
     }
     if (in_array('tousLesProjetsRecherche', $listeLiens)) {
         echo '<ul class="actions">';
-        echo '<li>' . $this->Html->link('Nouvelle recherche', '/deliberations/tousLesProjetsRecherche', array('class' => 'btn', 'escape' => false, 'alt' => 'Nouvelle recherche parmi tous les projets', 'title' => 'Nouvelle recherche parmi tous les projets')) . '</li>';
+        echo '<li>' . $this->Html->link('Nouvelle recherche', array('controller'=>'deliberations','action'=>'tousLesProjetsRecherche'), array('class' => 'btn', 'escape' => false, 'alt' => 'Nouvelle recherche parmi tous les projets', 'title' => 'Nouvelle recherche parmi tous les projets')) . '</li>';
         echo '</ul>';
     }
     echo "</div></div>";
