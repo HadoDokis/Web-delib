@@ -9,9 +9,8 @@ class ConnecteursController extends AppController {
         'edit' => 'Connecteurs:index',
         'makeconf' => 'Connecteurs:index'
     );
-
-    function index() {
-        $connecteurs = array(
+    
+    private $_connecteurs = array(
             -1 => 'Editer le fichier webdelib.inc',
             0 => 'Mode debug',
             1 => 'Génération des documents',
@@ -25,11 +24,15 @@ class ConnecteursController extends AppController {
             9 => 'Pastell',
         );
 
-        $this->set('connecteurs', $connecteurs);
+    function index() {
+        
+
+        $this->set('connecteurs', $this->_connecteurs);
         return true;
     }
 
     function edit($id) {
+        $this->set('titre', $this->_connecteurs[$id]);
         switch ($id) {
             case -1:
                 // Mode Config (texte)
