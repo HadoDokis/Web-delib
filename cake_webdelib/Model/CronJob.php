@@ -45,7 +45,6 @@ class CronJob extends AppModel {
             $this->Deliberation = new Deliberation();
             App::uses('Traitement', 'Cakeflow.Model');
             $this->Traitement = new Traitement();
-            $this->Traitement->Behaviors->load('Containable');
             $traitements = $this->Traitement->find('all', array(
                 'contain' => array(
                     'Visa' => array(
