@@ -61,18 +61,6 @@ class Service extends AppModel
             return $this->_doList($service['Service']['parent_id']) . '/' . $service['Service']['libelle'];
     }
 
-    function makeBalise(&$oMainPart, $service_id)
-    {
-        $service = $this->find('first', array(
-            'conditions' => array('Service.id' => $service_id),
-            'fields' => array('libelle'),
-            'recursive' => -1));
-        
-        if(empty($service))return;
-        $oMainPart->addElement(new GDO_FieldType('service_emetteur', $service['Service']['libelle'], 'text'));
-        $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->_doList($service_id), 'text'));
-    }
-
     /**
      * doListId Retourne toute la liste de services disponibles par rapport à un service donné
      * @param int $id
@@ -118,11 +106,11 @@ class Service extends AppModel
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id id du modèle lié
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id) {
+    function setVariablesFusion(&$aData, &$modelOdtInfos, $id) {
         if ($modelOdtInfos->hasUserFieldDeclared('service_emetteur'))
-            $oMainPart->addElement(new GDO_FieldType('service_emetteur', $this->field('libelle', array('id'=>$id)), 'text'));
+            $aData['service_emetteur'] = $this->field('libelle', array('id'=>$id));
         if ($modelOdtInfos->hasUserFieldDeclared('service_avec_hierarchie'))
-            $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->_doList($id), 'text'));
+            $aData['service_avec_hierarchie'] = $this->_doList($id);
     }
 }
 ?>
