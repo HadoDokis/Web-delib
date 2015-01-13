@@ -96,6 +96,7 @@ class Infosup extends AppModel {
     function saveCompacted(&$infosups, $foreignKey, $model) {
         $success = true;
         foreach ($infosups as $code => $valeur) {
+            
             $validator = $this->validator();
             // Retire la règle 'required' de file_type
             if (isset($validator['text']))
@@ -106,7 +107,7 @@ class Infosup extends AppModel {
             // lecture de la définition de l'info sup
             $infosupdef = $this->Infosupdef->find('first', array(
                 'recursive' => -1,
-                'fields' => array('id', 'type'),
+                'fields' => array('id', 'type','nom'),
                 'conditions' => array('code' => $code, 'model' => $model)));
 
             // lecture de l'infosup en base
@@ -132,6 +133,7 @@ class Infosup extends AppModel {
                 case 'text' :
                 case 'boolean' :
                 case 'list' :
+                    //debug($infosupdef['Infosupdef']['nom'].'=======>'.$valeur);
                     // Ajout de la regle de validation
                     if($infosupdef['Infosupdef']['type']==='text')
                         $this->validator()->add('text', 'required', array(
@@ -418,7 +420,7 @@ class Infosup extends AppModel {
      * @param string $modelName nom du modele lié
      * @param integer $id id du modèle lié
      */
-    function setVariablesFusion(&$aData, &$modelOdtInfos, $modelName, $id) {
+    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $modelName, $id) {
         // lecture de la définition des infosup
         $allInfoSupDefs = $this->Infosupdef->find('all', array(
             'recursive' => -1,
@@ -467,16 +469,22 @@ class Infosup extends AppModel {
                     $oMainPart->addElement(new GDO_FieldType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], implode(', ', $listValues), 'text'));
                     break;
                 case 'richText':
-                    if (empty($infosup['Infosup']['content'])) break;
+                    $name = str_replace(" ", "_", $infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code']);
+                    if (empty($infosup['Infosup']['content'])) {
+                         $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt')));
+                        break;
+                    }
                     include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/ConversionComponent.php');
                     $this->Conversion = new ConversionComponent(new ComponentCollection());
                     $content = $this->Conversion->convertirFlux($infosup['Infosup']['content'], 'html', 'odt');
-                    $name = str_replace(" ", "_", $infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code']);
                     $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', $content));
                     break;
                 case 'odtFile':
-                    if (empty($infosup['Infosup']['content'])) break;
                     $name = str_replace(" ", "_", $infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code']);
+                    if (empty($infosup['Infosup']['content'])){
+                        $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt')));
+                        break;
+                    }
                     $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', $infosup['Infosup']['content']));
                     break;
             }
