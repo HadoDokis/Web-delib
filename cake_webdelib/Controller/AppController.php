@@ -55,6 +55,7 @@ class AppController extends Controller {
             $historique = $this->Session->check('user.history') ? $this->Session->read('user.history') : array();
             if (empty($this->params['requested'])
                 && stripos($this->params->here, 'ajax') === false // méthode ajax
+                && stripos($this->params->here, 'components') === false    
                 && stripos($this->params->here, 'download') === false // téléchargement de fichier
                 && stripos($this->params->here, 'genereToken') === false // méthode de génération
                 && stripos($this->params->here, 'genereFusion') === false // méthode de génération
