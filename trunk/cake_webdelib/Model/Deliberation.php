@@ -259,40 +259,40 @@ class Deliberation extends AppModel {
      * @param  bool $codesSpeciaux
      * @return string
      */
-    function libelleEtat($etat, $codesSpeciaux = false) {
+    function libelleEtat($etat) {
 		switch($etat) {
-			case -1 :
-				return $codesSpeciaux ? 'Versionn&eacute;' : 'Versionné';
+                        case -2 :
+				return __('Refusé');
 				break;
 			case -1 :
-				return $codesSpeciaux ? 'Refus&eacute;' : 'Refusé';
+				return __('Versionné');
 				break;
 			case 0 :
-				return $codesSpeciaux ? 'En cours de r&eacute;daction' : 'En cours de rédaction';
+				return __('En cours de rédaction');
 				break;
 			case 1:
-				return $codesSpeciaux ? 'En cours d\'&eacute;laboration et de validation' : 'En cours d\'élaboration et de validation';
+				return __('En cours d\'élaboration et de validation');
 				break;
 			case 2:
-				return $codesSpeciaux ? 'Valid&eacute;' : 'Validé';
+				return __('Validé');
 				break;
 			case 3:
-				return $codesSpeciaux ? 'Vot&eacute; et adopt&eacute;' : 'Voté et adopté';
+				return __('Voté et adopté');
 				break;
 			case 4:
-				return $codesSpeciaux ? 'Vot&eacute; et non adopt&eacute;' : 'Voté et non adopté';
+				return __('Voté et non adopté');
 				break;
 			case 5:
-				return $codesSpeciaux ? 'Transmis au contr&ocirc;le de l&eacute;galit&eacute;' : 'Transmis au contrôle de légalité';
+				return __('Transmis au contrôle de légalité');
 				break;
             default:
-                return $codesSpeciaux ? 'Code Erron&eacute;' : 'Code Erroné';
+                return __('Code Erroné');
 		}
 	}
 
 	function generateListEtat() {
 		$ret = array();
-		for($i=-1; $i <= 5; $i++) $ret[$i] = $this->libelleEtat($i, false);
+		for($i=-2; $i <= 5; $i++) $ret[$i] = $this->libelleEtat($i);
 		return $ret;
 	}
 
