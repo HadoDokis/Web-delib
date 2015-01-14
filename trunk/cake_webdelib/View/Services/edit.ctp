@@ -1,33 +1,26 @@
-<h2>Modification du service : <?php echo $this->Html->value('Service.libelle'); ?></h2>
-<?php echo $this->Form->create('Service', array('action' => 'edit', 'type' => 'post')); ?>
-<?php echo $this->Form->input('Service.libelle', array('label' => 'Libellé')); ?>
-<?php echo $this->Form->input('Service.parent_id', array('label' => 'Appartient à', 'options' => $services, 'default' => $selectedService, 'empty' => true, 'escape' => false, 'class' => 'autocomplete')); ?>
-<div class="spacer"></div>
-<?php echo $this->Form->input('Service.circuit_defaut_id', array('options' => $circuits, 'label' => 'Circuit par défaut', 'empty' => true, 'type' => 'select', 'class' => 'autocomplete')); ?>
-<div class="spacer"></div>
-<?php echo $this->Form->input('Service.order', array('label' => 'Critère de tri')); ?>
-<div class="submit">
-    <?php
-    echo $this->Form->hidden('Service.id', array('label' => false));
-    $this->Html2->boutonsSaveCancel();
-    ?>
-</div>
-<?php $this->Form->end(); ?>
-<script>
-    $(document).ready(function () {
-        $(".autocomplete").select2({
-            width: 'resolve',
-            placeholder: 'Aucun',
-            allowClear: true,
-            formatSelection: function (object, container) {
-                // trim sur la sélection (affichage en arbre)
-                return $.trim(object.text);
-            }
-        });
-    });
-</script>
-<style>
-    #ServiceEditForm label {
-        padding-top: 5px;
-    }
-</style>
+<?php
+$this->Html->addCrumb('Liste des services', array('action'=>'index'));
+
+$this->Html->addCrumb(__('Modification d\'un service'));
+
+echo $this->Bs->tag('h3', __('Modification du service : ').$this->Html->value('Service.libelle'));
+
+echo $this->BsForm->create('Service', array('action' => 'edit', 'type' => 'post'));
+echo $this->BsForm->input('Service.libelle', array('label' => 'Libellé')); 
+echo $this->BsForm->select('Service.parent_id', $services, array(
+    'label' => __('Appartient à'),
+    'placeholder'=>__('Choisir un service'),
+    'empty' => true, 
+    'escape' => false,
+    'class' => 'selectone'));
+
+echo $this->BsForm->select('Service.circuit_defaut_id', $circuits, array(
+    'placeholder'=> __('Choisir un circuit par défaut'),
+    'label' => __('Circuit par défaut'),
+    'empty' => true, 
+    'class' => 'selectone')); 
+echo $this->BsForm->input('Service.order', array('label' => 'Critère de tri'));
+
+    echo $this->BsForm->hidden('Service.id', array('label' => false));
+echo $this->Html2->btnSaveCancel(null, $previous);
+echo $this->BsForm->end(); 
