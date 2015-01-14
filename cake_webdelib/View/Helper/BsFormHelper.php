@@ -300,7 +300,7 @@ class BsFormHelper extends FormHelper {
  * - 'src'	   - URL of the image, if 'type' = 'image'.
  *
  * @param string $fieldName    Extends of BsFormHelper::input()
- * @param array  $addonOptions Array of options, see above for more informations
+ * @param array  $addonsOptions Array of options or array ..., see above for more informations
  * @param mixed  $options      Extends of BsFormHelper::input() so get same options
  * @param mixed  $optionsGroup Array of options, see above for more informations for groups
  *
@@ -316,14 +316,26 @@ class BsFormHelper extends FormHelper {
                 $between = '<div class="col-md-' . $this->__right . ' col-md-offset-' . $this->__left . '">';
 		$between .= '<div class="'.$class.'">';
 
-                // Check if the addon is on the right
-		if (isset($addonOptions['side']) && $addonOptions['side'] == 'right') {
-			$after = $this->__createAddon($addonOptions) . '</div>' . '</div>';
-			unset($addonOptions['side']);
-		} else {
-			$between .= $this->__createAddon($addonOptions);
-			$after = '</div>' . '</div>';
-		}
+                if (isset($optionsGroup['multiple']) && $optionsGroup['multiple']) {
+                    // Check if the addon is on the right
+                    if (isset($optionsGroup['side']) && $optionsGroup['side'] == 'right') {
+                            $after = $this->__createAddon($addonOptions, true) . '</div>' . '</div>';
+                            unset($addonOptions['side']);
+                    } else {
+                            $between .= $this->__createAddon($addonOptions, true);
+                            $after = '</div>' . '</div>';
+                    }
+                }else
+                {
+                    // Check if the addon is on the right
+                    if (isset($addonOptions['side']) && $addonOptions['side'] == 'right') {
+                            $after = $this->__createAddon($addonOptions) . '</div>' . '</div>';
+                            unset($addonOptions['side']);
+                    } else {
+                            $between .= $this->__createAddon($addonOptions);
+                            $after = '</div>' . '</div>';
+                    }
+                }
 
 		$after .= '</div>';
 		$options['between'] = $between;
@@ -337,7 +349,9 @@ class BsFormHelper extends FormHelper {
 		if (!isset($options['label'])) {
 			$options['label'] = false;
 		}
+                
 		$out = $this->input($fieldName, $options);
+                
 		return $out;
 	}
         
@@ -396,12 +410,22 @@ class BsFormHelper extends FormHelper {
  *
  * @return string HTML <span> element
  */
-	private function __createAddon($options) {
-		if (is_array($options)) {
-
+	private function __createAddon($optionsGroup, $multiple=false) {
+            if (is_array($optionsGroup)) {
+                if (!$multiple) {
+                    $optionsGroup=array($optionsGroup);
+                }
+                
+                $last_key = end(array_keys($optionsGroup));
+                foreach ($optionsGroup as  $key=>$options) {
+                    
 			// Check if the span content is a button
 			if (isset($options['type'])) {
-
+                                
+                            if($key==0){
+                                $out = '<div class="input-group-btn">';
+                            }
+                            
 				$buttonOptions = array();
 
 				if (isset($options['state'])) {
@@ -410,29 +434,50 @@ class BsFormHelper extends FormHelper {
 					$state = 'btn btn-default';
 				}
 
-				$out = '<span class="input-group-btn">';
+				
 
 				if (isset($options['class'])) {
 					$options['class'] .= ' ' . $state;
 				} else {
 					$options['class'] = $state;
 				}
+                                
+                                if (!empty($options['icon'])) {
+                                    $options['content']='<span class="'.($options['icon']).'"></span>'.(!empty($options['content'])?' '.$options['content']:'');
+                                }
 
 				$buttonOptions['div'] = false;
 				$buttonOptions['escape'] = false;
 				$buttonOptions['type'] = $options['type'];
 				$buttonOptions['class'] = $options['class'];
+                                if (!empty($options['id'])) {
+                                    $buttonOptions['id']  = $options['id'];
+                                }
+                                if (!empty($options['data-toggle'])) {
+                                    $buttonOptions['data-toggle']  = $options['data-toggle'];
+                                }
+                                $before='';
+                                if (!empty($options['before'])) {
+                                    $before = $options['before'];
+                                }
+                                $after='';
+                                if (!empty($options['after'])) {
+                                    $after = $options['after'];
+                                }
+                                
 				if ($options['type'] == 'image') {
 					$buttonOptions['src'] = $options['src'];
 					$buttonOptions['type'] = 'image';
+                                        $buttonOptions['before'] = $before;
+                                        $buttonOptions['after'] = $after;
 					$buttonOptions['label'] = false;
 					$out .= parent::input($options['content'], $buttonOptions);
 				} else {
-					$out .= parent::button($options['content'], $buttonOptions);
+					$out .= $before.parent::button($options['content'], $buttonOptions).$after;
 				}
-
-				$out .= '</span>';
-
+                                if(isset($last_key) && $key==$last_key){
+                                    $out .= '</div>';
+                                }
 			} else {
 
 				if (isset($options['class'])) {
@@ -440,14 +485,15 @@ class BsFormHelper extends FormHelper {
 				} else {
 					$options['class'] = 'input-group-addon';
 				}
-
 				$out = '<span class="' . $options['class'] . '">' . $options['content'] . '</span>';
 			}
-		} else {
-			$out = '<span class="input-group-addon">' . $options . '</span>';
-		}
-
-		return $out;
+                    
+                    }
+            } else {
+                        $out = '<span class="input-group-addon">' . $optionsGroup . '</span>';
+                }
+		
+            return $out;
 	}
 
 /**
