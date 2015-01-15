@@ -62,11 +62,14 @@ echo $this->BsForm->button('<i class="fa fa-check"></i> Valider', array('type' =
 echo $this->Html->tag('/div', null);
 
 echo $this->Html->tag('/div', null);*/
+echo $this->Bs->close(); 
 
-echo $this->Html->tag("div", null, array("class" => "btn-group col-md-offset-4"));
-echo $this->Html2->btnSaveCancel('', array('controller' => 'compositions', 'action' => 'index', $circuit_id)).
-     $this->Html->tag("/div", null). 
-     $this->BsForm->end();
+echo $this->Bs->row();
+echo $this->Bs->col('lg12');
+echo $this->Html->tag('div',$this->Html2->btnSaveCancel('', array('controller' => 'compositions', 'action' => 'index', $circuit_id)),array('class' => 'col-md-offset-2'));
+echo $this->Bs->close(); 
+echo $this->Bs->close(); 
+echo $this->BsForm->end();
 ?>
 
 <script type="text/javascript">

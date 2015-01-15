@@ -41,7 +41,7 @@ if (!empty($compositions)) {
     
     echo '<div class=\'actions\'>';
     //echo $this->Html2->btnCancel(array('controller' => 'etapes', 'action' => 'index', $etape['Circuit']['id']), 'default', __('Retour à la liste des étapes'));
-    echo $this->Html2->btnCancel(array('controller' => 'etapes', 'action' => 'index', $etape['Circuit']['id']), 'default', __('Retour à la liste des étapes'));
+    echo $this->Html2->btnCancel(array('controller' => 'etapes', 'action' => 'index', $etape['Circuit']['id']));
     
     if ($canAdd) {
         echo $this->Html2->btnAdd(__('Ajouter une composition'), null, array('action' => 'add', $this->params['pass'][0]));
