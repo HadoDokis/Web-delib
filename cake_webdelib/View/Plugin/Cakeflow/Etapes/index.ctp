@@ -50,7 +50,7 @@ if (!empty($etapes)) {
         echo $this->Bs->cell(h($row['libelleType']));
         echo $this->Bs->cell(implode(', ', $triggers));
         echo $this->Bs->cell($cells);
-        echo $this->Bs->cell($bouton);
+        echo $this->Bs->cell($bouton,'text-nowrap');
     }
 
     echo $this->Bs->endTable();
