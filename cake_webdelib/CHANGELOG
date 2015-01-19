@@ -1,5 +1,6 @@
 4.3.0
 ======
+- Fusion de 2 services ensemble
 - Ajout de la possibilité de voir les annexes lors des télétranmission vers le tdt
 - Correction des profils en doubles (désactivés) dans l'édition des utilisateurs
 - Mise en place des mails HTML/TEXT pour les alertes et les nouveaux corps de messages

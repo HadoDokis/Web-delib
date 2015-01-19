@@ -11,11 +11,13 @@ echo $this->BsForm->inputGroup('search_tree', array(array(
                                 'content'=>'',
                                 'id' => 'search_tree_button',
                                 'icon'=>'glyphicon glyphicon-search',
+                                'title' => __('Rechercher un service'),
                                 'type' => 'button',
                                 'state' => 'primary',
     ), array(
     'content'=>'<span class="caret"></span>',
                                 'class' => 'dropdown-toggle',
+                                'title' => __('Option de recherche'),
                                 'data-toggle' => 'dropdown',
                                 'icon'=>'glyphicon glyphicon-cog',
                                 'after'=>'<ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -34,6 +36,7 @@ echo $this->Bs->close();
 echo $this->Bs->div('btn-group', null, array('role'=>"group"));
 echo $this->Bs->btn('Nouveau', array('action' => 'add'), array(
         'escape' => false, 
+        'title' => __('Nouveau service'),
         'icon'=>'glyphicon glyphicon-plus',
         'type'=>'primary',
         'id' => 'boutonAdd', 
@@ -43,19 +46,49 @@ echo $this->Bs->close();
 echo $this->Bs->div('btn-group', null, array('role'=>"group"));
     echo $this->Bs->btn('Modifier', '#', 
             array('escape' => false, 
-                'type'=>'warning',
+                'title' => __('Modifier le service'),
+                'type'=>'primary',
                 'icon'=>'glyphicon glyphicon-edit',
                 'id' => 'boutonEdit'));
-    echo $this->Bs->close();
+echo $this->Bs->close();
+
+echo $this->Bs->div('btn-group', null, array('role'=>"group"));
+    echo    $this->Bs->confirm($this->Bs->icon('copy').' Fusionner', 
+            array('controller' => 'services', 'action' => 'fusionner'), 
+            array('type' => 'success', 
+                'title' => __('Fusionner le service'),
+                'texte' => $this->BsForm->create(false, array(
+                    'url' => array('controller' => 'services', 'action' => 'fusionner'),
+                    'novalidate' => true))
+                .$this->Bs->tag('p',__('Si vous ne souhaitez pas Fusionner un service, Fermer la boite de dialogue.'))
+                .$this->Bs->tag('p',__('Avec quel service voullez-vous fusionner ?'))
+                .$this->BsForm->select('Service.id', $services, array(
+                'placeholder'=> __('Choisir un service'),
+                'label' => false,
+                'empty' => true, 
+                'escape'=>false,    
+                'class' => 'selectone'))
+                .$this->BsForm->hidden('service_a_fusionner')
+                .$this->BsForm->end()
+                ,
+                'header' => __('Vous allez fusionner un service !'),
+                'style'=>array(
+                    'border-bottom-right-radius'=> '4px',
+                    'border-top-right-radius'=> '4px',
+                ),
+                'id' => 'boutonFusion',
+            ), array('form'=>true)); 
+echo $this->Bs->close();
     
-    echo $this->Bs->div('btn-group', null, array('role'=>"group"));
-    echo $this->Bs->btn('Supprimer', '#', array(
-        'escape' => false, 
-        'type'=>'danger',
-        'id' => 'boutonDelete', 
-        'icon'=>'glyphicon glyphicon-trash',
-        'confirm'=> __('Voulez-vous vraiment supprimer le service ?')
-        ));
+echo $this->Bs->div('btn-group', null, array('role'=>"group"));
+echo $this->Bs->btn('Supprimer', '#', array(
+    'escape' => false, 
+    'title' => __('Supprimer le service'),
+    'type'=>'danger',
+    'id' => 'boutonDelete', 
+    'icon'=>'glyphicon glyphicon-trash',
+    'confirm'=> __('Voulez-vous vraiment supprimer le service ?')
+    ));
     
 echo $this->Bs->close(2);
 echo $this->Bs->tag('/br');
@@ -63,6 +96,18 @@ echo $this->Bs->div( null,$this->Tree->generateIndex($data, 'Service',
          array('id' => 'id', 'display' => 'libelle', 'order' => 'order')), array('id'=>'arbre'));
 ?>
 <script>
+    function addAction() {
+        window.location.href = $('a#boutonAdd').attr("href");
+    }
+    function editAction() {
+        window.location.href = $('a#boutonEdit').attr("href");
+    }
+    function fusionService() {
+        $('button#boutonFusion').click();
+    }
+    function deleteAction() {
+        window.location.href = $('a#boutonDelete').attr("href");
+    }
     $(document).ready(function () {
         var jstreeconf = {
             /* Initialisation de jstree sur la liste des services */
@@ -102,16 +147,20 @@ echo $this->Bs->div( null,$this->Tree->generateIndex($data, 'Service',
 
 
         $("a#boutonEdit").hide();
+        $("button#boutonFusion").hide();
         $("a#boutonDelete").hide();
         $('#arbre').on('changed.jstree', function (e, data) {
             /* Listener onChange qui fait la synchro jsTree/hiddenField */
             $("a#boutonEdit").hide().prop('href','#');
+            $("button#boutonFusion").hide().prop('href','#');
             $("a#boutonDelete").hide().prop('href','#');
             if (data.selected.length) {
                 var node = data.instance.get_node(data.selected);
-                $("a#boutonEdit").show().prop('href', '/services/edit/' + data.instance.get_node(data.selected).data.id)
+                $("a#boutonEdit").show().prop('href', '/services/edit/' + data.instance.get_node(data.selected).data.id);
+                $("button#boutonFusion").show().prop('href', '/services/fusion/' + data.instance.get_node(data.selected).data.id);
+                $("#service_a_fusionner").val(data.instance.get_node(data.selected).data.id);
                 if ($('#' + node.id).hasClass('deletable')) {
-                    $("a#boutonDelete").show().prop('href', '/services/delete/' + data.instance.get_node(data.selected).data.id)
+                    $("a#boutonDelete").show().prop('href', '/services/delete/' + data.instance.get_node(data.selected).data.id);
                 }
             }
         });
@@ -148,17 +197,24 @@ echo $this->Bs->div( null,$this->Tree->generateIndex($data, 'Service',
                 "label": "Nouveau",
                 "action": addAction,
                 "icon": "fa fa-plus",
-                "separator_after": true
             },
             "edit": {
                 "label": "Modifier",
-                    "action": editAction,
-                    "icon": "fa fa-edit"
+                "action": editAction,
+                "icon": "fa fa-edit"
             },
             "delete": {
                 "label": "Supprimer",
-                    "action": deleteAction,
-                    "icon": "fa fa-trash-o"
+                "action": deleteAction,
+                "icon": "fa fa-trash-o"
+                
+            },
+            "fusion": {
+                "label": "Fusionner",
+                "action": fusionService,
+                "icon": "fa fa-copy",
+                "separator_before": true
+                
             }
         };
         if ($('#'+node.id).hasClass("deletable") == false) {

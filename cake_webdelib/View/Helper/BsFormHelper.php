@@ -453,6 +453,9 @@ class BsFormHelper extends FormHelper {
                                 if (!empty($options['id'])) {
                                     $buttonOptions['id']  = $options['id'];
                                 }
+                                if (!empty($options['title'])) {
+                                    $buttonOptions['title']  = $options['title'];
+                                }
                                 if (!empty($options['data-toggle'])) {
                                     $buttonOptions['data-toggle']  = $options['data-toggle'];
                                 }
