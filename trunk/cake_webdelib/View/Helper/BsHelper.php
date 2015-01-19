@@ -1001,6 +1001,7 @@ class BsHelper extends HtmlHelper {
 		$body = (isset($options['texte']) && $options['texte'] != '') ? $options['texte'] : 'Voulez-vous vraiment continuer votre action ?';
 		$header = (isset($options['header']) && $options['header'] != '') ? $options['header'] : $button;
                 //Fix border-radius
+                $buttons['open']['options']['id']=!empty($options['id']) ? parent::style($options['id']) : null ;
                 $buttons['open']['options']['style']=!empty($options['style']) ? parent::style($options['style']) : null ;
                 
 		return $this->modal($header, $body, $optionsModal, $buttons).$out;

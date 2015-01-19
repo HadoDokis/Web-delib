@@ -4,7 +4,7 @@ class ServicesController extends AppController {
 
     public $name = 'Services';
     public $helpers = array('Tree');
-    public $uses = array('Service', 'Cakeflow.Circuit');
+    public $uses = array('Service', 'UserService', 'Cakeflow.Circuit');
 
     // Gestion des droits
     public $aucunDroit = array(
@@ -16,7 +16,8 @@ class ServicesController extends AppController {
     public $commeDroit = array(
         'edit' => 'Services:index',
         'add' => 'Services:index',
-        'delete' => 'Services:index'
+        'delete' => 'Services:index',
+        'fusionner' => 'Services:index'
     );
 
     function changeService($newServiceActif) {
@@ -27,6 +28,8 @@ class ServicesController extends AppController {
     }
 
     function index() {
+        $services = $this->Service->generateTreeList(array( 'Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;');
+        $this->set('services', $services);
         $services = $this->Service->find('threaded', array('conditions' => array('actif' => 1), 'order' => 'Service.id ASC', 'recursive' => -1));
         $this->_isDeletable($services);
         $this->set('data', $services);
@@ -110,21 +113,20 @@ class ServicesController extends AppController {
 
     function delete($id = null) {
         if (!$id) {
-            $this->Session->setFlash('Invalide id pour le service', 'growl');
+            $this->Session->setFlash('Invalide id pour le service', 'growl', array('type'=>'danger'));
             return $this->redirect(array('action' => 'index'));
         }
 
         if (!$this->Service->find('first', array('conditions' => array('parent_id' => $id, 'actif' => 1), 'recursive' => -1))) {
-            $this->Service->id = $id;
-            if ($this->Service->saveField('actif', 0)) {
-                $this->Session->setFlash('Le service a été supprimé', 'growl');
+            if ( $this->Service->desactive($id)) {
+                $this->Session->setFlash('Le service a été supprimé', 'growl', array('type'=>'sucess'));
                 $this->redirect($this->previous);
             } else {
-                $this->Session->setFlash('Impossible de supprimer ce service', 'growl');
+                $this->Session->setFlash('Impossible de supprimer ce service', 'growl', array('type'=>'danger'));
                 $this->redirect($this->previous);
             }
         } else {
-            $this->Session->setFlash('Impossible de supprimer ce service : il possède au moins un fils', 'growl');
+            $this->Session->setFlash('Impossible de supprimer ce service : il possède au moins un fils', 'growl', array('type'=>'warning'));
             $this->redirect($this->previous);
         }
     }
@@ -139,6 +141,25 @@ class ServicesController extends AppController {
             'conditions' => array('Service.libelle LIKE' => $this->params['url']['q'] . '%'),
             'fields' => array('libelle', 'id')));
         $this->set('data', $data);
+    }
+    
+    function fusionner()
+    {
+        if (empty($this->data['service_a_fusionner']) 
+            OR empty($this->data['Service']['id'])) {
+            $this->Session->setFlash(__('Invalide id pour fusionner le service'), 'growl', array('type'=>'danger'));
+        
+            $this->redirect($this->previous);
+        }
+        
+        try{
+           $this->UserService->fusion($this->data['service_a_fusionner'], $this->data['Service']['id']); 
+           $this->Session->setFlash(__('le service a été fusionné'), 'growl', array('type'=>'sucess'));
+        } catch (Exception $e) {
+            $this->Session->setFlash( $e->getMessage(), 'growl', array('type'=>'danger'));
+        }
+        
+        $this->redirect($this->previous);
     }
 
 }

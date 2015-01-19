@@ -1,7 +1,7 @@
 <?php
-$this->Html->addCrumb('Liste des services', array('action'=>'index'));
+$this->Html->addCrumb(__('Liste des services'), array('action'=>'index'));
 
-$this->Html->addCrumb('Liste des services');
+$this->Html->addCrumb(__('Liste des services'));
 
 echo $this->Bs->tag('h3', __('Ajout d\'un service'));
 
@@ -19,6 +19,6 @@ echo $this->BsForm->select('Service.circuit_defaut_id', $circuits, array(
     'label' => __('Circuit par défaut'),
     'empty' => true, 
     'class' => 'selectone')); 
-echo $this->BsForm->input('Service.order', array('label' => 'Critère de tri')); 
+echo $this->BsForm->input('Service.order', array('label' => __('Critère de tri'))); 
 echo $this->Html2->btnSaveCancel(null, $previous);
 echo $this->BsForm->end(); 

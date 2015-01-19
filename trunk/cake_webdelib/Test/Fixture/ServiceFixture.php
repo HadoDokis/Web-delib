@@ -16,41 +16,68 @@
 
 class ServiceFixture extends CakeTestFixture {
 
-        var $import = array( 'table' => 'services', 'records' => true);
+        var $import = array( 'model' => 'Service', 'records' => false);
+        
+        public $records;
 
 
-        var $records = array(/*
+        /**
+    * Définition des enregistrements.
+    *
+    * @var array
+    */
+    public function init() {
+        $this->records = array(
                 array(
-                        'id' => '1',
-                        'parent_id' => '0',
-                        'order' => null,
-                        'libelle' => 'Défaut',
-                        'circuit_defaut_id' => '1',
-                        'actif' => '1',
-                        'created' => '2009-04-06 08:35:48',
-                        'modified' => '2010-05-03 17:06:58',
+                        'id' => 1,
+                        'parent_id' => 0,
+                        'order' => 'A',
+                        'libelle' => 'Informatique',
+                        'circuit_defaut_id' => 1,
+                        'actif' => true,
+                        'created' => date('Y-m-d H:i:s'),
+                        'modified' => date('Y-m-d H:i:s'),
+                        'lft'=> 1,
+                        'rght'=>6,
                 ),
                 array(
-                        'id' => '2',
-                        'parent_id' => '0',
-                        'order' => null,
-                        'libelle' => 'TEST',
-                        'circuit_defaut_id' => '0',
-                        'actif' => '1',
-                        'created' => '2010-04-27 12:11:17',
-                        'modified' => '2010-04-27 12:11:17',
+                        'id' => 2,
+                        'parent_id' => 1,
+                        'order' => 'AA',
+                        'libelle' => 'Développement',
+                        'circuit_defaut_id' => 1,
+                        'actif' => true,
+                        'created' => date('Y-m-d H:i:s'),
+                        'modified' => date('Y-m-d H:i:s'),
+                        'lft'=>2,
+                        'rght'=>3,
                 ),
                 array(
-                        'id' => '3',
-                        'parent_id' => '2',
-                        'order' => null,
-                        'libelle' => 'Sous - TEST',
-                        'circuit_defaut_id' => '1',
-                        'actif' => '1',
-                        'created' => '2010-04-27 12:11:21',
-                        'modified' => '2010-05-03 17:07:26',
-                ),*/
+                        'id' => 3,
+                        'parent_id' => 1,
+                        'order' => 'AB',
+                        'libelle' => 'Infrastructure',
+                        'circuit_defaut_id' => 1,
+                        'actif' => true,
+                        'created' => date('Y-m-d H:i:s'),
+                        'modified' => date('Y-m-d H:i:s'),
+                        'lft'=>4,
+                        'rght'=>5,
+                ),
+                array(
+                        'id' => 4,
+                        'parent_id' => 0,
+                        'order' => 'B',
+                        'libelle' => 'Ressource',
+                        'circuit_defaut_id' => 2,
+                        'actif' => true,
+                        'created' => date('Y-m-d H:i:s'),
+                        'modified' => date('Y-m-d H:i:s'),
+                        'lft'=>7,
+                        'rght'=>8,
+                ),
         );
+        
+        parent::init();
+    }
 }
-
-?>
