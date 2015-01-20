@@ -3,7 +3,7 @@
 $this->Html->addCrumb('Séance à traiter', array($this->request['controller'], 'action'=>'listerFuturesSeances'));
 
 echo $this->Bs->tag('h3', __('Liste des projets pour la séance du '.$date_seance));
-$this->Html->addCrumb(__('Liste des projets pour la séance du '.$date_seance));
+$this->Html->addCrumb(__('Liste des projets'));
 
 // select masqués utilisés par le javascript
 //echo $this->Form->input('Deliberation.position', array('options'=>$lst_pos, 'id'=>'selectOrdre', 'label'=>false, 'div'=>false, 'style'=>"display:none; width: auto;", 'onChange'=>"onChangeSelectOrdre(this.value);"));
@@ -37,47 +37,48 @@ echo $this->Bs->table(array(array('title' => 'Ordre'),
         ), array('hover', 'striped'));
 $this->BsForm->setFormType('vertical');
 foreach ($projets as $projet) {
-    $delibId=$projet['Deliberation']['id'];
-    $delibPosition = $projet['Deliberationseance']['position'];
-    echo $this->Bs->tableCells(array(
-        //$this->Html->link($delibPosition, "javascript:onClickLinkOrdre(".$delibPosition.", ".$delibId.");", array('id'=>'linkOrdre'.$delibPosition))
-        $this->BsForm->select('Deliberationseance.position',$aPosition, array(
-            'value' =>$delibPosition,
+        //$this->Html->link($delibPosition, "javascript:onClickLinkOrdre(".$delibPosition.", ".$projet['Deliberation']['id'].");", array('id'=>'linkOrdre'.$delibPosition))
+        echo $this->Bs->cell(
+                $this->BsForm->select('Deliberationseance.position', $aPosition, 
+        array(
+            'value' => $projet['Deliberationseance']['position'],
             'autocomplete'=>'off',
             'label'=>false,
-            'class'=>'input-sm select2 selectone',
-            'id'=>'DelibOrdreId'.$delibId,
+            'class'=>'input-sm selectone',
+            'id'=>'DelibOrdreId'.$projet['Deliberation']['id'],
         )).$this->Bs->btn(null,array('controller'=>'seances',
                                         'action'=>'changePosition',
-                                        $seance_id, $delibId) , array(
+                                        $seance_id, $projet['Deliberation']['id']) , array(
             'style'=>'Display:none',
-            'id'=>'DelibOrdreId'.$delibId.'link',
-        )),
-        $delibId/*($delibPosition != 1?
+            'id'=>'DelibOrdreId'.$projet['Deliberation']['id'].'link',
+        )));
+        
+        echo $this->Bs->cell($projet['Deliberation']['id']);/*($delibPosition != 1?
             $this->Html->link(null, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/-1', array('class' => 'link_monter', 'title' => 'Monter', 'escape' => false), false):'').
         ($delibPosition != $lastPosition?
             $this->Html->link(null, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/1', array('class' => 'link_descendre', 'title' => 'Descendre', 'escape' => false), false):'')
-        */,
-        '['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle'],
-        $projet['Service']['libelle'],
-        $this->BsForm->select('deliberation.rapporteur_id',$rapporteurs, array(
+        */
+        echo $this->Bs->cell('['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle']);
+        echo $this->Bs->cell($projet['Service']['libelle']);
+        echo $this->Bs->cell($this->BsForm->select('deliberation.rapporteur_id',$rapporteurs, array(
             'default' =>$projet['Deliberation']['rapporteur_id'],
             'class'=>'input-sm select2 selectone',
-            'id'=>'DelibRappId'.$delibId,
+            'id'=>'DelibRappId'.$projet['Deliberation']['id'],
         )).$this->Bs->btn(null,array('controller'=>'seances',
                                         'action'=>'changeRapporteur',
-                                        $seance_id, $delibId) , array(
+                                        $seance_id, $projet['Deliberation']['id']) , array(
             'style'=>'Display:none',
-            'id'=>'DelibRappId'.$delibId.'link',
-        )),
-        $projet['Deliberation']['objet_delib'],
-        $projet['Deliberation']['titre'],
-        $this->Bs->div('btn-group') .
+            'id'=>'DelibRappId'.$projet['Deliberation']['id'].'link',
+        )));
+        echo $this->Bs->cell($projet['Deliberation']['objet_delib']);
+        echo $this->Bs->cell($projet['Deliberation']['titre']);
+        
+        echo $this->Bs->cell(
+        $this->Bs->div('btn-group-vertical') .
         $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'view', $projet['Deliberation']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'edit', $projet['Deliberation']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
         $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'delete', $projet['Deliberation']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$is_deletable ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer :' . $projet['Deliberation']['objet_delib'] . ' ?') .
-        $this->Bs->close(),
-    ));
+        $this->Bs->close());
 }
 echo $this->Bs->endTable() .
          $this->Html2->btnCancel();
@@ -91,7 +92,7 @@ if ($is_deliberante)
 ?>
 <script type="application/javascript">
 $(document).ready(function() {
-    $('.select2.selectone').select2({
+    $('.selectone').select2({
         width: 'element',
         placeholder: false,
         allowClear: true

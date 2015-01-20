@@ -404,5 +404,48 @@ class Deliberationseance extends AppModel {
             $oIteration->addPart($oDevPart);
         $oMainPart->addElement($oIteration);
     }
+    
+    /**
+     * ordonne la séance passé en paramètre par un tableau d'Ids
+     * @param int $seance_id id de la séance
+     * @param array $sortby id de la séance
+     * @version 4.3
+     */
+    function ordonneSeanceByValue($seance_id, $sortby) {
+        
+        // Critere de tri
+        switch ($sortby) {
+            case 'theme_id':
+                $contain = $sortby_champ = 'Theme.order';
+                break;
+            case 'service_id':
+                $contain = $sortby_champ = 'Service.order';
+                break;
+            case 'rapporteur_id':
+                $contain = $sortby_champ = 'Rapporteur.nom';
+                break;
+            default:
+                $sortby_champ = $sortby;
+                break;
+        }
+
+        $deliberations = $this->Deliberation->find('list', array(
+            'conditions' => array('Deliberation.id' => $this->Seance->getDeliberationsId($seance_id)),
+            'fields' => array('Deliberation.id'),
+            'contain' => (!empty($contain)?array($contain):null),
+            'order' => array("$sortby_champ  ASC"),
+            'recursive' =>-1
+            ));
+        
+        $i = 1;
+        foreach ($deliberations as $delib_id) {
+            $this->recursive=-1;
+            $deliberationseance = $this->findBySeanceIdAndDeliberationId($seance_id, $delib_id,'Deliberationseance.id');
+            
+
+            $this->id = $deliberationseance['Deliberationseance']['id'];
+            $this->saveField('position', $i++);
+        }
+    }
 
 }
