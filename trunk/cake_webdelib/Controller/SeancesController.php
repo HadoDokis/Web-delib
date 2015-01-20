@@ -8,7 +8,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Fck');
 	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav');
-	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
+	var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
 
 	// Gestion des droits
@@ -324,43 +324,10 @@ class SeancesController extends AppController {
     }*/
         
         function sortby($seance_id, $sortby) {
-        $tab_projets = array();
-        $this->Deliberation->Behaviors->load('Containable');
-        $aProjetIds = $this->Seance->getDeliberationsId($seance_id);
-        foreach ($aProjetIds as $projetId)
-            $tab_projets[] = $projet['Deliberation']['id'];
-
-        $condition = array("Deliberation.id" => $tab_projets, "Deliberation.etat <>" => "-1");
-        // Critere de tri
-        if ($sortby == 'theme_id')
-            $sortby = 'Theme.order';
-        elseif ($sortby == 'service_id')
-            $sortby = 'Service.order';
-        elseif ($sortby == 'rapporteur_id')
-            $sortby = 'Rapporteur.nom';
-        elseif ($sortby == 'titre')
-            $sortby = 'Deliberation.titre';
-
-        $deliberations = $this->Deliberation->find('all', array(
-            'conditions' => $condition,
-            'fields' => array('Deliberation.id'),
-            'contain' => array('Theme.order', 'Service.order', 'Rapporteur.nom'),
-            'order' => array("$sortby  ASC")));
-
-        for ($i = 0; $i < count($deliberations); $i++) {
-            $ds = $this->Deliberationseance->find('first', array(
-                'conditions' => array(
-                    'Deliberationseance.seance_id' => $seance_id,
-                    'Deliberationseance.deliberation_id' => $deliberations[$i]['Deliberation']['id']
-                ),
-                'fields' => array('Deliberationseance.id'),
-                'recursive' => -1));
-
-
-            $this->Deliberationseance->id = $ds['Deliberationseance']['id'];
-            $this->Deliberationseance->saveField('position', $i + 1);
-        }
-        return $this->redirect("/seances/afficherProjets/$seance_id");
+            
+            $this->Deliberationseance->ordonneSeanceByValue($seance_id, $sortby);
+            
+            return $this->redirect($this->previous);
         }
 
 	function afficherProjets ($id=null, $sortby=null) {
@@ -432,7 +399,12 @@ class SeancesController extends AppController {
             $this->set('rapporteurs', $this->Acteur->generateListElus());
             $this->set('projets', $projets);
             $this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->Seance->getDate($id))));
-            $this->set('aPosition', array_keys($aProjetIds));
+            $aPosition=array();
+            foreach($aProjetIds as $key=>$value)
+            {
+                $aPosition[$key]=$key;
+            }
+            $this->set('aPosition', $aPosition);
             $this->set('is_deletable', true);
             $this->set('is_deliberante', $this->Seance->isSeanceDeliberante($id));
 	}
