@@ -6,12 +6,12 @@
 class Historique extends AppModel {
 
     var $name = 'Historique';
-
     var $belongsTo = array(
         'Deliberation' => array(
             'className' => 'Deliberation',
             'conditions' => '',
             'order' => '',
+            //'type' => 'right',
             'dependent' => false,
             'foreignKey' => 'delib_id'),
         'User' => array(
@@ -22,6 +22,21 @@ class Historique extends AppModel {
             'foreignKey' => 'user_id')
     );
 
+    function afterFind($results, $primary = false) {
+        if (array_key_exists(0, $results)) {
+            if (array_key_exists('Historique', $results[0])) {
+                if (array_key_exists('user_id', $results[0]['Historique'])) {
+                    foreach ($results as $key => $val) {
+                        if ($val['Historique']['user_id'] == 0) {
+                            $results[$key]['User']['prenom'] = "Historique auto";
+                            $results[$key]['User']['nom'] = '';
+                        }
+                    }
+                }
+            }
+        }
+        return $results;
+    }
 
     function enregistre($delib_id, $user_id, $commentaire) {
         $this->create();
@@ -54,7 +69,8 @@ class Historique extends AppModel {
             'recursive' => -1,
             'fields' => array('commentaire', 'created'),
             'conditions' => array('delib_id' => $deliberationId)));
-        if (empty($historiques)) return;
+        if (empty($historiques))
+            return;
 
         $oStyleIteration = new GDO_IterationType("Historique");
         foreach ($historiques as $historique) {
@@ -64,4 +80,5 @@ class Historique extends AppModel {
         }
         $oMainPart->addElement($oStyleIteration);
     }
+
 }

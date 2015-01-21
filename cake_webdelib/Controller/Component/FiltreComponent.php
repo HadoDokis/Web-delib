@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Gestion des filtres dans les vues index
  * Stockage des listes des options des filtres dans la session
@@ -11,15 +12,12 @@
  *        -'classeDiv' : nom de la classe de la div qui contient l'input
  *        -'retourLigne' : boobleen qui indique si il faut ajouter un div spacer
  */
-
-class FiltreComponent extends Component
-{
+class FiltreComponent extends Component {
 
     public $components = array('Session');
 
     // called before Controller::beforeFilter()
-    function initialize(&$controller, $settings = array())
-    {
+    function initialize(&$controller, $settings = array()) {
         // saving the controller reference for later use
         $this->controller = $controller;
     }
@@ -31,16 +29,14 @@ class FiltreComponent extends Component
      * @param array $options tableau des parmètres optionnels :
      *        'url' : array, optionnel, url du formulaire du filtre
      */
-    function initialisation($name, $dataFiltre, $options = array())
-    {
+    function initialisation($name, $dataFiltre, $options = array()) {
         // Initilisations
         $filtreActif = false;
         $defaultOptions = array('url' => array(
-            'controller' => $this->controller->request->params['controller'],
-            'action' => $this->controller->request->params['action']
+                'controller' => $this->controller->request->params['controller'],
+                'action' => $this->controller->request->params['action']
         ));
         $options = array_merge($defaultOptions, $options);
-
         // Si on a déjà un filtre en session et qu'il est différent alors on supprime l'ancien filtre
         if ($this->Session->check('Filtre') && $this->Session->read('Filtre.nom') != $name) {
             $this->Session->delete('Filtre');
@@ -58,8 +54,7 @@ class FiltreComponent extends Component
                         if (empty($valSessionSelected))
                             $this->Session->write('Filtre.Criteres.' . $nomCritere . '.inputOptions.selected', $dateVide);
                         // Si la date est incomplete : on garde la valeur précédente en session
-                        if ((!empty($valCritere['day']) || !empty($valCritere['month']) || !empty($valCritere['year']))
-                            && (empty($valCritere['day']) || empty($valCritere['month']) || empty($valCritere['year']))
+                        if ((!empty($valCritere['day']) || !empty($valCritere['month']) || !empty($valCritere['year'])) && (empty($valCritere['day']) || empty($valCritere['month']) || empty($valCritere['year']))
                         ) {
                             $this->Session->write('Filtre.Criteres.' . $nomCritere . '.changed', false);
                             $valCritere = $this->Session->read('Filtre.Criteres.' . $nomCritere . '.inputOptions.selected');
@@ -99,8 +94,7 @@ class FiltreComponent extends Component
      * @param string $name : nom du filtre à tester
      * @return bool true si il existe, false dans le cas contraire
      */
-    function exists($name)
-    {
+    function exists($name) {
         return ($this->Session->check('Filtre') && $this->Session->read('Filtre.nom') == $name);
     }
 
@@ -109,8 +103,7 @@ class FiltreComponent extends Component
      * @param string $name : nom du critere du filtre à tester, si vide test l'existence de la présence de critères
      * @return bool true si il existe, false dans le cas contraire
      */
-    function critereExists($name = null)
-    {
+    function critereExists($name = null) {
         if (empty($name))
             return ($this->Session->check('Filtre.Criteres'));
         else
@@ -128,8 +121,7 @@ class FiltreComponent extends Component
      *    - string $classeDiv nom de la classe du div contenant l'input
      *    - booleen $retourLigne indique si il faut ajouter un div spacer
      */
-    function addCritere($nomCritere, $params)
-    {
+    function addCritere($nomCritere, $params) {
         // Initialisation des valeurs par défaut
         $defaut = array(
             'classeDiv' => 'demi',
@@ -145,15 +137,13 @@ class FiltreComponent extends Component
         $this->Session->write('Filtre.Criteres.' . $nomCritere, $params);
         $this->Session->write('Filtre.Criteres.' . $nomCritere . '.inputOptions.selected', '');
         $this->Session->write('Filtre.Criteres.' . $nomCritere . '.changed', false);
-
     }
 
     /**
      * Supprime un critere au filtre courant (en session)
      * @param string $nomCritere : nom du critère à supprimer
      */
-    function delCritere($nomCritere)
-    {
+    function delCritere($nomCritere) {
         $this->Session->delete('Filtre.Criteres.' . $nomCritere);
     }
 
@@ -162,10 +152,10 @@ class FiltreComponent extends Component
      * @param string $nomCritere : nom du critère
      * @param string $valCritere valeur du critère
      */
-    function setCritere($nomCritere, $valCritere)
-    {
+    function setCritere($nomCritere, $valCritere) {
         // initialisation
-        if (!$this->critereExists($nomCritere)) return;
+        if (!$this->critereExists($nomCritere))
+            return;
         // selon le type de critère
         if ($this->Session->check('Filtre.Criteres.' . $nomCritere . '.inputOptions.options')) {
             // select : recherche de l'option correspondante à $valCritere
@@ -184,52 +174,56 @@ class FiltreComponent extends Component
     /**
      * Supprime tous les criteres du filtre (en session)
      */
-    function supprimer()
-    {
+    function supprimer() {
         $this->Session->delete('Filtre');
     }
 
     /**
      * Retourne un tableau de conditions en fonction de la valeur des filtres de la vue
      */
-    function conditions()
-    {
+    function conditions() {
         $conditions = array();
-        if (!$this->Session->check('Filtre.Criteres')) return $conditions;
+        if (!$this->Session->check('Filtre.Criteres'))
+            return $conditions;
         $criteres = $this->Session->read('Filtre.Criteres');
         foreach ($criteres as $critere) {
-            if (!array_key_exists('selected', $critere['inputOptions'])) continue;
-            if (is_array($critere['inputOptions']['selected'])) {
-                if (empty($critere['inputOptions']['selected'])) continue;
-            } else
-                if (strlen($critere['inputOptions']['selected']) == 0) continue;
-            if (array_key_exists('type', $critere['inputOptions']) && $critere['inputOptions']['type'] == 'date') {
-                // date
-                if (strlen($critere['inputOptions']['selected']['day']) > 0
-                    && strlen($critere['inputOptions']['selected']['month']) > 0
-                    && strlen($critere['inputOptions']['selected']['year']) > 0
-                ) {
-                    // la date est renseignée
-                    if (strpos($critere['field'], '>') !== false)
-                        $conditions[$critere['field']] = sprintf("%s-%s-%s 00:00:00", $critere['inputOptions']['selected']['year'], $critere['inputOptions']['selected']['month'], $critere['inputOptions']['selected']['day']);
-                    elseif (strpos($critere['field'], '<') !== false)
-                        $conditions[$critere['field']] = sprintf("%s-%s-%s 23:59:59", $critere['inputOptions']['selected']['year'], $critere['inputOptions']['selected']['month'], $critere['inputOptions']['selected']['day']);
-                    else
-                        $conditions[$critere['field']] = sprintf("%s-%s-%s", $critere['inputOptions']['selected']['year'], $critere['inputOptions']['selected']['month'], $critere['inputOptions']['selected']['day']);
-                }
-            } elseif (array_key_exists('type', $critere['inputOptions']) && $critere['inputOptions']['type'] == 'text') {
-                // text : gestion du méta caractère %
-                if (strpos($critere['inputOptions']['selected'], '%') !== false)
-                    $conditions[$critere['field'] . ' ILIKE'] = $critere['inputOptions']['selected'];
-                else
-                    $conditions[$critere['field']] = $critere['inputOptions']['selected'];
-            } else {
-                // select : cas ou la valeur sélectionnée commence par '>|', '>=|', '<|', '<=|'
-                if (!is_array($critere['inputOptions']['selected']) && strpos($critere['inputOptions']['selected'], '|') !== false) {
-                    $tabCritere = explode('|', $critere['inputOptions']['selected']);
-                    $conditions[$critere['field'] . ' ' . $tabCritere[0]] = $tabCritere[1];
+            //si aucun champ d'une table n est ajouté on ne tient pas conte du champ
+            if (!empty($critere['field'])) {
+                if (!array_key_exists('selected', $critere['inputOptions']))
+                    continue;
+                if (is_array($critere['inputOptions']['selected'])) {
+                    if (empty($critere['inputOptions']['selected']))
+                        continue;
                 } else
-                    $conditions[$critere['field']] = $critere['inputOptions']['selected'];
+                if (strlen($critere['inputOptions']['selected']) == 0)
+                    continue;
+                if (array_key_exists('type', $critere['inputOptions']) && $critere['inputOptions']['type'] == 'date') {
+                    // date
+                    //if (strlen($critere['inputOptions']['selected']['day']) > 0 && strlen($critere['inputOptions']['selected']['month']) > 0 && strlen($critere['inputOptions']['selected']['year']) > 0
+                    //) {
+                    // vérifie qu'il sagit d'une date passé au format yyyy-mm-dd hh:mm:ss avec pas à plusieur espaces
+                    if (preg_match('#([0-9]{4})(-)([0-9]{2})(-)([0-9]{2})(\s*)([0-9]{2})(:)([0-9]{2})(:)([0-9]{2})#', $critere['inputOptions']['selected'])) {
+                        $conditions[$critere['field']] = $critere['inputOptions']['selected'];
+                        /*
+                          if (strpos($critere['field'], '>') !== false)
+                          $conditions[$critere['field']] = sprintf("%s-%s-%s 00:00:00", $critere['inputOptions']['selected']['year'], $critere['inputOptions']['selected']['month'], $critere['inputOptions']['selected']['day']);
+                          elseif (strpos($critere['field'], '<') !== false)
+                          $conditions[$critere['field']] = sprintf("%s-%s-%s 23:59:59", $critere['inputOptions']['selected']['year'], $critere['inputOptions']['selected']['month'], $critere['inputOptions']['selected']['day']);
+                          else
+                          $conditions[$critere['field']] = sprintf("%s-%s-%s", $critere['inputOptions']['selected']['year'], $critere['inputOptions']['selected']['month'], $critere['inputOptions']['selected']['day']);
+                         */
+                    }
+                } elseif (array_key_exists('type', $critere['inputOptions']) && $critere['inputOptions']['type'] == 'text') {
+                    //gestion d'un champ text le paramttre ILIKE est utilisé car insenssible à la casse le cast est la pour la gestions des id
+                    $conditions['CAST('.$critere['field'] . ' AS TEXT) ILIKE'] = '%'.$critere['inputOptions']['selected'].'%';
+                } else {
+                    // select : cas ou la valeur sélectionnée commence par '>|', '>=|', '<|', '<=|'
+                    if (!is_array($critere['inputOptions']['selected']) && strpos($critere['inputOptions']['selected'], '|') !== false) {
+                        $tabCritere = explode('|', $critere['inputOptions']['selected']);
+                        $conditions[$critere['field'] . ' ' . $tabCritere[0]] = $tabCritere[1];
+                    } else
+                        $conditions[$critere['field']] = $critere['inputOptions']['selected'];
+                }
             }
         }
         return $conditions;
@@ -240,9 +234,9 @@ class FiltreComponent extends Component
      * @param string $nomCritere : nom du filtre à tester si vide test l'existence de la présence de critères
      * @return bool true si la valeur a changé, false dans le cas contraire ou si le critère n'existe pas
      */
-    function critereChanged($nomCritere)
-    {
-        if (!$this->critereExists($nomCritere)) return false;
+    function critereChanged($nomCritere) {
+        if (!$this->critereExists($nomCritere))
+            return false;
 
         return $this->Session->read('Filtre.Criteres.' . $nomCritere . '.changed');
     }
@@ -252,9 +246,9 @@ class FiltreComponent extends Component
      * @param string $nomCritere : nom du filtre à tester si vide test l'existence de la présence de critères
      * @return bool valeur sélectionnée
      */
-    function critereSelected($nomCritere)
-    {
-        if (!$this->critereExists($nomCritere)) return false;
+    function critereSelected($nomCritere) {
+        if (!$this->critereExists($nomCritere))
+            return false;
 
         return $this->Session->read('Filtre.Criteres.' . $nomCritere . '.inputOptions.selected');
     }
