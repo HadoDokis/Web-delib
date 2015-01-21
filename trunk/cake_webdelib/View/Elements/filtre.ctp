@@ -14,11 +14,10 @@ if (empty($criteres)) return;
     $note1 = false;
     $newLine=true;
     $line=array(1=>'6',2=>'6',3=>'4');
+    //debug($criteres);
     foreach($criteres as $nom => $options) {
-
         $filtre .= ($newLine==true?$this->Bs->row():'').$this->Bs->col('xs'.(!empty($options['column'])?$line[$options['column']]:$line[2]));
         //$options['onChange'] = "critereChange(this);";
-
         if (array_key_exists('type', $options['inputOptions'])) {
 
                 switch ($options['inputOptions']['type']){
@@ -31,8 +30,16 @@ if (empty($criteres)) return;
 
                         break;
                     case 'date':
-                        //TODO à faire
-                        //echo $this->Html->div($critere['classeDiv'], $datePicker->picker('Critere.'.$nom, $options));
+                        $filtre .= $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min');
+                        $filtre .= $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr');
+                        $filtre .=  $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+                        $filtre .=  $this->BsForm->datetimepicker('Critere.'.$nom, $options['Datepicker'],$options['inputOptions']);
+                        break;
+                    case 'checkbox':
+                        $filtre .=  $this->BsForm->checkbox('Critere.'.$nom,$options['inputOptions']);
+                        break;
+                    case 'select':
+                        $filtre .= $this->BsForm->select('Critere.'.$nom,$options['attribute'],$options['inputOptions']);
                         break;
                     default:
                         $filtre .=  $this->BsForm->input('Critere.'.$nom, $options['inputOptions']);
@@ -51,9 +58,9 @@ if (empty($criteres)) return;
         }
 }
 
-    if ($note1){
-        $filtre .=  $this->Html->tag('em',"* Le caractère '%' est employé comme métacaractère (joker), il remplace un ou plusieurs caractères et ignore la casse. Exemple : \"dupon%\" (commence par Dupon)");
-    }
+    /*if ($note1){
+        $filtre .= $this->Html->tag('em',__("* Vous pouvez indiquer seulement les premières lètres du terme recherchés, par exemple \"dup\" pour trouver \"Dupon\""));    
+    }*/
 
     $filtre .= $this->Bs->div('btn-group col-md-offset-' . $this->BsForm->getLeft(), null).
     $this->Bs->btn('Réinitialiser','#' ,array(
