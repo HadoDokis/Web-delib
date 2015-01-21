@@ -32,7 +32,7 @@ $affichage .= $this->Bs->close();
 echo $affichage;
 $affichage = $this->Bs->row();
 $affichage .= $this->Bs->col('lg12');
-$bouton = $this->Html2->btnCancel($contenuVue['lienRetour']['url']);
+$bouton = $this->Html2->btnCancel($previous);
 $affichage .= $this->Html->tag('div', $bouton, array('class' => 'actions'));
 $affichage .= $this->Bs->close();
 $affichage .= $this->Bs->close();
