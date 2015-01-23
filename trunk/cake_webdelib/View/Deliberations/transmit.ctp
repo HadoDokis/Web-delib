@@ -6,7 +6,8 @@ if ($this->action == 'autreActesEnvoyes') {
 } elseif ($this->action == 'transmit') {
     echo $this->Bs->tag('h3', 'Télétransmission des délibérations');
 }
-echo $this->Bs->div('alert alert-info', __('La Classification enregistrée date du'). ' ' .$dateClassification).
+
+echo $this->Bs->div('alert alert-info', __('La Classification enregistrée date du'). ' '. $this->Time->i18nFormat($dateClassification, '%A %d %B %G')).
 $this->Bs->div();
 
 
@@ -86,7 +87,7 @@ foreach ($deliberations as $deliberation) {
     if (isset($deliberation['Deliberation']['code_retour'])) {
     switch ($deliberation['Deliberation']['code_retour']) {
         case 4:
-            $etat = $this->Html->link("Acquittement reçu le " . $deliberation['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $deliberation['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
+            $etat = $this->Html->link("Acquittement reçu le " . $this->Time->i18nFormat($deliberation['Deliberation']['tdt_ar_date'], '%A %d %B %G à %k:%M'), array('action'=>'getBordereauTdt', $deliberation['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
             break;
         case 3:
             $etat =  'Transmis';
@@ -101,8 +102,9 @@ foreach ($deliberations as $deliberation) {
             break;
     }
 }else{
-    if (!empty($deliberation['Deliberation']['tdt_dateAR'])){
-        $etat =  $this->Html->link("Acquittement reçu le " . $deliberation['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $deliberation['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
+    if (!empty($deliberation['Deliberation']['tdt_ar_date'])){
+        $tdt_ar_date = $deliberation['Deliberation']['tdt_ar_date'];
+        $etat =  $this->Html->link("Acquittement reçu le ".$this->Time->i18nFormat($deliberation['Deliberation']['tdt_ar_date'], '%A %d %B %G à %k:%M') , array('action'=>'getBordereauTdt', $deliberation['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
     }else{
         $etat =  'En attente de réception';
     }

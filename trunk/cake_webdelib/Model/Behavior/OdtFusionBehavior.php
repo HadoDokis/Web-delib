@@ -16,7 +16,7 @@
  */
 
 App::import( 'Behavior', 'Gedooo.GedoooFusionConverter' );
-
+App::uses('CakeTime', 'Utility');
 
 class OdtFusionBehavior extends GedoooFusionConverterBehavior {
 
@@ -196,8 +196,8 @@ class OdtFusionBehavior extends GedoooFusionConverterBehavior {
     private function _setVariablesCommunesFusion(Model &$model, &$aData) {
         // variables des dates du jour
         if ($model->modelTemplateOdtInfos->hasUserFieldDeclared('date_jour_courant')) {
-            $myDate = new DateComponent;
-            $aData['date_jour_courant']= $myDate->frenchDate(strtotime("now"));
+            $//myDate = new DateComponent;
+            $aData['date_jour_courant']= CakeTime::i18nFormat(date('Y-m-d H:i:s'), '%A %d %B %G à %k:%M');
         }
         if ($model->modelTemplateOdtInfos->hasUserFieldDeclared('date_du_jour'))
             $aData['date_du_jour'] = date("d/m/Y", strtotime("now"));

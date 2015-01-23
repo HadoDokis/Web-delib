@@ -478,7 +478,7 @@ class PostseancesController extends AppController {
                     'conditions' => array('Deliberation.id' => $delib_id),
                     'fields' => array('Deliberation.id', 'Deliberation.num_delib', 'Deliberation.objet_delib', 'Deliberation.titre',
                         'Deliberation.delib_pdf', 'Deliberation.tdt_data_pdf', 'Deliberation.tdt_data_bordereau_pdf', 'Deliberation.deliberation',
-                        'Deliberation.deliberation_size', 'Deliberation.signature', 'Deliberation.tdt_dateAR'),
+                        'Deliberation.deliberation_size', 'Deliberation.signature', 'Deliberation.tdt_ar_date'),
                     'contain' => array(
                         'Service' => array('fields' => array('libelle')),
                         'Theme' => array('fields' => array('libelle')),
@@ -499,7 +499,7 @@ class PostseancesController extends AppController {
                 $doc->appendChild($this->_createElement($dom, 'redacteurACTE', $delib['Redacteur']['prenom'] . ' ' . $delib['Redacteur']['nom']));
                 $doc->appendChild($this->_createElement($dom, 'rapporteurACTE', $delib['Rapporteur']['prenom'] . ' ' . $delib['Rapporteur']['nom']));
                 $doc->appendChild($this->_createElement($dom, 'typeseanceACTE', $type_seance));
-                $doc->appendChild($this->_createElement($dom, 'dateAR', $delib['Deliberation']['tdt_dateAR'])); // utile ??
+                $doc->appendChild($this->_createElement($dom, 'dateAR', $delib['Deliberation']['tdt_ar_date'])); // utile ??
                 //<listeCommissions>
                 $seances_id = $this->Deliberation->getSeancesid($delib_id);
 
@@ -730,7 +730,7 @@ class PostseancesController extends AppController {
                     'conditions' => array('Deliberation.id' => $delib_id),
                     'fields' => array('Deliberation.id', 'Deliberation.num_delib', 'Deliberation.objet_delib', 'Deliberation.titre',
                         'Deliberation.delib_pdf', 'Deliberation.tdt_data_pdf', 'Deliberation.tdt_data_bordereau_pdf', 'Deliberation.deliberation',
-                        'Deliberation.deliberation_size', 'Deliberation.signature', 'Deliberation.tdt_dateAR','Deliberation.tdt_ar', 'Deliberation.signee', 'Deliberation.parapheur_etat', 'Deliberation.tdt_id'),
+                        'Deliberation.deliberation_size', 'Deliberation.signature', 'Deliberation.tdt_ar_date','Deliberation.tdt_ar', 'Deliberation.signee', 'Deliberation.parapheur_etat', 'Deliberation.tdt_id'),
                     'contain' => array(
                         'Service' => array('fields' => array('libelle')),
                         'Theme' => array('fields' => array('libelle')),
@@ -753,7 +753,6 @@ class PostseancesController extends AppController {
                 $doc->appendChild($this->_createElement($dom, 'redacteurACTE', $delib['Redacteur']['prenom'] . ' ' . $delib['Redacteur']['nom']));
                 $doc->appendChild($this->_createElement($dom, 'rapporteurACTE', $delib['Rapporteur']['prenom'] . ' ' . $delib['Rapporteur']['nom']));
                 $doc->appendChild($this->_createElement($dom, 'typeseanceACTE', $type_seance));
-                $doc->appendChild($this->_createElement($dom, 'dateAR', $delib['Deliberation']['tdt_dateAR'])); // utile ??
                 //<listeCommissions>
                 $seances_id = $this->Deliberation->getSeancesid($delib_id);
 

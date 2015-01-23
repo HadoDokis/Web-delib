@@ -72,7 +72,7 @@ class Signature extends ConnecteurLib  {
             $libelleSousType = $circuit_id;
         }
         $targetName = $delib['Deliberation']['objet_delib'];
-        $date_limite = !empty($delib['Deliberation']['date_limite']) ? $delib['Deliberation']['date_limite'] : null;
+        $date_limite = !empty($delib['Deliberation']['date_limite']) ? $this->Time->i18nFormat($deliberation['Deliberation']['date_limite'], '%A %d %B %G à %k:%M'): null;
 
         $ret = $this->Iparapheur->creerDossierWebservice(
             $targetName,

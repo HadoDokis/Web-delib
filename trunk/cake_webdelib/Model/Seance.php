@@ -265,6 +265,11 @@ class Seance extends AppModel
         }
     }
 
+    /**
+     * 
+     * @param type $seance_id
+     * @return string
+     */
     function getDate($seance_id)
     {
         if (empty($seance_id))
@@ -366,7 +371,7 @@ class Seance extends AppModel
         if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe.'_lettres')) {
             include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
             $this->Date = new DateComponent;
-            $aData['date_'.$suffixe.'_lettres']=$this->Date->dateLettres($dateSeanceTimeStamp);//, 'text'));
+            $aData['date_'.$suffixe.'_lettres']=AppTools::dateLettres($dateSeanceTimeStamp);//, 'text'));
         }
         if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe))
             $aData['date_'.$suffixe]= date('d/m/Y', $dateSeanceTimeStamp);//, 'text'));
