@@ -18,7 +18,7 @@ echo $this->Html->script('utils.js');
 
 $classification='';
 if (!empty($dateClassification)) {
-    $classification = __('La Classification enregistrée date du') . ' ' . $dateClassification;
+    $classification = __('La Classification enregistrée date du') . ' ' . $this->Time->i18nFormat($dateClassification, '%A %d %B %G');
 $this->Bs->div();
 } else {
     $classification = $this->Bs->icon('warning') . __('Classification non téléchargée');

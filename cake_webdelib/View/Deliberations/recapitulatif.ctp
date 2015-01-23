@@ -48,7 +48,7 @@
         </tr>
         <tr>
             <td><?php echo $this->Form->label('Deliberation.date_limite', 'Date limite'); ?></td>
-            <td><?php echo $deliberation['Deliberation']['date_limite']; ?></td>
+            <td><?php echo $this->Time->i18nFormat($deliberation['Deliberation']['date_limite'], '%A %d %B %G à %k:%M'); ?></td>
         </tr>
         <?php if (!empty($annexes)) { ?>
             <tr>

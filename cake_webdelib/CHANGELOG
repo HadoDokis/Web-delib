@@ -1,5 +1,6 @@
 4.3.0
 ======
+- Ajout des champ de recherche sur les projets, sur la date de création du projet et sur la date de reception en prefecture
 - Ajout d'un historique global
 - Fusion de 2 services ensemble
 - Ajout de la possibilité de voir les annexes lors des télétranmission vers le tdt

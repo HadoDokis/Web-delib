@@ -193,7 +193,7 @@ class Tdt extends ConnecteurLib {
         $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
         if (!empty($infos['data']['date_ar']))
-            return $infos['data']['date_ar'];////$this->Date->frenchDate(strtotime($date))
+            return $infos['data']['date_ar'];// A vérifier que la date est au format date et non comme la fonction french
         else
             return false;
     }

@@ -159,8 +159,7 @@ class S2lowComponent extends Component {
         $doc = new DOMDocument();
         if (!@$doc->load(Configure::read('S2LOW_CLASSIFICATION')))
             return false;
-        $date = $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
-        return ($this->Date->frenchDate(strtotime($date)));
+        return $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
     }
 
     function sendMail($data) {
@@ -206,16 +205,15 @@ class S2lowComponent extends Component {
     
      function getDateAR($fluxRetour) {
         // +21 Correspond a la longueur du string : actes:DateReception"
-        $date = substr($fluxRetour, strpos($fluxRetour, 'actes:DateReception') + 21, 10);
-        return ($this->Date->frenchDate(strtotime($date)));
+       return substr($fluxRetour, strpos($fluxRetour, 'actes:DateReception') + 21, 10);
     }
     
-    function getIDActe() {
+
+    function getIDActe() { // Utilisé ? 
         
         $fluxRetour;
         // +21 Correspond a la longueur du string : actes:DateReception"
-        $date = substr($fluxRetour, strpos($fluxRetour, 'actes:DateReception') + 21, 10);
-        return ($this->Date->frenchDate(strtotime($date)));
+        return substr($fluxRetour, strpos($fluxRetour, 'actes:DateReception') + 21, 10);
     }
 
     function getNewFlux($tdt_id) {
