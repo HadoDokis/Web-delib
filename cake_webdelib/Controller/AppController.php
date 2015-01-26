@@ -32,13 +32,24 @@ App::uses('Controller', 'Controller');
  */
 class AppController extends Controller {
     public $theme = "Webdelib";
-    public $components = array('Acl', 'Droits', 'Session'/*,'DebugKit.Toolbar'*/);
+    public $components = array('Acl', 'Droits', 'Session',
+        'History' => array(
+                'unAuthorize' =>  array('/components',
+                                        '/download',
+                                        '/genereToken',
+                                        '/files',
+                )
+            )/*,'DebugKit.Toolbar'*/);
     public $helpers = array('Html', 'Form', 'Session', 'Html2','Bs','BsForm');
     public $aucunDroit = array('Pages:format', 'Pages:service');
     public $previous;
     public $user_id;
 
     function beforeFilter() {
+        // Désactivation du cache du navigateur: (quand on revient en arrière dans l'historique de
+        // navigation, la page n'est pas cachée du côté du navigateur, donc il ré-exécute la demande)
+        CakeResponse::disableCache();
+        
         $this->set('Droits', $this->Droits);
         $this->set('name', $this->name);
         $this->set('Droit', $this->Droits);
@@ -46,56 +57,18 @@ class AppController extends Controller {
         $this->set('lienDeconnexion', true);
         $this->set('session_service_id', $this->Session->read('user.User.service'));
         $this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
+
         //Si utilisateur connecté
         if ($this->Session->check('user')) {
             $this->set('infoUser', $this->Session->read('user.User.prenom') . ' ' . $this->Session->read('user.User.nom'));
             $this->set('Collectivite', array('nom'=> $this->Session->read('user.collective.nom')));
             $this->user_id = $this->Session->read('user.User.id');
             $this->set('user_id', $this->user_id);
-            $historique = $this->Session->check('user.history') ? $this->Session->read('user.history') : array();
-            if (empty($this->params['requested'])
-                && stripos($this->params->here, 'ajax') === false // méthode ajax
-                && stripos($this->params->here, 'components') === false    
-                && stripos($this->params->here, 'download') === false // téléchargement de fichier
-                && stripos($this->params->here, 'genereToken') === false // méthode de génération
-                && stripos($this->params->here, 'genereFusion') === false // méthode de génération
-                && stripos($this->params->here, 'files/') === false // liens vers fichiers
-                && stripos($this->params->here, 'sendToTdt') === false // pas de vue associée
-                && stripos($this->params->here, 'deliberations/getBordereauTdt') === false // pas de vue associée
-                && stripos($this->params->here, 'deliberations/attribuercircuit') === false // méthode ajax   
-                && stripos($this->params->here, 'deliberations/getTampon') === false // pas de vue associée
-                && stripos($this->params->here, 'deliberations/classification') === false // popup
-            ) {
-                //Ajoute l'url courante au début du tableau
-                if (empty($historique) || $historique[0] != $this->params->here) {
-                    //Insère l'url courant en début de tableau (indice 0)
-                    array_unshift($historique, $this->params->here);
-                }
-
-                if (count($historique) > 2 && $historique[0] == $historique[2]) {
-                    array_shift($historique);
-                    array_shift($historique);
-                }
-
-                //Si ne garder que 6 éléments dans l'historique
-                if (count($historique) > 6)
-                    array_pop($historique);
-            }
-            $this->Session->write('user.history', $historique);
-            if (count($historique) > 1) {
-                $this->here = $historique[0];
-                $this->previous = $historique[1];
-                $this->Session->write('previous_url', $this->previous);
-                $this->set('previous', $this->previous);
-            }elseif (count($historique) ==1)  {
-                $this->here = '/';
-                $this->previous = $this->here;
-                $this->Session->write('previous_url', $this->previous);
-                $this->set('previous', $this->previous);
-            }
-            if ($this->Session->check('user.User.theme'))
+            
+            if ($this->Session->check('user.User.theme')) {
                 $this->theme = $this->Session->read('user.User.theme');
-        }
+            }
+        }  
         // ????
         //if (CRON_DISPATCHER) return true;
         // Exception pour le bon déroulement de cron
@@ -107,7 +80,6 @@ class AppController extends Controller {
             && $this->action != 'writeSession'
             && substr(substr($_SERVER['REQUEST_URI'], strlen($this->base)), 0, strlen('/cakeflow/traitements/traiter_mail')) != '/cakeflow/traitements/traiter_mail'
         ) {
-
             //si il n'y a pas d'utilisateur connecte en session
             if (!$this->Session->Check('user')) {
                 return $this->redirect(array('controller' => 'users', 'action' => 'login', 'plugin' => ''));
@@ -128,31 +100,10 @@ class AppController extends Controller {
         }
     }
 
-    function afterFilter() { //FIXME : lastUrl devrait être enregistré dans beforeFilter ?
-        //Navigation (lien de retour)
-        if ($this->Session->check('user.User')) {
-            $this->Session->write('user.User.myUrl', $this->here);
-            // Attention au cas de elements
-            if ($this->here != $this->referer()
-                && $this->here != '/deliberations/classification'
-                && $this->here != '/seances/voter'
-                && $this->here != '/deliberations/listerPresences'
-            ) {
-                $pos = strpos(Router::url(null, true), 'Ajax');
-                if ($pos === false) {
-                    $this->Session->write('user.User.lasturl', $this->referer());
-                }
-            }
-        }
+    function afterFilter() {
     }
 
     function beforeRender() {
-        if ($this->Session->check('user.User')) {
-            $pos = strpos(Router::url(null, true), 'Ajax');
-            if ($pos === false) {
-                $this->Session->write('user.User.oldurl', Router::url(null, true));
-            }
-        }
     }
 
     function _selectedArray($data, $key = 'id') {

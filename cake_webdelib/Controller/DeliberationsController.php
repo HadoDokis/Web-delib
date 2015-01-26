@@ -4543,7 +4543,7 @@ class DeliberationsController extends AppController {
     }
 
     function getTampon($delib_id) {
-
+        
         $delib = $this->Deliberation->find('first', array(
             'conditions' => array('id' => $delib_id),
             'fields' => array('num_delib', 'tdt_data_pdf'),
@@ -4572,6 +4572,7 @@ class DeliberationsController extends AppController {
             'fields' => array('num_delib', 'tdt_data_bordereau_pdf'),
             'recursive' => -1
         ));
+        
         if (empty($delib['Deliberation']['tdt_data_bordereau_pdf'])) {
             $this->Session->setFlash('le bordereau n\'est pas encore disponible', 'growl', array('type' => 'warning'));
             $this->redirect($this->here);
@@ -4670,5 +4671,11 @@ class DeliberationsController extends AppController {
         $this->response->download($filename);
         return $this->response;
     }
-
+    
+    
+    public function beforeFilter() {
+        parent::beforeFilter();
+        
+        $this->History->deny('getBordereauTdt','attribuercircuit','getTampon','sendToTdt','downloadDelib');
+    }
 }
