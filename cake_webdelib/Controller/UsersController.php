@@ -1,6 +1,6 @@
 <?php
 class UsersController extends AppController {
-	public $uses = array('User', 'Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
+    public $uses = array('User', 'Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
     public $components = array('Menu', 'Dbdroits', 'Filtre', 'Paginator');
 
     // Gestion des droits
@@ -80,8 +80,9 @@ class UsersController extends AppController {
                     'title' => 'Filtre sur les prénoms des utilisateurs'),
                 'column' => 3));
         }
+        
         $this->paginate = array('User' => array(
-            'conditions' => $conditions,
+            //'conditions' => $conditions,
             'fields' => array('DISTINCT User.id', 'User.login', 'User.nom', 'User.prenom', 'User.telfixe', 'User.telmobile'),
             'limit' => 20,
             'contain' => array(
@@ -414,6 +415,7 @@ class UsersController extends AppController {
 
     function login()
     {
+        $this->History->reset();
         //pas de message d'erreur
         $this->set('errorMsg', '');
         $collective = $this->Collectivite->read(array('logo','nom'), 1);
@@ -502,10 +504,11 @@ class UsersController extends AppController {
                 // Chargement du menu dans la session
                 $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
                 $this->Session->setFlash('Bienvenue sur Webdelib', 'growl');
-                if (!empty($this->previous))
+                if (!empty($this->previous)) {
                     $this->redirect($this->previous);
-                else
-                    $this->redirect('/');
+                } else {
+                    $this->redirect(array('controller' => 'pages', 'action' => 'home'));
+                }
             } else {
                 //sinon on prépare le message d'erreur a afficher dans la vue
                 $this->set('errorMsg', 'Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
@@ -517,10 +520,11 @@ class UsersController extends AppController {
     }
 
     function logout() {
-		//on supprime les infos utilisateur de la session
+        //on supprime les infos utilisateur de la session
+        $this->History->reset();
         $this->Session->delete('user');
-		$this->redirect(array('action' => 'login'));
-	}
+        $this->redirect(array('action' => 'login'));
+    }
 
     function changeMdp($id)
     {
@@ -548,11 +552,11 @@ class UsersController extends AppController {
     }
 
     function changeFormat($id) {
-		$this->Session->delete('user.format.sortie');
-		$this->Session->write('user.format.sortie', $id);
-		//redirection sur la page où on était avant de changer de service
-		$this->redirect($this->previous);
-	}
+        $this->Session->delete('user.format.sortie');
+        $this->Session->write('user.format.sortie', $id);
+        //redirection sur la page où on était avant de changer de service
+        $this->redirect($this->previous);
+    }
 
 	function _checkLDAP($login, $password) {
 		//  $DN = Configure::read('LDAP_UID')."=$login, ".LDAP_BASE_DN;
@@ -619,16 +623,21 @@ class UsersController extends AppController {
             $this->User->id = $this->user_id;
             if ($this->User->saveField('theme', $this->data['User']['theme'])) {
                 $this->Session->write('user.User.theme', $this->data['User']['theme']);
-                $this->Session->setFlash('Nouveau thême utilisateur : '.$this->data['User']['theme'], 'growl');
+                $this->Session->setFlash('Nouveau thême utilisateur : ' . $this->data['User']['theme'], 'growl');
                 return $this->redirect($this->previous);
-            } else
+            } else {
                 $this->Session->setFlash('Erreur lors du changement de thême.', 'growl');
+            }
         }
         App::uses('Folder', 'Utility');
         $Themed = new Folder(APP . 'View' . DS . 'Themed');
         $dossiers = $Themed->read();
 
-        $this->set('themes', array_combine($dossiers[0],$dossiers[0]));
+        $this->set('themes', array_combine($dossiers[0], $dossiers[0]));
+    }
+    
+    public function beforeFilter() {
+        parent::beforeFilter();
     }
 
 }

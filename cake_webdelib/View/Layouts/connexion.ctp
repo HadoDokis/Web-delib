@@ -22,7 +22,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     <meta charset="utf-8">
     <title>
         <?php echo $cakeDescription ?>:
-        <?php echo $title_for_layout; ?>
+        <?php echo $this->fetch('title'); ?>
     </title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <?php

@@ -74,7 +74,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
       </button>
         <?php
         echo $this->Html->link(
-            $this->Html->image('webdelib_petit.png', array('id' => 'logo', 'class' => 'logo', 'alt' => 'Webdelib')), array('controller' => 'pages', 'action' => 'home'), array('escape' => false, 'title' => 'Bienvenue dans Webdelib', 'class' => 'navbar-brand')
+            $this->Html->image('webdelib_petit.png', array('id' => 'logo', 'class' => 'logo', 'alt' => 'Webdelib')), array('plugin'=> null,'controller' => 'pages', 'action' => 'home'), array('escape' => false, 'title' => 'Bienvenue dans Webdelib', 'class' => 'navbar-brand')
         );
         ?>
     </div>
@@ -82,10 +82,14 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li class="active" style='margin-left: 230px'>
-            <?php echo $this->Html->link($Collectivite['nom'], array('controller' => 'pages', 'action' => 'home')); ?>
+            <?php echo $this->Html->link($Collectivite['nom'], array(
+                'plugin'=> null, 
+                'controller' => 'pages', 
+                'action' => 'home')); ?>
         </li>
          <li>
              <?php echo $this->Bs->btn(null, array(
+                                                    'plugin'=> null,
                                                     'controller' => 'pages', 
                                                     'action' => 'home'
                                                     ),
