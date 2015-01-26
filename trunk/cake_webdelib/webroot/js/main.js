@@ -3,6 +3,48 @@
  *
  * Instructions javascript à éxectuter au lancement de toutes les pages
  */
+
+/**
+ * A partir de la date passé on va renvoyer une nouvelle date 
+ * en fonction de la combobox et de l'écart passé. L'utilisation 
+ * d'une variable date permet de gérer les fin de mois,jour,...
+ * 
+ * @param {type} dateS date de départ au format yyyy-mm-dd hh:mm:ss
+ * @param {type} nb valeur à rajouter 1 => +, -1 => -
+ * @returns {String} retourne la date correctement formaté avec l'écarrt voulue
+ */
+function modifierDate(nom, dateSplit, nb) {
+    var separators = ['-', ' ', ':'];
+    //on récupère tout les champs un a un
+    var tab = dateSplit.split(new RegExp(separators.join('|'), 'g'));
+    //on construit la date
+    var now = new Date(tab[0], tab[1] - 1, tab[2], tab[3], 0, 0, 0);
+    //on ajoute la valeur voulue en fonction de la combox
+    if ($(nom).val() == 0) {
+        now.setHours(now.getHours() + nb);
+    } else if ($(nom).val() == 1) {
+        now.setDate(now.getDate() + nb);
+    } else if ($(nom).val() == 2) {
+        now.setMonth(now.getMonth() + nb);
+    } else if ($(nom).val() == 3) {
+        now.setFullYear(now.getFullYear() + nb);
+    }
+
+    return now.getFullYear() + '-' + ajoutZero((now.getMonth() + 1).toString()) + '-' + ajoutZero(now.getDate().toString()) + ' ' + ajoutZero(now.getHours().toString()) + ':' + ajoutZero(now.getMinutes().toString()) + ':' + ajoutZero(now.getSeconds().toString());
+}
+/**
+ * Ajoute un zero en début de chaine si la taille de data est egale à 1
+ * 
+ * @param {type} data
+ * @returns {String}
+ */
+function ajoutZero(data) {
+    if (data.length == 1) {
+        return '0' + data;
+    }
+    return data;
+}
+
 $(document).ready(function () {
 
     /**
@@ -35,8 +77,8 @@ $(document).ready(function () {
      */
     $('#boutonValider').click(function () {
         var empty_flds = 0;
-        $('input,textarea,select').filter('[required]:not(:visible):not(:disabled)').each(function(){
-            if ($.trim($(this).val()) == ''){
+        $('input,textarea,select').filter('[required]:not(:visible):not(:disabled)').each(function () {
+            if ($.trim($(this).val()) == '') {
                 empty_flds++;
             }
         });
@@ -44,7 +86,7 @@ $(document).ready(function () {
             if (empty_flds == 1)
                 $.jGrowl('<strong>Action impossible :</strong><br>Un champ obligatoire est vide.');
             else
-                $.jGrowl('<strong>Action impossible :</strong><br>'+empty_flds+' champs obligatoires n\'ont pas été saisis');
+                $.jGrowl('<strong>Action impossible :</strong><br>' + empty_flds + ' champs obligatoires n\'ont pas été saisis');
             return false;
         }
     });
@@ -56,9 +98,9 @@ $(document).ready(function () {
         width: 'resolve',
         allowClear: true,
         width: "100%",
-        placeholder: 'Sélection vide'
+                placeholder: 'Sélection vide'
     });
-    
+
     $(".selectmultiple").select2({
         width: "100%",
         allowClear: true,
@@ -67,7 +109,7 @@ $(document).ready(function () {
             return $.trim(object.text);
         }
     });
-    
+
     $(".selectone, #filtreCriteres select").select2({
         //width: "element",
         allowClear: true,
@@ -76,4 +118,6 @@ $(document).ready(function () {
             return $.trim(object.text);
         }
     });
+
+
 });
