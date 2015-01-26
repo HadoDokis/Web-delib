@@ -1,5 +1,4 @@
 <?php
-
 class HistoriquesController extends AppController {
 
     // Gestion des droits
@@ -10,7 +9,6 @@ class HistoriquesController extends AppController {
      * Affichage de l'historique des commentaires 
      */
     public function index() {
-
         //on initialise le filtre avec le retour de donné pour paramétrer le filtre
         $this->Filtre->initialisation('Historique', $this->data);
         //initialisation des conditions pour la recherche
@@ -45,7 +43,6 @@ class HistoriquesController extends AppController {
         //initialisation des champs du filtres
         $this->_ajouterFiltre();
         $this->set('historique', $historique);
-        $this->render('historique');
     }
 
     /**
@@ -118,7 +115,7 @@ class HistoriquesController extends AppController {
             'column' => 3));
 
         $this->Filtre->addCritere('dateFin', array(
-            'field' => 'Historique.created < DATE',
+            'field' => 'Historique.created <= DATE',
             'inputOptions' => array(
                 'label' => __('date de fin', true),
                 'type' => 'date',

@@ -1,4 +1,5 @@
 <?php
+echo $this->Html->script('main.js');
 $this->Html->addCrumb('Historiques');
 echo $this->element('filtre');
 echo $this->Bs->tag('h3', 'Historiques');
@@ -24,7 +25,7 @@ foreach ($historique as $data) {
 }
 $affichage .= $this->Bs->endTable();
 //affichage des pages numéroté
-$affichage .= $this->element('paginator',array('paginator' => $this->Paginator));
+$affichage .= $this->element('paginator', array('paginator' => $this->Paginator));
 $affichage .= $this->Bs->close();
 $affichage .= $this->Bs->close();
 echo $affichage;
@@ -33,11 +34,23 @@ echo $affichage;
     $(document).ready(function () {
 
         $('#CritereDifDate').on('change', function () {
-            if ($('#CritereDateDebut').val() != '') {
-                $('#CritereDateFin').val(modifierDate($('#CritereDateDebut').val(), 1));
+            var date = new Date(Date.now());
+            if ($('#CritereDateDebut').val() == '' && $('#CritereDateFin').val() == '') {
+                $('#CritereDateDebut').val(date.getFullYear() + '-' + ajoutZero((date.getMonth() + 1).toString()) + '-' + ajoutZero(date.getDate().toString()) + ' ' + ajoutZero(date.getHours().toString()) + ':00:00');
+                $('#CritereDateFin').val(modifierDate('#CritereDifDate', $('#CritereDateDebut').val(), 1));
+            } else if ($('#CritereDateDebut').val() == '' && $('#CritereDateFin').val() != '') {
+                $('#CritereDateDebut').val(modifierDate('#CritereDifDate', $('#CritereDateFin').val(), -1));
+            } else {
+                $('#CritereDateFin').val(modifierDate('#CritereDifDate', $('#CritereDateDebut').val(), 1));
             }
         });
-        
+
+        $('#CritereDifDate').on('change', function () {
+            if ($('#CritereDateDebut').val() != '') {
+                $('#CritereDateFin').val(modifierDate('#CritereDifDate', $('#CritereDateDebut').val(), 1));
+            }
+        });
+
         $('#CritereDateDebut').on('change', function () {
             //si la date de fin est null on initialise avec la date de début
             if ($('#CritereDateFin').val() == '') {
@@ -45,7 +58,7 @@ echo $affichage;
             }
             //si la combobox contient une valeur on rajoute l'écart a la date de sortie
             if ($('#CritereDifDate').val() != '') {
-                $('#CritereDateFin').val(modifierDate($('#CritereDateDebut').val(), 1));
+                $('#CritereDateFin').val(modifierDate('#CritereDifDate', $('#CritereDateDebut').val(), 1));
             }
         });
         $('#CritereDateFin').on('change', function () {
@@ -55,50 +68,10 @@ echo $affichage;
             }
             //si la combobox contient une valeur on rajoute l'écart a la date de début
             if ($('#CritereDifDate').val() != '') {
-                $('#CritereDateDebut').val(modifierDate($('#CritereDateFin').val(), -1));
+                $('#CritereDateDebut').val(modifierDate('#CritereDifDate', $('#CritereDateFin').val(), -1));
             }
         });
-        /**
-         * A partir de la date passé on va renvoyer une nouvelle date 
-         * en fonction de la combobox et de l'écart passé. L'utilisation 
-         * d'une variable date permet de gérer les fin de mois,jour,...
-         * 
-         * @param {type} dateS date de départ au format yyyy-mm-dd hh:mm:ss
-         * @param {type} nb valeur à rajouter 1 => +, -1 => -
-         * @returns {String} retourne la date correctement formaté avec l'écarrt voulue
-         */
-        function modifierDate(dateS, nb) {
 
-            var separators = ['-', ' ', ':'];
-            //on récupère tout les champs un a un
-            var tab = dateS.split(new RegExp(separators.join('|'), 'g'));
-            //on construit la date
-            var now = new Date(tab[0], tab[1], tab[2], tab[3], 0, 0, 0);
-            //on ajoute la valeur voulue en fonction de la combox
-            if ($('#CritereDifDate').val() == 0) {
-                now.setHours(now.getHours() + nb);
-            } else if ($('#CritereDifDate').val() == 1) {
-                now.setDate(now.getDate() + nb);
-            } else if ($('#CritereDifDate').val() == 2) {
-                now.setMonth(now.getMonth() + nb);
-            } else if ($('#CritereDifDate').val() == 3) {
-                now.setFullYear(now.getFullYear() + nb);
-            }
-
-            return now.getFullYear() + '-' + ajoutZero(now.getMonth().toString()) + '-' + ajoutZero(now.getDate().toString()) + ' ' + ajoutZero(now.getHours().toString()) + ':' + ajoutZero(now.getMinutes().toString()) + ':' + ajoutZero(now.getSeconds().toString());
-        }
-        /**
-         * Ajoute un zero en début de chaine si la taille de data est egale à 1
-         * 
-         * @param {type} data
-         * @returns {String}
-         */
-        function ajoutZero(data) {
-            if (data.length == 1) {
-                return '0' + data;
-            }
-            return data;
-        }
     });
 
 </script>
