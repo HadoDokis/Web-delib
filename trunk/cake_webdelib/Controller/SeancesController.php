@@ -6,37 +6,39 @@ App::uses('CakeTime', 'Utility');
 
 class SeancesController extends AppController {
 
-    var $name = 'Seances';
-    var $helpers = array('Fck');
-    var $components = array('Date', 'Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido', 'SabreDav');
-    var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
-    var $cacheAction = 0;
-    // Gestion des droits
-    var $demandeDroit = array(
-        'listerFuturesSeances',
-        'add',
-        'Calendrier',
-        'listerAnciennesSeances');
-    var $commeDroit = array(
-        'delete' => 'Seances:listerFuturesSeances',
-        'edit' => 'Seances:listerFuturesSeances',
-        'afficherProjets' => 'Seances:listerFuturesSeances',
-        'reportePositionsSeanceDeliberante' => 'Seances:listerFuturesSeances',
-        'genererConvoc' => 'Seances:listerFuturesSeances',
-        'multiodj' => 'Seances:listerFuturesSeances',
-        'changePosition' => 'Seances:listerFuturesSeances',
-        'saisirDebatGlobal' => 'Seances:listerFuturesSeances',
-        'details' => 'Seances:listerFuturesSeances',
-        'saisirDebat' => 'Seances:listerFuturesSeances',
-        'voter' => 'Seances:listerFuturesSeances',
-        'changeRapporteur' => 'Seances:listerFuturesSeances',
-        'detailsAvis' => 'Seances:listerFuturesSeances',
-        'donnerAvis' => 'Seances:listerFuturesSeances',
-        'saisirSecretaire' => 'Seances:listerFuturesSeances',
-        'getListActeurs' => 'Seances:listerFuturesSeances',
-        'sendConvocations' => 'Seances:listerFuturesSeances',
-        'sendToIdelibre' => 'Seances:listerFuturesSeances',
-        'saisirCommentaire' => 'Seances:listerFuturesSeances');
+	var $name = 'Seances';
+	var $helpers = array('Fck');
+	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav');
+	var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
+	var $cacheAction = 0;
+
+	// Gestion des droits
+	var $demandeDroit = array(
+			'listerFuturesSeances',
+			'add',
+			'Calendrier',
+			'listerAnciennesSeances');
+
+	var $commeDroit = array(
+			'delete'           => 'Seances:index',
+			'edit'             => 'Seances:index',
+			'afficherProjets'  => 'Seances:index',
+			'reportePositionsSeanceDeliberante'  => 'Seances:index',
+			'genererConvoc'    => 'Seances:index',
+			'multiodj'         => 'Seances:index',
+			'changePosition'   => 'Seances:index',
+			'saisirDebatGlobal'=> 'Seances:index',
+			'details'          => 'Seances:index',
+			'saisirDebat'      => 'Seances:index',
+			'voter'            => 'Seances:index',
+			'changeRapporteur' => 'Seances:index',
+			'detailsAvis'      => 'Seances:index',
+			'donnerAvis'       => 'Seances:index',
+			'saisirSecretaire' => 'Seances:index',
+			'getListActeurs'   => 'Seances:index',
+                        'sendConvocations' => 'Seances:index',
+                        'sendToIdelibre' => 'Seances:index',
+			'saisirCommentaire'=>'Seances:index');
 
     function add($timestamp = null) {
         // initialisation
@@ -198,7 +200,7 @@ class SeancesController extends AppController {
         }
     }
 
-    function listerFuturesSeances() {
+    function index() {
         $this->set('AFFICHE_CONVOCS_ANONYME', Configure::read('AFFICHE_CONVOCS_ANONYME'));
         $this->set('use_pastell', Configure::read('USE_PASTELL'));
         $this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
@@ -351,69 +353,47 @@ class SeancesController extends AppController {
         }
 
         $aProjetIds = $this->Seance->getDeliberationsId($id);
-        $projets = array();
-        foreach ($aProjetIds as $projet_id) {
-            $projets[] = $this->Deliberation->find('first', array(
-                'conditions' => array("Deliberation.id" => $projet_id),
-                'fields' => array(
-                    'Deliberation.objet_delib',
-                    'Deliberation.titre',
-                    'Deliberation.id',
-                    'Deliberation.etat',
-                    'Deliberation.typeacte_id',
-                    'Deliberation.num_delib',
-                    'Deliberation.rapporteur_id',
+            $projets = $this->Deliberation->find('all', array(
+            'conditions' => array("Deliberation.id" => $aProjetIds),
+            'fields' => array(
+                    'objet_delib',
+                    'titre',
+                    'id',
+                    'etat',
+                    'typeacte_id',
+                    'num_delib',
+                    'rapporteur_id',
                     'Deliberationseance.position'
                 ),
-                'contain' => array(
-                    'Theme' => array('fields' => array('order', 'libelle')),
-                    'Service' => array('fields' => array('order', 'libelle')),
+            'contain' => array(
+                'Theme'=>array('fields'=>array('order','libelle')), 
+                'Service'=>array('fields'=>array('order','libelle')),  
                 ),
-                'joins' => array($this->Deliberation->join('Deliberationseance', array('type' => 'INNER'))),
-                'order' => array("$sortby_champ  ASC")));
+            'joins' => array($this->Deliberation->join('Deliberationseance',array( 'type' => 'INNER' ))),
+            'order' => array("$sortby_champ  ASC")));
+            
+            $this->set('seance_id', $id);
+            $this->set('rapporteurs', $this->Acteur->generateListElus());
+            $this->set('projets', $projets);
+            $this->set('date_seance', $this->Seance->getDate($id));
+            $aPosition=array();
+            foreach($aProjetIds as $key=>$value)
+            {
+                $aPosition[$key]=$key;
+            }
+            $this->set('aPosition', $aPosition);
+            $this->set('is_deletable', true);
+            $this->set('is_deliberante', $this->Seance->isSeanceDeliberante($id));
+	}
+        
+        function reportePositionsSeanceDeliberante ($seance_id) {
+            if ($this->Seance->Deliberationseance->reportePositionsSeanceDeliberante($seance_id))
+                $this->Session->setFlash('Report effectué.', 'growl');
+            else
+                $this->Session->setFlash('Report non effectué.', 'growl', array('type'=>'erreur'));
+                
+            $this->redirect('/seances/afficherProjets/'.$seance_id);
         }
-        /*
-         * $conditions[] = 'Deliberation.id IN ('
-          . 'SELECT deliberations_seances.deliberation_id'
-          . ' FROM deliberations_seances '
-          . ' INNER JOIN seances  ON ( seances.id=deliberations_seances.seance_id )'
-          . ' INNER JOIN typeseances ON ( typeseances.id=seances.type_id )'
-          . ' INNER JOIN typeactes  ON ( typeactes.id=Deliberation.typeacte_id )'
-          . ' WHERE typeseances.action = 0 AND Typeacte.teletransmettre = TRUE'
-          . ' )';
-         * $lst_pos=array();
-          for ($i=0; $i<count($projets); $i++) {
-          $theme = $this->Deliberation->Theme->find('first',
-          array('conditions' => array('Theme.id' => $deliberations[$i]['Deliberation']['theme_id'] ),
-          'recursive'  => -1));
-
-          $service = $this->Deliberation->Service->find('first', array('conditions' => array('Service.id' => $deliberations[$i]['Deliberation']['service_id'] ),
-          'recursive'  => -1));
-          $deliberations[$i]['Theme'] = $theme['Theme'];
-          $deliberations[$i]['Service'] = $service['Service'];
-          $lst_pos[$i+1] = $i+1;
-          } */
-        $this->set('seance_id', $id);
-        $this->set('rapporteurs', $this->Acteur->generateListElus());
-        $this->set('projets', $projets);
-        $this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->Seance->getDate($id))));
-        $aPosition = array();
-        foreach ($aProjetIds as $key => $value) {
-            $aPosition[$key] = $key;
-        }
-        $this->set('aPosition', $aPosition);
-        $this->set('is_deletable', true);
-        $this->set('is_deliberante', $this->Seance->isSeanceDeliberante($id));
-    }
-
-    function reportePositionsSeanceDeliberante($seance_id) {
-        if ($this->Seance->Deliberationseance->reportePositionsSeanceDeliberante($seance_id))
-            $this->Session->setFlash('Report effectué.', 'growl');
-        else
-            $this->Session->setFlash('Report non effectué.', 'growl', array('type' => 'erreur'));
-
-        $this->redirect('/seances/afficherProjets/' . $seance_id);
-    }
 
     function changeRapporteur($seance_id, $newRapporteur, $delib_id) {
         $this->Deliberation->id = $delib_id;
@@ -421,50 +401,49 @@ class SeancesController extends AppController {
             $this->redirect(array('action' => 'afficherProjets', $seance_id));
     }
 
-    function details($seance_id = null) {
+    function details ($seance_id = null) {
+        
         $this->set('seance_id', $seance_id);
-        $this->Deliberation->Behaviors->attach('Containable');
 
-        $this->Seance->Behaviors->attach('Containable');
         $seance = $this->Seance->find('first', array(
-            'conditions' => array('Seance.id' => $seance_id),
-            'fields' => array('Seance.type_id'),
-            'contain' => array('Typeseance.libelle', 'Typeseance.action'))
+        'conditions' => array('Seance.id'=> $seance_id),
+        'fields' => array('Seance.type_id'),
+        'contain' => array('Typeseance.libelle', 'Typeseance.action'))
         );
 
         $delibs = $this->Seance->getDeliberationsId($seance_id);
-        $deliberations = array();
-        foreach ($delibs as $delib_id) {
-            $deliberations[] = $this->Deliberation->find('first', array(
-                'conditions' => array('Deliberation.id' => $delib_id),
-                'contain' => array(
-                    'Theme.libelle',
-                    'Rapporteur.nom',
-                    'Rapporteur.prenom',
-                    'President.nom',
-                    'President.prenom',
-                    'Service.libelle'
-                ),
+        $deliberations = $this->Deliberation->find('all',
+            array(
                 'fields' => array(
                     'Deliberation.objet_delib',
                     'Deliberation.titre',
                     'Deliberation.id',
                     'Deliberation.etat',
                     'Deliberation.typeacte_id',
-                    'Deliberation.num_delib'
-            )));
-        }
-        for ($i = 0; $i < count($deliberations); $i++) {
-            $id_service = $deliberations[$i]['Service']['id'];
+                    'Deliberation.num_delib',
+                    'Deliberationseance.position'
+                ),
+
+                'contain' => array(
+                    'Theme'=>array('fields'=>array('libelle')), 
+                    'Service'=>array('fields'=>array('libelle')),
+                    'Rapporteur'=>array('fields'=>array('nom','prenom')),
+                    'President'=>array('fields'=>array('nom','prenom')),
+                ),
+                'conditions' => array('Deliberation.id' => $delibs),
+                'joins' => array($this->Deliberation->join('Deliberationseance',array( 'type' => 'INNER' ))),
+                'order'=>'Deliberationseance.position ASC'
+                ));
+        
+        for ($i=0; $i<count($deliberations); $i++) {
             $deliberations[$i]['Deliberation']['is_delib'] = $this->Deliberation->is_delib($deliberations[$i]['Deliberation']['id']);
-            $deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+            $deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($deliberations[$i]['Service']['id']);
             $deliberations[$i]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
         }
-        $this->set('seance', $seance);
-        $this->set('deliberations', $deliberations);
-        $date_tmpstp = strtotime($this->Seance->getDate($seance_id));
-        $this->set('date_tmpstp', $date_tmpstp);
-        $this->set('date_seance', $this->Date->frenchDateConvocation($date_tmpstp));
+        
+        $this->set('seance',$seance);
+        $this->set('deliberations',$deliberations);
+        $this->set('date_seance', $this->Seance->getDate($seance_id));
         $this->set('seance_id', $seance_id);
     }
 
@@ -595,6 +574,19 @@ class SeancesController extends AppController {
                 $this->redirect(array('action' => 'details', $seance_id));
             }
         }
+    }
+    
+    function resetVote($seance_id, $projet_id)
+    {
+        try {
+            $this->Deliberation->resetVote($projet_id, $seance_id);
+            $this->Session->setFlash('Le vote du projet a été supprimé', 'growl', array('type' => 'sucess'));
+        
+        } catch (Exception $e) {
+            $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'danger'));
+        }
+
+        $this->redirect($this->previous);
     }
 
     function saisirDebat($delib_id = null, $seance_id = null) {
@@ -1312,71 +1304,7 @@ class SeancesController extends AppController {
         header('Content-Disposition: attachment; filename="Convocation.zip"');
         die($content);
     }
-
-    function multiodj() {
-        $this->Progress->start(200, 100, 200, '#FFCC00', '#006699');
-        $this->Progress->at(0, 'Démarrage de la génération');
-        Configure::write('debug', 0);
-        $model_id = $this->data['Seance']['model_id'];
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
-        $format = $this->Session->read('user.format.sortie');
-        $dyn_path = "/files/generee/seances/";
-        $nomFichier = "odj";
-        $path = WEBROOT_PATH . $dyn_path;
-        if (!file_exists($path))
-            mkdir($path);
-
-        if (empty($format))
-            $format = 0;
-
-        if ($format == 0) {
-            $sMimeType = "application/pdf";
-            $format = "pdf";
-        } elseif ($format == 1) {
-            $sMimeType = "application/vnd.oasis.opendocument.text";
-            $format = "odt";
-        }
-        $this->Progress->at(5, 'Recherche en base de données');
-        $content = $this->Typeseance->Modelprojet->find('first', array('conditions' => array('id' => $model_id),
-            'fields' => array('content'),
-            'recursive' => -1));
-        $oTemplate = new GDO_ContentType("", "modele.odt", "application/vnd.oasis.opendocument.text", "binary", $content['Modelprojet']['content']);
-        $oMainPart = new GDO_PartType();
-
-        $seances = new GDO_IterationType("Seances");
-        $cpt = 1;
-        foreach ($this->data['Seance'] as $id => $bool) {
-            $this->Progress->at(5 + $cpt * (50 / count($this->data['Seance'])), 'Envoi les informations des séances à Gedooo...');
-            if ($bool == 1) {
-                $seance_id = substr($id, 3, strlen($id));
-                $seances->addPart($this->Seance->makeBalise($seance_id, null, true, array('Deliberation.etat >=' => 0)));
-            }
-            $cpt++;
-        }
-        $oMainPart->addElement($seances);
-        $this->Progress->at(60, 'Fusion en cours...');
-        $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
-        $oFusion->process();
-        $oFusion->SendContentToFile($path . $nomFichier . ".odt");
-        $this->Progress->at(80, 'Conversion du fichier au bon format...');
-        $content = $this->Conversion->convertirFichier($path . $nomFichier . ".odt", 'odt', $format);
-        $this->Gedooo->createFile($path, $nomFichier . '.' . $format, $content);
-        $this->Progress->at(100, 'Chargement des résultats...');
-        $listFiles[FULL_BASE_URL . $dyn_path . $nomFichier] = 'Document généré';
-        $this->Session->write('user.User.lasturl', '/seances/listerFuturesSeances');
-        $this->Session->write('tmp.listFiles', $listFiles);
-        $this->Session->write('tmp.format', $format);
-        $this->Progress->end('/models/getGeneration');
-    }
-
+    
     /**
      * Envoi d'une séance et ses projets à i-delibRE
      * @param integer $seance_id
