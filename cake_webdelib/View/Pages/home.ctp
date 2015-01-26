@@ -22,6 +22,6 @@ if ($Droit->check($this->Session->read('user.User.id'), 'Deliberations:mesProjet
             array('controller' => 'deliberations', 'action' => 'mesProjetsRedaction'), array('return', 'render' => 'banette')) .
     $this->Bs->tag(null, '<br/><br/>');
 }
-if ($Droit->check($this->Session->read('user.User.id'), 'Seances:listerFuturesSeances')) {
-    echo $this->requestAction(array('controller' => 'seances', 'action' => 'listerFuturesSeances'), array('return', 'render' => 'banette'));
+if ($Droit->check($this->Session->read('user.User.id'), 'Seances:index')) {
+    echo $this->requestAction(array('controller' => 'seances', 'action' => 'index'), array('return', 'render' => 'banette'));
 }
