@@ -3241,8 +3241,20 @@ class DeliberationsController extends AppController {
 
             if (!empty($this->data['Deliberation']['texte'])) {
                 $texte = $this->data['Deliberation']['texte'];
-                $conditions['AND']["OR"]["Deliberation.objet ILIKE"] = $texte;
-                $conditions['AND']["OR"]["Deliberation.titre ILIKE"] = $texte;
+                $conditions['AND']["OR"]["Deliberation.objet ILIKE"] = '%'.$texte.'%';
+                $conditions['AND']["OR"]["Deliberation.titre ILIKE"] = '%'.$texte.'%';
+            }
+            if (!empty($this->data['Deliberation']['dateDebut'])) {
+                $conditions['Deliberation.created >= DATE'] = $this->data['Deliberation']['dateDebut'];
+            }
+            if (!empty($this->data['Deliberation']['dateFin'])) {
+                $conditions['Deliberation.created <= DATE'] = $this->data['Deliberation']['dateFin'];
+            }
+            if (!empty($this->data['Deliberation']['dateDebutAr'])) {
+                $conditions['Deliberation.tdt_ar_date >= DATE'] = $this->data['Deliberation']['dateDebutAr'];
+            }
+            if (!empty($this->data['Deliberation']['dateFinAr'])) {
+                $conditions['Deliberation.tdt_ar_date <= DATE'] = $this->data['Deliberation']['dateFinAr'];
             }
             if (empty($conditions["Deliberation.id"]) || (!isset($conditions["Deliberation.id"]))) {
                 if ((isset($this->data['Deliberation']['seance_id'])) && (!empty($this->data['Deliberation']['seance_id']))) {
