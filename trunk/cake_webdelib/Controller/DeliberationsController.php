@@ -193,8 +193,8 @@ class DeliberationsController extends AppController {
 
         // Mise en forme des données du projet ou de la délibération
         $projet['Deliberation']['libelleEtat'] = $this->Deliberation->libelleEtat($projet['Deliberation']['etat']);
-        if (!empty($this->data['Seance']['date']))
-            $projet['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($projet['Seance']['date']));
+        /* if (!empty($this->data['Seance']['date']))
+          $projet['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($projet['Seance']['date'])); */
         // initialisation des séances
         $listeTypeSeance = array();
         $projet['listeSeances'] = array();
@@ -460,7 +460,7 @@ class DeliberationsController extends AppController {
                     'contain' => array('Typeseance.libelle', 'Typeseance.retard'),
                     'fields' => array('Seance.id', 'Seance.type_id', 'Seance.date')));
                 foreach ($seances_tmp as $seance)
-                    $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'] . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+                    $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'];// . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
 
                 foreach ($seances_tmp as $seance) {
                     $bSeanceok = false;
@@ -475,7 +475,7 @@ class DeliberationsController extends AppController {
                     }
 
                     if ($bSeanceok)
-                        $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'] . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+                        $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'];// . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
                 }
             }
 
@@ -741,8 +741,10 @@ class DeliberationsController extends AppController {
                         $bSeanceok = true;
                 }
 
-                if ($bSeanceok)
-                    $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'] . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+                if ($bSeanceok) {
+                    $seances[$seance['Seance']['id']]['libelle'] = $seance['Typeseance']['libelle'];
+                    $seances[$seance['Seance']['id']]['date'] = $seance['Seance']['date'];  
+                }
             }
 
             if (Configure::read('DELIBERATIONS_MULTIPLES')) {
@@ -1164,7 +1166,8 @@ class DeliberationsController extends AppController {
                         if (time() < mktime(0, 0, 0, date("m", $iTime), date("d", $iTime) - $seance['Typeseance']['retard'], date("Y", $iTime)))
                             $bSeanceok = true;
                     } else
-                        $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'] . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+                        $seances[$seance['Seance']['id']]['libelle'] = $seance['Typeseance']['libelle'];
+                        $seances[$seance['Seance']['id']]['date'] = $seance['Seance']['date'];  
                 }
 
                 if (Configure::read('DELIBERATIONS_MULTIPLES')) {
@@ -1581,8 +1584,6 @@ class DeliberationsController extends AppController {
                 $action = 'view';
                 $this->set('tab_anterieure', $this->Deliberation->chercherVersionAnterieure($projet['Deliberation']['id'], $nb_recursion, array(), $action));
 
-                if (!empty($projet['Seance']['date']))
-                    $projet['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($projet['Seance']['date']));
                 $id_service = $projet['Deliberation']['service_id'];
                 $projet['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
                 $projet['Circuit']['libelle'] = $this->Circuit->getLibelle($projet['Deliberation']['circuit_id']);
@@ -1775,9 +1776,9 @@ class DeliberationsController extends AppController {
                         'date' => $seance['Seance']['date']);
                 }
             }
-            /*if (!empty($deliberations[$i]['Deliberation']['tdt_ar_date'])) {
-                $deliberations[$i]['Deliberation']['tdt_ar_date'] = $this->Time->i18nFormat($deliberations[$i]['Deliberation']['tdt_ar_date'], '%d/%m/%Y à %k:%M');
-            }*/
+            /* if (!empty($deliberations[$i]['Deliberation']['tdt_ar_date'])) {
+              $deliberations[$i]['Deliberation']['tdt_ar_date'] = $this->Time->i18nFormat($deliberations[$i]['Deliberation']['tdt_ar_date'], '%d/%m/%Y à %k:%M');
+              } */
         }
 
         $seances = $this->Seance->find('all', array(
@@ -1786,7 +1787,7 @@ class DeliberationsController extends AppController {
             'fields' => array('Seance.id', 'Seance.date')));
 
         foreach ($seances as $seance)
-            $toutes_seances[$seance['Seance']['id']] = $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+            $toutes_seances[$seance['Seance']['id']] = $seance['Seance']['date'];
 
         $this->_ajouterFiltre($deliberations);
 
@@ -2680,7 +2681,7 @@ class DeliberationsController extends AppController {
                 $projet['Deliberation'] = $projet[0];
             $this->request->data[$i]['last_viseur'] = $this->Traitement->getLastVisaTrigger($projet['Deliberation']['id']);
             $this->request->data[$i]['Deliberation']['num_pref'] = $this->request->data[$i]['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($this->request->data[$i]['Deliberation']['num_pref']);
-
+                            
             if ($projet['Deliberation']['etat'] == 0 && $projet['Deliberation']['anterieure_id'] != 0)
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['id'], -2);
             elseif ($projet['Deliberation']['etat'] == 1) {
@@ -2697,15 +2698,15 @@ class DeliberationsController extends AppController {
             $this->request->data[$i]['listeSeances'] = array();
             if (isset($projet['Deliberationseance']) && !empty($projet['Deliberationseance'])) {
                 foreach ($projet['Deliberationseance'] as $keySeance => $seance) {
-                    if (empty($seance['Seance']['Typeseance']['color']))
-                        $seance['Seance']['Typeseance']['color'] = '';
+                    if(!empty($seance['Seance']['id'])){
                     $this->request->data[$i]['listeSeances'][] = array('seance_id' => $seance['Seance']['id'],
                         'type_id' => $seance['Seance']['type_id'],
-                        'color' => $seance['Seance']['Typeseance']['color'],
+                        'color' => !empty($seance['Seance']['Typeseance']['color'])?$seance['Seance']['Typeseance']['color']:'',
                         'action' => $seance['Seance']['Typeseance']['action'],
                         'libelle' => $seance['Seance']['Typeseance']['libelle'],
                         'date' => $seance['Seance']['date']);
                     $listeTypeSeance[] = $seance['Seance']['type_id'];
+                    }
                 }
             }
             if (isset($projet['Deliberationtypeseance']) && !empty($projet['Deliberationtypeseance'])) {
@@ -2713,7 +2714,7 @@ class DeliberationsController extends AppController {
                     if (!in_array($typeseance['Typeseance']['id'], $listeTypeSeance))
                         $this->request->data[$i]['listeSeances'][] = array('seance_id' => NULL,
                             'type_id' => $typeseance['Typeseance']['id'],
-                            'color' => $typeseance['Typeseance']['color'],
+                            'color' => !empty($typeseance['Typeseance']['color'])?$typeseance['Typeseance']['color']:'',
                             'action' => $typeseance['Typeseance']['action'],
                             'libelle' => $typeseance['Typeseance']['libelle'],
                             'date' => NULL);
@@ -3311,7 +3312,7 @@ class DeliberationsController extends AppController {
     }
 
     function tousLesProjetsRecherche() {
-        
+
         if (empty($this->data)) {
             $this->set('action', array('controller' => 'deliberations', 'action' => 'tousLesProjetsRecherche'));
             $this->set('titreVue', 'Recherche multi-critères parmi tous les projets');
@@ -3360,8 +3361,8 @@ class DeliberationsController extends AppController {
                 $conditions["Deliberation.etat"] = $this->data['Deliberation']['etat'];
             if (!empty($this->data['Deliberation']['texte'])) {
                 $texte = $this->data['Deliberation']['texte'];
-                $conditions["OR"]["Deliberation.objet ILIKE"] = $texte;
-                $conditions["OR"]["Deliberation.titre ILIKE"] = $texte;
+                $conditions["OR"]["Deliberation.objet ILIKE"] = '%'.$texte.'%';
+                $conditions["OR"]["Deliberation.titre ILIKE"] = '%'.$texte.'%';
             }
             if (!empty($this->data['Deliberation']['dateDebut'])) {
                 $conditions['Deliberation.created >= DATE'] = $this->data['Deliberation']['dateDebut'];
@@ -4387,7 +4388,7 @@ class DeliberationsController extends AppController {
                 $iTime = strtotime($seance['Seance']['date']);
                 //Voir tous les projets ou tous les futurs dates avec un delais respecté
                 if ($canEditAll || time() < mktime(0, 0, 0, date('m', $iTime), date('d', $iTime) - $seance['Typeseance']['retard'], date('Y', $iTime)))
-                    $result[$seance['Seance']['id']] = $seance['Typeseance']['libelle'] . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+                    $result[$seance['Seance']['id']] = $seance['Typeseance']['libelle'] . ' : ' . CakeTime::i18nFormat($seance['Seance']['date'], '%A %d %B %G à %k:%M');
             }
         }
         $this->set('seances', $result);
