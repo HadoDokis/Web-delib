@@ -24,7 +24,7 @@ class DeliberationsController extends AppController {
 
     public $helpers = array('Fck');
     public $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
-    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Date', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'S2low', 'Paginator');
+    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'S2low', 'Paginator');
     public $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch', 'genereFusionToClient');
     // Gestion des droits
     public $demandeDroit = array(
