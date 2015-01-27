@@ -232,7 +232,6 @@ class SeancesController extends AppController {
 
             for ($i = 0; $i < count($seances); $i++) {
                 $seances[$i]['Seance']['dateEn'] = $seances[$i]['Seance']['date'];
-                $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
             }
             $this->set('seances', $seances);
         }
@@ -245,9 +244,6 @@ class SeancesController extends AppController {
                 'contain' => array('Typeseance.libelle'),
                 'fields' => array('Seance.id', 'Seance.date', 'Seance.type_id'),
                 'ordre' => 'date asc'));
-
-            for ($i = 0; $i < count($seances); $i++)
-                $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
             $this->set('seances', $seances);
         }
     }
@@ -599,8 +595,7 @@ class SeancesController extends AppController {
             'fields' => array('traitee', 'pv_figes', 'date'),
             'contain' => array('Typeseance.action')
         ));
-
-        $seance['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+        
         $this->set('seance', $seance);
 
         if ($seance['Seance']['pv_figes'] == 1) {
@@ -716,7 +711,7 @@ class SeancesController extends AppController {
         }
 
         $this->set('deliberations', $deliberations);
-        $this->set('date_seance', $this->Date->frenchDateConvocation($date_tmpstp));
+        $this->set('date_seance', $date_tmpstp);
         $this->set('seance_id', $seance_id);
         $this->set('canClose', (($date_tmpstp <= strtotime(date('Y-m-d H:i:s'))) && $toutesVisees));
     }
@@ -1070,7 +1065,7 @@ class SeancesController extends AppController {
                         //S2low est encodé en iso
                         $content = utf8_decode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $template))));
                         $subject = utf8_decode('Convocation à la séance \'' . $seance['Typeseance']['libelle'] . '\' du : '
-                                . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
+                                . CakeTime::i18nFormat($seance['Seance']['date'], '%A %d %B %G à %k:%M'));
 
                         $data['mailto'] = $acteur['Acteur']['email'];
                         $data['objet'] = $subject;
@@ -1086,7 +1081,7 @@ class SeancesController extends AppController {
                     } else {
                         $content = str_replace(array_keys($searchReplace), array_values($searchReplace), $template);
                         $subject = 'Convocation à la séance \'' . $seance['Typeseance']['libelle'] . '\' du : '
-                                . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+                                . CakeTime::i18nFormat($seance['Seance']['date'], '%A %d %B %G à %k:%M');
 
                         if (Configure::read("SMTP_USE")) {
                             $this->Email->smtpOptions = array('port' => Configure::read("SMTP_PORT"),

@@ -11,7 +11,7 @@ echo $this->Bs->tag('h3', 'Post-séances') .
 foreach ($seances as $seance) {
     echo $this->Bs->tableCells(array(
         $seance['Typeseance']['libelle'],
-        $seance['Seance']['date'],
+        $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M'),
         $this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'postseances', 'action' => 'afficherProjets', $seance['Seance']['id']), 
                 array('type' => 'default', 
@@ -55,11 +55,11 @@ foreach ($seances as $seance) {
                 $this->Bs->nestedList(array(
                 $this->Bs->link('PV sommaire', array('controller' => 'postseances', 'action' => 'downloadPV', $seance['Seance']['id'] , 'sommaire'), 
                     array(
-                            'title' => 'Télécharger le pv sommaire pour la séance du ' . $seance['Seance']['date'],
+                            'title' => 'Télécharger le pv sommaire pour la séance du ' . $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M'),
                           )),
                 $this->Bs->link('PV complet', array('controller' => 'postseances', 'action' => 'downloadPV', $seance['Seance']['id'] , 'complet'), 
                     array(
-                    'title' => 'Télécharger le pv complet pour la séance du ' . $seance['Seance']['date']
+                    'title' => 'Télécharger le pv complet pour la séance du ' . $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M')
                     ))
                 )
                 , array('class'=>'dropdown-menu','role'=>'menu')).
@@ -75,12 +75,12 @@ foreach ($seances as $seance) {
                 $this->Bs->nestedList(array(
                 $this->Bs->link('PV sommaire', array('controller' => 'postseances', 'action' => 'genereFusionToClient', $seance['Seance']['id'] , 'pvsommaire'), 
                     array(
-                            'title' => 'Génération du pv sommaire pour la séance du ' . $seance['Seance']['date'],
+                            'title' => 'Génération du pv sommaire pour la séance du ' . $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M'),
                             'class' => 'waiter',
                             'data-modal' => 'Génération du PV sommaire en cours')),
                 $this->Bs->link('PV complet', array('controller' => 'postseances', 'action' => 'genereFusionToClient', $seance['Seance']['id'] , 'pvdetaille'), 
                     array(
-                    'title' => 'Génération du pv complet pour la séance du ' . $seance['Seance']['date'],
+                    'title' => 'Génération du pv complet pour la séance du ' . $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M'),
                     'class' => 'waiter',
                     'data-modal' => 'Génération du PV complet en cours'))
                 )

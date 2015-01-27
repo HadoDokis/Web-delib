@@ -8,7 +8,6 @@
  * @lastmodified    $Date: 2007-10-14
  */
 App::uses('File', 'Utility');
-
 class Infosup extends AppModel {
 
     public $belongsTo = array(
@@ -318,9 +317,8 @@ class Infosup extends AppModel {
         if ($champs['text'] != null) {
             return (new GDO_FieldType($champs_def['Infosupdef']['code'], $champs['text'], 'lines'));
         } elseif ($champs['date'] != null) {
-            include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
-            $this->Date = new DateComponent;
-            return (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']), 'date'));
+            App::uses('CakeTime', 'Utility');
+            return (new GDO_FieldType($champs_def['Infosupdef']['code'], CakeTime::i18nFormat($champs['date'], '%A %d %B %G à %k:%M'), 'date'));
         } elseif ($champs['file_size'] != 0) {
             $name = str_replace(" ", "_", $champs['file_name']);
             return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', $champs['content']));
@@ -370,10 +368,9 @@ class Infosup extends AppModel {
                 $return[$infosup['Infosupdef']['code']] = array('type' => 'string',
                     'content' => $infosup['Infosup']['content']);
             } elseif ($infosup['Infosupdef']['type'] == 'date') {
-                include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
-                $this->Date = new DateComponent;
+                App::uses('CakeTime', 'Utility');
                 $return[$infosup['Infosupdef']['code']] = array('type' => 'string',
-                    'content' => $this->Date->frDate($infosup['Infosup']['date']));
+                    'content' => CakeTime::i18nFormat($infosup['Infosup']['date'], '%A %d %B %G à %k:%M'));
             } elseif ($infosup['Infosupdef']['type'] == 'file' || $infosup['Infosupdef']['type'] == 'odtFile') {
                 $return[$infosup['Infosupdef']['code']] = array('type' => 'file',
                     'id' => $infosup['Infosup']['id'],

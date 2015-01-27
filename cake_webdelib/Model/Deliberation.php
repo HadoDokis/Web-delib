@@ -1632,11 +1632,10 @@ class Deliberation extends AppModel {
      * @throws Exception
      */
     function setVariablesFusion(&$aData, &$modelOdtInfos, $id, $fusionSeanceId = null) {
-        App::uses('DateComponent', 'Controller/Component');
+        App::uses('CakeTime', 'Utility');
         App::uses('Component', 'Controller');
         // initialisations
         $collection = new ComponentCollection();
-        $this->Date = new DateComponent($collection);
         // liste des champs à lire en base de données
         $fields = array('id', 'service_id', 'theme_id', 'rapporteur_id', 'redacteur_id', 'president_id', 'is_multidelib',
             'titre', 'objet', 'objet_delib', 'etat', 'num_delib', 'num_pref', 'date_envoi_signature',
@@ -1687,7 +1686,7 @@ class Deliberation extends AppModel {
         if ($modelOdtInfos->hasUserFieldDeclared('classification_deliberation'))
             $aData['classification_deliberation'] = $delib['Deliberation']['num_pref']; //, 'text'));
         if ($modelOdtInfos->hasUserFieldDeclared('date_envoi_signature'))
-            $aData['date_envoi_signature'] = $this->Date->frDate($delib['Deliberation']['date_envoi_signature']); //, 'date'));
+            $aData['date_envoi_signature'] = CakeTime::i18nFormat($delib['Deliberation']['date_envoi_signature'], '%d/%m/%Y'); //, 'date'));
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_seance'))
             $aData['nombre_seance'] = $this->getNbSeances($delib['Deliberation']['id']); //, 'text'));
 

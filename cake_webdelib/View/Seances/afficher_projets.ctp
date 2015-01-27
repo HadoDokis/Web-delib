@@ -2,7 +2,7 @@
 
 $this->Html->addCrumb('Séance à traiter', array($this->request['controller'], 'action'=>'listerFuturesSeances'));
 
-echo $this->Bs->tag('h3', __('Liste des projets pour la séance du '.$date_seance));
+echo $this->Bs->tag('h3', __('Liste des projets pour la séance du '.$this->Time->i18nFormat($date_seance, '%d/%m/%Y à %k:%M')));
 $this->Html->addCrumb(__('Liste des projets'));
 
 // select masqués utilisés par le javascript

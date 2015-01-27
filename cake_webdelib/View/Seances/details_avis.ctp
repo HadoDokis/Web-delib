@@ -1,7 +1,7 @@
 <?php
 $this->Html->addCrumb('Séance à traiter', array($this->request['controller'], 'action' => 'afficherProjets', $seance_id));
-$this->Html->addCrumb( __('Séance du ') . $date_seance);
-echo $this->Html->tag('h3', __('Détails des projets de la séance du ') . $date_seance);
+$this->Html->addCrumb( __('Séance du ') . $this->Time->i18nFormat($date_seance, '%d/%m/%Y à %k:%M'));
+echo $this->Html->tag('h3', __('Détails des projets de la séance du ') .$this->Time->i18nFormat($date_seance, '%d/%m/%Y à %k:%M'));
 ?>
 <div class="deliberations">
 

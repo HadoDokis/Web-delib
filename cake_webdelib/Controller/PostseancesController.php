@@ -47,7 +47,6 @@ class PostseancesController extends AppController {
                 'Typeseance.modelpvdetaille_id')));
 
         for ($i = 0; $i < count($seances); $i++) {
-            $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
             $seances[$i]['Seance']['Actions'] = $actions;
         }
         $this->set('use_tdt', Configure::read('USE_TDT'));
@@ -80,7 +79,7 @@ class PostseancesController extends AppController {
 			}
 			$this->set('seance_id', $id);
 			$this->set('projets', $delibs);
-			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->Seance->getDate($id))));
+			$this->set('date_seance', $this->Seance->getDate($id));
 		}
 		else {
 			$condition = array("seance_id"=>$id, "etat >="=>2);
@@ -394,7 +393,7 @@ class PostseancesController extends AppController {
             $date_seance = $seance['Seance']['date'];
             $date_convocation = $seance['Seance']['date_convocation'];
             $type_seance = $seance['Typeseance']['libelle'];
-            $libelle_seance = $seance['Typeseance']['libelle'] . " " . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+            $libelle_seance = $seance['Typeseance']['libelle'] . " " . CakeTime::i18nFormat($seance['Seance']['date'], '%A %d %B %G à %k:%M');
 
             $this->_deletetoGed($cmis, $libelle_seance);
 
@@ -644,7 +643,7 @@ class PostseancesController extends AppController {
             $date_seance = $seance['Seance']['date'];
             $date_convocation = $seance['Seance']['date_convocation'];
             $type_seance = $seance['Typeseance']['libelle'];
-            $libelle_seance = $seance['Typeseance']['libelle'] . " " . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+            $libelle_seance = $seance['Typeseance']['libelle'] . " " . CakeTime::i18nFormat($seance['Seance']['date'], '%A %d %B %G à %k:%M');
 
             $this->_deletetoGed($cmis, $libelle_seance);
 

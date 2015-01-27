@@ -4,12 +4,12 @@ echo $this->Html->script('/libs/bootstrap-filestyle/js/bootstrap-filestyle.min.j
 if(empty($seance['Seance']['traitee'])) {
     if ($seance['Typeseance']['action'] == 0){
         $this->Html->addCrumb('Séance à traiter', array('controller'=>'seances', 'action' => 'listerFuturesSeances'));
-        $this->Html->addCrumb(__('Séance du ') . $seance['Seance']['date'], array('controller'=>'seances', 'action' => 'details', $seance_id));
+        $this->Html->addCrumb(__('Séance du ') . $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M'), array('controller'=>'seances', 'action' => 'details', $seance_id));
     }
     if ($seance['Typeseance']['action'] == 1)
     {
         $this->Html->addCrumb('Séance à traiter', array('controller'=>'seances', 'action' => 'listerFuturesSeances'));
-        $this->Html->addCrumb(__('Séance du ') . $seance['Seance']['date'], array('controller'=>'seances', 'action' => 'detailsAvis', $seance_id));
+        $this->Html->addCrumb(__('Séance du ') . $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M'), array('controller'=>'seances', 'action' => 'detailsAvis', $seance_id));
     }
     if ($seance['Typeseance']['action'] == 2){
         $this->Html->addCrumb('Séance à traiter', array('controller'=>'seances', 'action' => 'listerFuturesSeances'));
@@ -18,7 +18,7 @@ if(empty($seance['Seance']['traitee'])) {
 }  
 else {
     $this->Html->addCrumb('Post-séances', array('controller'=>'postseances', 'action' => 'index'));
-    $this->Html->addCrumb(__('Séance du ') . $seance['Seance']['date'], array('controller'=>'postseances', 'action' => 'afficherProjets', $seance_id));
+    $this->Html->addCrumb(__('Séance du ') . $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M'), array('controller'=>'postseances', 'action' => 'afficherProjets', $seance_id));
 }
 
 $this->Html->addCrumb(__('Saisir les débats'));
