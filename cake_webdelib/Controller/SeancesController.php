@@ -8,7 +8,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Fck');
-	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav');
+	var $components = array('Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav');
 	var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
 

@@ -18,7 +18,6 @@ App::uses('File', 'Utility');
  */
 class S2lowComponent extends Component {
 
-    var $components = array('Date');
 
     function send($acte) {
         $url = Configure::read('S2LOW_HOST') . '/modules/actes/actes_transac_create.php';
