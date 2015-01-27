@@ -13,7 +13,7 @@ echo    $this->Bs->div('well').
                 $this->Bs->close().
         $this->Bs->close();
 
-echo $this->Bs->row().
+echo $this->Bs->row().  
         $this->Bs->col('xs6').'<b>Libellé :</b> ' . $projet['Deliberation']['objet'].$this->Bs->tag('br /')
         .'<b>Titre :</b> ' . $projet['Deliberation']['objet'].$this->Bs->tag('br /')
         .'<b>Rapporteur :</b> ' . $this->Html->link($projet['Rapporteur']['prenom'] . ' ' . $projet['Rapporteur']['nom'], array('controller'=>'acteurs', 'action'=>'view' , $projet['Rapporteur']['id']))

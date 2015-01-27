@@ -147,13 +147,17 @@ echo $this->Bs->close().
                         placeholder: "Selection vide"
                     });
                       ');
-   if (!empty($seances))
+   if (!empty($seances)){
+       foreach ($seances AS $id => $seance) {
+           $seances[$id] = $seance['libelle']. ' : '. $this->Time->i18nFormat($seances[$id]['date'], '%d/%m/%Y à %k:%M');
+       }
                 echo $this->BsForm->input('Seance', array(
                     'options' => $seances,
                     'type' => 'select',
                     'label' => 'Dates de séance',
                     'multiple' => true,
                     'selected' => isset($seances_selected) ? $seances_selected : ''));
+   }
    echo $this->Bs->scriptBlock('
                     $("#SeanceSeance").select2({
                         width: "80%",

@@ -1,6 +1,6 @@
 <?php
 
-echo $this->Bs->tag('h3', 'Projets de la séance du ' . $date_seance) .
+    echo $this->Bs->tag('h3', 'Projets de la séance du ' . $this->Time->i18nFormat($date_seance, '%d/%m/%Y à %k:%M')) .
  $this->Bs->table(array(
     array('title' => 'Num Delib'),
     array('title' => 'Libellé de l\'acte'),

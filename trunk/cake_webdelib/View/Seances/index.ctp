@@ -12,11 +12,11 @@
 <tr>
 	<td><?php echo $seance['Seance']['id']; ?></td>
 	<td><?php echo $seance['Typeseance']['libelle']; ?></td>
-	<td><?php echo $seance['Seance']['date']; ?></td>
+	<td><?php echo $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M'); ?></td>
 	<td class="actions">
 		<?php echo $this->Html->link(SHY,'/seances/view/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
 		<?php echo $this->Html->link(SHY,'/seances/edit/' . $seance['Seance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
-		<?php echo $this->Html->link(SHY,'/seances/delete/' . $seance['Seance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la seance du "' . $seance['Seance']['date'].'" ?', false)?>
+		<?php echo $this->Html->link(SHY,'/seances/delete/' . $seance['Seance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la seance du "' . $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M').'" ?', false)?>
 	</td>
 </tr>
 <?php endforeach; ?>

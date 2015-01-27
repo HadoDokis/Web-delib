@@ -448,7 +448,7 @@ class DeliberationsController extends AppController {
             }
             $this->set('typeseances', $typeseances);
 
-            // initialisation de la liste des séances
+            // initialisation dekjhlkjlkjlkj la liste des séances
             $seances = array();
             if (!empty($this->request->data['Typeseance']['Typeseance'])) {
                 $selectedTypeseanceIds = set::extract('/Typeseance/Typeseance', $this->request->data);
@@ -461,7 +461,6 @@ class DeliberationsController extends AppController {
                     'fields' => array('Seance.id', 'Seance.type_id', 'Seance.date')));
                 foreach ($seances_tmp as $seance)
                     $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'];// . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-
                 foreach ($seances_tmp as $seance) {
                     $bSeanceok = false;
 

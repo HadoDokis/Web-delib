@@ -17,7 +17,7 @@
             $numLigne++;
             ?>
             <td><?php echo $seance['Typeseance']['libelle']; ?></td>
-            <td><?php echo $seance['Seance']['date']; ?></td>
+            <td><?php echo $this->Time->i18nFormat($seance['Seance']['date'], '%d/%m/%Y à %k:%M'); ?></td>
             <td class="actions">
                 <?php echo $this->Html->link(SHY, array('controller' => 'seances', 'action' => 'saisirDebatGlobal', $seance['Seance']['id']), array('class' => 'link_debat', 'escape' => false, 'title' => 'Saisir les débats généraux de la séance')); ?>
             </td>

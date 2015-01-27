@@ -369,8 +369,7 @@ class Seance extends AppModel
         // fusion des variables
         $dateSeanceTimeStamp = strtotime($seance['Seance']['date']);
         if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe.'_lettres')) {
-            include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
-            $this->Date = new DateComponent;
+            App::uses('CakeTime', 'Utility');
             $aData['date_'.$suffixe.'_lettres']=AppTools::dateLettres($dateSeanceTimeStamp);//, 'text'));
         }
         if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe))
