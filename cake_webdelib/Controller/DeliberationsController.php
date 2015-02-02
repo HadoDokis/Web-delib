@@ -165,6 +165,8 @@ class DeliberationsController extends AppController {
 
         $this->set('userCanEdit', $this->Droits->check($this->user_id, "Deliberations:edit") && $this->Deliberation->estModifiable($id, $this->user_id, $this->Droits->check($this->user_id, "Deliberations:editerTous")));
 
+        $this->set('userCanadd', $this->Droits->check($this->user_id, "Deliberations:add"));
+        
         $this->set('inBannette', in_array($this->user_id, $this->Traitement->whoIs($id, 'current', 'RI', false)));
 
         $this->set('commentaires', $this->Commentaire->find('all', array(
@@ -2407,12 +2409,27 @@ class DeliberationsController extends AppController {
         return $this->redirect(array('controller' => 'seances', 'action' => 'listerFuturesSeances'));
     }
 
+    /**
+     * Duplique le projet d'on l'id est passé, duplique les 
+     * informations de la table délibération et infosup, un petit ménage est fait
+     * 
+     * @param type $id id de la délibération
+     */
+    function duplicate($id = null){
+        $newId = $this->Deliberation->duplicate($id);
+        //$previous = $this->Session->read('User');
+        $this->Session->setFlash('Le projet a été dupliqué.', 'growl', array('type' => 'info'));
+        //$this->redirect(array('controller' => $previous['History']['data'][1]['controller'], 'action' => $previous['History']['data'][1]['action'], !empty($previous['History']['data'][1][0])?$previous['History']['data'][1][0]:'' ));
+        $buff = $this->Deliberation->Infosup->duplicateById($id,$newId);
+        $this->redirect($this->previous);
+    }
     /*
      * Affiche la liste des projets en cours de redaction (etat = 0) dont l'utilisateur connecté
      * est le rédacteur.
      */
 
     function mesProjetsRedaction() {
+        
         if (isset($this->params['render']) && ($this->params['render'] == 'banette')) {
             $limit = Configure::read('LIMIT');
         } else {
@@ -2475,7 +2492,6 @@ class DeliberationsController extends AppController {
             'order' => $ordre));
         $this->_sortProjetSeanceDate($projets);
         $this->_ajouterFiltre($projets);
-
         $this->_afficheProjets($render, $projets, 'Mes projets en cours de rédaction', array('view', 'edit', 'delete', 'attribuerCircuit', 'generer'), $listeLiens, $nbProjets
         );
     }
@@ -2766,8 +2782,6 @@ class DeliberationsController extends AppController {
         if ($nbProjets == null)
             $nbProjets = count($projets);
         $this->set('nbProjets', $nbProjets);
-
-        // on affiche la vue index
         $this->render($render);
     }
 
@@ -3424,7 +3438,7 @@ class DeliberationsController extends AppController {
                 ));
                 $this->_sortProjetSeanceDate($projets);
                 if ($this->data['Deliberation']['generer'] == 0) {
-
+                    
                     $actions = array('view', 'generer');
                     if ($this->Droits->check($this->user_id, "Deliberations:delete"))
                         array_push($actions, 'delete');
@@ -3432,6 +3446,7 @@ class DeliberationsController extends AppController {
                     if ($this->Droits->check($this->user_id, "Deliberations:editerTous"))
                         $actions[] = 'edit';
                     $this->_afficheProjets('index', $projets, 'Résultat de la recherche parmi tous les projets', $actions, array('tousLesProjetsRecherche'));
+                    
                 } else {
                     if (empty($this->data['Deliberation']['model'])) {
                         $this->Session->setFlash("Vous devez choisir un modèle de document", 'growl', array('type' => 'erreur'));
@@ -3938,6 +3953,12 @@ class DeliberationsController extends AppController {
         }
     }
 
+    /**
+     * La fonction gère l'affichage de la de la page "envoyer a" puis gère 
+     * l'envoient des données nécessaires pour Cakeflow 
+     * @param type $delib_id id de la délibération
+     * @return type Page courante
+     */
     function rebond($delib_id) {
         $this->set('delib_id', $delib_id);
         $acte = $this->Deliberation->find('first', array(
@@ -3952,22 +3973,24 @@ class DeliberationsController extends AppController {
             $this->set('users', $users);
             $this->set('typeEtape', $this->Traitement->typeEtape($delib_id));
         } else {
-            $user = $this->User->read(null, $this->data['Insert']['user_id']);
-            $destinataire = $user['User']['prenom'] . ' ' . $user['User']['nom'] . ' (' . $user['User']['login'] . ')';
 
-            // initialisation des visas a ajouter au traitement
+            //on récupaire les données de l'utilisateur courant
+            // initialisation des visas a ajouter au traitement 
+            //on cré le tableau de mise a jour
+            $user = $this->Session->read('user');
             $options = array(
-                'insertion' => array(
-                    '0' => array(
+                'insertion' => array(0 => array(
                         'Etape' => array(
                             'etape_id' => null,
                             'etape_nom' => $user['User']['prenom'] . ' ' . $user['User']['nom'],
-                            'etape_type' => 1
+                            //simple 2ou 3et
+                            'etape_type' => $this->data['Insert']['etape_choisie'],
                         ),
-                        'Visa' => array(
-                            '0' => array(
-                                'trigger_id' => $this->data['Insert']['user_id'],
-                                'type_validation' => 'V'
+                    
+                    'Visa' =>  array(0 => array(
+                        'type_validation' => 'V',
+                            'trigger_id' => $this->data['Insert']['users_id'],
+                            
             )))));
             if ($this->data['Insert']['option'] == 'retour') {
                 $action_com = " avec l'option  de retour";
@@ -3979,10 +4002,14 @@ class DeliberationsController extends AppController {
                 $action_com = " pour validation finale";
                 $action = 'VF';
             }
-
+            $destinataires = '';
+            //Cakeflow insertion de/des utilisateurs dans le circuits la gestion et/ou est faite par l'envoie d'un tableau id voulue ds le trriger_id au lieu d'un seul
             $this->Traitement->execute($action, $this->user_id, $delib_id, $options);
-            $this->Historique->enregistre($delib_id, $this->user_id, "Le projet a été envoyé à $destinataire $action_com");
-            $this->User->notifier($delib_id, $this->data['Insert']['user_id'], 'traitement');
+            $destinataires = $user['User']['prenom'] . ' ' . $user['User']['nom'] . ' (' . $user['User']['login'] . ')';
+            $this->Historique->enregistre($delib_id, $this->user_id, 'Le projet a été envoyé à'.$destinataire.' '.$action_com);
+            foreach ($this->data['Insert']['users_id'] as $id) {
+                $this->User->notifier($delib_id, $id, 'traitement');
+            }
 
             return $this->redirect('/');
         }

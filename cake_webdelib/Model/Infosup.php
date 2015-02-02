@@ -487,4 +487,27 @@ class Infosup extends AppModel {
             }
         }
     }
+    
+    /**
+     * Duplique les informations suplémentaires lié à une délibération
+     * 
+     * @param type $delib_id id de la délibération(projet) d'on les info supp sont à dupliquer
+     * @param type $newDelib_id id de la nouvelle délibération(projet) d'on les informations supp doivent être rattaché
+     * @return type le retour de la fonction saveMany true -> sauvegardé ou false -> érreur
+     */
+   function duplicateById($delib_id,$newDelib_id) {
+
+       $infosups = $this->find('all', array(
+                'recursive' => -1,
+                'fields' => array('deliberation_id','text','date', 'foreign_key', 'model', 'infosupdef_id', 'file_name','file_size','file_type','content'),
+                'conditions' => array(
+                    'foreign_key' => $delib_id,)
+           ));
+       
+           foreach ($infosups as $id => $infosup){
+               $infosups[$id]['Infosup']['foreign_key'] = $newDelib_id;
+           }
+
+           return  $this->saveMany($infosups);
+   } 
 }
