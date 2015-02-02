@@ -178,6 +178,33 @@ class Deliberation extends AppModel {
      * @param array $options Le tableau $options est le même que celui passé dans Model::save()
      */
     public function afterSave($created, $options = array()) {
+        $Historique = $this->Historique->find('first', array(
+            'conditions' => array(
+                'Historique.delib_id' => $this->data['Deliberation']['id'],
+            ),
+            'recursive' => '-1',
+            'fields' => array('Historique.delib_id')
+            ));
+        if (empty($Historique)){
+            $user = $this->find('first', array(
+            'conditions' => array(
+                'Deliberation.id' => $this->data['Deliberation']['id'],
+            ),
+            'contain' => 'Redacteur', 
+            'recursive' => '-1',
+            'fields' => array('Redacteur.nom' , 'Redacteur.prenom')  
+            ));
+            $create = array(
+                'delib_id' => $this->data['Deliberation']['id'],
+                'user_id' => $this->data['Deliberation']['redacteur_id'],
+                'circuit_id' => -1,
+                'commentaire' => '['.$user['Redacteur']['prenom'].' '.$user['Redacteur']['nom'].'] '.__('Le projet a été créé'),
+                'modified' => date("Y-m-d H:i:s"),
+                'created' => date("Y-m-d H:i:s")
+            );
+            $this->Historique->create($create);
+            $this->Historique->save();
+        }
         if (!empty($this->data['Deliberation']['id'])) {
             $hasChildren = $this->hasAny(array('Deliberation.parent_id' => $this->data['Deliberation']['id']));
             //Si la delib a des enfants
@@ -2053,6 +2080,35 @@ class Deliberation extends AppModel {
         $file->write($content);
         $this->Behaviors->unload('OdtFusion');
         return $file->path;
+    }
+    
+    /**
+     * Duplique un projet en rinitialisant certain champs, pour que la délibération
+     * soit comme nouvellement créé
+     * 
+     * @param type $id id du projet à copier
+     * @return type $id id du nouveau projet créé
+     */
+    function duplicate($id = null){
+       if(!empty($id)){
+            $deliberation = $this->find('all',array(
+                'recursive' => -1,
+                'conditions' => array('Deliberation.id' => $id)
+            ));
+            unset($deliberation[0]['Deliberation']['id']);
+            App::uses('SessionHelper', 'View/Helper');
+            $user = SessionHelper::read('user');
+            $deliberation[0]['Deliberation']['texte_projet'] = $deliberation[0]['Deliberation']['texte_synthese'] = $deliberation[0]['Deliberation']['deliberation'] = NULL;
+            $deliberation[0]['Deliberation']['redacteur_id'] = $user['User']['id'];
+            $deliberation[0]['Deliberation']['texte_projet_name'] = $deliberation[0]['Deliberation']['texte_projet_type'] = '';
+            $deliberation[0]['Deliberation']['texte_synthese_name'] = $deliberation[0]['Deliberation']['texte_synthese_type'] = '';
+            $deliberation[0]['Deliberation']['deliberation_name'] = $deliberation[0]['Deliberation']['deliberation_type'] = '';
+            $deliberation[0]['Deliberation']['texte_projet_size'] = $deliberation[0]['Deliberation']['texte_synthese_size'] = $deliberation[0]['Deliberation']['deliberation_size'] = 0;
+            $deliberation[0]['Deliberation']['modified'] = $deliberation[0]['Deliberation']['created'] = date("Y-m-d H:i:s");
+            $this->create($deliberation[0]);
+            $save = $this->save();
+            return $save['Deliberation']['id'];
+        }
     }
 
 }
