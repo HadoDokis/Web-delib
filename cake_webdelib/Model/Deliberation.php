@@ -152,7 +152,8 @@ class Deliberation extends AppModel {
         'Deliberationtypeseance' => array(
             'className' => 'Deliberationtypeseance',
             'foreignKey' => 'deliberation_id'
-        )
+        ),
+        
     );
     public $hasAndBelongsToMany = array(
         'Seance' => array('className' => 'Seance',
@@ -169,6 +170,21 @@ class Deliberation extends AppModel {
             'deleteQuery' => '',
             'insertQuery' => ''),
         'Typeseance',
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'deliberation_id',
+            'joinTable' => 'users_deliberations',
+            'associationForeignKey' => 'user_id',
+            'unique' => true,
+            'conditions' => '',
+            'fields' => '',
+            //'order' => 'User.nom ASC',
+            'limit' => '',
+            'offset' => '',
+            'finderQuery' => '',
+            'deleteQuery' => '',
+            'insertQuery' => ''
+        )
     );
 
     /**
