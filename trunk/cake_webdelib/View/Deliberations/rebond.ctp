@@ -1,40 +1,54 @@
-<h2>Envoyer le projet à un utilisateur</h2>
+<?php
+echo $this->Html->tag('h2', __('Envoyer le projet à un ou plusieurs utilisateurs', true));
+$this->Html->addCrumb('Délibération', array('action' => 'traiter', $delib_id));
+$this->Html->addCrumb('Envoyer le projet à un utilisateur');
+$options = array(
+    'detour' => 'Envoyer (sans retour) <i class="fa fa-mail-forward"></i>',
+    'retour' => 'Aller-retour <i class="fa fa-retweet"></i>',
+    'validation' => 'Validation finale <i class="fa fa-legal"></i>');
+$attributes = array('legend' => false, 'value' => 1);
+echo $this->BsForm->create('Insert', array('url' => array('controller' => 'deliberations', 'action' => 'rebond', $delib_id), 'type' => 'post'));
+$affiche = $this->BsForm->radio('etape_choisie', array(3 => 'Collaboratif [ET]', 2 => 'Concurrent [OU]', 1 => 'Simple'), $attributes);
+$affiche .= $this->BsForm->select('users_id', $users, array('multiple' => true,'placeholder' => __('Utilisateurs')));
 
-<?php
-    $options = array(
-        'detour' =>'Envoyer (sans retour) <i class="fa fa-mail-forward"></i>',
-        'retour' => 'Aller-retour <i class="fa fa-retweet"></i>',
-        'validation'=> 'Validation finale <i class="fa fa-legal"></i>');
-    $attributes=array('legend'=>false, 'separator' => '<br class="spacer"/>', 'value' => 'retour');
-    echo $this->Form->create('Insert', array('url'=>array('controller'=>'deliberations', 'action'=>'rebond', $delib_id),'type'=>'post'));
-    echo $this->Form->input('user_id', array('label'=>array('text'=>'Destinataire','style'=>'padding-top: 5px;'), 'title'=>"A qui voulez vous envoyer le projet ? : "));
+$affiche = $this->Html2->div('panel-heading', __('Sélection du ou des destinataires'))
+        . $this->Html2->div('panel-body', $affiche);
+echo $this->Html2->div('panel panel-default', $affiche);
+
+/* echo  $this->Html->tag('div', 'Titre', array('class' => 'panel-heading'));
+  echo $this->Html->tag('div', $affiche, array('class' => 'panel-body')); */
+$attributes = array('legend' => false, 'value' => 'retour');
+$radio = '';
+if ($typeEtape == CAKEFLOW_COLLABORATIF) {
+    $radio .= $this->BsForm->hidden('option', array('value' => 'retour'));
+    $radio .= $this->BsForm->radio('option_disabled', $options, array_merge($attributes, array('disabled' => true)));
+    $radio .= '<div class="spacer"></div>';
+    $radio .= $this->Html->para('profil', 'Note : pour les étapes collaboratives (ET), l\'aller-retour est la seule possibilité.', array('style' => 'float: left;text-align: left;'));
+} else {
+    $radio .= $this->BsForm->radio('option', $options, $attributes);
+}
+$radio = $this->Html2->div('panel-heading', __('Sélection du type d\'envoie'))
+        .$this->Html2->div('panel-body', $radio);
+echo $this->Html2->div('panel panel-default', $radio);
+
+echo $this->Html2->btnSaveCancel('', array('action' => 'traiter', $delib_id));
+
+echo $this->BsForm->end();
 ?>
-<div class="spacer"></div>
-<div>
-<?php
-    if ($typeEtape == CAKEFLOW_COLLABORATIF) {
-        echo $this->Form->hidden('option', array('value'=>'retour'));
-        echo $this->Form->radio('option_disabled', $options, array_merge($attributes, array('disabled'=>true)));
-        echo '<div class="spacer"></div>';
-        echo $this->Html->para('profil', 'Note : pour les étapes collaboratives (ET), l\'aller-retour est la seule possibilité.',array('style'=>'float: left;text-align: left;'));
-    } else {
-        echo $this->Form->radio('option', $options, $attributes);
-    }
-?>
-</div>
-<div class="spacer"></div>
-<div class="submit btn-group">
-<?php
-    echo $this->Html->link('<i class=" fa fa-arrow-left"></i> Annuler', array('action' => 'traiter', $delib_id), array('class' => 'btn', 'name' => 'Annuler', 'escape' => false));
-    echo $this->Form->button('<i class="fa fa-check"></i> Valider', array('div' => false, 'class' => 'btn btn-primary', 'name' => 'Valider', 'type' => 'submit'));
-?>
-</div>
-<?php echo $this->Form->end(); ?>
 <script type="application/javascript">
     $(document).ready(function(){
-       $('#InsertUserId').select2({
-           width: "400px",
-           minimumInputLength: 1
-       });
+    $("#InsertEtapeChoisie3").on('change', function(){
+    $('#InsertUsersId').select2({ width: "100%"});
+    });
+    $("#InsertEtapeChoisie2").on('change', function(){
+    $('#InsertUsersId').select2({ width: "100%"});
+    });
+    $("#InsertEtapeChoisie1").on('change', function(){
+    $("#InsertUsersId").select2("val", "");
+    $('#InsertUsersId').select2({ width: "100%",maximumSelectionSize: 1 });
+    });
+    $('#InsertUsersId').select2({
+    width: "100%",maximumSelectionSize: 1 
+    });    
     });
 </script>
