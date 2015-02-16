@@ -29,6 +29,7 @@ class HistoriquesController extends AppController {
                             'foreignKey' => 'delib_id')))
         );
         //requette avec paginate pour avoir des pages de 20 resultats
+        $conditions['Historique.created IS NOT '] = '';
         $paginate = array(
             'fields' => array('Historique.id','Historique.user_id', 'Historique.commentaire', 'Historique.created', 'User.nom', 'User.prenom', 'Deliberation.id', 'Deliberation.objet'),
             'conditions' => $conditions,
@@ -39,7 +40,7 @@ class HistoriquesController extends AppController {
         );
         //initialisation des pages affichés
         $this->Paginator->settings = $paginate;
-        $historique = $this->Paginator->paginate('Historique');
+        $historique = $this->Paginator->paginate($this->Historique);
         //initialisation des champs du filtres
         $this->_ajouterFiltre();
         $this->set('historique', $historique);
@@ -58,7 +59,7 @@ class HistoriquesController extends AppController {
             'inputOptions' => array(
                 'label' => __('Objet', true),
                 'type' => 'text',
-                'title' => __('Filtre sur les objets de la délibération')),
+                'title' => __('Filtre sur les objets des délibérations')),
             'column' => 3));
 
         $this->Filtre->addCritere('DeliberationId', array(
@@ -67,7 +68,7 @@ class HistoriquesController extends AppController {
             'inputOptions' => array(
                 'label' => __('Id', true),
                 'type' => 'text',
-                'title' => __('Filtre sur les Id de la délibération')),
+                'title' => __('Filtre sur les ids des délibérations')),
             'column' => 3));
 
         $this->Filtre->addCritere('UserLogin', array(
@@ -75,7 +76,7 @@ class HistoriquesController extends AppController {
             'inputOptions' => array(
                 'label' => __('Login', true),
                 'type' => 'text',
-                'title' => __('Filtre sur les Login des utilisateurs')),
+                'title' => __('Filtre sur les identifiants de connexion des utilisateurs')),
             'column' => 3));
 
         $this->Filtre->addCritere('UserNom', array(
@@ -83,7 +84,7 @@ class HistoriquesController extends AppController {
             'inputOptions' => array(
                 'label' => __('Nom', true),
                 'type' => 'text',
-                'title' => __('Filtre sur les Nom des utilisateurs')),
+                'title' => __('Filtre sur les noms des utilisateurs')),
             'column' => 3));
 
         $this->Filtre->addCritere('UserPrenom', array(
@@ -92,7 +93,7 @@ class HistoriquesController extends AppController {
             'inputOptions' => array(
                 'label' => __('Prenom', true),
                 'type' => 'text',
-                'title' => __('Filtre sur les Prenom des utilisateurs')),
+                'title' => __('Filtre sur les prenoms des utilisateurs')),
             'column' => 3));
 
         //champ datetimepicker
@@ -103,8 +104,8 @@ class HistoriquesController extends AppController {
                 'type' => 'date',
                 'style' => 'cursor:pointer',
                 'help' => __('Cliquez sur le champs ci-dessus pour choisir la date'),
-                //'readonly' => 'readonly',
-                'title' => __('Filtre sur les dates des commentaires')),
+                //'disabled' => false,//readonly
+                'title' => __('Filtre sur les dates')),
             'Datepicker' => array(
                 'language' => 'fr',
                 'autoclose' => 'true',
@@ -121,8 +122,8 @@ class HistoriquesController extends AppController {
                 'type' => 'date',
                 'style' => 'cursor:pointer',
                 'help' => __('Cliquez sur le champs ci-dessus pour choisir la date'),
-                //'readonly' => 'readonly',
-                'title' => __('Filtre sur les dates des commentaires')),
+                'readonly' => '',
+                'title' => __('Filtre sur les dates')),
             'Datepicker' => array(
                 'language' => 'fr',
                 'autoclose' => 'true',
@@ -135,11 +136,12 @@ class HistoriquesController extends AppController {
         //champ select
         $this->Filtre->addCritere('difDate', array(
             'retourLigne' => true,
-            'attribute' => array(__('1 heure'), __('1 jour'), __('1 mois'), __('1 ans')),
+            'attribute' => array(__('1 heure'), __('1 jour'), __('1 mois'), __('1 ans'),__('hier'),_('cette semaine'),__('aujourd\'hui')),
             'inputOptions' => array(
+                'empty' => 'Aucune plage de date',
                 'type' => 'select',
-                'title' => __('Permet de créer un décallage entre la date de début et de fin'),
-                'label' => __('Chainer les dates', true),
+                'title' => __('Sélectioner une plage entre la date de début et de fin'),
+                'label' => __('Plage de dates', true),
             //'options' => array(__('1 heure'), __('1 jour'),__('1 mois'),__('1 ans'))
             ),
             'column' => 3));

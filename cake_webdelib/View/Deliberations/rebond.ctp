@@ -6,7 +6,7 @@ $options = array(
     'detour' => 'Envoyer (sans retour) <i class="fa fa-mail-forward"></i>',
     'retour' => 'Aller-retour <i class="fa fa-retweet"></i>',
     'validation' => 'Validation finale <i class="fa fa-legal"></i>');
-$attributes = array('legend' => false, 'value' => 1);
+$attributes = array('legend' => false, 'value' => 2);
 echo $this->BsForm->create('Insert', array('url' => array('controller' => 'deliberations', 'action' => 'rebond', $delib_id), 'type' => 'post'));
 $affiche = $this->BsForm->radio('etape_choisie', array(3 => 'Collaboratif [ET]', 2 => 'Concurrent [OU]', 1 => 'Simple'), $attributes);
 $affiche .= $this->BsForm->select('users_id', $users, array('multiple' => true,'placeholder' => __('Utilisateurs')));
@@ -48,7 +48,7 @@ echo $this->BsForm->end();
     $('#InsertUsersId').select2({ width: "100%",maximumSelectionSize: 1 });
     });
     $('#InsertUsersId').select2({
-    width: "100%",maximumSelectionSize: 1 
+    width: "100%",
     });    
     });
 </script>
