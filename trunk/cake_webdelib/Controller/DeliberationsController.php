@@ -95,6 +95,7 @@ class DeliberationsController extends AppController {
                 'texte_projet_name', 'texte_synthese_name', 'deliberation_name',
                 'Deliberation.created', 'Deliberation.modified', 'deliberation', 'texte_projet', 'texte_synthese'),
             'contain' => array(
+                'User' => array('id','nom','prenom'),
                 'Multidelib' => array(
                     'fields' => array('id', 'objet', 'objet_delib', 'num_delib', 'etat', 'deliberation', 'deliberation_name'),
                     'Annex' => array('fields' => array('id', 'titre', 'joindre_ctrl_legalite', 'filename'))
@@ -134,6 +135,15 @@ class DeliberationsController extends AppController {
                 $services = array();
                 $conditions['Deliberation.id'] = $id;
                 $conditions['OR']['redacteur_id'] = $this->user_id;
+                $user = $this->Deliberation->find('first', array(
+                'conditions' => array('Deliberation.id' => $id),
+                'contain' => array('User' => array('conditions' => array('User.id' => $this->user_id))),
+                'fields' => array('Deliberation.redacteur_id'),
+                'recursive' => -1));
+        
+                if(!empty($user['User'])){
+                    $conditions['OR']['redacteur_id'] = $user['Deliberation']['redacteur_id'];
+                }
                 $this->User->Behaviors->load('Containable');
                 $user_services = $this->User->find('first', array('conditions' => array('User.id' => $this->user_id),
                     'fields' => array('User.id'),
@@ -147,7 +157,13 @@ class DeliberationsController extends AppController {
                 'conditions' => $conditions,
                 'fields' => array('Deliberation.id'),
                 'recursive' => -1));
-            $estDansCircuit = $this->Traitement->triggerDansTraitementCible($this->user_id, $id);
+            
+            if(!empty($user['User'])){
+                $estDansCircuit = $this->Traitement->triggerDansTraitementCible($user['Deliberation']['redacteur_id'], $id);
+            }else{
+                $estDansCircuit = $this->Traitement->triggerDansTraitementCible($this->user_id, $id);
+            }
+
             if (empty($acte) && ($estDansCircuit == false)) {
                 $this->Session->setFlash("Vous n'avez pas les droits pour visualiser cet acte", 'growl');
                 return $this->redirect(array('action' => 'mesProjetsRedaction'));
@@ -245,7 +261,7 @@ class DeliberationsController extends AppController {
                         'action' => 'visuTraitement', $target_id), array('return')));
         else
             $this->set('visu', null);
-
+        
         $this->set('projet', $projet);
 
 
@@ -361,7 +377,20 @@ class DeliberationsController extends AppController {
                 $this->request->data['Deliberation']['deliberation_type'] = 'application/vnd.oasis.opendocument.text';
             }
 
-            $success &= $this->Deliberation->save($this->data);
+            //on récupère la liste des utilisateurs vouluent dans la combobox
+            //et on les sauvegarde de facon a mettre a jour la table users_deliberations
+                if(!empty($this->request->data['Deliberation']['multiRedactor'])){
+                    $multiusers = array();
+                    foreach ($this->request->data['Deliberation']['multiRedactor'] as $user){
+                      $multiusers[] = array('id' => $user,
+                                'UsersDeliberation' => array(
+                                    'user_id' => $user,
+                                ));
+                    }
+                $this->request->data['User'] = $multiusers;    
+                }
+            // saveAll permet d'enregistrer ds la table de liason                    
+            $success &= $this->Deliberation->saveAll($this->data);
 
             if ($success) {
                 $this->Filtre->Supprimer();
@@ -392,19 +421,7 @@ class DeliberationsController extends AppController {
                   $this->Deliberationseance->save($this->data['Deliberationseance']);
                   }
                   } */
-                
-                //on récupère la liste des utilisateurs vouluent et on les sauvegarde
-                /*if(!empty($this->request->data['Deliberation']['multiRedactor'])){
-                    $multiusers = array();
-                    foreach ($this->request->data['Deliberation']['multiRedactor'] as $user){
-                      $multiusers['user_id'] = $user;
-                      $multiusers['deliberation_id'] = $delibId;
-                      $this->Deliberation->Multiusers->create();
-                      $this->Deliberation->Multiusers->save($multiusers);
-                    }
-                }
-                    */
-                
+
                 $sortie = true;
             }
 
@@ -507,18 +524,37 @@ class DeliberationsController extends AppController {
                 'recursive' => -1,
                 'fields' => array('Typeacte.id')
             ));
-            
-            //on récupaire tout les utilisateurs
-            $redacteurs = $this->Deliberation->Redacteur->find('all',array(
-               'fields' => array('Redacteur.id','Redacteur.login','Redacteur.nom','Redacteur.prenom'), 
+            $services = $this->Deliberation->Redacteur->find('first',array(
+                'fields' => array('Redacteur.id'),
+                'conditions' => array('Redacteur.id' => $this->user_id),
+                'contain' => array('Service' => array('fields' => array('Service.id'),)),
                 'recursive' => -1,
             ));
-            // on format les données pour le select id => text
-            foreach($redacteurs as $id => $redacteur){
-                $redacteurs[$redacteur['Redacteur']['id']] = '('.$redacteur['Redacteur']['login'].') '.$redacteur['Redacteur']['prenom'].' '.$redacteur['Redacteur']['nom'];
-                unset($redacteurs[$id]);
+            $listeservices = array();
+            foreach ($services['Service'] as $service){
+                $listeservices[] = $service['id'];
             }
-            $this->set('redacteurs', $redacteurs);
+            $condition = array();
+            if(!empty($listeservices)){
+                if(count($listeservices) > 1){
+                    $condition['Service.id IN'] = $listeservices;
+                }else{
+                    $condition['Service.id'] = $listeservices;
+                }
+            }
+            $users = $this->Deliberation->Service->find('all',array(
+                'fields' => array('Service.id'),
+                'conditions' => $condition,
+                'contain' => array('User' => array('fields' => array('User.id','User.login','User.nom','User.prenom'),'conditions' => array('User.id <>' => $this->user_id))),
+                'recursive' => -1,
+                ));
+            $listeusers = array();
+            foreach($users as $user){
+                foreach($user['User'] as $data){
+                   $listeusers[$data['id']] = '('.$data['login'].') '.$data['prenom'].' '.$data['nom']; 
+                }
+            }
+            $this->set('redacteurs', $listeusers);
 
             $this->set('typesactemulti', Set::extract('/Typeacte/id', $typeacte_ids));
             $this->set('seances', $seances);
@@ -669,6 +705,7 @@ class DeliberationsController extends AppController {
     }
 
     function edit($id = null) {
+        
         if (!$this->Deliberation->hasAny(array('id' => $id))) {
             $this->Session->setFlash("Le projet n&deg;$id est introuvable !", 'growl');
             return $this->redirect($this->previous);
@@ -715,10 +752,9 @@ class DeliberationsController extends AppController {
 
             /* initialisation du lien de redirection */
             $history = $this->Session->read('user.history');
-            if (stripos($this->previous, 'deliberations/add') === false && stripos($this->previous, 'deliberations/edit') === false
-            )
+            if ($this->previous['action'] != 'add' && $this->previous['action'] != 'edit')
                 $redirect = $this->previous;
-            elseif (stripos($this->previous, 'deliberations/add'))
+            elseif ($this->previous['action'] == 'add')
                 $redirect = array('action' => 'mesProjetsRedaction');
             else
                 foreach ($history as $h)
@@ -742,7 +778,7 @@ class DeliberationsController extends AppController {
             $typeseances = $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' => $typeseance_ids), 'order' => 'libelle'));
             foreach ($this->request->data['Typeseance'] as $typeseance)
                 $typeseances_selected[] = $typeseance['id'];
-
+            
             $seances_tmp = $this->Seance->find('all', array(
                 'conditions' => array(
                     'Seance.type_id' => $typeseances_selected,
@@ -800,10 +836,11 @@ class DeliberationsController extends AppController {
 
             // teste si le projet est modifiable par l'utilisateur connecté
             if (!$this->Droits->check($this->user_id, "Deliberations:edit") || !$this->Deliberation->estModifiable($id, $this->user_id, $this->Droits->check($this->user_id, "Deliberations:editerTous"))) {
+                if(!$this->Droits->check($this->data['Deliberation']['redacteur_id'], "Deliberations:edit")){
                 $this->Session->setFlash("Vous n'avez pas les droits pour editer le projet '$id'.", 'growl', array('type' => 'erreur'));
                 return $this->redirect($this->referer());
+                }
             }
-
             // initialisation des fichiers des textes
             $this->Gedooo->createFile($path_projet, 'texte_projet.odt', $this->data['Deliberation']['texte_projet']);
             $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
@@ -912,11 +949,56 @@ class DeliberationsController extends AppController {
             if ($this->request->data['Deliberation']['parapheur_etat'] >= 1) {
                 $this->Session->setFlash("Attention, l'acte est en cours de signature!", 'growl', array('type' => 'erreur'));
             }
+            //on récupaire tout les utilisateurs sauf l'utilisateur courrant
+            $user = $this->Deliberation->find('first',array('conditions' => array('Deliberation.id' => $id),'fields' => array('redacteur_id'),'recursive' => -1,));
+            // on format les données pour le select id => text
+            $select = array();
+            $users = $this->Deliberation->find('first',
+                        array('fields' => 'id',
+                            'contain' => array('User' => array('fields' => array('id'))),
+                            'conditions' => array('Deliberation.id' => $id)));
+            // listes des utilisateurs deja rataché à la délibération
+            foreach ($users['User'] as $users){
+                $select[$users['id']] = $users['id'];
+            }
+            // liste de tout les autres rédacteurs possibles
+            $services = $this->Deliberation->Redacteur->find('first',array(
+                'fields' => array('Redacteur.id'),
+                'conditions' => array('Redacteur.id' => $user['Deliberation']['redacteur_id']),
+                'contain' => array('Service' => array('fields' => array('Service.id'),)),
+                'recursive' => -1,
+            ));
+            $listeservices = array();
+            foreach ($services['Service'] as $service){
+                $listeservices[] = $service['id'];
+            }
+            $condition = array();
+            if(!empty($listeservices)){
+                if(count($listeservices) > 1){
+                    $condition['Service.id IN'] = $listeservices;
+                }else{
+                    $condition['Service.id'] = $listeservices;
+                }
+            }
+            $users = $this->Deliberation->Service->find('all',array(
+                'fields' => array('Service.id'),
+                'conditions' => $condition,
+                'contain' => array('User' => array('fields' => array('User.id','User.login','User.nom','User.prenom'),'conditions' => array('User.id <>' => $user['Deliberation']['redacteur_id']))),
+                'recursive' => -1,
+                ));
+            $listeusers = array();
+            foreach($users as $user){
+                foreach($user['User'] as $data){
+                   $listeusers[$data['id']] = '('.$data['login'].') '.$data['prenom'].' '.$data['nom']; 
+                }
+            }
+            $this->set('select', $select);
+            $this->set('redacteurs', $listeusers);
             $this->render();
         } else {
             $this->Deliberation->begin();
             $success = true;
-            $redirect = $this->data['Deliberation']['redirect'];
+            $redirect = !empty($this->data['Deliberation']['redirect'])?$this->data['Deliberation']['redirect']:$this->previous;
             $oldDelib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
             // Si on definit une seance a une delib, on la place en derniere position de la seance
             if (isset($this->data['Seance'])) {
@@ -969,7 +1051,26 @@ class DeliberationsController extends AppController {
                 App::uses('CakeTime', 'Utility');
                 $this->request->data['Deliberation']['date_limite'] = CakeTime::format($this->data['date_limite'], '%Y-%m-%d 00:00:00');
             }
-            if ($success = $this->Deliberation->save($this->request->data)) {
+            //on récupère la liste des utilisateurs vouluent et on les sauvegarde
+            $multiusers = array();
+                if(!empty($this->request->data['Deliberation']['multiRedactor'])){
+                    foreach ($this->request->data['Deliberation']['multiRedactor'] as $user){
+                      $multiusers[] = array('id' => $user,
+                                'UsersDeliberation' => array(
+                                    'user_id' => $user,
+                                ));
+                    }
+                } else {
+                    $multiusers = array('id' => null,
+                                'UsersDeliberation' => array());
+                }
+                $deliberation = array('Deliberation' => array('id' => $id));
+                $deliberation['User'] = $multiusers;
+                $this->Deliberation->saveAll($deliberation);
+
+                $success = $this->Deliberation->save($this->request->data);
+                
+            if ($success) {
                 $this->Historique->enregistre($id, $this->user_id, "Modification du projet");
                 $this->Filtre->supprimer();
 
@@ -1083,7 +1184,7 @@ class DeliberationsController extends AppController {
                                     $success &= $this->_saveAnnexe($delibRattacheeId, $annexe, $annexesErrors);
                     }
                 }
-
+                
                 if ($success) {
                     //Mise à jour des Multi-délibération
                     $multis = $this->Deliberation->find('all', array(
@@ -1105,7 +1206,7 @@ class DeliberationsController extends AppController {
                     }
                 }
             }
-
+            
             if ($success) {
                 $this->Deliberation->commit();
 //                $this->Annex->commit();
@@ -1330,7 +1431,12 @@ class DeliberationsController extends AppController {
         
         
     }
-    
+    /**
+     * Ajoute un projet dans un circuit
+     * 
+     * @param type $id id du projet
+     * @param type $users listes des corédacteurs possibles
+     */
     function _addIntoCircuit($id = null,$users = array()) {
 
         try {
@@ -1348,6 +1454,7 @@ class DeliberationsController extends AppController {
                 new Exception('Problème de sauvegarde.', 'error');
             }
             // insertion dans le circuit de traitement
+            
             if ($this->Traitement->targetExists($id)) {
                 $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $this->user_id);
                 $this->Traitement->Visa->replaceDynamicTrigger($id, $this->user_id);
@@ -1378,16 +1485,23 @@ class DeliberationsController extends AppController {
                     $this->redirect(array('action' => 'mesProjetsRedaction'));
                 }
             } else {
-                $users[] = $this->user_id;
-                $this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id,$this->user_id ,$users);
-               //die();
+                //si users est vide on initialise avec avec l'id de l'utilisateur soit on le rajoute à la liste
+                $redactor = $this->Deliberation->find('first',  array(
+                    'fields' => array('id','redacteur_id'),
+                    'conditions' => array('id' => $id),
+                    'recursive' => -1,
+                ));
+                $users[] = $redactor['Deliberation']['redacteur_id'];
+                // création des étapes du circuit dans le visas
+                $this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id,$redactor['Deliberation']['redacteur_id'] );
+                //tableau des rédacteurs
                 $options = array(
                     'insertion' => array(
                         '0' => array(
                             'Etape' => array(
                                 'etape_id' => null,
                                 'etape_nom' => 'Rédacteur',
-                                'etape_type' => 1,
+                                'etape_type' => count($users) > 1?2:1,
                                 'cpt_retard' => null
                             ),
                             'Visa' => array(
@@ -1401,11 +1515,10 @@ class DeliberationsController extends AppController {
                     ),
                     'optimisation' => configure::read('Cakeflow.optimisation')
                 );
-                $traitementTermine = $this->Traitement->execute('IN', $this->user_id, $id, $options);
-
+                $traitementTermine = $this->Traitement->execute('IN', $redactor['Deliberation']['redacteur_id'], $id, $options);
                 //FIX Devrait enregistrer un historique des actions effectés en optimisation et autre mais pas que sur l'état final
                 if ($traitementTermine) {
-                    $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
+                    $this->Historique->enregistre($id, $redactor['Deliberation']['redacteur_id'], 'Projet validé');
                     $this->Deliberation->id = $id;
                     $this->Deliberation->saveField('etat', 2);
                 }
@@ -1438,19 +1551,25 @@ class DeliberationsController extends AppController {
             $this->Deliberation->id = $id;
             if (!empty($this->request->data['Deliberation']['circuit_id']) && $this->Deliberation->saveField('circuit_id', $this->request->data['Deliberation']['circuit_id'])) {
                 
-                // on récupère les utilisateurs associé multideliberation
-               /* $multiusers = $this->Deliberation->Multiusers->find('list',array(
-                   'fields' => array('Multiusers.user_id'),
-                   'conditions' => array('Multiusers.deliberation_id' => $id), 
-                   'recursive' => -1
-                ));*/
-
-                $this->_addIntoCircuit($id);
+                // on récupère les utilisateurs associé multideliberation(table de liason)
+                $multiusers = array();
+                $users = $this->Deliberation->find('first',
+                        array('fields' => array('id'),
+                            'contain' => array('User' => array('fields' => array('id'))),
+                            'conditions' => array('Deliberation.id' => $id)));
+                //on récupère tout les utilisateurs secondaires
+                        foreach ($users['User'] as $user){
+                            $multiusers[] = $user['id'];
+                        }
+                $this->_addIntoCircuit($id,$multiusers);
 
                 $message = "Projet injecté au circuit : " . $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
-                $this->Session->setFlash($message, 'growl', array('type' => 'success'));
-
-                return $this->redirect($this->previous);
+                $this->Session->setFlash($message, 'growl');
+                return $this->redirect(array(
+                    'plugin' => null,
+                    'controller' => 'deliberations',
+                    'action' => 'mesProjetsRedaction',
+                ));
             } else// if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
                 $this->Session->setFlash('Veuillez sélectionner un circuit', 'growl', array('type' => 'erreur'));
         }
@@ -1459,6 +1578,7 @@ class DeliberationsController extends AppController {
         $projet = $this->Deliberation->find('first', array(
             'fields' => array('modified', 'created', 'texte_projet', 'objet', 'num_pref'),
             'contain' => array(
+                'User',
                 'Typeacte.libelle',
                 'Theme.libelle',
                 'Service.libelle',
@@ -1564,9 +1684,6 @@ class DeliberationsController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($valid == '1') {
-                if(!empty($this->request->data['Commentaire']['texte'])){
-                    $this->Deliberation->Commentaire->add($id,$this->request->data['Commentaire']['texte'],$this->Session->read('user.User.id'));
-                }
                 $this->_accepteDossier($id);
                 $this->Session->setFlash('Vous venez de valider le projet : ' . $id, 'growl');
             } else {
@@ -1601,6 +1718,7 @@ class DeliberationsController extends AppController {
                 'modified'
             ),
             'contain' => array(
+                'User',
                 'Typeacte.libelle',
                 'Theme.libelle',
                 'Service.libelle',
@@ -1721,8 +1839,9 @@ class DeliberationsController extends AppController {
         $nouvelId = $this->Deliberation->refusDossier($id);
         $this->Traitement->execute('KO', $this->user_id, $id);
         $destinataires = $this->Traitement->whoIs($id, 'in', array('OK', 'IN'));
-        foreach ($destinataires as $destinataire_id)
+        foreach ($destinataires as $destinataire_id){
             $this->User->notifier($nouvelId, $destinataire_id, 'refus');
+        }
         $this->Historique->enregistre($id, $this->user_id, 'Projet refusé');
     }
 
@@ -2527,15 +2646,23 @@ class DeliberationsController extends AppController {
         if (!isset($conditions['Deliberation.typeacte_id']))
             $conditions['Deliberation.typeacte_id'] = array_keys($this->Session->read('user.Nature'));
         $conditions['Deliberation.etat'] = 0;
-        //$conditions['Deliberation.redacteur_id = \''.$this->user_id.'\' OR "User"."user_id" = '] = $this->user_id;
         $conditions['Deliberation.redacteur_id'] = $this->user_id;
-        //$conditions['Deliberation.redacteur_id'] = array($this->user_id,'OR' => array('Multiusers.user_id' => $this->user_id));
-        $conditions['Deliberation.parent_id'] = null;
-
         $ordre = array('Deliberation.id' => 'DESC');
-
-        /*var_dump($this->Deliberation->find('all',array( 'contain' => array('Seance') )));
-        exit();*/
+        $redacteur = $this->Deliberation->Redacteur->find('all',array('fields' => 'id','contain' => array('Deliberation' => array('conditions' => array('Deliberation.etat' => 0))),'conditions' => array('Redacteur.id' => $this->user_id)));
+        
+        $id = array();
+        foreach ($redacteur[0]['Deliberation'] as $deliberation_id){
+            $id[] =  $deliberation_id['id'];
+        }
+        if(empty($id)){
+            $conditions['Deliberation.parent_id'] = null;
+        }else{
+            if(count($id) != 1){
+               $conditions['Deliberation.parent_id IS NULL OR "Deliberation"."id" IN '] =  $id ;
+            }else{
+               $conditions['Deliberation.parent_id IS NULL OR "Deliberation"."id"'] = $id;
+            }
+        }
         $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions));
         $projets = $this->Deliberation->find('all', array(
             'conditions' => $conditions,
@@ -2557,7 +2684,6 @@ class DeliberationsController extends AppController {
                 'Deliberationseance' => array('fields' => array('id'),
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
                         'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action')))),
-                //'User' => array('fields'=>array('id','user_id','deliberation_id')),
                 ),
             'order' => $ordre));
         $this->_sortProjetSeanceDate($projets);
@@ -2743,7 +2869,6 @@ class DeliberationsController extends AppController {
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
                         'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
             'order' => $ordre));
-
         $this->_sortProjetSeanceDate($projets);
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets('index', $projets, 'Mes projets validés', array('view', 'generer'));
@@ -4045,7 +4170,7 @@ class DeliberationsController extends AppController {
         } else {
             if($this->data['Insert']['etape_choisie'] != 1){
                 if(count($this->data['Insert']['users_id']) <= 1){
-                     $this->Session->setFlash(__('Veuillez sélectionner au moins 2 utilisateurs.', true), 'growl', array('type' => 'erreur'));
+                     $this->Session->setFlash(__('Veuillez sélectioner au moin 2 utilisateurs.', true), 'growl', array('type' => 'erreur'));
                      return $this->redirect(array('action' => 'rebond',$delib_id));
                 }
             }
@@ -4068,29 +4193,24 @@ class DeliberationsController extends AppController {
                             
             )))));
             if ($this->data['Insert']['option'] == 'retour') {
-                $action_com = __('envoyé en aller-retour');
-                //$action_com = " avec l'option  de retour";
+                $action_com = " avec l'option  de retour";
                 $action = 'IL';
             } elseif ($this->data['Insert']['option'] == 'detour') {
-                $action_com = __('envoyé (sans retour)');
-                //$action_com = "";
+                $action_com = "";
                 $action = 'IP';
             } elseif ($this->data['Insert']['option'] == 'validation') {
-                $action_com = __('envoyé en validation finale');
-                //$action_com = " pour validation finale";
+                $action_com = " pour validation finale";
                 $action = 'VF';
             }
+            $destinataires = '';
             //Cakeflow insertion de/des utilisateurs dans le circuits la gestion et/ou est faite par l'envoie d'un tableau id voulue ds le trriger_id au lieu d'un seul
             $this->Traitement->execute($action, $this->user_id, $delib_id, $options);
-            $destinataires = '';
+            $destinataires = $user['User']['prenom'] . ' ' . $user['User']['nom'] . ' (' . $user['User']['login'] . ')';
+            $this->Historique->enregistre($delib_id, $this->user_id, 'Le projet a été envoyé à'.$destinataire.' '.$action_com);
             foreach ($this->data['Insert']['users_id'] as $id) {
-                if($destinataires != '')
-                  $destinataires .=  ', ';
                 $this->User->notifier($delib_id, $id, 'traitement');
-                $user = $this->User->find('first',array('fields' => array('User.nom','User.prenom','User.login'),'conditions' => array('User.id' => $id),'recursive' => -1));
-                $destinataires .= $user['User']['prenom'] . ' ' . $user['User']['nom'] . ' (' . $user['User']['login'] . ')';
             }
-            $this->Historique->enregistre($delib_id, $this->user_id, 'Le projet a été '.$action_com.' à '.$destinataires);
+
             return $this->redirect('/');
         }
     }

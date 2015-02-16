@@ -172,13 +172,13 @@ class Deliberation extends AppModel {
         'Typeseance',
         'User' => array(
             'className' => 'User',
-            'foreignKey' => 'deliberation_id',
             'joinTable' => 'users_deliberations',
+            'foreignKey' => 'deliberation_id',
             'associationForeignKey' => 'user_id',
             'unique' => true,
             'conditions' => '',
             'fields' => '',
-            //'order' => 'User.nom ASC',
+            'order' => 'User.nom ASC',
             'limit' => '',
             'offset' => '',
             'finderQuery' => '',
@@ -220,6 +220,28 @@ class Deliberation extends AppModel {
             );
             $this->Historique->create($create);
             $this->Historique->save();
+            
+            // on récupère les utilisateurs associé multideliberation
+            $multiusers = '';
+            $users = $this->find('all',
+                    array('fields' => 'id',
+                        'contain' => array('User' => array('fields' => array('nom','prenom'))),
+                        'conditions' => array('Deliberation.id' => $this->data['Deliberation']['id'])));
+            if(!empty($users[0]['User'])){
+                    foreach ($users[0]['User'] as $users){
+                        $multiusers .= ' ['.$users['prenom'].' '.$users['nom'].'] ';
+                    }
+            $create = array(
+                'delib_id' => $this->data['Deliberation']['id'],
+                'user_id' => $this->data['Deliberation']['redacteur_id'],
+                'circuit_id' => -1,
+                'commentaire' => '['.$user['Redacteur']['prenom'].' '.$user['Redacteur']['nom'].'] '.__('Ajout de ou des rédacteurs:').$multiusers,
+                'modified' => date("Y-m-d H:i:s"),
+                'created' => date("Y-m-d H:i:s")
+            );
+            $this->Historique->create($create);
+            $this->Historique->save();   
+            }
         }
         if (!empty($this->data['Deliberation']['id'])) {
             $hasChildren = $this->hasAny(array('Deliberation.parent_id' => $this->data['Deliberation']['id']));
@@ -425,14 +447,18 @@ class Deliberation extends AppModel {
                 return $this->Typeacte->getModelId($delib['Deliberation']['typeacte_id'], 'modelefinal_id');
         }
     }
-
+    /**
+     * Refuse un dossier et cré un nouveau dossier avec l'ancien rataché au nouveau
+     * 
+     * @param type $id l'id du dossier à supprimer
+     * @return type nouvelle id
+     */
     public function refusDossier($id) {
         // lecture en base de données
         $this->Behaviors->load('Containable');
         $delib = $this->find('first', array(
-            'contain' => array('Annex', 'Infosup', 'Typeseance'),
+            'contain' => array('Annex', 'Infosup', 'Typeseance','User' => array('fields' => array('id'))),
             'conditions' => array('Deliberation.id' => $id)));
-
         // maj de l'etat de la delib dans la table deliberations
         $this->id = $id;
         $this->saveField('etat', '-1');
@@ -443,11 +469,18 @@ class Deliberation extends AppModel {
         unset($delib['Deliberation']['modified']);
         $delib['Deliberation']['etat'] = 0;
         $delib['Deliberation']['anterieure_id'] = $id;
+        
+        //on récupère les champ des users liers et on suprime les id afin de créer une nouvelle delib et non de mettre a jour l'ancienne
+        foreach ($delib['User'] as $id => $user){
+             unset($delib['User'][$id]['UsersDeliberation']['deliberation_id']);
+             unset($delib['User'][$id]['UsersDeliberation']['id']);
+        }
+
         $this->create();
-        $this->save($delib);
+        $this->saveAll($delib);
         $delib_id = $this->getLastInsertID();
         $this->copyPositionsDelibs($id, $delib_id);
-
+        
         // copie des annexes du projet refusé vers le nouveau projet
         $annexes = $delib['Annex'];
         foreach ($annexes as $annexe) {
@@ -2107,22 +2140,26 @@ class Deliberation extends AppModel {
      */
     function duplicate($id = null){
        if(!empty($id)){
-            $deliberation = $this->find('all',array(
+            $deliberation = $this->find('first',array(
+                'contain' => array('User' => array('fields' => array('id'))),
                 'recursive' => -1,
                 'conditions' => array('Deliberation.id' => $id)
             ));
-            unset($deliberation[0]['Deliberation']['id']);
+            foreach ($deliberation['User'] as $id => $user){
+                unset($deliberation['User'][$id]['UsersDeliberation']['deliberation_id']);
+                unset($deliberation['User'][$id]['UsersDeliberation']['id']);
+            }
+            unset($deliberation['Deliberation']['id']);
             App::uses('SessionHelper', 'View/Helper');
             $user = SessionHelper::read('user');
-            $deliberation[0]['Deliberation']['texte_projet'] = $deliberation[0]['Deliberation']['texte_synthese'] = $deliberation[0]['Deliberation']['deliberation'] = NULL;
-            $deliberation[0]['Deliberation']['redacteur_id'] = $user['User']['id'];
-            $deliberation[0]['Deliberation']['texte_projet_name'] = $deliberation[0]['Deliberation']['texte_projet_type'] = '';
-            $deliberation[0]['Deliberation']['texte_synthese_name'] = $deliberation[0]['Deliberation']['texte_synthese_type'] = '';
-            $deliberation[0]['Deliberation']['deliberation_name'] = $deliberation[0]['Deliberation']['deliberation_type'] = '';
-            $deliberation[0]['Deliberation']['texte_projet_size'] = $deliberation[0]['Deliberation']['texte_synthese_size'] = $deliberation[0]['Deliberation']['deliberation_size'] = 0;
-            $deliberation[0]['Deliberation']['modified'] = $deliberation[0]['Deliberation']['created'] = date("Y-m-d H:i:s");
-            $this->create($deliberation[0]);
-            $save = $this->save();
+            $deliberation['Deliberation']['texte_projet'] = $deliberation['Deliberation']['texte_synthese'] = $deliberation['Deliberation']['deliberation'] = NULL;
+            $deliberation['Deliberation']['redacteur_id'] = $user['User']['id'];
+            $deliberation['Deliberation']['texte_projet_name'] = $deliberation['Deliberation']['texte_projet_type'] = '';
+            $deliberation['Deliberation']['texte_synthese_name'] = $deliberation['Deliberation']['texte_synthese_type'] = '';
+            $deliberation['Deliberation']['deliberation_name'] = $deliberation['Deliberation']['deliberation_type'] = '';
+            $deliberation['Deliberation']['texte_projet_size'] = $deliberation['Deliberation']['texte_synthese_size'] = $deliberation['Deliberation']['deliberation_size'] = 0;
+            $deliberation['Deliberation']['modified'] = $deliberation['Deliberation']['created'] = date("Y-m-d H:i:s");
+            $save = $this->saveAll($deliberation);
             return $save['Deliberation']['id'];
         }
     }
