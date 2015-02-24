@@ -66,7 +66,7 @@ class User extends AppModel
     public $displayFields = array(
         'fields' => array('nom', 'prenom', 'login'),
         'format' => '%s %s (%s)');
-
+    
     public $belongsTo = array(
         'Profil' => array(
             'className' => 'Profil',
@@ -74,6 +74,18 @@ class User extends AppModel
             'order' => '',
             'dependent' => false,
             'foreignKey' => 'profil_id')
+    );
+    
+    public $hasOne = array(
+        'Aro' => array(
+            'className' => 'Aro',
+            'foreignKey' => false,
+            'conditions' => array(
+                'User.id = Aro.foreign_key',
+                'Aro.model' => 'User'
+            ),
+            'dependent' => false
+        )
     );
 
     public $hasAndBelongsToMany = array(
@@ -104,15 +116,15 @@ class User extends AppModel
     public $hasMany = array(
         'Historique' => array(
             'className' => 'Historique',
-            'foreignKey' => 'user_id'),
+            'foreignKey' => 'user_id'
+        ),
         'Composition' => array(
             'className' => 'Cakeflow.Composition',
             'foreignKey' => 'trigger_id'
-        ),
-        'Aro' => array(
-            'foreignKey' => 'foreign_key'
         )
     );
+    
+    public $actsAs = array('Acl' => array('type' => 'requester'));
 
     function samePassword()
     {
@@ -135,20 +147,20 @@ class User extends AppModel
         return !($this->data['User']['accept_notif'] && empty($this->data['User']['email']));
     }
 
-    function beforeSave()
+    function beforeSave($options=array())
     {
         if (array_key_exists('password', $this->data['User']))
             $this->data['User']['password'] = md5($this->data['User']['password']);
         return true;
     }
 
-    function beforeValidate()
+    function beforeValidate($options=array())
     {
         if (empty($this->data['Service']['Service'])) {
             $this->invalidate('Service', true);
         }
     }
-
+    
     /* Retourne le circuit par défaut défini pour l'utilisateur $id */
     /* Si l'utilisateur n'a pas de circuit par défaut, retourne le circuit défini */
     /* au niveau du premier service de l'utilisateur. */
@@ -200,11 +212,19 @@ class User extends AppModel
 
     function getCircuits($user_id)
     {
-        $this->Behaviors->load('Containable');
         $circuits = array();
         $user = $this->find('first', array(
+                'contain' => array(
+                    'Circuit'=>array('fields' => array(
+                                                        'Circuit.id',
+                                                        'Circuit.nom',
+                                                        'Circuit.actif'
+                                                        ),
+                                     'order'=>array('Circuit.nom'=>'ASC')       
+                                    )
+                    ),
                 'conditions' => array('User.id' => $user_id),
-                'contain' => array('Circuit'))
+                'recursive'=>-1)
         );
         foreach ($user['Circuit'] as $circuit) {
             if ($circuit['actif'])
@@ -366,5 +386,32 @@ class User extends AppModel
             throw new Exception('user '.$suffixe.' id:'.$id.' non trouvé en base de données');
         foreach($user[$this->alias] as $field => $val)
             $aData[$field.'_'.$suffixe]= $val;//, 'text'));
+    }
+    
+    public function parentNode() {
+        if (!$this->id && empty($this->data)) {
+            return null;
+        }
+        if (isset($this->data['User']['profil_id'])) {
+            $groupId = $this->data['User']['profil_id'];
+        } else {
+            $groupId = $this->field('profil_id');
+        }
+        if (!$groupId) {
+            return null;
+        }
+        return array('Profil' => array('id' => $groupId));
+    }
+    
+    public function parentNodeAlias() {
+        if (!$this->id && empty($this->data)) {
+        return null;
+        }
+        $data = $this->data;
+        if (empty($this->data)) {
+            $data = $this->read();
+        }
+        
+        return array('User' => array('alias' => $data['User']['username']));
     }
 }
