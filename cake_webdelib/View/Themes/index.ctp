@@ -1,44 +1,67 @@
-<h2>Liste des thèmes</h2>
-<div class="input-append pull-left">
-    <input type="text" id="search_tree" placeholder="Filtrer par nom" style="float: left; z-index: 2"/>
+<?php
+$this->Html->addCrumb('Liste des thèmes');
 
-    <div class="btn-group" id="search_bloc">
-        <a class="btn" id="search_tree_button" title="Lancer la recherche">
-            <i class="fa fa-search"></i>
-        </a>
+echo $this->Bs->tag('h3', 'Liste des thèmes');
 
-        <a class="btn dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-        </a>
-
-        <ul class="dropdown-menu">
-            <li>
-                <a id="search_tree_erase_button" title="Remettre à zéro la recherche">Effacer la recherche</a>
-            </li>
+echo $this->Bs->div('btn-toolbar', null, array('role'=>"toolbar"));
+echo $this->Bs->div('btn-group', null, array('role'=>"group"));
+$this->BsForm->setLeft(0);
+$this->BsForm->setRight(12);
+echo $this->BsForm->inputGroup('search_tree', array(array(
+                                'content'=>'',
+                                'id' => 'search_tree_button',
+                                'icon'=>'glyphicon glyphicon-search',
+                                'type' => 'button',
+                                'state' => 'primary',
+    ), array(
+    'content'=>'<span class="caret"></span>',
+                                'class' => 'dropdown-toggle',
+                                'data-toggle' => 'dropdown',
+                                'icon'=>'glyphicon glyphicon-cog',
+                                'after'=>'<ul class="dropdown-menu dropdown-menu-right" role="menu">
+            <li><a id="search_tree_erase_button" title="Remettre à zéro la recherche">Effacer la recherche</a></li>
             <li class="divider"></li>
-            <li>
-                <a id="search_tree_plier_button" title="Replier tous les thèmes">Tout replier</i></a>
-            </li>
-            <li>
-                <a id="search_tree_deplier_button" title="Déplier tous les thèmes">Tout déplier</a>
-            </li>
-        </ul>
-    </div>
-</div>
-<div id="boutons_action">
-    <?php
-    echo $this->Html->link('<i class="fa fa-plus"></i> Nouveau', array('action' => 'add'), array('escape' => false, 'id' => 'boutonAdd', 'class' => 'btn btn-primary'));
-    echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', '#', array('escape' => false, 'id' => 'boutonEdit', 'class' => 'btn btn-warning'));
-    echo $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer', '#', array('escape' => false, 'id' => 'boutonDelete', 'class' => 'btn btn-danger'));
-    ?>
-</div>
-<div class="spacer"></div>
-<div id="arbre">
-    <?php
-    echo $this->Tree->generateIndex($data, 'Theme', array('id' => 'id', 'display' => 'libelle', 'order' => 'order'));
-    ?>
-</div>
+            <li><a id="search_tree_plier_button" title="Replier tous les thèmes">Tout replier</i></a></li>
+            <li><a id="search_tree_deplier_button" title="Déplier tous les thèmes">Tout déplier</a></li>
+        </ul>',
+                                'type' => 'button',
+                                'state' => 'default')
+    ), array(
+        'placeholder'=>__('Filtrer par nom de thème'),//style="float: left; z-index: 2"
+    ), array('multiple'=>true,'side'=>'right'));
+echo $this->Bs->close();
 
+echo $this->Bs->div('btn-group', null, array('role'=>"group"));
+echo $this->Bs->btn('Nouveau', array('action' => 'add'), array(
+        'escape' => false, 
+        'icon'=>'glyphicon glyphicon-plus',
+        'type'=>'primary',
+        'id' => 'boutonAdd', 
+        ));
+echo $this->Bs->close();
+
+echo $this->Bs->div('btn-group', null, array('role'=>"group"));
+    echo $this->Bs->btn('Modifier', '#', 
+            array('escape' => false, 
+                'type'=>'warning',
+                'icon'=>'glyphicon glyphicon-edit',
+                'id' => 'boutonEdit'));
+    echo $this->Bs->close();
+    
+    echo $this->Bs->div('btn-group', null, array('role'=>"group"));
+    echo $this->Bs->btn('Supprimer', '#', array(
+        'escape' => false, 
+        'type'=>'danger',
+        'id' => 'boutonDelete', 
+        'icon'=>'glyphicon glyphicon-trash',
+        'confirm'=> __('Voulez-vous vraiment supprimer le thème ?')
+        ));
+    
+echo $this->Bs->close(2);
+echo $this->Bs->tag('/br');
+echo $this->Bs->div( null,$this->Tree->generateIndex($data, 'Theme', 
+         array('id' => 'id', 'display' => 'libelle', 'order' => 'order')), array('id'=>'arbre'));
+?>
 <script>
     function addAction() {
         window.location.href = $('a#boutonAdd').attr('href');

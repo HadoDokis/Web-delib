@@ -1,3 +1,4 @@
+<?php echo $this->Session->flash('auth'); ?>
 <?php if (!empty($errorMsg)): ?>
     <div class="alert alert-danger alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -18,27 +19,24 @@
                                             'label' => false,
                                             'div' => false
                                    ))); ?>
-    
     <div class="form-group">
         <label class="col-sm-offset-1 col-sm-3 control-label" for="User.login">Identifiant</label>
         <div class="col-sm-7">
-            <?php echo $this->Form->input('User.login', array('type' => 'text', 'escape' => false, 'placeholder' => 'Identifiant', 'class'=>'form-control')); ?>
+            <?php echo $this->Form->input('username', array('type' => 'text', 'escape' => false, 'placeholder' => 'Identifiant', 'class'=>'form-control')); ?>
         </div>
     </div>
     
     <div class="form-group">
         <label class="col-sm-offset-1 col-sm-3 control-label" for="User.password">Mot de passe</label>
         <div class="col-sm-7">
-            <?php echo $this->Form->input('User.password', array('type' => 'password', 'escape' => false, 'placeholder' => 'Mot de passe', 'class'=>'form-control')); ?>
+            <?php echo $this->Form->input('password', array('type' => 'password', 'escape' => false, 'placeholder' => 'Mot de passe', 'class'=>'form-control')); ?>
         </div>
     </div>
     
     <div class="form-group">
         <div class="col-sm-offset-4 col-sm-7">
-            <?php echo $this->Form->button('Connexion', array('div' => false,'type'=>'submit', 'class' => 'btn btn-primary')); ?>
+            <?php echo $this->Form->end(array('div' => false,'type'=>'submit', 'class' => 'btn btn-primary','label'=>__('Connexion'))); ?>   
         </div>
     </div>
-    
-    <?php echo $this->Form->end(); ?>   
 </div>
 <script>$('input, text').placeholder();</script>

@@ -4,18 +4,18 @@ $this->Html->addCrumb('Liste des types d\'acte', array('controller'=>$this->requ
 if ($this->Html->value('Typeacte.id')) {
     echo $this->Bs->tag('h3', 'Modification d\'un type d\'acte');
     $this->Html->addCrumb('Modification d\'un type d\'acte');
-    echo $this->Form->create('Typeacte', array('url' => '/typeactes/edit/' . $this->Html->value('Typeacte.id'), 'type' => 'file'));
+    echo $this->BsForm->create('Typeacte', array('controller' => 'typeactes', 'action' => 'edit', 'type' => 'post', $this->Html->value('Typeacte.id')));
 } else {
     echo $this->Bs->tag('h3', 'Ajout d\'un type d\'acte');
     $this->Html->addCrumb('Ajout d\'un type d\'acte');
-    echo $this->Form->create('Typeacte', array('url' => '/typeactes/add/', 'type' => 'file'));
+    echo $this->BsForm->create('Typeacte', array('controller' => 'typeactes', 'action' => 'add', 'type' => 'post', 'type' => 'file'));
 }
 ?>
 
 <div class="demi">
     <fieldset>
         <legend>Informations générales</legend>
-        <?php echo $this->Form->input('Typeacte.libelle', array('label' => 'Libellé <abbr title="obligatoire">*</abbr>', 'size' => '40', 'type' => 'text')); ?>
+        <?php echo $this->Form->input('Typeacte.name', array('label' => 'Libellé <abbr title="obligatoire">*</abbr>', 'size' => '40', 'type' => 'text')); ?>
         <br/>
         <?php echo $this->Form->input('Typeacte.compteur_id', array('label' => 'Compteur <abbr title="obligatoire">*</abbr>', 'options' => $compteurs, 'default' => $this->Html->value('Typeacte.compteur_id'), 'empty' => (count($compteurs) > 1) && (!$this->Html->value('Typeacte.id')))); ?>
         <br/>

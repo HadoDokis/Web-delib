@@ -35,6 +35,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->css('/components/font-awesome/css/font-awesome.min');
     echo $this->Html->css('/components/select2/select2');
     echo $this->Html->css('/components/select2-bootstrap-css/select2-bootstrap');
+    echo $this->Html->css('/components/yamm3/yamm/yamm.css');
+    echo $this->Html->css('/components/bootstrap-submenu/dist/css/bootstrap-submenu.min');
     echo $this->Html->css('/components/jstree/dist/themes/default/style.min');
     echo $this->Html->css('treeview');
     echo $this->Html->css('webdelib');
@@ -50,6 +52,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->script('/components/select2/select2_locale_fr');
     echo $this->Html->script('/components/scrollup/dist/jquery.scrollUp.min');
     echo $this->Html->script('/components/jstree/dist/jstree.min');
+    echo $this->html->script('/components/bootstrap-submenu/dist/js/bootstrap-submenu.min');
     echo $this->html->script('/components/jquery-placeholder/jquery.placeholder.min');
     echo $this->Html->script('utils');
     echo $this->Html->script('attendable');
@@ -62,184 +65,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     ?>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-        <?php
-        echo $this->Html->link(
-            $this->Html->image('webdelib_petit.png', array('id' => 'logo', 'class' => 'logo', 'alt' => 'Webdelib')), array('plugin'=> null,'controller' => 'pages', 'action' => 'home'), array('escape' => false, 'title' => 'Bienvenue dans Webdelib', 'class' => 'navbar-brand')
-        );
-        ?>
-    </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active" style='margin-left: 230px'>
-            <?php echo $this->Html->link($Collectivite['nom'], array(
-                'plugin'=> null, 
-                'controller' => 'pages', 
-                'action' => 'home')); ?>
-        </li>
-         <li>
-             <?php echo $this->Bs->btn(null, array(
-                                                    'plugin'=> null,
-                                                    'controller' => 'pages', 
-                                                    'action' => 'home'
-                                                    ),
-                 array('icon'=>'glyphicon glyphicon-home"')); 
-             ?>
-            </li>
-      </ul>
-      <ul class="nav navbar-nav">
-        <?php
-        if ($this->fetch('filtre')){
-            echo $this->Bs->btn(__('FILTRER'), '#',
-         array(
-                'id'=>'boutonBasculeCriteres',
-                'class' => 'navbar-btn',
-                'type'=>'primary',
-                'title'=>__('Afficher-masquer les critères du filtre'),
-                'onClick'=>"basculeCriteres(this);",
-                //'escape'=> false,filtreCriteres
-                /*'icon'=>'glyphicon glyphicon-filter"'*/));
-        }  else {
-            echo $this->Bs->btn(__('FILTRER'), '#',
-             array(
-                    'id'=>'boutonBasculeCriteres',
-                    'class' => 'navbar-btn',
-                    'type'=>'primary',
-                    'title'=>__('Afficher-masquer les critères du filtre'),
-                    'disabled'=>"disabled"));
-        }
-        ?>
-      </ul>
-    <?php
-    echo $this->Form->create('User', array(
-        'id' => 'quickSearch',
-        'role'=>'search',
-        'class' => 'navbar-form navbar-right',
-        'url' => array(
-            'plugin' => null,
-            'controller' => 'deliberations',
-            'action' => 'quicksearch')));
-    ?><div class="form-group"><?php
-    echo $this->Form->input('User.search', array(
-        'class' => 'form-control span2',
-        'div' => false,
-        'label' => false,
-        'id' => 'searchInput',
-        'placeholder' => 'Rechercher',
-        'autocomplete' => 'off'));
-    ?></div><?php
-    echo $this->Form->end();
-    ?>
-        
-      <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $infoUser; ?> <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-                <li>
-                    <?php echo $this->Html->link('Changer le format de sortie des éditions', array('plugin' => null, 'controller' => 'pages', 'action' => 'format')); ?>
-                </li>
-                <li>
-                    <?php echo $this->Html->link('Changer le service émetteur', array('plugin' => null, 'controller' => 'pages', 'action' => 'service')); ?>
-                </li>
-                <li>
-                    <?php echo $this->Html->link('Changer de mot de passe', array('plugin' => null, 'controller' => 'users', 'action' => 'changeUserMdp')); ?>
-                </li>
-                <li>
-                    <?php echo $this->Html->link('Changer de thême', array('plugin' => null, 'controller' => 'users', 'action' => 'changeTheme')); ?>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <?php echo $this->Html->link('Se déconnecter', array('plugin' => null, 'controller' => 'users', 'action' => 'logout')); ?>
-                </li>
-          </ul>
-        </li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
-    
-<!--<nav class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="navbar-inner">
-        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <?php
-        echo $this->Html->link(
-            $this->Html->image('webdelib_petit.png', array('id' => 'logo', 'class' => 'logo', 'alt' => 'Webdelib')), array('controller' => 'pages', 'action' => 'home'), array('escape' => false, 'title' => 'Bienvenue dans Webdelib', 'class' => 'brand')
-        );
-        ?>
-        <div class="nav-collapse collapse" style='margin-left: 260px'>
-            <ul class="nav  navbar-nav">
-                <li class="active">
-                    <?php echo $this->Html->link($Collectivite['nom'], array('controller' => 'pages', 'action' => 'home')); ?>
-                </li>
-            </ul>
-        </div>
-        /.nav-collapse 
-        <div class="nav-collapse collapse pull-right" style="margin-right: 30px;">
-            <?php
-            echo $this->Form->create('User', array(
-                'id' => 'quickSearch',
-                'role'=>'search',
-                'class' => 'navbar-search pull-right',
-                'url' => array(
-                    'plugin' => null,
-                    'controller' => 'deliberations',
-                    'action' => 'quicksearch')));
-            echo $this->Form->input('User.search', array(
-                'class' => 'search-query span2',
-                'div' => false,
-                'label' => false,
-                'id' => 'searchInput',
-                'placeholder' => 'Rechercher',
-                'autocomplete' => 'off'));
-            echo $this->Form->end();
-            ?>
-        </div>
-        /.nav-collapse 
-        <div class="nav-collapse collapse pull-right">
-            <ul class="nav">
-                <li class="dropdown pull-right">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <span class="user"><?php echo $infoUser; ?></span>
-                        <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu pull-right">
-                        <li>
-                            <?php echo $this->Html->link('Changer le format de sortie des éditions', array('plugin' => null, 'controller' => 'pages', 'action' => 'format')); ?>
-                        </li>
-                        <li>
-                            <?php echo $this->Html->link('Changer le service émetteur', array('plugin' => null, 'controller' => 'pages', 'action' => 'service')); ?>
-                        </li>
-                        <li>
-                            <?php echo $this->Html->link('Changer de mot de passe', array('plugin' => null, 'controller' => 'users', 'action' => 'changeUserMdp')); ?>
-                        </li>
-                        <li>
-                            <?php echo $this->Html->link('Changer de thême', array('plugin' => null, 'controller' => 'users', 'action' => 'changeTheme')); ?>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <?php echo $this->Html->link('Se déconnecter', array('plugin' => null, 'controller' => 'users', 'action' => 'logout')); ?>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-        /.nav-collapse 
-    </div>
-</div>-->
+<?php echo $this->element('navbar'); ?>
 <?php
 App::uses('Debugger', 'Utility');
 if (Configure::read('debug') > 0):

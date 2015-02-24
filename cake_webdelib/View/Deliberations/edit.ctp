@@ -12,11 +12,11 @@ echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstr
 echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr');
 echo $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
 
-echo $this->Html->script('/libs/bootstrap-filestyle/js/bootstrap-filestyle.min.js');
-echo $this->Html->script('/libs/bootstrap-jquery-sortable/js/jquery-sortable-min.js');
+echo $this->Html->script('/components/bootstrap-filestyle/js/bootstrap-filestyle.min.js');
+echo $this->Html->script('/components/bootstrap-jquery-sortable/js/jquery-sortable-min.js');
 
-echo $this->Html->css('/libs/bootstrap-table/bootstrap-table.css');
-echo $this->Html->script('/libs/bootstrap-table/bootstrap-table.js');
+echo $this->Html->css('/components/bootstrap-table/bootstrap-table.css');
+echo $this->Html->script('/components/bootstrap-table/bootstrap-table.js');
 
 
 $this->Html->addCrumb('Mes projets', array('controller'=>'deliberations', 'action'=>'mesProjetsRedaction'));
@@ -192,7 +192,7 @@ echo $this->Html->tag(null, '<br />') .
 
 if (!empty($infosupdefs)){
     echo  $this->Bs->tabPane('Infos_suppl', array('class' => (isset($nameTab) && $nameTab=='Infos_suppl' ? 'active' : ''))); 
-    echo $this->Html->tag(null, '<br />') ; 
+    echo $this->Html->tag('br /');  
 
         foreach ($infosupdefs as $infosupdef) {
             // Amélioration 4.1 : on ne peut modifier une infosup qu'en fonction du profil
@@ -356,7 +356,7 @@ if (!empty($infosupdefs)){
 
 if (Configure::read('DELIBERATIONS_MULTIPLES')) {
     echo  $this->Bs->tabPane('multidelib', array('class' => (isset($nameTab) && $nameTab=='multidelib' ? 'active' : ''))); 
-    echo $this->Html->tag(null, '<br />') ; 
+    echo $this->Html->tag('br /');  
     
         if (empty($this->data['Deliberation']['parent_id']))
             echo $this->element('multidelib');

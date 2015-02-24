@@ -29,7 +29,6 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
     echo $this->Html->meta('icon');
 
-    echo $this->Html->css('/components/jgrowl/jquery.jgrowl');
     echo $this->Html->css('/components/bootstrap/dist/css/bootstrap.min');
     echo $this->Html->css('/components/font-awesome/css/font-awesome.min');
     echo $this->Html->css('webdelib');
@@ -59,7 +58,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         <strong>Attention!</strong> Vous devez activer JavaScript dans votre navigateur pour pouvoir utiliser le service Webdelib
     </div>
     </noscript>
-    <?php echo $content_for_layout; ?>
+    <?php echo $this->Session->flash(); ?>
+    <?php echo $this->fetch('content'); ?>
 </div>
 <?php 
 echo $this->element('footer'); 

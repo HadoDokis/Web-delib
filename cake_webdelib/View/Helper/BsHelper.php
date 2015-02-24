@@ -696,11 +696,14 @@ class BsHelper extends HtmlHelper {
 				$class .= ' ' . $this->faPrefix . '-' . $opt;
 			}
 		}
-
+                
 		if (!empty($attributes)) {
-			foreach ($attributes as $key => $attr) {
-				$more .= ' ' . $key . '="' . $attr . '"';
-			}
+                    if (!empty($attributes['class'])) {
+                        $class .= ' ' . $attributes['class'];
+                    }
+                    foreach ($attributes as $key => $attr) {
+                            $more .= ' ' . $key . '="' . $attr . '"';
+                    }
 		}
 		return '<span class="' . $this->faPrefix . ' ' . $this->faPrefix . '-' . $iconLabel . $class . '"' . $more . '></span>';
 	}
@@ -724,8 +727,16 @@ class BsHelper extends HtmlHelper {
 		}
                 
                 if (!empty($options['icon'])) {
-			$options['escapeTitle'] = false;
-                        $text='<span class="'.($options['icon']).'"></span>'.(!empty($text)?' '.$text:'');
+                    $icon='';
+                    if(substr($options['icon'],0, 9) == 'glyphicon') {
+                        
+                        $icon = '<span class="' . ($options['icon']) . '"></span>';
+                    } else {
+                        $icon=$this->icon($options['icon']); 
+                    }
+           
+                    $options['escapeTitle'] = false;
+                    $text=$icon.(!empty($text)?' '.$text:'');
 		}
 
 		$class = 'btn';

@@ -584,7 +584,6 @@ class BsFormHelper extends FormHelper {
 		if (isset($options['label']) && isset($labelHelp)) {
 			$out .= '<span class="help-block">' . $options['label']['help'] . '</span>';
 		}
-
 		//----- [inline] option
 		if (!(isset($options['inline']) && ($options['inline'] == 'inline' || $options['inline'] == true))) {
 			$out .= '<div class="checkbox">';
