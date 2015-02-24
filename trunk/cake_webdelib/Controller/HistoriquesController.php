@@ -1,8 +1,6 @@
 <?php
 class HistoriquesController extends AppController {
 
-    // Gestion des droits
-    public $aucunDroit;
     public $components = array('Paginator', 'Filtre');
 
     /**

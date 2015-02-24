@@ -11,7 +11,13 @@ class CronsController extends AppController {
         'VueDetaillee',
         'Applist',
         'Crons',
-        'Paginator'
+        'Paginator',
+        'Auth' => array(
+            'mapActions' => array(
+                'create' => array('admin_add','admin_delete','admin_edit','admin_executer','admin_index'
+                    ,'admin_planifier','admin_runCrons','admin_unlock','admin_view')
+            )
+        )
     );
 
     public $demandeDroit = array('index');
@@ -21,7 +27,7 @@ class CronsController extends AppController {
     /**
      * Vue détaillée des crons (tâches planifiées)
      */
-    function view($id = null) {
+    function admin_view($id = null) {
         // initialisations
         $this->request->data = $this->{$this->modelClass}->find('first', array(
             'recursive' => 1,
@@ -64,7 +70,7 @@ class CronsController extends AppController {
     /**
      * Planification d'une tâche
      */
-    function planifier($id = null) {
+    function admin_planifier($id = null) {
         $sortie = false;
         if (empty($this->request->data)) {
             // Initialisations
@@ -104,7 +110,7 @@ class CronsController extends AppController {
     /**
      * Ajout d'une tâche planifiée
      */
-    function add() {
+    function admin_add() {
         if (!empty($this->request->data)) {
             // Initialisations avant sauvegarde
             $this->request->data[$this->modelClass]['next_execution_time'] = array_merge($this->request->data[$this->modelClass]['next_execution_date'], $this->request->data[$this->modelClass]['next_execution_heure']);
@@ -132,7 +138,7 @@ class CronsController extends AppController {
     /**
      * Edition d'une tâche planifiée
      */
-    function edit($id) {
+    function admin_edit($id) {
         $sortie = false;
         if (empty($this->request->data)) {
             // Initialisations
@@ -179,7 +185,7 @@ class CronsController extends AppController {
     /**
      * Liste des crons
      */
-    function index() {
+    function admin_index() {
         $this->request->data = $this->Cron->find('all', array(
             'order' => array('Cron.nom ASC'),
         ));
@@ -191,7 +197,7 @@ class CronsController extends AppController {
         }
     }
 
-    function delete($id) {
+    function admin_delete($id) {
         if ($id != null) {
             $this->Cron->delete($id);
             $this->Session->setFlash(__('Tâche planifiée numéro ', true) . $id . __(' supprimée !', true), 'growl', array('type' => 'important'));
@@ -201,7 +207,7 @@ class CronsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    function unlock($id) {
+    function admin_unlock($id) {
         if ($id != null) {
             $this->Cron->id = $id;
             $this->Cron->saveField('lock', false);
@@ -217,7 +223,7 @@ class CronsController extends AppController {
      * @param integer $id id de la tâche a exécuter
      * @return redirect
      */
-    function executer($id) {
+    function admin_executer($id) {
         // lecture du crons à exécuter
         $cron = $this->Cron->find('first', array(
             'recursive' => -1,
@@ -239,7 +245,7 @@ class CronsController extends AppController {
     /**
      * fonction d'exécution de tous les crons actifs (appelée par le shell 'cron')
      */
-    function runCrons() {
+    function admin_runCrons() {
         $this->Crons->runAll();
 
         $errors = $this->Cron->find('count', array(

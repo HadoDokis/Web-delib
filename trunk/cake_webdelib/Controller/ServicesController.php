@@ -5,19 +5,14 @@ class ServicesController extends AppController {
     public $name = 'Services';
     public $helpers = array('Tree');
     public $uses = array('Service', 'UserService', 'Cakeflow.Circuit');
-
-    // Gestion des droits
-    public $aucunDroit = array(
-        'changeService',
-        'isEditable',
-        'view',
-        'autoComplete', 'test'
-    );
-    public $commeDroit = array(
-        'edit' => 'Services:index',
-        'add' => 'Services:index',
-        'delete' => 'Services:index',
-        'fusionner' => 'Services:index'
+    
+    public $components = array(
+        'Auth' => array(
+            'mapActions' => array(
+                'admin_index' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view','admin_fusionner',
+                    'changeService','isEditable','view','autoComplete')
+            )
+        )
     );
 
     function changeService($newServiceActif) {
@@ -27,7 +22,8 @@ class ServicesController extends AppController {
         $this->redirect($this->referer());
     }
 
-    function index() {
+    function admin_index() {
+        $this->view='index';
         $services = $this->Service->generateTreeList(array( 'Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;');
         $this->set('services', $services);
         $services = $this->Service->find('threaded', array('conditions' => array('actif' => 1), 'order' => 'Service.id ASC', 'recursive' => -1));
@@ -58,7 +54,7 @@ class ServicesController extends AppController {
         }
     }
 
-    function view($id = null) {
+    function admin_view($id = null) {
         $service = $this->Service->read(null, $id);
         if (!$id || empty($service)) {
             $this->Session->setFlash('Invalide id pour le Service.', 'growl');
@@ -68,7 +64,7 @@ class ServicesController extends AppController {
         $this->set('circuitDefaut', $this->Circuit->findById($this->Service->field('circuit_defaut_id', 'id = ' . $id)));
     }
 
-    function add() {
+    function admin_add() {
         if (!empty($this->data)) {
             if (empty($this->data['Service']['parent_id']))
                 $this->request->data['Service']['parent_id'] = 0;
@@ -85,7 +81,7 @@ class ServicesController extends AppController {
         $this->set('circuits', $this->Circuit->find('list'));
     }
 
-    function edit($id = null) {
+    function admin_edit($id = null) {
         if (empty($this->data)) {
             $this->data = $this->Service->read(null, $id);
             if ((!$id) || (empty($this->data))) {
@@ -111,7 +107,7 @@ class ServicesController extends AppController {
         $this->set('circuits', $this->Circuit->find('list'));
     }
 
-    function delete($id = null) {
+    function admin_delete($id = null) {
         if (!$id) {
             $this->Session->setFlash('Invalide id pour le service', 'growl', array('type'=>'danger'));
             return $this->redirect(array('action' => 'index'));
@@ -143,7 +139,7 @@ class ServicesController extends AppController {
         $this->set('data', $data);
     }
     
-    function fusionner()
+    function admin_fusionner()
     {
         if (empty($this->data['service_a_fusionner']) 
             OR empty($this->data['Service']['id'])) {

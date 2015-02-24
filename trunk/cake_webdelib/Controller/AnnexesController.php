@@ -2,9 +2,6 @@
 
 class AnnexesController extends AppController {
 
-    // Gestion des droits
-    public $aucunDroit;
-
     public $uses = array('Annex', 'CronJob');
 
     public $components = array('Conversion');

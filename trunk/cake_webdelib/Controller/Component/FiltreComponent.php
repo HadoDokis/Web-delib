@@ -16,8 +16,7 @@ class FiltreComponent extends Component {
 
     public $components = array('Session');
 
-    // called before Controller::beforeFilter()
-    function initialize(&$controller, $settings = array()) {
+    function initialize(Controller $controller, $settings = array()) {
         // saving the controller reference for later use
         $this->controller = $controller;
     }

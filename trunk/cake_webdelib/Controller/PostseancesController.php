@@ -1,25 +1,16 @@
 <?php
 
 class PostseancesController extends AppController {
-	var $name = 'Postseances';
-	var $helpers = array('Fck');
-	var $components = array('Gedooo', 'Cmis', 'Progress', 'Conversion');
-	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Typeseance', 'Typeacte', 'Nature', 'TdtMessage');
-
-	var $demandeDroit = array('index');
-
-    // Gestion des droits
-    var $aucunDroit = array(
-        'getNom',
-        'getPresence',
-        'getVote',
-        'sendToGed'
-    );
-    var $commeDroit = array(
-        'afficherProjets' => 'Postseances:index',
-        'changeStatus' => 'Postseances:index',
-        'downloadPV' => 'Postseances:index'
-    );
+	public $name = 'Postseances';
+	public $helpers = array('Fck');
+	public $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion',
+            'Auth' => array(
+            'mapActions' => array(
+                'read' => array('index','getNom','getPresence','getVote','sendToGed',
+                    'afficherProjets','changeStatus','downloadPV')
+            )
+        ));
+	public $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Typeseance', 'Typeacte', 'Nature', 'TdtMessage');
 
     function index() {
         $format = $this->Session->read('user.format.sortie');

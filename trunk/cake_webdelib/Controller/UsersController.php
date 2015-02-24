@@ -1,42 +1,42 @@
 <?php
 class UsersController extends AppController {
-    public $uses = array('User', 'Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
-    public $components = array('Menu', 'Dbdroits', 'Filtre', 'Paginator');
-
-    // Gestion des droits
-    public $aucunDroit = array(
-        'login',
-        'logout',
-        'getAdresse',
-        'getCP',
-        'getNom',
-        'getPrenom',
-        'getVille',
-        'view',
-        'changeFormat',
-        'changeUserMdp',
-        'changeTheme'
-    );
-
-    public $commeDroit = array(
-        'add' => 'Users:index',
-        'delete' => 'Users:index',
-        'edit' => 'Users:index',
-        'changeMdp' => 'Users:index'
-    );
+    public $uses = array('User', 'Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte','Aro','Aco');
+    public $components = array('Menu', 
+        'Auth' => array(
+                'mapActions' => array(
+                    'read' => array(    'login',
+                                        'logout',
+                                        'getAdresse',
+                                        'getCP',
+                                        'getNom',
+                                        'getPrenom',
+                                        'getVille',
+                                        'view',
+                                        'changeFormat',
+                                        'changeUserMdp',
+                                        'changeTheme',
+                                        'admin_index'),
+                    'create' => array('admin_add','admin_changeMdp'),
+                    'update' => array('admin_edit'),
+                    'delete' => array('admin_delete'),
+                                    ),
+        ),
+        'AuthManager.AclManager', 'Filtre', 'Paginator');
 
     //FIXME -- optimisation
-    function index()
+    function admin_index()
     {
+        $this->view = 'index';
+        
         $this->Filtre->initialisation($this->name.':'.$this->request->action, $this->request->data);
         $conditions =  $this->Filtre->conditions();
         if (!$this->Filtre->critereExists()) {
             //Définition d'un champ virtuel pour affichage complet des informations
-            $this->User->virtualFields['name'] = 'User.prenom || \' \' || User.nom || \' (\' || User.login || \')\'';
+            $this->User->virtualFields['name'] = 'User.prenom || \' \' || User.nom || \' (\' || User.username || \')\'';
             $users = $this->User->find('list', array(
                 'recursive' => -1,
                 'fields'=> array('id', 'name'),
-                'order' => 'login'
+                'order' => 'username'
             ));
             //FIXME -- optimisation : ne pas fournir les options mais utiliser ajax pour alléger le navigateur (chargement page)
             $this->Filtre->addCritere('Utilisateur', array(
@@ -49,7 +49,7 @@ class UsersController extends AppController {
                     'class' => 'select2',
                     'data-placeholder' => 'Filtre désactivé',
                     'options' => $users)));
-            $profils = $this->Profil->find('list', array('fields'=>array('id','libelle')));
+            $profils = $this->Profil->find('list', array('fields'=>array('id','name')));
             $this->Filtre->addCritere('Profil', array(
                 'field' => 'User.profil_id',
                 'retourLigne' => true,
@@ -58,7 +58,7 @@ class UsersController extends AppController {
                     'title' => __('Profil', true)." du(des) utilisateur(s) recherché(s)",
                     'options' => $profils)));
             $this->Filtre->addCritere('Login', array(
-                'field' => 'User.login',
+                'field' => 'User.username',
                 'inputOptions' => array(
                     'label' => __('Login', true),
                     'type'  => 'text',
@@ -83,10 +83,10 @@ class UsersController extends AppController {
         
         $this->paginate = array('User' => array(
             //'conditions' => $conditions,
-            'fields' => array('DISTINCT User.id', 'User.login', 'User.nom', 'User.prenom', 'User.telfixe', 'User.telmobile'),
+            'fields' => array('DISTINCT User.id', 'User.username', 'User.nom', 'User.prenom', 'User.telfixe', 'User.telmobile'),
             'limit' => 20,
             'contain' => array(
-                'Profil.libelle',
+                'Profil.name',
                 'Service.libelle',
                 'Aro' => array('conditions' => array('Aro.model' => 'User'))
             ),
@@ -97,7 +97,7 @@ class UsersController extends AppController {
         //Chercher les droits (types d'acte et supprimable?)
         $i=1;
         foreach ($users as &$user) {
-            foreach ($user['Aro'] as $aro){
+            /*foreach ($user['Aro'] as $aro){
                 $aros_ados = $this->ArosAdo->find('all', array(
                     'conditions' => array(
                         'ArosAdo.aro_id' => $aro['id'],
@@ -108,7 +108,7 @@ class UsersController extends AppController {
                 ));
                 foreach ($aros_ados as $aros_ado)
                     $user['Natures'][] = substr($aros_ado['Ado']['alias'], strlen('Typeacte:'), strlen($aros_ado['Ado']['alias']));
-            }
+            }*/
             // FIXME Optimiser pour diminuer le nombre de requêtes quand grosse bdd!!
             $user['User']['is_deletable'] = $this->_isDeletable($user, $message);
             
@@ -133,7 +133,7 @@ class UsersController extends AppController {
         }
     }
 
-    function add() {
+    function admin_add() {
 		// Initialisation
 		$sortie = false;
 
@@ -148,13 +148,8 @@ class UsersController extends AppController {
             if ($this->User->save($this->data)) {
                 // Ajout de l'utilisateur dans la table aros
                 $user_id = $this->User->id;
-                $this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']));
-                $this->Dbdroits->MajCruDroits(
-                    array('model' => 'User', 'foreign_key' => $user_id, 'alias' => $this->data['User']['login']),
-                    array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']),
-                    $this->data['Droits']
-                );
-                $aro = $this->Aro->find('first', array('conditions' => array('model' => 'User', 'foreign_key' => $user_id),
+                //$this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']));
+                /*$aro = $this->Aro->find('first', array('conditions' => array('model' => 'User', 'foreign_key' => $user_id),
                     'fields' => array('id'),
                     'recursive' => -1));
 
@@ -170,14 +165,14 @@ class UsersController extends AppController {
                         $this->ArosAdo->allow($aro['Aro']['id'], $ado['Ado']['id']);
                     else
                         $this->ArosAdo->deny($aro['Aro']['id'], $ado['Ado']['id']);
-                }
-                $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['login'] . '\' a été ajouté', 'growl');
+                }*/
+                $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['username'] . '\' a été ajouté', 'growl');
                 $sortie = true;
             } else
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
         }
         if ($sortie)
-            $this->redirect(array('action'=>'index'));
+            $this->redirect($this->previous);
         else {
             $this->set('selectedCircuits', 0);
             $this->set('services', $this->User->Service->find('threaded', array(
@@ -198,37 +193,74 @@ class UsersController extends AppController {
         }
     }
 
-    function edit($id = null)
+    function admin_edit($id = null)
     {
-        $sortie = false;
         if (empty($this->data)) {
-            $this->request->data = $this->User->find('first', array('conditions' => array('User.id' => $id)));
+            
+            $this->request->data = $this->User->find('first', array(
+                                            'conditions' => array('User.id' => $id)));
+        
             if (empty($this->data)) {
-                $this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
-                $sortie = true;
-            } else {
-                $aro = $this->Aro->find('first', array(
-                    'conditions' => array('model' => 'User', 'foreign_key' => $id),
-                    'fields' => array('id'),
+                    $this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
+                    $this->redirect($this->previous);
+            }
+
+            $this->set('selectedServices', $this->_selectedArray($this->data['Service']));
+
+            $this->AclManager->permissionsTypeacte($id);
+            $this->AclManager->permissionsProfil($id);
+            $this->AclManager->permissionsUser($id);
+
+            //$this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'User', 'foreign_key' => $id));
+            $natures = $this->Typeacte->find('all', array('recursive' => -1));
+            foreach ($natures as &$nature) {
+                $naturesAco = $this->Aco->find('first', array(
+                    'fields' => array('Aco.id'),
+                    'conditions' => array(
+                        'Aco.model' => 'Typeacte', 
+                        'Aco.foreign_key' => $nature['Typeacte']['id']),
                     'recursive' => -1));
 
-                $this->set('selectedServices', $this->_selectedArray($this->data['Service']));
-                $this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'User', 'foreign_key' => $id));
-                $natures = $this->Typeacte->find('all', array('recursive' => -1));
-
-                foreach ($natures as &$nature) {
-                    $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
-                        'Ado.foreign_key' => $nature['Typeacte']['id']),
-                        'fields' => array('Ado.id'),
-                        'recursive' => -1));
-
-                    $nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
-                }
-                $this->set('natures', $natures);
+              //  $nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
             }
-        } else {
-            $userDb = $this->User->find('first', array('conditions' => array('id' => $id), 'recursive' => -1));
-            $aro = $this->Aro->find('first', array('conditions' => array('model' => 'User', 'foreign_key' => $id),
+            $this->set('natures', $natures);
+            $this->set('services', $this->User->Service->find('threaded', array(
+                'recursive' => -1,
+                'order' => 'libelle ASC',
+                'conditions' => array('actif' => 1),
+                'fields' => array('id', 'libelle', 'parent_id')
+            )));
+            $this->set('profils', $this->User->Profil->find('list'));
+            $this->set('notif', array('1' => 'oui', '0' => 'non'));
+            $this->set('circuits', $this->Circuit->getList());
+             //$this->set('listeCtrlAction', $this->Menu->menuCtrlActionAffichage());
+            /*$aro = $this->Aro->find('first', array(
+                'conditions' => array('model' => 'User', 'foreign_key' => $id),
+                'fields' => array('id'),
+                'recursive' => -1));
+
+            $natures = $this->Typeacte->find('all', array('recursive' => -1));
+            foreach ($natures as &$nature) {
+                $naturesAco = $this->Aco->find('first', array('conditions' => array('Aco.model' => 'Typeacte',
+                    'Aco.foreign_key' => $nature['Typeacte']['id']),
+                    'fields' => array('Aco.id'),
+                    'recursive' => -1));
+*/
+                //$nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
+         //   }
+            $this->set('natures', $natures);
+        } 
+        else {
+            $userDb = $this->User->find('first', array(
+                'conditions' => array('id' => $id), 
+                'recursive' => -1));
+
+            $this->AclManager->setPermissionsTypeacte('User', $id, $this->data['Aco']['Typeacte']);
+            $this->AclManager->setPermissionsProfil('User', $id, $this->data['Aco']['Profil']);
+            $this->AclManager->setPermissionsUser('User',$id, $this->data['Aco']['User']);
+            
+            $aro = $this->Aro->find('first', array(
+                'conditions' => array('model' => 'User', 'foreign_key' => $id),
                 'fields' => array('id'),
                 'recursive' => -1));
 
@@ -242,6 +274,8 @@ class UsersController extends AppController {
                      $this->request->data['User']['accept_notif']=true;
                     
             if ($this->User->save($this->data)) {
+                
+                /*
                 if (!empty($this->data['Nature']))
                     foreach ($this->data['Nature'] as $nature_id => $can) {
                         $nature_id = substr($nature_id, 3, strlen($nature_id));
@@ -264,43 +298,19 @@ class UsersController extends AppController {
                     array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']),
                     $this->request->data['Droits']
                 );
+                 * */
+                // */
 
-                $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['login'] . '\' a été modifié', 'growl');
-                $sortie = true;
+                $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['username'] . '\' a été modifié', 'growl');
+                $this->redirect($this->previous);
             } else {
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
                 $this->set('selectedServices', $this->data['Service']['Service']);
+                $this->redirect($this->here);
             }
         }
-        if ($sortie)
-            $this->redirect(array('action'=>'index'));
-        else {
-            $this->set('services', $this->User->Service->find('threaded', array(
-                'recursive' => -1,
-                'order' => 'libelle ASC',
-                'conditions' => array('actif' => 1),
-                'fields' => array('id', 'libelle', 'parent_id')
-            )));
-            $this->set('profils', $this->User->Profil->find('list'));
-            $this->set('notif', array('1' => 'oui', '0' => 'non'));
-            $this->set('circuits', $this->Circuit->getList());
-            $this->set('listeCtrlAction', $this->Menu->menuCtrlActionAffichage());
-            $aro = $this->Aro->find('first', array(
-                'conditions' => array('model' => 'User', 'foreign_key' => $id),
-                'fields' => array('id'),
-                'recursive' => -1));
-
-            $natures = $this->Typeacte->find('all', array('recursive' => -1));
-            foreach ($natures as &$nature) {
-                $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
-                    'Ado.foreign_key' => $nature['Typeacte']['id']),
-                    'fields' => array('Ado.id'),
-                    'recursive' => -1));
-
-                $nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
-            }
-            $this->set('natures', $natures);
-        }
+        
+        $this->render('edit');
     }
 
     /* dans le controleur car utilisé dans la vue index pour l'affichage */
@@ -308,16 +318,16 @@ class UsersController extends AppController {
     {
         $this->loadModel('Deliberation');
         if ($user['User']['id'] == 1) {
-            $message = 'L\'utilisateur \'' . $user['User']['login'] . '\' ne peut pas être supprimé car il est protégé';
+            $message = 'L\'utilisateur \'' . $user['User']['username'] . '\' ne peut pas être supprimé car il est protégé';
             return false;
         } elseif ($user['User']['id'] == $this->Session->read('user.User.id')) {
-            $message = 'L\'utilisateur courant \'' . $user['User']['login'] . '\' ne peut pas être supprimé';
+            $message = 'L\'utilisateur courant \'' . $user['User']['username'] . '\' ne peut pas être supprimé';
             return false;
         } elseif ($this->Deliberation->find('count', array(
             'conditions' => array('Deliberation.redacteur_id' => $user['User']['id']),
             'recursive' => -1))
         ) {
-            $message = 'L\'utilisateur \'' . $user['User']['login'] . '\' ne peut pas être supprimé car il est l\'auteur de délibérations';
+            $message = 'L\'utilisateur \'' . $user['User']['username'] . '\' ne peut pas être supprimé car il est l\'auteur de délibérations';
             return false;
         } else { //Si l'utilisateur à des projets A traiter, ne pas permettre la suppression
             $this->loadModel('Cakeflow.Traitement');
@@ -337,28 +347,25 @@ class UsersController extends AppController {
             $nbProjets = $nbProjetsATraiter + $nbProjetsValidation;
 
             if ($nbProjets > 0) {
-                $message = 'L\'utilisateur \'' . $user['User']['login'] . '\' ne peut pas être supprimé car il a des projets en cours';
+                $message = 'L\'utilisateur \'' . $user['User']['username'] . '\' ne peut pas être supprimé car il a des projets en cours';
                 return false;
             }
         }
         return true;
     }
 
-    function delete($id = null) {
+    function admin_delete($id = null) {
 		$messageErreur = '';
 		$user = $this->User->find('first' , array(
             'conditions' => array('User.id' => $id),
-            'fields'     => array('id', 'login'),
+            'fields'     => array('id', 'username'),
             'recursive'  => -1));
 		if (empty($user))
 			$this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
 		elseif (!$this->_isDeletable($user, $messageErreur)) {
 			$this->Session->setFlash($messageErreur, 'growl', array('type'=>'erreur'));
 		} elseif ($this->User->delete($id)) {
-			$aro = new Aro();
-			$aro_id = $aro->find('first',array('conditions'=>array('model'=>'User', 'foreign_key'=>$id),'fields'=>array('id')));
-			$aro->delete($aro_id['Aro']['id']);
-			$this->Session->setFlash('L\'utilisateur \''.$user['User']['login'].'\' a été supprimé', 'growl');
+			$this->Session->setFlash('L\'utilisateur \''.$user['User']['username'].'\' a été supprimé', 'growl');
 		}
 		$this->redirect('/users/index');
 	}
@@ -415,13 +422,111 @@ class UsersController extends AppController {
 
     function login()
     {
-        $this->History->reset();
-        //pas de message d'erreur
-        $this->set('errorMsg', '');
+        if ($this->request->is('post')) {
+            if ($this->Auth->login()) {
+                
+                $this->User->Profil->recursive=-1;
+                $userGroup = $this->User->Profil->findById($this->Auth->user('profil_id'));
+                
+                $aro = $this->Acl->Aro->find('first', array(
+                    'conditions' => array(
+                        'Aro.model' => 'User',
+                        'Aro.foreign_key' => $this->Auth->user('id'),
+                    ),
+                    'recursive'=>-1,
+                ));
+                if(!empty($aro)){
+                $acos = $this->Acl->Aco->children();
+                foreach($acos as $aco){
+                    $tmpacos = $this->Acl->Aco->getPath($aco['Aco']['id']);
+                    $path = array();
+                    foreach ($tmpacos as $tmpaco) {
+                        $path[] = $tmpaco['Aco']['alias'];
+                    }
+                    $stringPath = implode('/', $path); 
+/*
+                $permission = $this->Acl->Aro->Permission->find('first', array(
+                    'conditions' => array(
+                        'Permission.aro_id' => $aro['Aro']['id'],
+                        'Permission.aco_id' => $aco['Aco']['id'],
+                    ),
+                ));*/
+                $permissions=array();
+                foreach($this->AclManager->getKeys() as $key) {
+                    if ($this->Acl->check(array('model' => 'User', 'foreign_key' => $this->Auth->user('id')), $stringPath))
+                        $permissions[$key] = true; 
+                }
+                    $this->Session->write(
+                            'Auth.Permissions.'.(!empty($aco['Aco']['model'])?$aco['Aco']['model'].'.':'User.').$stringPath,
+                             $permissions
+                            );
+                }
+                }
+                /*
+                $this->User->Profil->recursive=-1;
+                $userGroup = $this->User->Profil->findById($this->Auth->user('profil_id'));
+                
+                $aro = $this->Acl->Aro->find('first', array(
+                    'conditions' => array(
+                        'Aro.model' => 'User',
+                        'Aro.foreign_key' => $this->Auth->user('id'),
+                    ),
+                    'recursive'=>-1,
+                ));
+                if(!empty($aro)){
+                $acos = $this->Acl->Aco->children();
+                foreach($acos as $aco){
+                $permission = $this->Acl->Aro->Permission->find('first', array(
+                    'conditions' => array(
+                        'Permission.aro_id' => $aro['Aro']['id'],
+                        'Permission.aco_id' => $aco['Aco']['id'],
+                    ),
+                ));
+                
+                    if(isset($permission['Permission']['id'])){
+                        if ($permission['Permission']['_create'] == 1 ||
+                            $permission['Permission']['_read'] == 1 ||
+                            $permission['Permission']['_update'] == 1 ||
+                            $permission['Permission']['_delete'] == 1) {
+                                $this->Session->write(
+                                    'Auth.Permissions.'.$permission['Aco']['alias'],
+                                     true
+                                );
+                                if(!empty($permission['Aco']['parent_id'])){
+                                        $parentAco = $this->Acl->Aco->find('first', array(
+                                        'conditions' => array(
+                                            'id' => $permission['Aco']['parent_id']
+                                        )	
+                                    ));
+                                        $this->Session->write(
+                                        'Auth.Permissions.'.$permission['Aco']['alias']
+                                        .'.'.$parentAco['Aco']['alias'], 
+                                        true
+                                    );
+                                }
+                            }
+                        }   
+                } 
+                
+                }*/
+                include(ROOT . DS . APP_DIR . DS . 'Config' . DS . 'menu.ini.php');
+                $this->_purgeMenu($navbar);
+                $this->Session->write('Auth.Navbar', $navbar);
+                
+                $this->Session->setFlash('Bienvenue sur Webdelib', 'growl');
+                
+                return $this->redirect($this->Auth->redirectUrl());
+            } else {
+                $this->Session->setFlash(__("Nom d'user ou mot de passe invalide, réessayer"), 'growl');
+            }
+        }
+        
         $collective = $this->Collectivite->read(array('logo','nom'), 1);
+        $this->Session->write('Collective.nom', $collective['Collectivite']['nom']);
+        
         App::uses('File', 'Utility');
         $file = new File(WEBROOT_DIR . DS . 'files' . DS . 'image' . DS . 'logo');
-
+        
         if (empty($collective['Collectivite']['logo']))
             $this->set('logo_path',  $this->base . "/files/image/adullact.png");
         else {
@@ -432,14 +537,20 @@ class UsersController extends AppController {
             $file->close();
             $this->set('logo_path',  $this->base . "/files/image/logo");
         }
-
+        
+        $this->layout = 'connexion';
+        //$this->History->reset();
+        
+        return;
+        //pas de message d'erreur
+        $this->set('errorMsg', '');
         //si le formulaire d'authentification a été soumis
         if (!empty($this->data)) {
             //cherche si utilisateur enregistré possede ce login
-            $user = $this->User->findByLogin($this->data['User']['login']);
+            $user = $this->User->findByLogin($this->data['User']['username']);
             unset($user['Historique']);
             if (empty($user)) {
-                $this->set('errorMsg', "L'utilisateur " . $this->data['User']['login'] . " n'existe pas dans l'application.");
+                $this->set('errorMsg', "L'utilisateur " . $this->data['User']['username'] . " n'existe pas dans l'application.");
                 $this->layout = 'connexion';
                 return $this->render();
             }
@@ -458,9 +569,9 @@ class UsersController extends AppController {
                     define('LDAP_DN', Configure::read('LDAP_DN'));
                     include(ROOT . DS . APP_DIR . DS . 'Vendor/adLDAP.php');
                     $ldap = new adLDAP();
-                    $isAuthentif = $ldap->authenticate($this->data['User']['login'], $this->data['User']['password']);
+                    $isAuthentif = $ldap->authenticate($this->data['User']['username'], $this->data['User']['password']);
                 } elseif (Configure::read('USE_LDAP') && Configure::read('LDAP')=='OPENLDAP')
-                    $isAuthentif = $this->_checkLDAP($this->data['User']['login'], $this->data['User']['password']);
+                    $isAuthentif = $this->_checkLDAP($this->data['User']['username'], $this->data['User']['password']);
                 else
                     $isAuthentif = ($user['User']['password'] == md5($this->data['User']['password']));
             }
@@ -468,7 +579,6 @@ class UsersController extends AppController {
             if ($isAuthentif) {
                 //on stocke l'utilisateur en session
                 $this->Session->write('user', $user);
-                $this->Session->write('user.collective', array('nom'=>$collective['Collectivite']['nom']));
                 // On stock la collectivite de l'utilisateur en cas de PASTELL
                 if (Configure::read('USE_PASTELL')) {
                     $coll = $this->Collectivite->find('first', array(
@@ -503,7 +613,7 @@ class UsersController extends AppController {
 
                 // Chargement du menu dans la session
                 $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
-                $this->Session->setFlash('Bienvenue sur Webdelib', 'growl');
+                
                 if (!empty($this->previous)) {
                     $this->redirect($this->previous);
                 } else {
@@ -522,11 +632,13 @@ class UsersController extends AppController {
     function logout() {
         //on supprime les infos utilisateur de la session
         $this->History->reset();
-        $this->Session->delete('user');
-        $this->redirect(array('action' => 'login'));
+        $this->Session->delete('Auth.Permissions');
+        $this->Session->delete('Collectivite');
+        //$this->redirect(array('action' => 'username'));
+        return $this->redirect($this->Auth->logout());
     }
 
-    function changeMdp($id)
+    function admin_changeMdp($id)
     {
         if (empty($this->data)) {
             $this->request->data = $this->User->read(null, $id);
@@ -542,7 +654,7 @@ class UsersController extends AppController {
                     'conditions' => array('User.id' => $id),
                     'recursive' => -1));
                 if ($this->User->saveField('password', $this->data['User']['password'])) {
-                    $this->Session->setFlash('Le mot de passe de l\'utilisateur \'' . $user['User']['login'] . '\' a été modifié', 'growl');
+                    $this->Session->setFlash('Le mot de passe de l\'utilisateur \'' . $user['User']['username'] . '\' a été modifié', 'growl');
                     $this->redirect(array('action' => 'index'));
                 } else
                     $this->Session->setFlash('Erreur lors de la saisie des mots de passe.', 'growl');
@@ -638,6 +750,68 @@ class UsersController extends AppController {
     
     public function beforeFilter() {
         parent::beforeFilter();
+        /*$this->Auth->mapActions(array(
+            'create' => array('add'),
+            'view' => array('index', 'view')
+        ));*/
+        
+         // Permet aux utilisateurs de se déconnecter
+       $this->Auth->allow();
+    }
+    
+    public function isAuthorized ($user) {
+        return true;
+        if (in_array($this->action, $this->userAllowed)) {
+            return true;
+        }
+
+        parent::isAuthorized ();
+    }
+    
+    private function _purgeSubMenu(&$subMenu)
+    {
+        foreach ($subMenu as $key => $Menu) {
+            $unset=false;
+            switch ($Menu['html']) {
+                case 'link':
+                    $checkDroit=$Menu['check'][0]; 
+                    $checkPermission= !empty($Menu['check'][1])?$Menu['check'][1]:'*';
+                    if($this->Acl->check(array('model' => 'User', 'foreign_key' => $this->Auth->user('id')), $checkDroit, $checkPermission)){ 
+                        continue;
+                    }
+                    $unset=true;
+                    break;
+                case 'divider':
+                    if(!empty($subMenu[$key-1]['html']) && $subMenu[$key-1]['html']=='divider'){
+                        $unset=true;  
+                    }
+                    break;
+
+                case 'subMenu':
+                    $this->_purgeMenu($Menu['content']);
+                break;
+            
+                default:
+                   // throw new Exception();
+                    break;
+            }
+            if($unset){
+                unset($subMenu[$key]);
+            }
+        }
+    }
+    private function _purgeMenu(&$navbar)
+    {
+        //Purge menu
+        foreach ($navbar as $key => $menu) {
+            if(!empty($menu['subMenu'])){
+                $this->_purgeSubMenu($menu['subMenu']);
+            }
+            if(empty($menu['subMenu'])){
+                unset($navbar[$key]);
+            }
+        }
+        
     }
 
 }

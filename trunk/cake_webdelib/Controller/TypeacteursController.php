@@ -3,20 +3,19 @@ class TypeacteursController extends AppController
 {
 	var $name = 'Typeacteurs';
         public $helpers = array();
-	// Gestion des droits : identiques aux droits des acteurs
-	var $commeDroit = array(
-		'add' => 'Typeacteurs:index',
-		'edit' => 'Typeacteurs:index',
-		'delete' => 'Typeacteurs:index',
-		'view' => 'Typeacteurs:index'
-		);
+        var $components = array(
+            'Auth' => array(
+            'mapActions' => array(
+                'admin_index' => array('admin_index','admin_add','admin_delete','admin_edit','admin_view')
+            )
+        ));
 
-	function index()
+	function admin_index()
 	{
             $this->set('typeacteurs', $this->Typeacteur->find('all', array('recursive' => -1,'order'=>'id ASC' )));
 	}
 
-	function view($id = null) 	{
+	function admin_view($id = null) 	{
 		$typeacteur = $this->Typeacteur->find('first', array('conditions' => array('Typeacteur.id'=> $id)));
 		if (empty($typeacteur)) {
 			$this->Session->setFlash('Invalide id pour le type d\'acteur', 'growl', array('type'=>'erreur'));
@@ -25,7 +24,7 @@ class TypeacteursController extends AppController
 			$this->set('typeacteur', $typeacteur);
 	}
 
-	function add() {
+	function admin_add() {
 		$sortie = false;
 		if (!empty($this->request->data)) {
 			$this->Typeacteur->create($this->request->data);
@@ -43,7 +42,7 @@ class TypeacteursController extends AppController
 		}
 	}
 
-	function edit($id = null) {
+	function admin_edit($id = null) {
 		$sortie = false;
 		if (empty($this->request->data)) {
                     
@@ -69,7 +68,7 @@ class TypeacteursController extends AppController
                 $this->set('eluNonElu', array('1'=>'élu','0'=>'non élu'));
 	}
 
-	function delete($id = null) {
+	function admin_delete($id = null) {
 		$typeacteur = $this->Typeacteur->read('id, nom', $id);
 		if (empty($typeacteur)) {
 			$this->Session->setFlash('Invalide id pour le type d\'acteur', 'growl', array('type'=>'erreur'));

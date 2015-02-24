@@ -4,18 +4,14 @@ class ThemesController extends AppController {
 
     public $name = 'Themes';
     public $helpers = array('Tree');
-    public $components = array('Droits');
-
-    // Gestion des droits
-    public $aucunDroit = array(
-        'getLibelle',
-        'isEditable',
-        'view'
-    );
-    public $commeDroit = array(
-        'edit' => 'Themes:index',
-        'add' => 'Themes:index',
-        'delete' => 'Themes:index'
+    
+    public $components = array(
+        'Auth' => array(
+            'mapActions' => array(
+                'admin_index' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view',
+                    'getLibelle','isEditable','view')
+            )
+        )
     );
 
     function getLibelle($id = null) {
@@ -26,7 +22,7 @@ class ThemesController extends AppController {
         return $objCourant['Theme']['libelle'];
     }
 
-    function index() {
+    function admin_index() {
         $themes = $this->Theme->find('threaded', array(
             'conditions' => array('actif' => 1),
             'order' => 'Theme.order ASC',
@@ -34,7 +30,7 @@ class ThemesController extends AppController {
         $this->set('data', $themes);
     }
 
-    function view($id = null) {
+    function admin_view($id = null) {
         if (!$id) {
             $this->Session->setFlash('Invalide id pour le Thême.', 'growl', array('type' => 'erreur'));
             $this->redirect($this->referer());
@@ -44,7 +40,7 @@ class ThemesController extends AppController {
         $this->set('Droits', $this->Droits);
     }
 
-    function add() {
+    function admin_add() {
         $themes = $this->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;');
         $this->set('themes', $themes);
         if (!empty($this->data)) {
@@ -60,7 +56,7 @@ class ThemesController extends AppController {
         }
     }
 
-    function edit($id = null) {
+    function admin_edit($id = null) {
         if (empty($id)) {
             $this->Session->setFlash('Invalide id pour le Thème', 'growl', array('type' => 'erreur'));
             $this->redirect($this->referer());
@@ -85,7 +81,7 @@ class ThemesController extends AppController {
         $this->set('selectedTheme', $this->data['Theme']['parent_id']);
     }
 
-    function delete($id = null) {
+    function admin_delete($id = null) {
         if (!$id) {
             $this->Session->setFlash('Invalide id pour le Thème', 'growl', array('type' => 'erreur'));
             $this->redirect(array('controller'=>'themes','action'=>'index'));

@@ -50,7 +50,7 @@
             echo '$("#contTemp").hide();';
             echo '</script>';
             echo '<script type="text/javascript">';
-            echo "window.location = \"$redirect\"";
+            echo 'window.location = "'.Router::url($redirect).'"';
             echo '</script>';
         }
 

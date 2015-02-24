@@ -1,17 +1,13 @@
 <?php
 class InfosuplistedefsController extends AppController
 {
-    public $components = array('Filtre');
-
-    // Gestion des droits : identiques aux droits de l'index
-    public $commeDroit = array(
-        'index' => 'Infosupdefs:index',
-        'add' => 'Infosupdefs:index',
-        'edit' => 'Infosupdefs:index',
-        'delete' => 'Infosupdefs:index',
-        'changerOrdre' => 'Infosupdefs:index',
-        'test' => 'Infosupdefs:index',
-        'test2' => 'Infosupdefs:index'
+    public $components = array(
+        'Filtre',
+        'Auth' => array(
+            'mapActions' => array(
+                'read' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view','admin_changerOrdre')
+            )
+        )
     );
 
     function beforeFilter()
@@ -23,7 +19,7 @@ class InfosuplistedefsController extends AppController
     /**
      * liste des éléments de la liste d'une information supplémentaire de type 'list'
      */
-    function index($infosupdefId)
+    function admin_index($infosupdefId)
     {
         $sortie = false;
         // lecture de l'infosup
@@ -71,7 +67,7 @@ class InfosuplistedefsController extends AppController
     /**
      * Ajoute un éléments à la liste de l'info. sup. $infosupId
      */
-    function add($infosupId = 0)
+    function admin_add($infosupId = 0)
     {
         $sortie = false;
 
@@ -120,7 +116,7 @@ class InfosuplistedefsController extends AppController
     /**
      * Edition de l'élément $id de la liste d'une info supplémentaire
      */
-    function edit($id = 0)
+    function admin_edit($id = 0)
     {
         $sortie = false;
 
@@ -151,7 +147,7 @@ class InfosuplistedefsController extends AppController
     /**
      * supprime l'élément $id de la liste d'une info supplémentaire
      */
-    function delete($id = 0)
+    function admin_delete($id = 0)
     {
         $data = $this->{$this->modelClass}->find('first', array(
             'recursive' => -1,
@@ -173,7 +169,7 @@ class InfosuplistedefsController extends AppController
     /**
      * intervertit l'élément de la liste $id avec son suivant ou son précédent
      */
-    function changerOrdre($id = null, $suivant = true)
+    function admin_changerOrdre($id = null, $suivant = true)
     {
         $data = $this->{$this->modelClass}->find('first', array(
             'recursive' => -1,

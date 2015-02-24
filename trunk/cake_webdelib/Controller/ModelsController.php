@@ -6,8 +6,12 @@ class ModelsController extends AppController {
         'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'ModelOdtValidator.Modeltemplate'
     );
     public $helpers = array('Fck');
-    public $components = array('RequestHandler','Email', 'Acl', 'Gedooo', 'Conversion', 'Progress');
-
+    public $components = array('RequestHandler','Date','Email', 'Acl', 'Gedooo', 'Conversion', 'Progress',
+            'Auth' => array(
+            'mapActions' => array(
+                'read' => array('genereToken','getGeneration','paramMails','changeStatus')
+        )
+    ));
 	// Gestion des droits
     public $aucunDroit = array(
 			'generer',
