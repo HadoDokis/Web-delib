@@ -5,7 +5,7 @@ echo $this->Html->script('/components/bootstrap-calendar/js/language/fr-FR.js');
 echo $this->Html->script('/components/bootstrap-calendar/js/calendar.min.js');
 echo $this->Html->css('/components/bootstrap-calendar/css/calendar.min.css');
 
-$this->Html->addCrumb('Séance à traiter', array($this->request['controller'], 'action'=>'listerFuturesSeances'));
+$this->Html->addCrumb('Séance à traiter', array('controller'=>'seances', 'action'=>'index'));
 
 echo $this->Bs->tag('h3', __('Calendrier des séances'));
 $this->Html->addCrumb(__('Calendrier des séances'));
