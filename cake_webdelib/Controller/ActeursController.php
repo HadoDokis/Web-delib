@@ -4,17 +4,17 @@ App::uses('CakeTime', 'Utility');
 class ActeursController extends AppController
 {
     public $helpers = array();
-    public $components = array('Paginator');
+    public $components = array('Paginator',
+        'Auth' => array(
+            'mapActions' => array(
+                'create' => array('add'),
+                'read' => array('index', 'view'),
+                'update' => array('edit'),
+                'delete' => array('delete')),
+        )
+        );
     public $uses = array('Acteur', 'Deliberation', 'Vote');
-
-    // Gestion des droits : identiques aux droits des acteurs
-    public $commeDroit = array(
-        'add' => 'Acteurs:index',
-        'edit' => 'Acteurs:index',
-        'delete' => 'Acteurs:index',
-        'view' => 'Acteurs:index'
-    );
-
+    
     public $paginate = array(
         'Acteur' => array(
             'conditions' => array('Acteur.actif' => 1),
@@ -38,7 +38,7 @@ class ActeursController extends AppController
         )
     );
 
-    public function index()
+    public function admin_index()
     {
         $this->Acteur->Behaviors->attach('Containable');
         $this->paginate = array('Acteur' => array(
@@ -67,7 +67,7 @@ class ActeursController extends AppController
         }
     }
 
-    public function add()
+    public function admin_add()
     {
         $sortie = false;
         if (!empty($this->data)) {
@@ -90,11 +90,11 @@ class ActeursController extends AppController
             $this->set('typeacteurs', $typeacteurs=Hash::combine($typeacteurs, '{n}.Typeacteur.id', '{n}.Typeacteur.nom'));
             $this->set('services', $this->Acteur->Service->generateTreeList(array('Service.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('selectedServices', null);
-            $this->render('edit');
+            $this->render('admin_edit');
         }
     }
 
-    public function edit($id = null)
+    public function admin_edit($id = null)
     {
         $sortie = false;
         if (empty($this->data)) {
@@ -168,7 +168,7 @@ class ActeursController extends AppController
         return true;
     }
 
-    public function delete($id = null)
+    public function admin_delete($id = null)
     {
         $acteur = $this->Acteur->read('id, nom, prenom', $id);
         if (empty($acteur))
@@ -178,6 +178,16 @@ class ActeursController extends AppController
             $this->Acteur->saveField('actif', 0);
         }
         $this->redirect(array('action'=>'index'));
+    }
+    
+    public function beforeFilter() {
+        parent::beforeFilter();
+        
+        /*$this->Auth->mapActions(array(
+            'create' => array('add'),
+            'view' => array('index', 'view')
+        ));*/
+        
     }
 
 }

@@ -4,15 +4,16 @@ class TypeseancesController extends AppController {
 
     var $name = 'Typeseances';
     var $uses = array('Typeseance', 'Typeacte', 'ModelOdtValidator.Modeltemplate', 'Compteur');
-    // Gestion des droits
-    var $commeDroit = array(
-        'edit' => 'Typeseances:index',
-        'add' => 'Typeseances:index',
-        'delete' => 'Typeseances:index',
-        'view' => 'Typeseances:index'
+    
+    public $components = array(
+        'Auth' => array(
+            'mapActions' => array(
+                'create' => array('admin_add','admin_edit','admin_index','admin_view','admin_delete')
+            )
+        )
     );
 
-    function index() {
+    function admin_index() {
         $typeseances = $this->Typeseance->find('all', array('contain' => array('Modelpvdetaille.name', 'Modelpvdetaille.id',
                 'Modelpvsommaire.name', 'Modelpvsommaire.id',
                 'Modelordredujour.name', 'Modelordredujour.id',
@@ -28,7 +29,7 @@ class TypeseancesController extends AppController {
         $this->set('typeseances', $typeseances);
     }
 
-    function view($id = null) {
+    function admin_view($id = null) {
         $typeseance = $this->Typeseance->find('first', array('conditions' => array('Typeseance.id' => $id),
             'contain' => array('Modelpvdetaille.name', 'Modelpvdetaille.id',
                 'Modelpvsommaire.name', 'Modelpvsommaire.id',
@@ -41,7 +42,7 @@ class TypeseancesController extends AppController {
         $this->set('typeseance', $typeseance);
     }
 
-    function add() {
+    function admin_add() {
         $sortie = false;
         if (!empty($this->data)) {
             if ($this->Typeseance->save($this->data)) {
@@ -70,13 +71,13 @@ class TypeseancesController extends AppController {
             $this->set('selectedTypeacteurs', null);
             $this->set('acteurs', $this->Typeseance->Acteur->generateList('Acteur.nom'));
             $this->set('selectedActeurs', null);
-            $this->set('natures', $this->Typeacte->find('list', array('fields' => array('Typeacte.libelle'))));
+            $this->set('natures', $this->Typeacte->find('list', array('fields' => array('Typeacte.name'))));
             $this->set('selectedNatures', null);
             $this->render('edit');
         }
     }
 
-    function edit($id = null) {
+    function admin_edit($id = null) {
         $sortie = false;
 
         if (empty($this->data)) {
@@ -123,7 +124,7 @@ class TypeseancesController extends AppController {
                 2 => $this->Typeseance->libelleAction(2, true)));
             $this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
             $this->set('acteurs', $this->Typeseance->Acteur->generateList('Acteur.nom'));
-            $this->set('natures', $this->Typeacte->find('list', array('fields' => array('Typeacte.libelle'))));
+            $this->set('natures', $this->Typeacte->find('list', array('fields' => array('Typeacte.name'))));
             //Modèles
             $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
             $this->set('models_delib', $this->Modeltemplate->getModelsByTypes(array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)));
@@ -134,7 +135,7 @@ class TypeseancesController extends AppController {
         }
     }
 
-    function delete($id = null) {
+    function admin_delete($id = null) {
         $typeseance = $this->Typeseance->read('id, libelle', $id);
         if (empty($typeseance)) {
             $message = 'Type de séance introuvable';

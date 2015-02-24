@@ -85,7 +85,7 @@ class HistoryComponent extends Component {
      * @return void
      */
 
-    function initialize(Controller &$controller) {
+    function initialize(Controller $controller) {
 
         $this->request = $controller->request;
         $this->response = $controller->response;

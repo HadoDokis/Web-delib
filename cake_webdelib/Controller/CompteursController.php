@@ -3,25 +3,27 @@
 class CompteursController extends AppController {
 
     var $name = 'Compteurs';
-    var $components = array('Security');
-    // Gestion des droits
-    var $commeDroit = array(
-        'edit' => 'Compteurs:index',
-        'view' => 'Compteurs:index',
-        'add' => 'Compteurs:index',
-        'delete' => 'Compteurs:index');
-
+    
+    public $components = array(
+        'Security',
+        'Auth' => array(
+            'mapActions' => array(
+                'create' => array('admin_add','admin_edit','admin_index','admin_view','admin_delete')
+            )
+        )
+    );
+    
     function beforeFilter() {
         if (property_exists($this, 'demandePost'))
             call_user_func_array(array($this->Security, 'requirePost'), $this->demandePost);
         parent::beforeFilter();
     }
 
-    function index() {
+    function admin_index() {
         $this->set('compteurs', $this->Compteur->find('all', array('recursive' => 1)));
     }
 
-    function view($id = null) {
+    function admin_view($id = null) {
         if (!$this->Compteur->exists($id)) {
             $this->Session->setFlash('Invalide id pour le compteur', 'growl', array('type' => 'erreur'));
             $this->redirect('/compteurs/index');
@@ -30,7 +32,7 @@ class CompteursController extends AppController {
             $this->set('compteur', $this->Compteur->read(null, $id));
     }
 
-    function add() {
+    function admin_add() {
         $sortie = false;
         if (!empty($this->data)) {
             if ($this->Compteur->save($this->data)) {
@@ -48,7 +50,7 @@ class CompteursController extends AppController {
         }
     }
 
-    function edit($id = null) {
+    function admin_edit($id = null) {
         $sortie = false;
         if (empty($this->data)) {
             $this->data = $this->Compteur->read(null, $id);
@@ -73,7 +75,7 @@ class CompteursController extends AppController {
             $this->set('sequences', $this->Compteur->Sequence->find('list'));
     }
 
-    function delete($id = null) {
+    function admin_delete($id = null) {
         $compteur = $this->Compteur->read('id, nom', $id);
         if (empty($compteur)) {
             $this->Session->setFlash('Invalide id pour le compteur', 'growl', array('type' => 'erreur'));

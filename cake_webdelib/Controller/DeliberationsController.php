@@ -24,59 +24,33 @@ class DeliberationsController extends AppController {
 
     public $helpers = array('Fck');
     public $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
-    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'S2low', 'Paginator');
-    public $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch', 'genereFusionToClient');
-    // Gestion des droits
-    public $demandeDroit = array(
-        'add',
-        'edit',
-        'delete',
-        'mesProjetsRedaction',
-        'mesProjetsValidation',
-        'mesProjetsValides',
-        'mesProjetsATraiter',
-        'mesProjetsRecherche',
-        'projetsMonService',
-        'tousLesProjetsSansSeance',
-        'tousLesProjetsValidation',
-        'tousLesProjetsAFaireVoter',
-        'tousLesProjetsRecherche',
-        'goNext',
-        'validerEnUrgence',
-        'rebond',
-        'sendToParapheur',
-        'autresActesAValider',
-        'toSend',
-        'transmit',
-//        'verserAsalae',
-        'autreActesAEnvoyer',
-        'autreActesEnvoyes',
-        'editerTous',
-        'nonTransmis',
-    );
-    public $commeDroit = array(
-        'view' => array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
-        'attribuercircuit' => 'Deliberations:mesProjetsRedaction',
-        'addIntoCircuit' => 'Deliberations:mesProjetsRedaction',
-        'traiter' => 'Deliberations:mesProjetsATraiter',
-        'retour' => 'Deliberations:mesProjetsATraiter',
-        'attribuerSeance' => 'Deliberations:tousLesProjetsSansSeance',
-        'refreshSignature' => 'Deliberations:sendToParapheur',
-        'autreActesValides' => 'Deliberations:autresActesAValider',
-        'autresActesAEnvoyer' => 'Deliberations:autresActesAValider',
-        'autresActesEnvoyes' => 'Deliberations:autresActesAValider',
-        'getTampon' => 'Deliberations:transmit',
-        'duplicate' => 'Deliberations:add'
-    );
-    public $libelleControleurDroit = 'Projets';
-    public $ajouteDroit = array(
-        'edit',
-        'delete',
-        'goNext',
-        'validerEnUrgence',
-        'rebond',
-//        'editerTous',
-    );
+    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Date', 'Email', 'Acl'/*, 'Droits'*/, 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'S2low', 'Paginator',
+        'Auth' => array(
+            'mapActions' => array(
+                'read' => array('view','download','downloadDelib',
+                    'getTypeseancesParTypeacteAjax','quicksearch', 'genereFusionToClient',
+                    'textsynthesevue','deliberationvue','textprojetvue'),
+                'create' => array('add'),
+                'update'=> array('edit','admin_add'),
+                'delete'=> array('delete','admin_add'),
+                
+                'mesProjetsRedaction' => array('attribuercircuit'),
+                'mesProjetsRedaction' => array('addIntoCircuit'),
+                'mesProjetsATraiter' => array('traiter'),
+                'mesProjetsATraiter' => array('retour'),
+                'tousLesProjetsSansSeance' => array('attribuerSeance'),
+                'autresActesAValider' => array('autreActesValides'),
+                'autresActesAValider' => array('autresActesAEnvoyer'),
+                'autresActesAValider' => array('autresActesEnvoyes'),
+                'sendActesToSignature' => array('sendToParapheur','refreshSignature','majEtatParapheur',
+                    'downloadSignature','downloadBordereau'),
+                'sendToTdt' => array('getTampon','getClassification','getBordereauTdt','transmit',
+                    'downloadTdtMessage','majEchangesTdt','majArTdt','classification'),
+                
+            )
+        )
+        );
+    /*public $libelleControleurDroit = 'Projets';
     public $libellesActionsDroit = array(
         'edit' => "Modification d'un projet",
         'delete' => "Suppression d'un projet",
@@ -85,7 +59,7 @@ class DeliberationsController extends AppController {
         'rebond' => 'Effectuer un rebond',
         'sendToParapheur' => 'Envoie à la signature',
         'editerTous' => 'Editer tous les projets',
-    );
+    );*/
 
     function view($id = null) {
         $projet = $this->Deliberation->find('first', array(
@@ -1578,8 +1552,7 @@ class DeliberationsController extends AppController {
         $projet = $this->Deliberation->find('first', array(
             'fields' => array('modified', 'created', 'texte_projet', 'objet', 'num_pref'),
             'contain' => array(
-                'User',
-                'Typeacte.libelle',
+                'Typeacte.name',
                 'Theme.libelle',
                 'Service.libelle',
                 'Seance.date',
@@ -1719,7 +1692,7 @@ class DeliberationsController extends AppController {
             ),
             'contain' => array(
                 'User',
-                'Typeacte.libelle',
+                'Typeacte.name',
                 'Theme.libelle',
                 'Service.libelle',
                 'Seance.date',
@@ -1739,7 +1712,7 @@ class DeliberationsController extends AppController {
                 'Multidelib.etat',
                 'Multidelib.deliberation',
                 'Multidelib.deliberation_name',
-                'Multidelib.Typeacte.libelle',
+                'Multidelib.Typeacte.name',
             ),
             'conditions' => array('Deliberation.id' => $id),
             'recursive' => -1)
@@ -2037,7 +2010,7 @@ class DeliberationsController extends AppController {
             'contain' => array(
                 'Service.libelle',
                 'Theme.libelle',
-                'Typeacte.libelle',
+                'Typeacte.name',
                 'Circuit.nom',
                 'Annex' => array(
                     'fields' => array('id', 'filename_pdf'),
@@ -2639,12 +2612,13 @@ class DeliberationsController extends AppController {
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $this->Deliberation->Behaviors->load('Containable');
 
-        $listeLiens = $this->Droits->check($this->user_id, "Deliberations:add") ? array('add') : array();
+        $listeLiens = $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'create') ? array('add') : array();
 
         $conditions = $this->_handleConditions($this->Filtre->conditions());
         //$conditions =  $this->Filtre->conditions();
-        if (!isset($conditions['Deliberation.typeacte_id']))
-            $conditions['Deliberation.typeacte_id'] = array_keys($this->Session->read('user.Nature'));
+        //debug($this->Auth->user());exit;
+        //$this->Acl->check( array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'update');
+        
         $conditions['Deliberation.etat'] = 0;
         $conditions['Deliberation.redacteur_id'] = $this->user_id;
         $ordre = array('Deliberation.id' => 'DESC');
@@ -2676,7 +2650,7 @@ class DeliberationsController extends AppController {
             'contain' => array(
                 'Service' => array('fields' => array('libelle')),
                 'Theme' => array('fields' => array('libelle')),
-                'Typeacte' => array('fields' => array('libelle')),
+                'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
                     'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action'),
@@ -2743,7 +2717,7 @@ class DeliberationsController extends AppController {
             'contain' => array(
                 'Service' => array('fields' => array('libelle')),
                 'Theme' => array('fields' => array('libelle')),
-                'Typeacte' => array('fields' => array('libelle')),
+                'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
                     'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action'),
@@ -2805,7 +2779,7 @@ class DeliberationsController extends AppController {
             'contain' => array(
                 'Service' => array('fields' => array('libelle')),
                 'Theme' => array('fields' => array('libelle')),
-                'Typeacte' => array('fields' => array('libelle')),
+                'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
                     'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action'))),
@@ -2881,7 +2855,8 @@ class DeliberationsController extends AppController {
         // initialisation de l'utilisateur connecté et des droits
         $this->set('typeseances', $this->Seance->Typeseance->find('list', array('recursive' => -1)));
 
-        $editerTous = $this->Droits->check($this->user_id, "Deliberations:editerTous");
+        $editerTous = $this->Acl->check( array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'update');
+        
         $this->request->data = $projets;
 
         /* initialisation pour chaque projet ou délibération */
@@ -2986,7 +2961,6 @@ class DeliberationsController extends AppController {
      */
     function projetsMonService() {
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
-        $this->Deliberation->Behaviors->load('Containable');
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
         if (!isset($conditions['Deliberation.service_id'])) {
@@ -3245,7 +3219,7 @@ class DeliberationsController extends AppController {
                 'inputOptions' => array(
                     'label' => __('Type d\'acte', true),
                     'empty' => 'tous',
-                    'options' => Hash::combine($projets, '{n}.Deliberation.typeacte_id', '{n}.Typeacte.libelle')
+                    'options' => Hash::combine($projets, '{n}.Deliberation.typeacte_id', '{n}.Typeacte.name')
             )));
             $this->Filtre->addCritere('ThemeId', array(
                 'field' => 'Deliberation.theme_id',
@@ -3284,7 +3258,7 @@ class DeliberationsController extends AppController {
                 'inputOptions' => array(
                     'label' => __('Type d\'acte', true),
                     'empty' => 'tous',
-                    'options' => Hash::combine($projets, '{n}.Deliberation.typeacte_id', '{n}.Deliberation.Typeacte.libelle')
+                    'options' => Hash::combine($projets, '{n}.Deliberation.typeacte_id', '{n}.Deliberation.Typeacte.name')
             )));
             $this->Filtre->addCritere('ThemeId', array(
                 'field' => 'Deliberation.theme_id',
@@ -3828,7 +3802,7 @@ class DeliberationsController extends AppController {
                 'contain' => array(
                     'Service.libelle',
                     'Theme.libelle',
-                    'Typeacte.libelle',
+                    'Typeacte.name',
                     'Circuit.nom',
                     'Deliberationtypeseance' => array(
                         'fields' => array('id'),
@@ -3880,7 +3854,7 @@ class DeliberationsController extends AppController {
                         'Seance',
                         'Deliberation' => array(
                             'Typeacte.nature_id',
-                            'Typeacte.libelle',
+                            'Typeacte.name',
                             'Service.libelle',
                             'Theme.libelle',
                             'Circuit.nom'
@@ -4292,7 +4266,7 @@ class DeliberationsController extends AppController {
             'Deliberation.service_id'
         );
         $contain = array(
-            'Typeacte.libelle',
+            'Typeacte.name',
             'Service.libelle',
             'Circuit.nom',
             'Theme.libelle',
@@ -4351,7 +4325,7 @@ class DeliberationsController extends AppController {
             'Deliberation.circuit_id',
         );
         $contain = array(
-            'Typeacte.libelle',
+            'Typeacte.name',
             'Typeacte.modeleprojet_id',
             'Typeacte.modelefinal_id',
             'Typeacte.nature_id',
@@ -4467,7 +4441,7 @@ class DeliberationsController extends AppController {
             'Deliberation.circuit_id',
         );
         $contain = array(
-            'Typeacte.libelle',
+            'Typeacte.name',
             'Service.libelle',
             'Circuit.nom',
             'Theme.libelle',
@@ -4508,7 +4482,7 @@ class DeliberationsController extends AppController {
                 'Deliberation.typeacte_id' => Set::extract('/Typeacte/id', $typeacte_ids)
             ),
             'contain' => array(
-                'Typeacte.libelle',
+                'Typeacte.name',
                 'Service.libelle',
             ),
             'fields' => array(
@@ -4555,7 +4529,7 @@ class DeliberationsController extends AppController {
             'Deliberation.service_id'
         );
         $contain = array(
-            'Typeacte.libelle',
+            'Typeacte.name',
             'Service.libelle',
             'Circuit.nom',
             'Theme.libelle',

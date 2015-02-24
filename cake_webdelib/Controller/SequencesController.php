@@ -2,20 +2,20 @@
 
 class SequencesController extends AppController {
 
-    var $name = 'Sequences';
-    // Gestion des droits : identiques aux droits des compteurs
-    var $commeDroit = array(
-        'add' => 'Sequences:index',
-        'edit' => 'Sequences:index',
-        'delete' => 'Sequences:index',
-        'view' => 'Sequences:index'
+    public $name = 'Sequences';
+    public $components = array(
+        'Auth' => array(
+            'mapActions' => array(
+                'admin_index' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view')
+            )
+        )
     );
 
-    function index() {
+    function admin_index() {
         $this->set('sequences', $this->Sequence->find('all', array('recursive' => 1)));
     }
 
-    function view($id = null) {
+    function admin_view($id = null) {
         if (!$this->Sequence->exists($id)) {
             $this->Session->setFlash('Invalide id pour la s&eacute;quence', 'growl', array('type' => 'erreur'));
             $this->redirect('/sequences/index');
@@ -24,7 +24,7 @@ class SequencesController extends AppController {
             $this->set('sequence', $this->Sequence->read(null, $id));
     }
 
-    function add() {
+    function admin_add() {
         $sortie = false;
         if (!empty($this->data)) {
             $this->Sequence->create($this->request->data);
@@ -41,7 +41,7 @@ class SequencesController extends AppController {
             $this->render('edit');
     }
 
-    function edit($id = null) {
+    function admin_edit($id = null) {
         $sortie = false;
         if (empty($this->data)) {
             $this->data = $this->Sequence->read(null, $id);
@@ -61,7 +61,7 @@ class SequencesController extends AppController {
             $this->redirect('/sequences/index');
     }
 
-    function delete($id = null) {
+    function admin_delete($id = null) {
         $sequence = $this->Sequence->read('id, nom', $id);
         if (empty($sequence)) {
             $this->Session->setFlash('Invalide id pour la s&eacute;quence', 'growl', array('type' => 'erreur'));

@@ -1,8 +1,6 @@
 <?php
 class CommentairesController extends AppController
 {
-    // Gestion des droits
-    public $aucunDroit;
 
     public function add($delib_id = null)
     {

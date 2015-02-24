@@ -8,37 +8,39 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Fck');
-	var $components = array('Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav');
-	var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
+        var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
+	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav',
+            'Auth' => array(
+            'mapActions' => array(
+                'create' => array('add','getSeancesParTypeseanceAjax'),
+                'read' => array('index','listerFuturesSeances', 'calendrier', 'listerAnciennesSeances',
+                    'delete','edit', 'sortby',           
+			'afficherProjets', 
+			'reportePositionsSeanceDeliberante',  
+			'genererConvoc',   
+			'multiodj',
+			'changePosition',
+			'saisirDebatGlobal',
+			'details',
+			'saisirDebat',
+			'voter',
+			'changeRapporteur',
+			'detailsAvis',
+			'donnerAvis',
+			'saisirSecretaire',
+			'getListActeurs',
+                        'sendConvocations',
+                        'sendToIdelibre',
+			'saisirCommentaire','genereFusionToFiles','genereFusionMultiSeancesToClient'
+                    ,'genererConvocation','genererOrdredujour','downloadZip','genereFusionToClient',
+                    'download','getFileType','getFileName','getSize','getData'
+                ),
+                'update' => array('edit','clore','sendOrdredujour','getSeancesParTypeseanceAjax'),
+                'delete' => array('delete','deleteDebatGlobal','effacerVote','resetVote')),
+        ));
+	
 	var $cacheAction = 0;
 
-	// Gestion des droits
-	var $demandeDroit = array(
-			'listerFuturesSeances',
-			'add',
-			'Calendrier',
-			'listerAnciennesSeances');
-
-	var $commeDroit = array(
-			'delete'           => 'Seances:index',
-			'edit'             => 'Seances:index',
-			'afficherProjets'  => 'Seances:index',
-			'reportePositionsSeanceDeliberante'  => 'Seances:index',
-			'genererConvoc'    => 'Seances:index',
-			'multiodj'         => 'Seances:index',
-			'changePosition'   => 'Seances:index',
-			'saisirDebatGlobal'=> 'Seances:index',
-			'details'          => 'Seances:index',
-			'saisirDebat'      => 'Seances:index',
-			'voter'            => 'Seances:index',
-			'changeRapporteur' => 'Seances:index',
-			'detailsAvis'      => 'Seances:index',
-			'donnerAvis'       => 'Seances:index',
-			'saisirSecretaire' => 'Seances:index',
-			'getListActeurs'   => 'Seances:index',
-                        'sendConvocations' => 'Seances:index',
-                        'sendToIdelibre' => 'Seances:index',
-			'saisirCommentaire'=>'Seances:index');
 
     function add($timestamp = null) {
         // initialisation
@@ -288,7 +290,7 @@ class SeancesController extends AppController {
       ),
       'contain' => array(
       'Deliberation'=>array(
-      'Typeacte.nature_id','Typeacte.libelle',
+      'Typeacte.nature_id','Typeacte.name',
       'Service.libelle',
       'Theme.libelle',
       'Circuit.nom'

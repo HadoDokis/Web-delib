@@ -7,22 +7,17 @@
 class CollectivitesController extends AppController {
 
     public $uses = array('Collectivite', 'User');
-    public $components = array();
-    // Gestion des droits
-    public $aucunDroit = array(
-        'synchronize',
-        'setMails'
-    );
-    public $commeDroit = array(
-        'edit' => 'Collectivites:index',
-        'setLogo' => 'Collectivites:index'
-        //FIXME: ajout gd mais à vérifier
-        , 'view' => 'Collectivites:index'
-        , 'add' => 'Collectivites:index'
-        , 'delete' => 'Collectivites:index'
+    public $components = array(
+        'Auth' => array(
+            'mapActions' => array(
+                'read' => array('admin_index'),
+                'create' => array('admin_add'),
+                'update' => array('admin_edit','setLogo','setMails','synchronize'),
+                ),
+        )
     );
 
-    function index() {
+    function admin_index() {
         $collectivite = $this->Collectivite->find('first', array('conditions' => array('Collectivite.id' => 1),
             'recursive' => -1));
         $this->set('collectivite', $collectivite);
@@ -33,7 +28,7 @@ class CollectivitesController extends AppController {
         $this->set('logo_path', $logo_path);
     }
 
-    function edit() {
+    function admin_edit() {
         if (Configure::read('USE_PASTELL')) {
             $this->Pastell = $this->Components->load('Pastell');
         }

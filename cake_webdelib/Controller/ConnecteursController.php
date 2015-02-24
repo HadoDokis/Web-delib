@@ -4,10 +4,12 @@ App::uses('File', 'Utility');
 
 class ConnecteursController extends AppController {
 
-    // Gestion des droits : identiques aux droits des compteurs
-    public $commeDroit = array(
-        'edit' => 'Connecteurs:index',
-        'makeconf' => 'Connecteurs:index'
+    public $components = array(
+        'Auth' => array(
+            'mapActions' => array(
+                'create' => array('admin_edit','admin_index','makeconf')
+            )
+        )
     );
     
     private $_connecteurs = array(
@@ -24,14 +26,14 @@ class ConnecteursController extends AppController {
             9 => 'Pastell',
         );
 
-    function index() {
+    function admin_index() {
         
 
         $this->set('connecteurs', $this->_connecteurs);
         return true;
     }
 
-    function edit($id) {
+    function admin_edit($id) {
         $this->set('titre', $this->_connecteurs[$id]);
         switch ($id) {
             case -1:
@@ -122,7 +124,7 @@ class ConnecteursController extends AppController {
         return $return;
     }
 
-    function makeconf($type) {
+    function admin_makeconf($type) {
         $file = new File(APP . 'Config' . DS . 'webdelib.inc', true);
         $content = $file->read();
         switch ($type) {
@@ -288,7 +290,7 @@ class ConnecteursController extends AppController {
                 $this->Session->setFlash('Un problème est survenu lors de la modification du fichier de configuration webdelib.inc', 'growl', array('type' => 'erreur'));
         }
 
-        return $this->redirect(array('action' => 'index'));
+        return $this->redirect($this->previous);
     }
 
 }
