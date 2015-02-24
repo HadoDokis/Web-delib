@@ -1,8 +1,9 @@
 <?php
-class UsersService extends AppModel {
+class CircuitUser extends AppModel {
 
-	var $name = 'UsersService';
-	var $useTable="users_services";
+	var $name = 'CircuitUser';
+        var $useTable="circuits_users";
+        
 	var $belongsTo = array(
 			'User' =>
 				array('className' => 'User',
@@ -12,9 +13,9 @@ class UsersService extends AppModel {
 						'order' => '',
 						'counterCache' => ''
 				),
-			'Service' =>
-				array('className' => 'Service',
-						'foreignKey' => 'service_id',
+			'Circuit' =>
+				array('className' => 'cakeflow.Circuit',
+						'foreignKey' => 'circuit_id',
 						'conditions' => '',
 						'fields' => '',
 						'order' => '',
@@ -23,4 +24,3 @@ class UsersService extends AppModel {
 
 	);
 }
-?>

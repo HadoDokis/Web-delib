@@ -186,6 +186,10 @@ class Deliberation extends AppModel {
             'insertQuery' => ''
         )
     );
+    
+    var $actsAs = array('Acl'=>'controlled');//A VOIR
+    // 'controlled' means you want to create a 'aco'
+    // 'requester' means you want to create an 'aro' 
 
     /**
      * Si vous avez besoin d’exécuter de la logique juste après chaque opération de sauvegarde,
@@ -1680,6 +1684,52 @@ class Deliberation extends AppModel {
         }
         return true;
     }
+    
+    public function beforeFind($query = array()) {
+        $query['conditions'] = (is_array($query['conditions'])) ? $query['conditions'] : array();
+        $db = $this->getDataSource();
+        
+        //Gestion des droits sur les types d'actes
+        if (!isset($query['Deliberation.typeacte_id']))
+        {
+            $Aro = ClassRegistry::init('Aro');
+
+            $Aro->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Aco->Behaviors->attach( 'DatabaseTable' );
+
+            $subQuery = array(
+                'fields' => array(
+                    'Aco.foreign_key'
+                ),
+                'contain' => false,
+                'joins' => array(
+                    $Aro->join( 'Permission', array( 'type' => 'INNER' ) ),
+                    $Aro->Permission->join( 'Aco', array( 'type' => 'INNER' ) )
+                ),
+                'conditions' => array(
+                    'Aro.foreign_key' => AuthComponent::user('id'),
+                    'Permission._read' => 1,
+                    'Aro.model' => 'User',
+                    'Aco.model' => 'Typeacte'
+                )
+            );
+
+            $subQuery=$Aro->sq($subQuery);
+            
+            $subQuery = ' "Deliberation"."typeacte_id" IN (' . $subQuery . ') ';
+            $subQueryExpression = $db->expression($subQuery);
+            $conditions[] = $subQueryExpression;
+        }
+        $query['conditions'] = array_merge($query['conditions'], $conditions);
+        
+        return $query;
+    }
+    
+    function parentNode()
+    {
+        return $this->name;
+    } 
 
     /**
      * fonction de callback du behavior OdtFusion
@@ -2129,6 +2179,24 @@ class Deliberation extends AppModel {
         $file->write($content);
         $this->Behaviors->unload('OdtFusion');
         return $file->path;
+    }
+    
+    /**
+     * Supression des votes d'un projet pour une séance
+     * @param int $projet_id variable Gedooo de type maintPart du document à fusionner
+     * @param int $seance_id objet PhpOdtApi du fichier odt du modèle d'édition
+     */
+    function resetVote($projet_id, $seance_id)
+    {
+        $this->Vote->deleteAll(array('delib_id' => $projet_id), false);
+        $this->Listepresence->deleteAll(array('delib_id' => $projet_id), false);
+        
+        $this->read(null, $projet_id);
+        $this->saveField('etat', 2);
+        $this->saveField('vote_nb_oui', null);
+        $this->saveField('vote_nb_non', null);
+        $this->saveField('vote_nb_abstention', null);
+        $this->saveField('vote_nb_retrait', null);
     }
     
     /**

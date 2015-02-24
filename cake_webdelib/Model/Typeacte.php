@@ -4,7 +4,7 @@ class Typeacte extends AppModel
 {
 
     public $name = 'Typeacte';
-    public $displayField = 'libelle';
+    //public $displayField = 'name';
     public $belongsTo = array(
         'Compteur' => array(
             'className' => 'Compteur',
@@ -25,7 +25,7 @@ class Typeacte extends AppModel
 
 
     public $validate = array(
-        'libelle' => array(
+        'name' => array(
             array(
                 'rule' => 'notEmpty',
                 'message' => 'Veuillez saisir le libellé de l\'acte'
@@ -82,23 +82,27 @@ class Typeacte extends AppModel
             'message' => 'Valeur incorrecte pour l\'attribut "Télétransmettre".'
         )
     );
+    
+    public $actsAs = array('AuthManager.AclManager' => array('type' => 'controlled'));
 
     public function getLibelle($type_id)
     {
-        $libelle = $this->find('first', array(
+        $name = $this->find('first', array(
             'conditions' => array('Typeacte.id' => $type_id),
             'recursive' => -1,
-            'fields' => array('Typeacte.libelle')));
-        return $libelle['Typeacte']['libelle'];
+            'fields' => array('Typeacte.name')));
+        return $name['Typeacte']['name'];
     }
 
     public function getModelId($type_id, $field)
     {
-        $libelle = $this->find('first', array(
+        
+        $typeActe = $this->find('first', array(
             'conditions' => array('Typeacte.id' => $type_id),
             'recursive' => -1,
             'fields' => array($field)));
-        return $libelle['Typeacte'][$field];
+        
+        return !empty($typeActe['Typeacte'][$field])?$typeActe['Typeacte'][$field]:'';
     }
 
     public function getIdDesNaturesDelib()
@@ -125,6 +129,22 @@ class Typeacte extends AppModel
             'conditions' => array('typeacte_id' => $id)
         ));
         return empty($nbSeancesEnCours);
+    }
+    
+    public function parentNode() {
+        return null;
+    }
+    
+    public function parentNodeAlias() {
+        if (!$this->id && empty($this->data)) {
+        return null;
+        }
+        $data = $this->data;
+        if (empty($this->data)) {
+            $data = $this->read();
+        }
+        
+        return array('Typeacte' => array('alias' => $data['Typeacte']['name']));
     }
 
 }

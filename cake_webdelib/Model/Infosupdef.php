@@ -92,7 +92,7 @@ class Infosupdef extends AppModel
      *    multiples pour un champ).
      */
 
-    function beforeValidate()
+    function beforeValidate($options=array())
     {
         $codepropose = Inflector::variable($this->data['Infosupdef']['code']);
 
@@ -200,7 +200,7 @@ class Infosupdef extends AppModel
         return;
     }
 
-    function beforeSave()
+    function beforeSave($options=array())
     {
         // calcul du n° d'ordre en cas d'ajout
         if (!array_key_exists('id', $this->data['Infosupdef']) || empty($this->data['Infosupdef']['id']))

@@ -329,7 +329,7 @@ class Seance extends AppModel
             $tab_seances[] = $seance['Seance']['id'];
         return ($tab_seances);
     }
-
+    
     /**
      * fonction d'initialisation des variables de fusion pour plusieurs séances
      * les bibliothèques Gedooo doivent être inclues par avance

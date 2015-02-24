@@ -76,11 +76,11 @@ class Listepresence extends AppModel {
 
         // itérations sur les acteurs présents
         if ($nbActeurs==0){
-           /* $oDevPart = new GDO_PartType();
+           $oDevPart = new GDO_PartType();
             foreach($acteurFields as $fieldname)
                 $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_present', $acteur['Acteur'][$fieldname], "text"));
             $oStyleIteration->addPart($oDevPart);
-            $oMainPart->addElement($oStyleIteration);*/
+            $oMainPart->addElement($oStyleIteration);
             return;
         }
         
@@ -143,11 +143,11 @@ class Listepresence extends AppModel {
             'order' => 'Acteur.position ASC'));
 
         if ($nbActeurs==0){
-            /*$oDevPart = new GDO_PartType();
+            $oDevPart = new GDO_PartType();
             foreach($acteurFields as $fieldname)
                 $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_absent', "", "text"));
             $oStyleIteration->addPart($oDevPart);
-            $oMainPart->addElement($oStyleIteration);*/
+            $oMainPart->addElement($oStyleIteration);
             return;
         }
         
@@ -203,13 +203,13 @@ class Listepresence extends AppModel {
             'order' => 'Acteur.position ASC'));
 
         if ($nbActeurs==0){
-           /* $oDevPart = new GDO_PartType();
+            $oDevPart = new GDO_PartType();
             foreach($acteurFields as $fieldname)
                 $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandataire', "", "text"));
             foreach($mandateFields as $fieldname)
                 $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandate', "", "text"));
             $oStyleIteration->addPart($oDevPart);
-            $oMainPart->addElement($oStyleIteration);*/
+            $oMainPart->addElement($oStyleIteration);
             return;
         }
         
@@ -231,4 +231,3 @@ class Listepresence extends AppModel {
         $aData['ActeursMandates']=$aActeursMandates;
     }
 }
-?>

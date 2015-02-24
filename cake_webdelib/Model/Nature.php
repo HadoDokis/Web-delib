@@ -6,12 +6,12 @@
                 $generateList = array();
 
                 if ($order_by==null)
-                    $natures = $this->find('all', array('fields'=>'id, libelle'));
+                    $natures = $this->find('all', array('fields'=>'id, name'));
                 else
-                    $natures = $this->find('all', array('fields'=> 'id, libelle', 'order' => $order_by.' DESC'));
+                    $natures = $this->find('all', array('fields'=> 'id, name', 'order' => $order_by.' DESC'));
 
                 foreach($natures as $nature) {
-                        $generateList[$nature['Nature']['id']] = $nature['Nature']['libelle'];
+                        $generateList[$nature['Nature']['id']] = $nature['Nature']['name'];
                 }
 
                 return $generateList;
@@ -19,10 +19,10 @@
 
         function makeBalise(&$oMainPart, $nature_id) {
             $nature = $this->find('first', array('conditions' => array('Nature.id' => $nature_id),
-                                                 'fields'     => array('libelle'),
+                                                 'fields'     => array('name'),
                                                  'recursive'  => -1));
 
-            $oMainPart->addElement(new GDO_FieldType('nature_projet', ($nature['Nature']['libelle']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('nature_projet', ($nature['Nature']['name']), 'text'));
         }
 
     }

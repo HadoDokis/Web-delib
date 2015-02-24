@@ -97,7 +97,26 @@ class Service extends AppModel
             $aArray[] = $id;
         return $aArray;
     }
-
+    
+    function desactive($id)
+    {
+        try {
+            //Suppression du service
+            $this->begin();
+            $this->recursive=-1;
+            $this->read(null, $id);
+            $this->set('actif', false);
+            $this->save();
+            $this->commit();
+            
+        } catch (Exception $e) {
+            $this->rollback();
+            throw new Exception($e);
+        }
+        
+        return true;
+    }
+    
     /**
      * fonction d'initialisation des variables de fusion pour le service émetteur d'un projet
      * les bibliothèques Gedooo doivent être inclues par avance

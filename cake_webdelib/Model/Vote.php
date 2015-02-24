@@ -65,11 +65,11 @@ class Vote extends AppModel {
                 'order' => 'Acteur.position ASC'));
             
             if ($nbVotes==0){
-               /* $oDevPart = new GDO_PartType();
+                $oDevPart = new GDO_PartType();
                 foreach($acteurFields as $fieldname)
                     $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_'.$voteIteration['fusionVariableSuffixe'], "", "text"));
                 $oStyleIteration->addPart($oDevPart);
-                $oMainPart->addElement($oStyleIteration);*/
+                $oMainPart->addElement($oStyleIteration);
                 continue;
             }
             
