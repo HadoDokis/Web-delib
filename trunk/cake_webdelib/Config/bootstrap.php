@@ -82,8 +82,11 @@ Inflector::rules('plural', array('irregular' => array(
 CakePlugin::loadAll(array(
 		array('bootstrap' => true),
  		'DebugKit' => array('routes' => false, 'bootstrap' => false),
+                'AclManager' => array('routes' => false, 'bootstrap' => true),
                 'Cakeflow' => array('routes' => false, 'bootstrap' => true),
                 'Appchecks' => array('routes' => false, 'bootstrap' => false),
+                'AclExtras' => array('routes' => false, 'bootstrap' => false),
+                'Bootstrap3' => array('routes' => false, 'bootstrap' => false)
  	));
 
 /**
@@ -131,6 +134,24 @@ require APP . 'Vendor/autoload.php';
 // See http://goo.gl/kKVJO7
 spl_autoload_unregister(array('App', 'load'));
 spl_autoload_register(array('App', 'load'), true, true);
+
+Configure::write('I18n.preferApp', true);
+
+Configure::write('AclManager.ignorePlugins', array('AclExtras','AclManager','Gedooo','DebugKit','Cakeflow','Appchecks','AuthManager'));
+Configure::write('AclManager.ignoreActions', array('isAuthorized'));
+Configure::write('AclManager.ignoreControllers', array(
+    'Annexes',
+    'Commentaires',
+    'Webdav',
+    'Pages',
+    'Infosups',
+    'Historiques',
+    'Nature',
+    'ModelOdtValidator.Modeltemplates',
+    )
+);
+Configure::write('AclManager.models', array('Profil', 'User','Typeacte'));
+Configure::write('AclManager.aros', array('Profil', 'User'));
 
 require_once('webdelib.inc');
 require_once('formats.inc');
