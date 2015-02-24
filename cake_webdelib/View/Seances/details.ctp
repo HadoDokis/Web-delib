@@ -1,79 +1,109 @@
-<div class="deliberations">
-    <h2>Détails des projets de la séance du <?php echo $date_seance; ?></h2>
+<?php 
+$this->Html->addCrumb('Séance à traiter', array('controller'=>'seances', 'action'=>'index'));
 
-    <table style="width: 100%;">
-        <tr>
-            <th>Id.</th>
-            <th>Etat</th>
-            <th>Résultat</th>
-            <th>Thème</th>
-            <th>Service émetteur</th>
-            <th>Rapporteur</th>
-            <th>Président</th>
-            <th>Libellé de l'acte</th>
-            <th>Titre</th>
-            <th>N° Délibération</th>
-            <th style="min-width: 150px;">Actions</th>
-        </tr>
-        <?php
-        $numLigne = 1;
-        foreach ($deliberations as $deliberation):
-            $rowClass = ($numLigne & 1) ? array('style' => 'height: 36px') : array('style' => 'height: 36px', 'class' => 'altrow');
-            $numLigne++;
-            ?>
-            <tr style="height: 36px;" <?php if ($numLigne & 1) echo 'class="altrow"' ?>>
-                <td style="text-align: center;"><?php echo $deliberation['Deliberation']['id']; ?></td>
-                <?php
-                if ($deliberation['Deliberation']['etat'] == 2) {
-                    echo '<td style="text-align: center;">' . $this->Html->image('/img/icons/non_votee.png', array('title' => 'Projet validé')) . '</td>';
-                    echo '<td>&nbsp;</td>';
-                } elseif ($deliberation['Deliberation']['etat'] < 2) {
-                    echo '<td style="text-align: center;">' . $this->Html->image('/img/icons/bloque.png', array('title' => 'Projet en cours d\'élaboration')) . '</td>';
-                    echo '<td>&nbsp;</td>';
-                } elseif ($deliberation['Deliberation']['etat'] > 2) {
-                    echo '<td style="text-align: center;">' . $this->Html->image('/img/icons/votee.png', array('title' => 'Deliberation votée')) . '</td>';
-                    if ($deliberation['Deliberation']['etat'] != 4)
-                        echo '<td style="text-align: center;">' . $this->Html->image('/img/icons/thumbs_up.png', array('title' => 'Adopté')) . '</td>';
-                    else
-                        echo '<td style="text-align: center;">' . $this->Html->image('/img/icons/thumbs_down.png', array('title' => 'Non adopté')) . '</td>';
-                }
-                ?>
-                <td><?php echo $deliberation['Theme']['libelle']; ?></td>
-                <td><?php echo $deliberation['Service']['libelle']; ?></td>
-                <td><?php echo $deliberation['Rapporteur']['nom'] . ' ' . $deliberation['Rapporteur']['prenom']; ?></td>
-                <td><?php echo $deliberation['President']['nom'] . ' ' . $deliberation['President']['prenom']; ?></td>
-                <td><?php echo $deliberation['Deliberation']['objet_delib']; ?></td>
-                <td><?php echo $deliberation['Deliberation']['titre']; ?></td>
-                <td><?php if (!empty($deliberation['Deliberation']['num_delib'])) echo $deliberation['Deliberation']['num_delib']; ?></td>
-                <td class="actions" style="width: 80px;">
-                    <?php echo $this->Html->link(null, array('controller' => 'seances', 'action' => 'saisirDebat', $deliberation['Deliberation']['id'], $seance_id), array('class' => 'link_debat', 'escape' => false, 'title' => 'Saisir les debats'), false); ?>
-                    <?php
-                    if ($seance['Typeseance']['action'] < 2 && $deliberation['Deliberation']['is_delib'])
-                        echo $this->Html->link(null,
-                            array('controller' => 'seances', 'action' => 'voter', $deliberation['Deliberation']['id'], $seance_id),
-                            array(
-                                'class' => 'link_voter',
-                                'title' => 'Voter les projets',
-                                'escape' => false
-                            )
-                        );
-                    ?>
-                    <?php
-                    echo $this->Html->link(null,
-                        array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
-                        array(
-                            'class' => 'link_pdf delib_pdf',
-                            'escape' => false,
-                            'title' => 'Générer le document PDF'));
-                    ?>
+$this->Html->addCrumb(__('Vote de la séance'));
 
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
+echo $this->Bs->tag('h3', __('Vote de la séance du') .' '. $this->Time->i18nFormat($date_seance, '%d %B %Y à %k h %M'));
 
-</div>
-<br/>
-<div class="submit">
-    <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', array('controller' => 'seances', 'action' => 'listerFuturesSeances'), array('class' => 'btn', 'name' => 'Retour', 'escape' => false)) ?>
-</div>
+echo $this->Bs->table(array(
+    array('title' => 'Ordre'),
+    array('title' => 'Id.'),
+    array('title' => 'Etat'),
+    array('title' => 'Thème'), 
+    array('title' => 'Service émetteur'),
+    array('title' => 'Rapporteur'),
+    array('title' => 'Président'),
+    array('title' => 'Libellé de l\'acte'),
+    array('title' => 'Titre'),
+    array('title' => 'N° Délibération'),
+    array('title' => 'Résultat'),
+    array('title' => 'Actions'),
+        ), array('hover', 'striped'));
+
+foreach ($deliberations as $deliberation) {
+   echo $this->Bs->cell($deliberation['Deliberationseance']['position']);
+   echo $this->Bs->cell($deliberation['Deliberation']['id']); 
+   
+   $image='';
+   $resultat='';
+   if ($deliberation['Deliberation']['etat'] == 2) {
+        $image=$this->Bs->icon('unlock-alt', array('2x'), array('title' => 'Projet validé', 'class'=>'text-success text-center'));
+    } elseif ($deliberation['Deliberation']['etat'] < 2) {
+        $image=$this->Bs->icon('ban', array('2x'), array('title' => 'Projet en cours d\'élaboration', 'class'=>'text-danger text-center'));
+    } elseif ($deliberation['Deliberation']['etat'] > 2) {
+        $image=$this->Bs->icon('lock', array('2x'), array('title' => 'Deliberation votée', 'class'=>'text-center'));
+
+        if ($deliberation['Deliberation']['etat'] != 4) {
+            $resultat = $this->Bs->icon('thumbs-up', array('2x'), array('title' => 'Adopté', 'class'=>'text-success text-center'));
+        } else {
+            $resultat = $this->Bs->icon('thumbs-down', array('2x'), array('title' => 'Non adopté', 'class'=>'text-danger text-center'));
+        }
+    }
+                
+    echo $this->Bs->cell($image); 
+    
+    echo $this->Bs->cell($deliberation['Theme']['libelle']);
+    echo $this->Bs->cell($deliberation['Service']['libelle']);
+    echo $this->Bs->cell($deliberation['Rapporteur']['nom'] . ' ' . $deliberation['Rapporteur']['prenom']);
+    echo $this->Bs->cell($deliberation['President']['nom'] . ' ' . $deliberation['President']['prenom']);
+    echo $this->Bs->cell($deliberation['Deliberation']['objet_delib']);
+    echo $this->Bs->cell($deliberation['Deliberation']['titre']);
+    
+   
+     
+    echo $this->Bs->cell(!empty($deliberation['Deliberation']['num_delib'])?$deliberation['Deliberation']['num_delib']:'');
+    
+     echo $this->Bs->cell($resultat); 
+     $actions=$this->Bs->div('btn-group-vertical');
+     
+     $actions.= $this->Bs->btn($this->Bs->icon('comments-o',array('lg')),array('controller' => 'seances', 'action' => 'saisirDebat', $deliberation['Deliberation']['id'], $seance_id), array(
+            'type' => 'default',
+            'escape' => false,
+            'disabled' => $deliberation['Deliberation']['etat'] > 2 ?null:'disabled',
+            'title' => __('Saisir les debats du projet :') .' '. $deliberation['Deliberation']['objet_delib'],
+        ));
+     $actions.= $this->Bs->btn($this->Bs->icon('gavel',array('lg')),array('controller' => 'seances', 'action' => 'voter', $deliberation['Deliberation']['id'], $seance_id), array(
+            'type' => 'primary',
+            'escape' => false,
+            'disabled' => $seance['Typeseance']['action'] < 2 ?null:'disabled',
+            'title' => __('Voter le projet :') .' '. $deliberation['Deliberation']['objet_delib'],
+        ));
+     $actions.= $this->Bs->btn('<span class="fa-stack fa-1x">'.$this->Bs->icon('gavel',array('stack-1x')).$this->Bs->icon('ban', array('stack-2x'), array('class'=>'text-danger')).'</span>', 
+             array('controller' => 'seances', 
+                 'action' => 'resetVote', $seance_id, $deliberation['Deliberation']['id']), array(
+            'type' => 'default',
+            'escape' => false,
+            'confirm'=> __('Supprimer le vote pour le projet :') .' '. $deliberation['Deliberation']['objet_delib'].' ?',
+            'disabled' => $seance['Typeseance']['action'] < 2 ?null:'disabled',
+            'title' => __('Supprimer le vote pour le projet :') .' '. $deliberation['Deliberation']['objet_delib'],
+        ));
+     /*
+        
+             $actions.= $this->Html->link(null,
+                array('controller' => 'seances', 'action' => 'voter', $deliberation['Deliberation']['id'], $seance_id),
+                array(
+                    'class' => 'link_voter',
+                    'title' => 'Voter les projets',
+                    'escape' => false
+                )
+            );
+        */
+        $actions.=$this->Bs->btn('Générer', 
+                        array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']), 
+                        array('type' => 'default', 
+                            'icon' => 'glyphicon glyphicon-cog', 
+                            'title' => 'Générer le document du projet ' . $deliberation['Deliberation']['objet_delib']
+        ));
+        
+         /*$actions.= $this->Html->link(null,
+            array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
+            array(
+                'class' => 'link_pdf delib_pdf',
+                'escape' => false,
+                'title' => 'Générer le document PDF'));*/
+    $actions.= $this->Bs->close();
+     
+    echo $this->Bs->cell($actions);
+}
+echo $this->Bs->endTable();
+echo $this->Html2->btnCancel();
