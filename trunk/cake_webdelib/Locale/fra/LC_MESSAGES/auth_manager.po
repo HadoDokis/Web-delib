@@ -1,0 +1,223 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: CakePHP\n"
+"POT-Creation-Date: 2012-10-22 10:52+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Sébastien PLAZA <sebastien.plaza@adullact-projet.com>\n"
+"Language-Team: Cakephp-fr.org <contact@cakephp-fr.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: View/Elements/permissions.ctp:3
+msgid "%s permissions"
+msgstr "%s"
+
+#: View/Elements/permissions.ctp:3
+msgid "User"
+msgstr "Utilisateur"
+
+#: View/Elements/permissions.ctp:6
+msgid "permissions"
+msgstr "Droits"
+
+#: View/Elements/permissions.ctp:3
+msgid "Typeacte"
+msgstr "Type d'acte"
+
+#: View/Elements/permissions.ctp:3
+msgid "Profil"
+msgstr "Profils"
+
+#: View/Elements/permissions.ctp:8
+msgid "_create"
+msgstr "Création"
+
+#: View/Elements/permissions.ctp:8
+msgid "_read"
+msgstr "Lecture"
+
+#: View/Elements/permissions.ctp:8
+msgid "_update"
+msgstr "Modification"
+
+#: View/Elements/permissions.ctp:8
+msgid "_delete"
+msgstr "Supression"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers"
+msgstr "Connexion"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Acteurs"
+msgstr "Administration: Acteurs"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Collectivites"
+msgstr "Administration: Collectivité"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Compteurs"
+msgstr "Administration: Compteur"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Connecteurs"
+msgstr "Administration: Connecteur"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Crons"
+msgstr "Administration: taches automatiques"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations"
+msgstr "Déliberation"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/attribuercircuit"
+msgstr "Déliberation : Attribuer un circuit"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/traiter"
+msgstr "Déliberation : Traiter un projet"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/toSend"
+msgstr "Déliberation : Télétransmettre au Tdt "
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/mesProjetsRedaction"
+msgstr "Déliberation : Mes projets en cour de rédaction"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/mesProjetsATraiter"
+msgstr "Déliberation : Mes projets à traiter"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/mesProjetsValidation"
+msgstr "Déliberation : Mes projets à valider"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/mesProjetsValides"
+msgstr "Déliberation : Mes projets validées"
+
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/projetsMonService"
+msgstr "Déliberation : Les projets de mon service"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/tousLesProjetsValidation"
+msgstr "Séance : Tous les projets à valider"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/tousLesProjetsSansSeance"
+msgstr "Séance : Tous les projets sans aucune séance"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/tousLesProjetsAFaireVoter"
+msgstr "Séance : Tous les projets à faire voter"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/validerEnUrgence"
+msgstr "Validation en \"URGENCE\" des actes"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/mesProjetsRecherche"
+msgstr "Recherche dans mes projets (Délibérations, arrêtés ...)"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/tousLesProjetsRecherche"
+msgstr "Recherche dans tous les projets (Délibérations, arrêtés ...)"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/sendToSae"
+msgstr "Télétransmettre au SAE"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/goNext"
+msgstr "Circuit de validation : sauter une étape"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/rebond"
+msgstr "Circuit de validation : effectuer un retour à une étape précédente"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/autresActesAValider"
+msgstr "Autres actes : Effectuer une validation d'un acte"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/autreActesValides"
+msgstr "Autres actes : Actes validés"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/sendActesToSignature"
+msgstr "Délibération : Envoyer une délibération en signature"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/autreActesAEnvoyer"
+msgstr "Autres actes : Acte envoyer au TDT"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/nonTransmis"
+msgstr "Autres actes : Non télétransmis au TDT"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/autreActesEnvoyes"
+msgstr "Autres actes : Acte télétranmis au TDT"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Deliberations/traitementLot"
+msgstr "Délibération : Traitement par lot de la séance"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Infosupdefs"
+msgstr "Administration : Définition des informations supplémentaires"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Infosuplistedefs"
+msgstr "Administration : Définition de liste pour informations supplémentaires de type liste"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Postseances"
+msgstr "Post-séance : Gestion des séances passées"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Profils"
+msgstr "Administration : Gestion des profils"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Seances"
+msgstr "Séance : Gestion des séances en cours"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Sequences"
+msgstr "Administration : Gestion des séquences"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Services"
+msgstr "Administration : Gestion des services"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Themes"
+msgstr "Administration : Gestion des thèmes"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Typeactes"
+msgstr "Administration : Gestion des types d'actes"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Typeacteurs"
+msgstr "Administration : Gestion des types d'acteurs"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Typeseances"
+msgstr "Administration : Gestion des types de séances"
+
+#: AclManager/Elements/permissions.ctp:8
+msgid "controllers/Users"
+msgstr "Administration : Gestion des utilisateurs"
