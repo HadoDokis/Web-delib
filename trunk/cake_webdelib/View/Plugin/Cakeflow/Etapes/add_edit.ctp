@@ -28,6 +28,7 @@ echo $this->BsForm->input('Etape.cpt_retard', array(
 ?>
 <div class="spacer"></div>
 <?php
+debug($previous);
 echo $this->Html2->btnSaveCancel('', $previous) .
  $this->BsForm->end();
 ?>

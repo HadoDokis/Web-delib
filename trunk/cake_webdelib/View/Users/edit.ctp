@@ -1,10 +1,13 @@
 <?php
-//echo $this->Html->css('users');
+$this->Html->addCrumb('Liste des utilisateurs', array('action'=>'index'));
+
 if ($this->Html->value('User.id')) {
-    echo $this->Bs->tag('h3', 'Modification de l\'utilisateur n&deg;' . $this->Html->value('User.id') . ' : ' . $this->Html->value('User.login'));
+    $this->Html->addCrumb('Modification d\'un acteur');
+    echo $this->Bs->tag('h3', 'Modification d\'un acteur');
     echo $this->BsForm->create('User', array('url' => array('controller' => 'users', 'action' => 'edit', $this->Html->value('User.id')), 'type' => 'post', 'name' => 'userEdit', 'id' => 'userForm'));
 } else {
     echo $this->Bs->tag('h3', 'Création d\'un utilisateur');
+    $this->Html->addCrumb('Création d\'un utilisateur');
     echo $this->BsForm->create('User', array('url' => array('controller' => 'users', 'action' => 'add'), 'type' => 'post', 'id' => 'userForm'));
 }
 
@@ -12,8 +15,8 @@ echo $this->Bs->tab(array(
     'infos' => 'Informations principales',
     'droits' => 'Droits',
     'notifications' => 'Notifications',
-    'circuit_services' => 'Circuit & Services',
-    'types' => 'Types d\'acte'), array('active' => isset($nOngletCourant) ? $nOngletCourant : 'infos', 'class' => '-justified')) .
+    'circuit_services' => 'Circuit & Services'
+    ), array('active' => isset($nOngletCourant) ? $nOngletCourant : 'infos', 'class' => '-justified')) .
  $this->Bs->tabContent();
 
 echo $this->Bs->tabPane('infos', array('class' => isset($nOngletCourant) ? $nOngletCourant : 'active')) .
@@ -21,7 +24,7 @@ echo $this->Bs->tabPane('infos', array('class' => isset($nOngletCourant) ? $nOng
 $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
         $this->Html->tag('div', 'Identifiant de connexion', array('class' => 'panel-heading')) .
         $this->Html->tag('div', null, array('class' => 'panel-body')) .
-        $this->BsForm->input('User.login', array('label' => 'Login <abbr title="obligatoire">*</abbr>', 'required'));
+        $this->BsForm->input('User.username', array('label' => 'Login <abbr title="obligatoire">*</abbr>', 'required'));
 if (!$this->Html->value('User.id')) {
     echo "<div class='tiers'>";
     echo $this->BsForm->input('User.password', array('type' => 'password', 'label' => 'Password <abbr title="obligatoire">*</abbr>'));
@@ -113,46 +116,43 @@ echo $this->Bs->col('lg6') .
  $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
  $this->Html->tag('div', 'Services', array('class' => 'panel-heading')).
     $this->Html->tag('div', null, array('class' => 'panel-body')) ;
-?>
-<div class="input-append">
-    <input type="text" id="search_service" placeholder="Filtrer par nom de service"
-           style="float: left; z-index: 2"/>
 
-    <div class="btn-group">
-        <a class="btn" id="search_tree_button" title="Lancer la recherche"><i
-                class="fa fa-search"></i></a>
 
-        <a class="btn dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-            <li>
-                <a id="search_service_erase_button" title="Remettre à zéro la recherche">Effacer la recherche</a>
-            </li>
+echo $this->Bs->div('btn-toolbar', null, array('role'=>"toolbar"));
+echo $this->Bs->div('btn-group', null, array('role'=>"group"));
+$this->BsForm->setLeft(0);
+$this->BsForm->setRight(12);
+echo $this->BsForm->inputGroup('search_tree', array(array(
+                                'content'=>'',
+                                'id' => 'search_tree_button',
+                                'icon'=>'glyphicon glyphicon-search',
+                                'title' => __('Rechercher un service'),
+                                'type' => 'button',
+                                'state' => 'primary',
+    ), array(
+    'content'=>'<span class="caret"></span>',
+                                'class' => 'dropdown-toggle',
+                                'title' => __('Option de recherche'),
+                                'data-toggle' => 'dropdown',
+                                'icon'=>'glyphicon glyphicon-cog',
+                                'after'=>'<ul class="dropdown-menu dropdown-menu-right" role="menu">
+            <li><a id="search_tree_erase_button" title="Remettre à zéro la recherche">Effacer la recherche</a></li>
             <li class="divider"></li>
-            <li>
-                <a id="search_service_ascenceur_button" title="Désactiver l'ascenceur vertical">Désactiver défilement</a>
-            </li>
-            <li class="divider"></li>
-            <li>
-                <a id="search_service_plier_button" title="Replier tous les services">Tout replier</i></a>
-            </li>
-            <li>
-                <a id="search_service_deplier_button" title="Déplier tous les services">Tout déplier</a>
-            </li>
-            <li class="divider"></li>
-            <li>
-                <a id="search_service_cocher_button" title="Cocher tous les services">Tout cocher</i></a>
-            </li>
-            <li>
-                <a id="search_service_decocher_button" title="Déplier tous les services">Tout décocher</a>
-            </li>
-        </ul>
-    </div>
-</div>
-<?php
+            <li><a id="search_tree_plier_button" title="Replier tous les services">Tout replier</i></a></li>
+            <li><a id="search_tree_deplier_button" title="Déplier tous les services">Tout déplier</a></li>
+        </ul>',
+                                'type' => 'button',
+                                'state' => 'default')
+    ), array(
+        'placeholder'=>__('Filtrer par nom de service'),//style="float: left; z-index: 2"
+    ), array('multiple'=>true,'side'=>'right'));
+echo $this->Bs->close(2);
+
 $selectedServices = !empty($selectedServices) ? $selectedServices : array();
-echo $this->Tree->generateList($services, 'Service', $selectedServices);
+echo $this->Bs->div( null, $this->Tree->generateIndex($services, 'Service', 
+         /*array('id' => 'id', 'display' => 'libelle', 'order' => 'order')*/$selectedServices), array('id'=>'services'));
+
+//echo $this->Tree->generateList($services, 'Service', $selectedServices);
 $options = array();
 if (!empty($selectedServices))
     $options['value'] = implode(',', $selectedServices);
@@ -168,8 +168,11 @@ echo $this->Bs->tabPane('droits') .
  $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
  $this->Html->tag('div', 'Table des droits', array('class' => 'panel-heading')).
  $this->Html->tag('div', null, array('class' => 'panel-body')) ;
-if ($this->Html->value('User.id'))
-    echo $this->element('editDroits');
+if ($this->Html->value('User.id')){
+    echo $this->element('AuthManager.permissions', array('model' => 'Typeacte'));
+    echo $this->element('AuthManager.permissions', array('model' => 'Profil'));
+    echo $this->element('AuthManager.permissions', array('model' => 'User'));
+}
 else {
     echo $this->Html->para(null, __('Sauvegardez puis &eacute;ditez &agrave; nouveau l\'utilisateur pour modifier ses droits.', true));
     echo $this->Html->para(null, __('Les nouveaux utilisateurs h&eacute;ritent des droits des profils auxquels ils sont rattach&eacute;s.', true));
@@ -177,35 +180,16 @@ else {
 echo $this->Bs->close(2);
 echo $this->Bs->tabClose();
 
-echo $this->Bs->tabPane('types') .
-        $this->Html->tag(null, '<br />') .
- $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
- $this->Html->tag('div', 'Types d\'acte autorisés', array('class' => 'panel-heading')).
- $this->Html->tag('div', null, array('class' => 'panel-body'));
-$this->BsForm->setFormType('vertical');
-foreach ($natures as $nature)
-    echo $this->BsForm->checkbox('Nature.id_' . $nature['Typeacte']['id'], 
-            array('checked' => $nature['Nature']['check'],
-            'label' => $nature['Typeacte']['libelle'])
-    );
-echo $this->Bs->close(2).
-$this->Bs->tabClose().
 $this->Bs->tabPaneClose();
 //echo $this->Bs->tabPane('configuration_synthese');.
 //echo $this->Bs->tabClose();
-?>
-    <?php
-    if ($this->action == 'edit')
+    if ($this->action == 'admin_edit')
         echo $this->Form->hidden('User.id');
+    
     $this->BsForm->setLeft(0);
     echo $this->Html2->btnSaveCancel( null, array('action' => 'index'));
-    
-   /* echo $this->Html->tag('div', null, array('class' => 'btn-group', 'style' => 'text-align:center; margin-top:10px;'));
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'index'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'style' => 'float:none;'));
-    echo $this->Form->button("<i class='fa fa-save'></i> Sauvegarder", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer les modifications', 'style' => 'float:none;'));
-    echo $this->Html->tag('/div', null);*/
-    ?>
-<?php echo $this->BsForm->end(); ?>
+echo $this->BsForm->end();
+?>
 <script>
     $(document).ready(function() {
         $('.autocomplete').select2({

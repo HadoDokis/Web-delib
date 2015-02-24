@@ -94,8 +94,9 @@ foreach ($projets as $projet) {
         foreach ($projet['listeSeances'] as $seance)
             $case_seance.= $seance['libelle'] . (isset($seance['date']) && !empty($seance['date']) ? ' : ' . $this->Html2->ukToFrenchDateWithHour($seance['date']) : '') . '<br/>';
     }
-    if (isset($projet['Typeacte']['libelle'])){
-        $case_nature = strtolower($projet['Typeacte']['libelle']);
+    $case_nature='';
+    if (isset($projet['Typeacte']['name'])){
+        $case_nature = strtolower($projet['Typeacte']['name']);
     }
         $case_theme = '<b>Thème : </b>';
         if (isset($projet['Theme']['libelle']))

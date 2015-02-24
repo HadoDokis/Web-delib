@@ -51,6 +51,7 @@ if (!empty($etapes)) {
 ?>
 <div class="actions">
     <?php
+    debug($previous);
     echo $this->Bs->div('btn-group col-md-offset-0', null) .
     $this->Html2->btnCancel($previous) .
     $this->Html2->btnAdd("Ajouter une étape", null, array('controller' => 'etapes', 'action' => 'add', $circuit_id)) .

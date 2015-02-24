@@ -1,29 +1,22 @@
-<h2>Modification d'un thème</h2>
-<?php echo $this->Form->create('Theme'); ?>
-<?php echo $this->Form->hidden('Theme.id'); ?>
-<?php echo $this->Form->input('Theme.libelle', array('label' => 'Libellé', 'maxlength' => '500')); ?>
-<?php echo $this->Form->input('Theme.order', array('label' => 'Critère de tri')); ?>
-<?php echo $this->Form->input('Theme.parent_id', array('label' => 'Appartient à', 'options' => $themes, 'default' => $selectedTheme, 'empty' => true, 'escape' => false)); ?>
-<div class="spacer"></div>
-<div class="submit">
-    <?php $this->Html2->boutonsSaveCancel(); ?>
-</div>
-<?php echo $this->Form->end(); ?>
-<script>
-    $(document).ready(function () {
-        $("#ThemeParentId").select2({
-            width: 'resolve',
-            placeholder: 'Aucun',
-            allowClear: true,
-            formatSelection: function (object) {
-                // trim sur la sélection (affichage en arbre)
-                return $.trim(object.text);
-            }
-        });
-    });
-</script>
-<style>
-    #ThemeEditForm label {
-        padding-top: 5px;
-    }
-</style>
+<?php
+$this->Html->addCrumb('Liste des thèmes', array('action'=>'index'));
+
+$this->Html->addCrumb(__('Modification d\'un thème'));
+
+echo $this->Bs->tag('h3', __('Modification du thème : ').$this->Html->value('Theme.libelle'));
+
+echo $this->BsForm->create('Theme'); 
+
+echo $this->BsForm->input('Theme.libelle', array('label' => 'Libellé', 'maxlength' => '500')); 
+echo $this->BsForm->input('Theme.order', array('label' => 'Critère de tri')); 
+echo $this->BsForm->select('Theme.parent_id', $themes,  array(
+    'label' => __('Appartient à'), 
+    'placeholder'=>__('Choisir un thème'),
+    'default' => $selectedTheme,
+    'class' => 'selectone', 
+    'empty' => true, 
+    'escape' => false));
+
+echo $this->BsForm->hidden('Theme.id'); 
+echo $this->Html2->btnSaveCancel(null, $previous);
+echo $this->BsForm->end(); 

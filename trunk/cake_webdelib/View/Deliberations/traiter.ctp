@@ -1,4 +1,3 @@
-<!--<div id="buttons">-->
 <?php
 echo $this->Html->script('ckeditor/ckeditor');
 echo $this->Html->script('ckeditor/adapters/jquery');
@@ -74,7 +73,7 @@ $linkBarre .= $this->Bs->confirm('Valider',
                 .$this->BsForm->input('Commentaire.texte', array('type' => 'textarea', 'label' => 'Commentaire', 'cols' => '3', 'cols' => '3'))
                 .$this->BsForm->end()
                 ,
-                'header' => 'Vous allez Valider ce projet !'
+                'header' => 'Vous allez valider ce projet !'
             ), array('form'=>true)); 
 $linkBarre .= $this->Bs->confirm('Refuser', 
             array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id'], '0'), 

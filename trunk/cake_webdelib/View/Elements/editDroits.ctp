@@ -3,6 +3,20 @@
 	Affiche les menus-controlleurs pour la saisie des droits
 	Paramètres :
 */
+
+      /*  echo $this->Bs->tabPane('types') .
+            $this->Html->tag(null, '<br />') .
+     $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
+     $this->Html->tag('div', 'Types d\'acte autorisés', array('class' => 'panel-heading')).
+     $this->Html->tag('div', null, array('class' => 'panel-body'));
+    $this->BsForm->setFormType('vertical');
+    foreach ($natures as $nature)
+        echo $this->BsForm->checkbox('Nature.id_' . $nature['Typeacte']['id'], 
+                array('checked' => $nature['Nature']['check'],
+                'label' => $nature['Typeacte']['libelle'])
+        );
+    echo $this->Bs->close(2).
+    $this->Bs->tabClose().*/
 ?>
 <tr>
     <td><em><label for="masterCheckboxDroits" style="width: auto; font-size: 11px;">Tout cocher / décocher</label></em></td>

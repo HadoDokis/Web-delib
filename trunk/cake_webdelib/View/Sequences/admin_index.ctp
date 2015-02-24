@@ -14,7 +14,7 @@ foreach ($sequences as $sequence) {
         $this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'sequences', 'action' => 'view', $sequence['Sequence']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn(null, array('controller' => 'sequences', 'action' => 'edit', $sequence['Sequence']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-        $this->Bs->btn(null, array('controller' => 'sequences', 'action' => 'delete', $sequence['Sequence']['id']), array('type' => 'primary', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => empty($sequence['Compteur']) ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $sequence['Sequence']['nom'] . ' ?') .
+        $this->Bs->btn(null, array('controller' => 'sequences', 'action' => 'delete', $sequence['Sequence']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => empty($sequence['Compteur']) ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $sequence['Sequence']['nom'] . ' ?') .
         $this->Bs->close()
     ));
 }
