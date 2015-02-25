@@ -1,5 +1,4 @@
 <?php
-
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 App::uses('CakeTime', 'Utility');
@@ -9,7 +8,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Fck');
         var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
-	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav',
+	var $components = array('Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav',
             'Auth' => array(
             'mapActions' => array(
                 'create' => array('add','getSeancesParTypeseanceAjax'),
@@ -42,6 +41,11 @@ class SeancesController extends AppController {
 	var $cacheAction = 0;
 
 
+    function listerFuturesSeances()
+    {
+        $this->redirect('/seances/index');
+    }
+    
     function add($timestamp = null) {
         // initialisation
         $success = false;

@@ -110,7 +110,22 @@ class User extends AppModel
             'limit' => '',
             'unique' => true,
             'finderQuery' => '',
-            'deleteQuery' => '')
+            'deleteQuery' => ''),
+        'Deliberation' => array(
+            'className' => 'Deliberation',
+            'foreignKey' => 'user_id',
+            'joinTable' => 'users_deliberations',
+            'associationForeignKey' => 'deliberation_id',
+            'unique' => true,
+            'conditions' => '',
+            'fields' => 'Deliberation.id',
+            //'order' => 'User.nom ASC',
+            'limit' => '',
+            'offset' => '',
+            'finderQuery' => '',
+            'deleteQuery' => '',
+            'insertQuery' => ''
+        )
     );
 
     public $hasMany = array(

@@ -7,10 +7,10 @@ class ActeursController extends AppController
     public $components = array('Paginator',
         'Auth' => array(
             'mapActions' => array(
-                'create' => array('add'),
-                'read' => array('index', 'view'),
-                'update' => array('edit'),
-                'delete' => array('delete')),
+                'create' => array('admin_add'),
+                'read' => array('admin_index', 'view'),
+                'update' => array('admin_edit'),
+                'delete' => array('admin_delete')),
         )
         );
     public $uses = array('Acteur', 'Deliberation', 'Vote');

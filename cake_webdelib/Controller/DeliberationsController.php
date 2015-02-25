@@ -24,7 +24,7 @@ class DeliberationsController extends AppController {
 
     public $helpers = array('Fck');
     public $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
-    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Date', 'Email', 'Acl'/*, 'Droits'*/, 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'S2low', 'Paginator',
+    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Email', 'Acl'/*, 'Droits'*/, 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'S2low', 'Paginator',
         'Auth' => array(
             'mapActions' => array(
                 'read' => array('view','download','downloadDelib',
@@ -2622,11 +2622,18 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.etat'] = 0;
         $conditions['Deliberation.redacteur_id'] = $this->user_id;
         $ordre = array('Deliberation.id' => 'DESC');
-        $redacteur = $this->Deliberation->Redacteur->find('all',array('fields' => 'id','contain' => array('Deliberation' => array('conditions' => array('Deliberation.etat' => 0))),'conditions' => array('Redacteur.id' => $this->user_id)));
+        $redacteur = $this->Deliberation->Redacteur->find('first',array(
+            'fields' => 'id',
+            'contain' => array(
+                'Deliberation' => array('conditions' => array('Deliberation.etat' => 0))),'conditions' => array('Redacteur.id' => $this->user_id)
+                    )
+                );
         
         $id = array();
-        foreach ($redacteur[0]['Deliberation'] as $deliberation_id){
-            $id[] =  $deliberation_id['id'];
+        if(!empty($redacteur)){
+            foreach ($redacteur['Deliberation'] as $deliberation_id){
+                $id[] =  $deliberation_id['id'];
+            }
         }
         if(empty($id)){
             $conditions['Deliberation.parent_id'] = null;
