@@ -78,7 +78,7 @@ $linkBarre .= $this->Bs->confirm('Valider',
 $linkBarre .= $this->Bs->confirm('Refuser', 
             array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id'], '0'), 
             array('type' => 'danger', 
-                'icon' => ' glyphicon glyphicon-thumbs-down', 
+                'icon' => 'glyphicon glyphicon-thumbs-down', 
                 'title' => 'Refuser le projet : ' . $projet['Deliberation']['objet'],
                 'texte' => $this->BsForm->create(false, array(
                     'url' => array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id'], false),

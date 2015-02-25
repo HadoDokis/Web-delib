@@ -16,7 +16,7 @@ foreach ($this->data  as $infosuplistedef) {
         $Infosuplistedef->libelleActif($infosuplistedef['Infosuplistedef']['actif']),
         $this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'infosuplistedefs', 'action' => 'edit', $infosuplistedef['Infosuplistedef']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-        $this->Bs->btn(null, array('controller' => 'infosuplistedefs', 'action' => 'delete', $infosuplistedef['Infosuplistedef']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$Infosuplistedef->isDeletable($infosuplistedef['Infosuplistedef']['id']) ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $infosuplistedef['Infosuplistedef']['nom'] . ' ?') .
+        $this->Bs->btn(null, array('controller' => 'infosuplistedefs', 'action' => 'delete', $infosuplistedef['Infosuplistedef']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$Infosuplistedef->isDeletable($infosuplistedef['Infosuplistedef']['id']) ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $infosuplistedef['Infosuplistedef']['nom'] . ' ?') .
         $this->Bs->close()
     ));
 }

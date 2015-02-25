@@ -18,7 +18,7 @@ foreach ($typeactes as $typeacte) {
         $this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'typeactes', 'action' => 'view', $typeacte['Typeacte']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn(null, array('controller' => 'typeactes', 'action' => 'edit', $typeacte['Typeacte']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-        $this->Bs->btn(null, array('controller' => 'typeactes', 'action' => 'delete', $typeacte['Typeacte']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$typeacte['Typeacte']['is_deletable'] ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $typeacte['Typeacte']['name'] . ' ?') .
+        $this->Bs->btn(null, array('controller' => 'typeactes', 'action' => 'delete', $typeacte['Typeacte']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$typeacte['Typeacte']['is_deletable'] ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $typeacte['Typeacte']['name'] . ' ?') .
         $this->Bs->close()
     ));
 }

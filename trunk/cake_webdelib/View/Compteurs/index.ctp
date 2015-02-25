@@ -18,7 +18,7 @@ foreach ($compteurs as $compteur) {
         $this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'compteurs', 'action' => 'view', $compteur['Compteur']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn(null, array('controller' => 'compteurs', 'action' => 'edit', $compteur['Compteur']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-        $this->Bs->btn(null, array('controller' => 'compteurs', 'action' => 'delete', $compteur['Compteur']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => empty($compteur['Typeseance'])? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $compteur['Compteur']['nom'] . ' ?') .
+        $this->Bs->btn(null, array('controller' => 'compteurs', 'action' => 'delete', $compteur['Compteur']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => empty($compteur['Typeseance'])? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $compteur['Compteur']['nom'] . ' ?') .
         $this->Bs->close()
     ));
 }
