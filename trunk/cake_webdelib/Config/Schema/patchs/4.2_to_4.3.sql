@@ -12,6 +12,8 @@ UPDATE users SET active=true;
 
 ALTER TABLE profils RENAME COLUMN libelle to "name";
 
+ALTER TABLE natures RENAME COLUMN libelle to "name";
+
 ALTER TABLE typeactes RENAME COLUMN libelle to "name";
 
 COMMIT;
