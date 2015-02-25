@@ -77,48 +77,7 @@ endif;
         <strong>Attention!</strong> Vous devez activer JavaScript dans votre navigateur pour pouvoir utiliser le service Webdelib
     </div>
 </noscript>
-<?php
-echo $this->fetch('filtre');
-?>
-<ul class="nav nav-tabs">
-    <?php
-    if (isset($session_menuPrincipal['items'])) {
-        foreach ($session_menuPrincipal['items'] as $libelle => $items) {
-            $carret = '';
-            $classDropdown = '';
-            $title = '';
-            if (isset($items['subMenu'])) {
-                $carret = ' <b class="caret"></b>';
-                $classDropdown = 'class="dropdown"';
-            }
-            if (isset($items['title'])) {
-                $title = $items['title'];
-            }
-            echo("<li $classDropdown>");
-            echo $this->Html->link("$libelle $carret", $items['link'], array(
-                'escape' => false,
-                'class' => 'dropdown-toggle',
-                'data-toggle' => 'dropdown',
-                'data-target' => '#',
-                'title' => $title
-            ));
-            if (isset($items['subMenu'])) {
-                echo $this->Html->tag('ul', null, array('class' => 'dropdown-menu'));
-                foreach ($items['subMenu'] as $key => $url) {
-                    foreach ($url as $titre => $lien) {
-                        echo $this->Html->tag('li', null);
-                        echo $this->Html->link($titre, $lien['link'], array('escape' => false));
-                        echo $this->Html->tag('/li', null);
-                    }
-                }
-                echo $this->Html->tag('/ul', null);
-            }
-            echo $this->Html->tag('/li', null);
-        }
-    }
-    ?>
-</ul>
-
+<?php echo $this->fetch('filtre');?>
 <!-- Contents -->
 <div id="principal" class="container-fluid">
     <?php 

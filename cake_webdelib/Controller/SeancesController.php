@@ -8,7 +8,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Fck');
         var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
-	var $components = array('Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav',
+	var $components = array('Email', 'Gedooo', 'Conversion', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav',
             'Auth' => array(
             'mapActions' => array(
                 'create' => array('add','getSeancesParTypeseanceAjax'),
@@ -209,7 +209,8 @@ class SeancesController extends AppController {
     function index() {
         $this->set('AFFICHE_CONVOCS_ANONYME', Configure::read('AFFICHE_CONVOCS_ANONYME'));
         $this->set('use_pastell', Configure::read('USE_PASTELL'));
-        $this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
+        
+        $this->set('canSign', $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations/sendToParapheur'));
         $format = $this->Session->read('user.format.sortie');
         $this->set('models', $this->Modeltemplate->find('list', array(
                     'recursive' => -1,
