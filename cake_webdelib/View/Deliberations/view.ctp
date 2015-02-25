@@ -54,7 +54,7 @@ if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:rebond')
 $linkBarre .= $this->Bs->btn('Envoyer à', 
             array('controller' => 'deliberations', 'action' => 'rebond', $projet['Deliberation']['id']), 
             array('type' => 'primary', 
-                'icon' => ' glyphicon glyphicon-share-alt', 
+                'icon' => 'glyphicon glyphicon-share-alt', 
                 'title' => 'Modifier le projet ' . $projet['Deliberation']['objet']
             ));        
 $linkBarre .= $this->Bs->close();
@@ -75,7 +75,7 @@ $linkBarre .= $this->Bs->confirm('Valider',
 $linkBarre .= $this->Bs->confirm('Refuser', 
             array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id'], '0'), 
             array('type' => 'danger', 
-                'icon' => ' glyphicon glyphicon-thumbs-down', 
+                'icon' => 'glyphicon glyphicon-thumbs-down', 
                 'title' => 'Refuser le projet : ' . $projet['Deliberation']['objet'],
                 'texte' => $this->BsForm->create('Commentaire')
                 .$this->Html->tag('p','Si vous ne souhaitez pas refuser le projet, Fermer la confirmation.')

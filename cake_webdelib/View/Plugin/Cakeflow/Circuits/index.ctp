@@ -31,7 +31,7 @@ foreach ($this->data as $rownum => $rowElement) {
     $boutons .= $this->Bs->btn(null,array('action' => 'view', $rowElement['Circuit']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open',array( 'title' =>  __('Voir', true),'class' => !$rowElement['ListeActions']['view'] ? 'disabled' : '' )));
     $boutons .= $this->Bs->btn(null,array('action' => 'edit', $rowElement['Circuit']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit',array( 'title' =>  __('Modifier', true),'class' => !$rowElement['ListeActions']['edit'] ? 'disabled' : ''   )));
     $boutons .= $this->Bs->btn(null,array('action' => 'visuCircuit', $rowElement['Circuit']['id']), array('type' => 'info', 'icon' => 'glyphicon glyphicon-list-alt',array('title' =>  __('Visionner', true),'class' => !$rowElement['ListeActions']['visuCircuit'] ? 'disabled' : ''  )));
-    $boutons .= $this->Bs->btn(null, array('action' => 'delete', $rowElement['Circuit']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash',array('title' => __('Supprimer')),'class' => !$rowElement['ListeActions']['delete'] ? 'disabled' : '' ), __('Êtes vous sur de vouloir supprimer ') . $rowElement['Circuit']['nom'] . ' ?');
+    $boutons .= $this->Bs->btn(null, array('action' => 'delete', $rowElement['Circuit']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash',array('title' => __('Supprimer')),'class' => !$rowElement['ListeActions']['delete'] ? 'disabled' : '' ), __('Êtes vous sur de vouloir supprimer ') . $rowElement['Circuit']['nom'] . ' ?');
     echo $this->Bs->cell($boutons,'text-nowrap');
 }
 echo $this->Bs->endTable();

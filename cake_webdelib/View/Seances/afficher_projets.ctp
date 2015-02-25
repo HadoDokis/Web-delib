@@ -76,7 +76,7 @@ foreach ($projets as $projet) {
         $this->Bs->div('btn-group-vertical') .
         $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'view', $projet['Deliberation']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir le projet')) .
         $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'edit', $projet['Deliberation']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier le projet')) .
-        //$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'delete', $projet['Deliberation']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-remove', 'title' => 'Enlever le projet de la séance', 'class' => !$is_deletable ? 'disabled' : ''), 'Êtes vous sur de vouloir enlever le projet :' . $projet['Deliberation']['objet_delib'] . ' ?') .
+        //$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'delete', $projet['Deliberation']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-remove', 'title' => 'Enlever le projet de la séance', 'class' => !$is_deletable ? 'disabled' : ''), 'Êtes vous sur de vouloir enlever le projet :' . $projet['Deliberation']['objet_delib'] . ' ?') .
         $this->Bs->close());
 }
 echo $this->Bs->endTable() .

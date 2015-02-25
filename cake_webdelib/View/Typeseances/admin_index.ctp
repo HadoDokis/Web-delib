@@ -44,7 +44,7 @@ foreach ($typeseances as $typeseance) {
         $this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'typeseances', 'action' => 'view', $typeseance['Typeseance']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn(null, array('controller' => 'typeseances', 'action' => 'edit', $typeseance['Typeseance']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-        $this->Bs->btn(null, array('controller' => 'typeseances', 'action' => 'delete', $typeseance['Typeseance']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$typeseance['Typeseance']['is_deletable'] ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $typeseance['Typeseance']['libelle'] . ' ?') .
+        $this->Bs->btn(null, array('controller' => 'typeseances', 'action' => 'delete', $typeseance['Typeseance']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$typeseance['Typeseance']['is_deletable'] ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $typeseance['Typeseance']['libelle'] . ' ?') .
         $this->Bs->close()
     ));
 }

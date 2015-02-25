@@ -55,7 +55,7 @@ foreach ($actes as $acte) {
        $actions=$this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'view', $acte['Deliberation']['id']), 
                 array('type' => 'default', 
-                    'icon' => ' glyphicon glyphicon-eye-open', 
+                    'icon' => 'glyphicon glyphicon-eye-open', 
                     'title' => 'Vue détaillée du projet')) .
         $this->Bs->close();
         
@@ -89,13 +89,13 @@ foreach ($actes as $acte) {
         if($this->action == 'autresActesAValider' && $canGoNext && !empty($acte['Deliberation']['circuit_id']) && $acte['Deliberation']['etat'] == 1) {
             $actions.=$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'goNext', $acte['Deliberation']['id']), 
                 array('type' => 'default', 
-                    'icon' => ' glyphicon glyphicon-eye-open', 
+                    'icon' => 'glyphicon glyphicon-eye-open', 
                     'title' => 'Sauter une ou plusieurs étapes du circuit'));
         }
         if ($this->action == 'autresActesAValider' && $peuxValiderEnUrgence && !empty($acte['Deliberation']['circuit_id']) && $acte['Deliberation']['etat'] == 1) {
             $actions.=$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'validerEnUrgence', $acte['Deliberation']['id']), 
                 array('type' => 'default', 
-                    'icon' => ' glyphicon glyphicon-eye-open', 
+                    'icon' => 'glyphicon glyphicon-eye-open', 
                     'title' => 'Valider en urgence le projet',
                     'confirm'=>'Confirmer la validation en urgence du projet ' . $acte['Deliberation']['id'] . ' ?'));
         }
@@ -103,7 +103,7 @@ foreach ($actes as $acte) {
         if ($this->action == 'autreActesValides' && $canEdit && !$acte['Deliberation']['signature_encours']) {
             $actions.=$this->Bs->btn(null, array('controller' => 'deliberations', 'action' => 'edit', $acte['Deliberation']['id']), 
                 array('type' => 'primary', 
-                    'icon' => ' glyphicon glyphicon-edit', 
+                    'icon' => 'glyphicon glyphicon-edit', 
                     'title' => 'Modifier le projet'));
         }
         if ($this->action == 'autreActesValides' && !$acte['Deliberation']['signature_encours']) {

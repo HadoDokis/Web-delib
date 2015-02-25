@@ -36,7 +36,7 @@ foreach ($acteurs as $acteur) {
         $this->Bs->div('btn-group-vertical') .
         $this->Bs->btn(null, array('controller' => 'acteurs', 'action' => 'view', $acteur['Acteur']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn(null, array('controller' => 'acteurs', 'action' => 'edit', $acteur['Acteur']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-        $this->Bs->btn(null, array('controller' => 'acteurs', 'action' => 'delete', $acteur['Acteur']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer'), 'Êtes vous sur de vouloir supprimer :' . $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'] . ' ?') .
+        $this->Bs->btn(null, array('controller' => 'acteurs', 'action' => 'delete', $acteur['Acteur']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer'), 'Êtes vous sur de vouloir supprimer :' . $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'] . ' ?') .
         $this->Bs->close(3)
     ));
 }

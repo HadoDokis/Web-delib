@@ -18,7 +18,7 @@ $this->Bs->btn(null, array('controller' => 'infosupdefs', 'action' => 'view', $i
  if (in_array($infosupdef['Infosupdef']['type'], array('list','listmulti')))       
         $actions.=$this->Bs->btn(null, array('controller' => 'infosuplistedefs', 'action' => 'index', $infosupdef['Infosupdef']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-th-list', 'title' => 'Liste'));
 $actions.=$this->Bs->btn(null, array('controller' => 'infosupdefs', 'action' => 'edit', $infosupdef['Infosupdef']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-$this->Bs->btn(null, array('controller' => 'infosupdefs', 'action' => 'delete', $infosupdef['Infosupdef']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$Infosupdef->isDeletable($infosupdef['Infosupdef']['id']) ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $infosupdef['Infosupdef']['nom'] . ' ?') .
+$this->Bs->btn(null, array('controller' => 'infosupdefs', 'action' => 'delete', $infosupdef['Infosupdef']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$Infosupdef->isDeletable($infosupdef['Infosupdef']['id']) ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer ' . $infosupdef['Infosupdef']['nom'] . ' ?') .
 $this->Bs->close();
 
     echo $this->Bs->tableCells(array(

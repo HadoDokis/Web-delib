@@ -32,7 +32,7 @@ if (!empty($compositions)) {
         $boutons = $this->Bs->div('btn-group');
         $boutons .= $this->Bs->btn(null, array('action' => 'view', $composition['Composition']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => __('Voir')));
         $boutons .= $this->Bs->btn(null, array('action' => 'edit', $composition['Composition']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => __('Modifier')));
-        $boutons .= $this->Bs->btn(null, array('action' => 'delete', $composition['Composition']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => __('Supprimer')), __('Êtes vous sur de vouloir supprimer ') . $rows['triggerLibelle'] . ' ?');
+        $boutons .= $this->Bs->btn(null, array('action' => 'delete', $composition['Composition']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => __('Supprimer')), __('Êtes vous sur de vouloir supprimer ') . $rows['triggerLibelle'] . ' ?');
         echo $this->Bs->cell($boutons, 'text-nowrap');
     }
     echo $this->Bs->endTable();

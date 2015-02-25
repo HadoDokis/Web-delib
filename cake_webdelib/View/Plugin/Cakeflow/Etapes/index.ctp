@@ -37,7 +37,7 @@ if (!empty($etapes)) {
                 . $this->Bs->btn(null, array('controller' => 'compositions', 'action' => 'index', $etape['Etape']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-user', 'title' => __("Composition de l'étape", true)))
                 . $this->Bs->btn(null, array('action' => 'view', $etape['Etape']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => __('Voir')))
                 . $this->Bs->btn(null, array('action' => 'edit', $etape['Etape']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => __('Modifier')))
-                . $this->Bs->btn(null, array('action' => 'delete', $etape['Etape']['id']), array('type' => 'danger', 'icon' => ' glyphicon glyphicon-trash', 'title' => __('Supprimer')), __('Êtes vous sur de vouloir supprimer ') . $etape['Etape']['nom'] . ' ?');
+                . $this->Bs->btn(null, array('action' => 'delete', $etape['Etape']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => __('Supprimer')), __('Êtes vous sur de vouloir supprimer ') . $etape['Etape']['nom'] . ' ?');
         echo $this->Bs->cell($moveUp . $ordre . $moveDown);
         echo $this->Bs->cell($row['nom']);
         echo $this->Bs->cell($row['description']);
