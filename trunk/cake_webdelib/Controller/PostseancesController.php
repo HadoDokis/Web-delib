@@ -3,7 +3,7 @@
 class PostseancesController extends AppController {
 	public $name = 'Postseances';
 	public $helpers = array('Fck');
-	public $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion',
+	public $components = array('Gedooo', 'Cmis', 'Progress', 'Conversion',
             'Auth' => array(
             'mapActions' => array(
                 'read' => array('index','getNom','getPresence','getVote','sendToGed',
