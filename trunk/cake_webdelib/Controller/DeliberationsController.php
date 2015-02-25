@@ -80,7 +80,7 @@ class DeliberationsController extends AppController {
                 'Annex' => array('fields' => array('id', 'titre', 'joindre_ctrl_legalite', 'filename')),
                 'Service' => array('fields' => array('libelle')),
                 'Theme' => array('fields' => array('libelle')),
-                'Typeacte' => array('fields' => array('libelle')),
+                'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
                     'Typeseance' => array('fields' => array('id', 'libelle', 'action'))),
@@ -101,6 +101,8 @@ class DeliberationsController extends AppController {
 
         $projet['Deliberation']['num_pref'] = $projet['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($projet['Deliberation']['num_pref']);
 
+        $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'create') ;
+        
         if (!$this->Droits->check($this->user_id, "Pages:tous_les_projets")) {
             $conditions['Deliberation.id'] = $id;
             $conditions['OR']['redacteur_id'] = $this->user_id;

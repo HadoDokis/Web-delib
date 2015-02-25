@@ -1,7 +1,7 @@
 <?php
 class UsersController extends AppController {
     public $uses = array('User', 'Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte','Aro','Aco');
-    public $components = array('Menu', 
+    public $components = array( 
         'Auth' => array(
                 'mapActions' => array(
                     'read' => array(    'login',
