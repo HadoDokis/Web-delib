@@ -551,7 +551,7 @@ class BsHelper extends HtmlHelper {
 
 		//$this->_openLine = 0;
 
-		if ($this->_tableClassesCells[$cellPos]) {
+		if (isset($this->_tableClassesCells[$cellPos])) {
 			$classVisibility = $this->_tableClassesCells[$cellPos];
 		}
 
@@ -602,7 +602,18 @@ class BsHelper extends HtmlHelper {
 		return $out;
 	}
  
-        /**
+/**
+ * Set number of column for a table (<tr>)
+ * 
+ * @param string $value set and override the table colum number
+ * @return string
+ */
+	public function setTableNbColumn($value) {
+		$this->_nbColumn=$value;
+	}
+        
+ 
+/**
  * Attributes for a line (<tr>)
  * 
  * @param array $attributes for the line
@@ -1001,8 +1012,18 @@ class BsHelper extends HtmlHelper {
 			)
 		);
                 if (!empty($options['icon'])) {
+                    $icon='';
+                    if(substr($options['icon'],0, 9) == 'glyphicon') {
+                        
+                        $icon = '<span class="' . ($options['icon']) . '"></span>';
+                    } else {
+                        $icon=$this->icon($options['icon']); 
+                    }
+           
+                    $options['escapeTitle'] = false;
+                    $text=$icon.(!empty($text)?' '.$text:'');
                     $buttons['open']['options']['escapeTitle']  = false;
-                    $buttons['open']['name']='<span class="'.($options['icon']).'"></span>'.(!empty($button)?' '.$button:'');
+                    $buttons['open']['name']=$icon.(!empty($button)?' '.$button:'');
                     unset($options['icon']);
 		}
 
