@@ -2448,6 +2448,7 @@ class DeliberationsController extends AppController {
 
         $acteurs = $this->Listepresence->find('all', array(
             'conditions' => array("Listepresence.delib_id" => $delib_id),
+            'order' => 'position ASC',
             'contain' => array('Acteur')));
 
         foreach ($acteurs as &$acteur) {
@@ -2459,7 +2460,7 @@ class DeliberationsController extends AppController {
                 $suppleant = $this->Acteur->find('first', array(
                     'conditions' => array('Acteur.id' => $acteur['Acteur']['suppleant_id'],
                         'Acteur.actif' => true),
-                    'order' => 'position ASC',
+                    'order' => 'nom ASC',
                     'recursive' => -1,
                     'fields' => array('id', 'nom', 'prenom')));
                 $acteur['Suppleant'] = $suppleant['Acteur'];
@@ -2469,7 +2470,7 @@ class DeliberationsController extends AppController {
                 $mandataire = $this->Acteur->find('first', array(
                     'conditions' => array('Acteur.id' => $acteur['Listepresence']['mandataire'],
                         'Acteur.actif' => true),
-                    'order' => 'position ASC',
+                    'order' => 'nom ASC',
                     'recursive' => -1,
                     'fields' => array('id', 'nom', 'prenom')));
                 $acteur['Mandataire'] = $mandataire['Acteur'];
