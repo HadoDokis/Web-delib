@@ -484,7 +484,12 @@ class SeancesController extends AppController {
 
             $nbAbsent = 0;
             // Initialisation du détail du vote
-            $donnees = $this->Vote->find('all', array('conditions' => array("Vote.delib_id" => $deliberation_id)));
+            $donnees = $this->Vote->find('all', array(
+                'conditions' => array(
+                "Vote.delib_id" => $deliberation_id
+                    ),
+                'recursive'=>-1));
+            debug($donnees,'debug');
             foreach ($donnees as $donnee) {
                 $this->request->data['detailVote'][$donnee['Vote']['acteur_id']] = $donnee['Vote']['resultat'];
             }
@@ -493,6 +498,8 @@ class SeancesController extends AppController {
             $this->request->data['Deliberation']['vote_nb_non'] = $deliberation['Deliberation']['vote_nb_non'];
             $this->request->data['Deliberation']['vote_nb_abstention'] = $deliberation['Deliberation']['vote_nb_abstention'];
             $this->request->data['Deliberation']['vote_nb_retrait'] = $deliberation['Deliberation']['vote_nb_retrait'];
+            $this->request->data['Deliberation']['vote_prendre_acte'] = $deliberation['Deliberation']['vote_prendre_acte'];
+            
             // Initialisation du resultat
             $this->request->data['Deliberation']['etat'] = $deliberation['Deliberation']['etat'];
             // Initialisation du commentaire
@@ -518,6 +525,7 @@ class SeancesController extends AppController {
             if ($nbPresent / 2 < $nbAbsent)
                 $this->set('message', 'Attention, le quorum n\'est plus atteint...');
         } else {
+            //$this->log(var_export($this->request->data, true),'debug');
             $this->request->data['Deliberation']['id'] = $deliberation_id;
 
             $this->Deliberation->id = $deliberation_id;
@@ -531,6 +539,7 @@ class SeancesController extends AppController {
                     $this->request->data['Deliberation']['vote_nb_retrait'] = 0;
                     if (!empty($this->data['detailVote'])) {
                         foreach ($this->data['detailVote'] as $acteur_id => $vote) {
+                            $this->log(var_export($this->data['detailVote'], true),'debug');
                             $this->Vote->create();
                             $this->request->data['Vote']['acteur_id'] = $acteur_id;
                             $this->request->data['Vote']['delib_id'] = $deliberation_id;
@@ -574,7 +583,7 @@ class SeancesController extends AppController {
                         '#p#', $this->Deliberation->getPosition($deliberation_id, $seance_id), $this->data['Deliberation']['num_delib']);
             }
             if ($this->Deliberation->save($this->data['Deliberation'])) {
-                $this->redirect(array('action' => 'details', $seance_id));
+                $this->redirect(array('controller'=>'seances', 'action' => 'details', $seance_id));
             }
         }
     }
