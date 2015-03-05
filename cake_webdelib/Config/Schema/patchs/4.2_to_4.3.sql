@@ -27,4 +27,6 @@ CREATE TABLE users_deliberations
   CONSTRAINT users_deliberations_pkey PRIMARY KEY (id)
 ) 
 
+ALTER TABLE deliberations ADD COLUMN vote_prendre_acte BOOLEAN DEFAULT NULL;
+
 COMMIT;

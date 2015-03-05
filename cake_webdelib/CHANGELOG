@@ -1,5 +1,7 @@
 4.3.0
 ======
+- Mise en place de la fonctionnalité "Prendre acte"
+- Prise en compte de l'ordre d'affichage des acteurs dans la gestion des votes
 - Ajout des champ de recherche sur les projets, sur la date de création du projet et sur la date de reception en prefecture
 - Ajout d'un historique global
 - Fusion de 2 services ensemble
