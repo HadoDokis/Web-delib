@@ -48,6 +48,17 @@ class BsFormHelper extends FormHelper {
  */
 	protected $_modelForm = null;
 
+
+/**
+ * Reset the dafault value of $left and $right
+ *
+ * @return void
+ */
+	public function setDefault() {
+		$this->__left = BsFormHelper::getLeft();
+                $this->__right = BsFormHelper::getRight();
+	}
+        
 /**
  * Return the current value of $_left
  * 
