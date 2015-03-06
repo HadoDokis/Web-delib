@@ -1,98 +1,124 @@
-<div class="deliberations">
-    <h2>Envoi de l'ordre du jour</h2>
-    <?php
-    echo $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id), 'class'=>'waiter', 'data-modal' => 'Envoi de l\'ordre du jour'));
+<?php
+echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min') .
+     $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr') .
+     $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+     $this->Html->addCrumb('Liste des présents');//, array($this->request['controller'], 'action'=>'index'));
+     
+   echo $this->Bs->div('deliberations').
+        $this->Bs->tag('h2', 'Envoi de l\'ordre du jour') .
 
-    echo $this->Html->tag('div', null, array('id' => 'boutons_generation_odj'));
+        //debut du form
+        $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id), 'class'=>'waiter', 'data-modal' => 'Envoi de l\'ordre du jour')) .
+        $this->Bs->div('boutons_generation_odj') .
+            $this->Bs->div('btn-group').
+            $this->Bs->btn('Générer l\'ordre du jour',
+            array('controller'=>'seances', 
+                'action'=>'genereFusionToFiles', 
+                $seance_id,
+                $model_id,
+                'ordredujour'
+                ), 
+            array(
+                'class' => "btn btn-success waiter", 
+                'escape' => false, 
+                'title' => 'Générer l\'ordre du jour', 
+                'data-modal' => 'Génération de l\'ordre du jour en cours', 
+                'type'=>'primary',
+                'icon'=>'fa fa-cogs')).
+            $this->Bs->btn('Télécharger une archive contenant tous les ODJ',
+            array('controller'=>'seances', 
+                'action'=>'downloadZip', 
+                $seance_id,
+                $model_id,
+                'ordredujour'
+                ),
+            array(
+                'class' => "btn btn-inverse", 
+                'escape' => false, 
+                'title' => 'Récupérer une archive contenant les ordres du jour', 
+                'type'=>'primary',
+                'icon'=>'fa fa-download')) .
+        $this->Bs->close(3);
 
-    echo $this->Html->link("<i class='fa fa-cogs'></i> Générer l'ordre du jour",
-        array('controller' => 'seances', 'action' => 'genereFusionToFiles', $seance_id, $model_id, 'ordredujour'),
-        array('class' => "btn btn-success waiter", 'escape' => false, 'title' => 'Générer l\'ordre du jour', 'data-modal' => 'Génération de l\'ordre du jour en cours', 'style' => 'margin-right:15px;'));
+     //spacer
+     $this->Bs->div('spacer') . $this->Bs->close();
+        
+     //creation du tableau
+     $attribute = array();
+     $attribute['attributes']['name'] = 'tableListeActeur';
+     echo $this->Bs->tag('h2', 'Liste des acteurs') .
+     $this->Bs->lineAttributes(array('class'=>'colonne_checkbox'));
+     $this->Bs->setTableNbColumn(4);
+     echo $this->Bs->table(
+     array(
+        array('title' => __($this->BsForm->checkbox('masterCheckbox', array(
+         'label' =>false,
+         //'checked'=>$selected
+         )))),
+        array('title' => __('Élus')),
+        array('title' => __('Document')),
+        array('title' => __('Date d\'envoi')),
+        array('title' => __('Statut'))
+     ), array('hover', 'striped'));
+     foreach ($acteurs as $acteur) {
+         //cellule checkbox
+         if (empty($acteur['Acteur']['email']))
+              $cell_checkbox = $this->BsForm->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
+             'label' =>false,
+             'disabled' => true,
+             'title' => 'Envoi impossible, l\'adresse mail de l\'acteur n\'est pas renseigné'));
+         elseif (empty($acteur['Acteur']['fichier']))
+              $cell_checkbox = $this->BsForm->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
+             'label' =>false,
+             'disabled' => true,
+             'title' => "Impossible d'envoyer à cet acteur, l'ordre du jour n'a pas encore été générée."));
+         elseif ($acteur['Acteur']['date_envoi'] == null)
+             $cell_checkbox = $this->BsForm->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
+             'label' =>false,
+             'class' => 'checkbox_acteur_odj',
+             'title' => "Impossible d'envoyer à cet acteur, l'ordre du jour n'a pas encore été générée."));
+         else
+             $cell_checkbox = '<i class="fa fa-check" title="ODJ déjà envoyée"></i>';
 
-    echo $this->Html->tag('i', '', array('class'=> 'fa fa-arrow-right'));
+         //cellule élu
+             $cell_elu = $this->Html->link($acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'], array('controller' => 'acteurs', 'action' => 'view', $acteur['Acteur']['id']));
+         
+         //cellule fichier
+         if (isset($acteur['Acteur']['fichier']))
+            $cell_fichier = $this->Bs->btn('Télécharger', $acteur['Acteur']['fichier'],
+            array(
+                'escape' => false, 
+                'type'=>'default',
+                'icon'=>'fa fa-file-pdf-o'));
+         else
+             $cell_fichier = 'Pas de document';
 
-    echo $this->Html->link("<i class='fa fa-download'></i> Télécharger une archive contenant tous les ODJ",
-        array('controller' => 'seances', 'action' => 'downloadZip', $seance_id, $model_id),
-        array('class' => "btn btn-inverse", 'escape' => false, 'title' => 'Récupérer une archive contenant les ordres du jour', 'style' => 'margin-left:15px;'));
+         //cellule date envoi
+         if ($acteur['Acteur']['date_envoi'] == null)
+             $cell_envoi = __('Non envoyé');
+         else
+             $cell_envoi = __('Envoyé le : ') . $this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_envoi']);
 
-    echo $this->Html->tag('/div');
-
-    ?>
-    <div class="spacer"></div>
-    <table style='width:100%'>
-        <caption>Liste des acteurs</caption>
-        <tr>
-            <th class="colonne_checkbox"><input type="checkbox" id="masterCheckbox"/></th>
-            <th>Élus</th>
-            <th>Document</th>
-            <th>Date d'envoi</th>
-            <th>statut</th>
-        </tr>
-        <?php
-        $numLigne = 1;
-        foreach ($acteurs as $acteur) {
-            $rowClass = ($numLigne & 1) ? array('height' => '36px') : array('height' => '36px', 'class' => 'altrow');
-            echo $this->Html->tag('tr', null, $rowClass);
-            $numLigne++;
-
-            if (file_exists(WEBROOT_PATH . '/files/seances/' . $seance_id . "/$model_id/" . $acteur['Acteur']['id'] . '.pdf')) {
-                $filepath = '/files/seances/' . $seance_id . "/$model_id/" . $acteur['Acteur']['id'] . '.pdf';
-                $ext = '.pdf';
-            } else if (file_exists(WEBROOT_PATH . '/files/seances/' . $seance_id . "/$model_id/" . $acteur['Acteur']['id'] . '.odt')) {
-                $filepath = '/files/seances/' . $seance_id . "/$model_id/" . $acteur['Acteur']['id'] . '.odt';
-                $ext = '.odt';
-            } else {
-                $filepath = '';
-            }
-
-            echo '<td style="text-align: center; vertical-align: middle;">';
-            if (empty($acteur['Acteur']['email']))
-                echo $this->Form->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
-                    'disabled' => true,
-                    'title' => 'Envoi impossible, l\'adresse mail de l\'acteur n\'est pas renseigné'));
-            elseif (empty($filepath))
-                echo $this->Form->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
-                    'disabled' => true,
-                    'title' => "Impossible d'envoyer à cet acteur, l'ordre du jour n'a pas encore été généré."));
-            elseif ($acteur['Acteur']['date_envoi'] == null)
-                echo $this->Form->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array('class' => 'checkbox_acteur_odj'));
-            else
-                echo '<i class="fa fa-check" title="ODJ déjà envoyé"></i>';
-            echo '</td>';
-
-            echo '<td>' . $this->Html->link($acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'], array('controller'=>'acteurs', 'action'=>'view', $acteur['Acteur']['id'])) . '</td>';
-
-            if (!empty($filepath))
-                echo('<td>' . $this->Html->link($model['Modeltemplate']['name'] . $ext, $filepath) . ' : [' . $date_convocation . ']</td>');
-            else
-                echo('<td></td>');
-            if ($acteur['Acteur']['date_envoi'] == null)
-                echo('<td>Non envoyé</td>');
-            else
-                echo('<td>' . 'Envoyé le : ' . $this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_envoi']) . '</td>');
-
-            if ($acteur['Acteur']['date_reception'] == null) {
-                if ($use_mail_securise)
-                    echo('<td>Non reçu</td>');
-                else
-                    echo('<td>Pas d\'accusé de réception</td>');
-            } else
-                echo('<td>' . 'Reçu le : ' . $this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_reception']) . '</td>');
-        }
-        ?>
-        </tr>
-    </table>
-
-    <div class="spacer"></div>
-
-    <div class="submit btn-group">
-        <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $previous, array('escape' => false, 'class' => 'btn')); ?>
-        <?php echo $this->Form->button("<i class='fa fa-envelope'></i> Envoyer l'ordre du jour <span id='nbActeursChecked'></span>", array('id' => 'envoyer_odj', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Envoyer les ordres du jour par email aux acteurs sélectionnés')); ?>
-    </div>
-
-
-    <?php echo $this->Form->end(); ?>
-</div>
+         //cellule reception
+         if ($acteur['Acteur']['date_reception'] == null) {
+             if ($use_mail_securise)
+                 $cell_reception = __('Non reçu');
+             else
+                 $cell_reception = __('Pas d\'accusé de réception');
+         } else {
+             $cell_reception = __('Reçu le : ') . $this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_reception']);
+         }
+         echo $this->Bs->cell($cell_checkbox).$this->Bs->cell($cell_elu).$this->Bs->cell($cell_fichier).$this->Bs->cell($cell_envoi).$this->Bs->cell($cell_reception);
+     }
+     echo $this->Bs->endTable();  
+     
+     //spacer
+     echo $this->Bs->div('spacer') . $this->Bs->close();
+     
+     echo $this->Html2->btnSaveCancel('', $previous, 'Envoyer l\'ordre du jour', 'Envoyer l\'ordre du jour');
+     $this->Form->end() .
+$this->Bs->close();
+?>
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -101,14 +127,14 @@
         selectionChange();
     });
     function selectionChange() {
-        var nbChecked = $('input[type=checkbox].checkbox_acteur_odj:checked').length;
+        var nbChecked = $('input[type=checkbox].checkbox_acteur_convoc:checked').length;
         //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
         if (nbChecked > 0) {
-            $('#envoyer_odj').removeClass('disabled');
-            $("#envoyer_odj").prop("disabled", false);
+            $('#boutonValider').removeClass('disabled');
+            $("#boutonValider").prop("disabled", false);
         } else {
-            $('#envoyer_odj').addClass('disabled');
-            $("#envoyer_odj").prop("disabled", true);
+            $('#boutonValider').addClass('disabled');
+            $("#boutonValider").prop("disabled", true);
         }
         $('#nbActeursChecked').text('(' + nbChecked + ')');
     }

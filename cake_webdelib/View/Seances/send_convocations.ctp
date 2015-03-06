@@ -1,91 +1,126 @@
-<div class="deliberations">
-    <h2>Envoi des convocations</h2>
-    <?php
-    echo $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'sendConvocations', $seance_id, $model_id), 'class'=>'waiter', 'data-modal' => 'Envoi des convocations'));
-    echo $this->Html->tag('div', null, array('id' => 'boutons_generation_convocation'));
-    echo $this->Html->link("<i class='fa fa-cogs'></i> Générer les convocations",
-        array('controller' => 'seances', 'action' => 'genereFusionToFiles', $seance_id, $model_id, 'convocation'),
-        array('class' => "btn btn-success waiter", 'escape' => false, 'title' => 'Générer le document des convocations', 'data-modal' => 'Génération des convocations en cours', 'style' => 'margin-right:15px;'));
-    echo $this->Html->tag('i', '', array('class'=> 'fa fa-arrow-right'));
-    echo $this->Html->link("<i class='fa fa-download'></i> Télécharger une archive contenant toutes les convocations",
-        array('controller' => 'seances', 'action' => 'downloadZip', $seance_id, $model_id),
-        array('class' => "btn btn-inverse", 'escape' => false, 'title' => 'Récupérer une archive contenant les convocations', 'style' => 'margin-left:15px;'));
-    echo $this->Html->tag('/div');
-    ?>
-    <div class="spacer"></div>
-    <table style='width:100%'>
-        <caption>Liste des acteurs</caption>
-        <tr>
-            <th class="colonne_checkbox"><input type="checkbox" id="masterCheckbox"/></th>
-            <th>Élus</th>
-            <th>Document</th>
-            <th>Date d'envoi</th>
-            <th>statut</th>
-        </tr>
-        <?php
-        $numLigne = 1;
-        foreach ($acteurs as $acteur) {
-            $rowClass = ($numLigne & 1) ? array('height' => '36px') : array('height' => '36px', 'class' => 'altrow');
-            echo $this->Html->tag('tr', null, $rowClass);
-            $numLigne++;
+<?php
+echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min') .
+     $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr') .
+     $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+     $this->Html->addCrumb('Liste des présents');//, array($this->request['controller'], 'action'=>'index'));
+     
+   echo $this->Bs->div('deliberations').
+        $this->Bs->tag('h2', 'Envoi des convocations') .
 
-            if (file_exists(WEBROOT_PATH . '/files/seances/' . $seance_id . "/$model_id/" . $acteur['Acteur']['id'] . '.pdf')) {
-                $filepath = '/files/seances/' . $seance_id . "/$model_id/" . $acteur['Acteur']['id'] . '.pdf';
-                $ext = '.pdf';
-            } else if (file_exists(WEBROOT_PATH . '/files/seances/' . $seance_id . "/$model_id/" . $acteur['Acteur']['id'] . '.odt')) {
-                $filepath = '/files/seances/' . $seance_id . "/$model_id/" . $acteur['Acteur']['id'] . '.odt';
-                $ext = '.odt';
-            } else {
-                $filepath = '';
-            }
+        //debut du form
+        $this->Form->create('Seance', array('url' => array('controller' => 'seances', 
+            'action' => 'sendConvocations', $seance_id, $model_id), 
+            'class'=>'waiter', 'data-modal' => 'Envoi des convocations')) .
+        $this->Bs->div('boutons_generation_convocation') .
+            $this->Bs->div('btn-group').
+            $this->Bs->btn('Générer les convocations',
+            array('controller'=>'seances', 
+                'action'=>'genereFusionToFiles', 
+                $seance_id,
+                $model_id,
+                'convocation'
+                ), 
+            array(
+                'class' => "btn btn-success waiter", 
+                'escape' => false, 
+                'title' => 'Générer le document des convocations', 
+                'data-modal' => 'Génération des convocations en cours', 
+                'type'=>'primary',
+                'icon'=>'fa fa-cogs')).
+            $this->Bs->btn('Télécharger une archive contenant toutes les convocations',
+            array('controller'=>'seances', 
+                'action'=>'downloadZip', 
+                $seance_id,
+                $model_id,
+                'convocation'
+                ), 
+            array(
+                'class' => "btn btn-inverse", 
+                'escape' => false, 
+                'title' => 'Récupérer une archive contenant les convocations', 
+                'type'=>'primary',
+                'icon'=>'fa fa-download')) .
+        $this->Bs->close(3);
 
-            echo '<td style="text-align: center; vertical-align: middle;">';
-            if (empty($acteur['Acteur']['email']))
-                echo $this->Form->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
-                    'disabled' => true,
-                    'title' => 'Envoi impossible, l\'adresse mail de l\'acteur n\'est pas renseigné'));
-            elseif (empty($filepath))
-                echo $this->Form->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
-                    'disabled' => true,
-                    'title' => "Impossible d'envoyer à cet acteur, la convocation n'a pas encore été générée."));
-            elseif ($acteur['Acteur']['date_envoi'] == null)
-                echo $this->Form->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array('class' => 'checkbox_acteur_convoc'));
-            else
-                echo '<i class="fa fa-check" title="Convocation déjà envoyée"></i>';
+     //spacer
+     $this->Bs->div('spacer') . $this->Bs->close();
+        
+     //creation du tableau
+     $attribute = array();
+     $attribute['attributes']['name'] = 'tableListeActeur';
+     echo $this->Bs->tag('h2', 'Liste des acteurs') .
+     $this->Bs->lineAttributes(array('class'=>'colonne_checkbox'));
+     $this->Bs->setTableNbColumn(4);
+     echo $this->Bs->table(
+     array(
+        array('title' => __($this->BsForm->checkbox('masterCheckbox', array(
+         'label' =>false,
+         //'checked'=>$selected
+         )))),
+        array('title' => __('Élus')),
+        array('title' => __('Document')),
+        array('title' => __('Date d\'envoi')),
+        array('title' => __('Statut'))
+     ), array('hover', 'striped'));
+     foreach ($acteurs as $acteur) {
+         //cellule checkbox
+         if (empty($acteur['Acteur']['email']))
+              $cell_checkbox = $this->BsForm->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
+             'label' =>false,
+             'disabled' => true,
+             'title' => 'Envoi impossible, l\'adresse mail de l\'acteur n\'est pas renseigné'));
+         elseif (empty($acteur['Acteur']['fichier']))
+              $cell_checkbox = $this->BsForm->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
+             'label' =>false,
+             'disabled' => true,
+             'title' => "Impossible d'envoyer à cet acteur, la convocation n'a pas encore été générée."));
+         elseif ($acteur['Acteur']['date_envoi'] == null)
+             $cell_checkbox = $this->BsForm->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
+             'label' =>false,
+             'class' => 'checkbox_acteur_convoc',
+             'title' => "Impossible d'envoyer à cet acteur, la convocation n'a pas encore été générée."));
+         else
+             $cell_checkbox = '<i class="fa fa-check" title="Convocation déjà envoyée"></i>';
 
-            echo '</td>';
+         //cellule élu
+             $cell_elu = $this->Html->link($acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'], array('controller' => 'acteurs', 'action' => 'view', $acteur['Acteur']['id']));
+         
+         //cellule fichier
+         if (isset($acteur['Acteur']['fichier']))
+             $cell_fichier = $this->Bs->btn('Télécharger', $acteur['Acteur']['fichier'],
+            array(
+                'escape' => false, 
+                'type'=>'default',
+                'icon'=>'fa fa-file-pdf-o'));
+         else
+             $cell_fichier = 'Pas de document';
 
-            echo '<td>' . $this->Html->link($acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'], array('controller' => 'acteurs', 'action' => 'view', $acteur['Acteur']['id'])) . '</td>';
+         //cellule date envoi
+         if ($acteur['Acteur']['date_envoi'] == null)
+             $cell_envoi = __('Non envoyé');
+         else
+             $cell_envoi = __('Envoyé le : ') . $this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_envoi']);
 
-            if ($filepath != '')
-                echo('<td>' . $this->Html->link($model['Modeltemplate']['name'] . $ext, $filepath) . ' : [' . $date_convocation . ']</td>');
-            else
-                echo('<td></td>');
-
-            if ($acteur['Acteur']['date_envoi'] == null)
-                echo('<td>Non envoyé</td>');
-            else
-                echo('<td>' . 'Envoyé le : ' . $this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_envoi']) . '</td>');
-
-            if ($acteur['Acteur']['date_reception'] == null) {
-                if ($use_mail_securise)
-                    echo('<td>Non reçu</td>');
-                else
-                    echo('<td>Pas d\'accusé de réception</td>');
-            } else
-                echo('<td>' . 'Reçu le : ' . $this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_reception']) . '</td>');
-        }
-        ?>
-        </tr>
-    </table>
-    <div class="spacer"></div>
-    <div class="submit btn-group">
-        <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $previous, array('escape' => false, 'class' => 'btn')); ?>
-        <?php echo $this->Form->button("<i class='fa fa-envelope'></i> Envoyer les convocations <span id='nbActeursChecked'></span>", array('id' => 'envoyer_convocs', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Envoyer les convocations par email aux acteurs sélectionnés')); ?>
-    </div>
-
-    <?php echo $this->Form->end(); ?>
-</div>
+         //cellule reception
+         if ($acteur['Acteur']['date_reception'] == null) {
+             if ($use_mail_securise)
+                 $cell_reception = __('Non reçu');
+             else
+                 $cell_reception = __('Pas d\'accusé de réception');
+         } else {
+             $cell_reception = __('Reçu le : ') . $this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_reception']);
+         }
+         echo $this->Bs->cell($cell_checkbox).$this->Bs->cell($cell_elu).$this->Bs->cell($cell_fichier).$this->Bs->cell($cell_envoi).$this->Bs->cell($cell_reception);
+     }
+     echo $this->Bs->endTable();  
+     
+     //spacer
+     echo $this->Bs->div('spacer') . $this->Bs->close();
+     
+     echo $this->Html2->btnSaveCancel('', $previous, 'Envoyer les convocations', 'Envoyer les convocations');
+     $this->Form->end() .
+$this->Bs->close();
+?>
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -97,18 +132,12 @@
         var nbChecked = $('input[type=checkbox].checkbox_acteur_convoc:checked').length;
         //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
         if (nbChecked > 0) {
-            $('#envoyer_convocs').removeClass('disabled');
-            $("#envoyer_convocs").prop("disabled", false);
+            $('#boutonValider').removeClass('disabled');
+            $("#boutonValider").prop("disabled", false);
         } else {
-            $('#envoyer_convocs').addClass('disabled');
-            $("#envoyer_convocs").prop("disabled", true);
+            $('#boutonValider').addClass('disabled');
+            $("#boutonValider").prop("disabled", true);
         }
         $('#nbActeursChecked').text('(' + nbChecked + ')');
     }
 </script>
-
-<style>
-    table tr td, table tr th {
-        vertical-align: middle;
-    }
-</style>

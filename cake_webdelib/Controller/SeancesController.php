@@ -489,7 +489,6 @@ class SeancesController extends AppController {
                 "Vote.delib_id" => $deliberation_id
                     ),
                 'recursive'=>-1));
-            debug($donnees,'debug');
             foreach ($donnees as $donnee) {
                 $this->request->data['detailVote'][$donnee['Vote']['acteur_id']] = $donnee['Vote']['resultat'];
             }
@@ -539,7 +538,6 @@ class SeancesController extends AppController {
                     $this->request->data['Deliberation']['vote_nb_retrait'] = 0;
                     if (!empty($this->data['detailVote'])) {
                         foreach ($this->data['detailVote'] as $acteur_id => $vote) {
-                            $this->log(var_export($this->data['detailVote'], true),'debug');
                             $this->Vote->create();
                             $this->request->data['Vote']['acteur_id'] = $acteur_id;
                             $this->request->data['Vote']['delib_id'] = $deliberation_id;
@@ -888,9 +886,7 @@ class SeancesController extends AppController {
     }
 
     function download($id = null, $file) {
-
         $this->autoRender = false;
-
         $fileType = $file . '_type';
         $fileSize = $file . '_size';
         $fileName = $file . '_name';
@@ -899,10 +895,28 @@ class SeancesController extends AppController {
             'fields' => array($fileType, $fileSize, $fileName, $file),
             'recursive' => -1
         ));
-
         $this->response->type($seance['Seance'][$fileType]);
         $this->response->download($seance['Seance'][$fileName]);
         $this->response->body($seance['Seance'][$file]);
+    }
+    
+    //Télechargement des pieces jointes PDF
+    function downloadAttachedFile( $type = null, $seance_id = '', $model_id = '', $acteur_id = '') {
+        
+        //refonte du chemin vers le pdf
+        $tmpFile = 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id;
+        $folder = new Folder(TMP . $tmpFile, true, 0777);
+        $uri =  $type . '_' . $acteur_id .'.pdf';
+        $file = new File($folder->pwd() . DS . $uri);
+
+        if($file->exists())
+        {
+            $this->response->disableCache();
+            $this->response->body($file->read(true));
+            $this->response->type('application/pdf');
+            $this->response->download($uri);
+            return $this->response;
+        }
     }
 
 //Obsolete
@@ -1015,7 +1029,6 @@ class SeancesController extends AppController {
 
     function sendConvocations($seance_id, $model_id) {
         $this->loadModel('Acteurseance');
-        $this->Seance->Behaviors->attach('Containable');
         $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
             'order' => array('date ASC'),
             'fields' => array('id', 'date', 'type_id', 'date_convocation'),
@@ -1027,6 +1040,12 @@ class SeancesController extends AppController {
         $this->set('use_mail_securise', Configure::read('S2LOW_MAILSEC'));
 
         if (empty($this->data)) {
+            
+            $model = $this->Modeltemplate->find('first', array(
+                'recursive' => -1,
+                'conditions' => array('Modeltemplate.id' => $model_id),
+                'fields' => array('name')));
+            
             $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
             foreach ($acteurs as &$acteur) {
                 $dates = $this->Acteurseance->find('first', array(
@@ -1039,14 +1058,30 @@ class SeancesController extends AppController {
                         'Acteurseance.date_envoi',
                         'Acteurseance.date_reception'
                 )));
+
+                //creation du dossier contenant le(s) pdf et test de la présence du pdf de convocation
+                $tmpFile = 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id;
+                $folder = new Folder(TMP . $tmpFile, true, 0777);
+                $uri = 'convocation_' . $acteur['Acteur']['id'] .'.pdf';
+                $file = new File($folder->pwd() . DS . $uri );
+
+                //lien vers l'appel du controleur pour le telechargement
+                $tmpLink = 'seances' . DS . 'downloadAttachedFile' . DS . 'convocation' . DS . $seance_id . DS . $model_id . DS . $acteur['Acteur']['id'];
+               
+                if($file->exists())
+                {
+                    $acteur['Acteur']['fichier'] = Configure::read('App.baseUrl') .DS. $tmpLink;
+                    $acteur['Acteur']['nom_fichier'] = $uri;
+                }
+                else
+                {
+                    $acteur['Acteur']['nom_fichier'] = 'Pas de document';
+                }
                 $acteur['Acteur']['date_envoi'] = !empty($dates['Acteurseance']['date_envoi']) ? $dates['Acteurseance']['date_envoi'] : null;
                 $acteur['Acteur']['date_reception'] = !empty($dates['Acteurseance']['date_reception']) ? $dates['Acteurseance']['date_reception'] : null;
             }
 
-            $model = $this->Modeltemplate->find('first', array(
-                'recursive' => -1,
-                'conditions' => array('Modeltemplate.id' => $model_id),
-                'fields' => array('name')));
+            
 
             $this->set('model', $model);
             $this->set('acteurs', $acteurs);
@@ -1065,12 +1100,23 @@ class SeancesController extends AppController {
                     $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id),
                         'recursive' => -1));
 
-                    if (file_exists(WEBROOT_PATH . DS . 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id . DS . $acteur['Acteur']['id'] . '.pdf')) {
-                        $filepath = WEBROOT_PATH . DS . 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id . DS . $acteur['Acteur']['id'] . '.pdf';
-                    } else if (file_exists(WEBROOT_PATH . DS . 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id . DS . $acteur['Acteur']['id'] . '.odt')) {
-                        $filepath = WEBROOT_PATH . DS . 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id . DS . $acteur['Acteur']['id'] . '.odt';
-                    } else {
-                        $message .= $acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'] . ' : Pas de Document' . "<br />";
+                    //creation du dossier contenant le(s) pdf et test de la présence du pdf de convocation
+                    $tmpFile = 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id;
+                    $folder = new Folder(TMP . $tmpFile, true, 0777);
+                    $uri = 'convocation_' . $acteur['Acteur']['id'] .'.pdf';
+                    $file = new File($folder->pwd() . DS . $uri );
+
+                    //lien vers l'appel du controleur pour le telechargement
+                    $tmpLink = 'seances' . DS . 'downloadAttachedFile' . DS . 'convocation' . DS . $seance_id . DS . $model_id . DS . $acteur['Acteur']['id'];
+
+                    if($file->exists())
+                    {
+                        $acteur['Acteur']['fichier'] = Configure::read('App.baseUrl') .DS. $tmpLink;
+                        $acteur['Acteur']['nom_fichier'] = $uri;
+                    }
+                    else
+                    {
+                        $acteur['Acteur']['nom_fichier'] = 'Pas de document';
                         continue;
                     }
 
@@ -1174,6 +1220,24 @@ class SeancesController extends AppController {
                         'acteur_id' => $acteur['Acteur']['id']),
                     'fields' => array('date_envoi', 'date_reception')));
 
+                //creation du dossier contenant le(s) pdf et test de la présence du pdf de convocation
+                $tmpFile = 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id;
+                $folder = new Folder(TMP . $tmpFile, true, 0777);
+                $uri = 'ordredujour_' . $acteur['Acteur']['id'] .'.pdf';
+                $file = new File($folder->pwd() . DS . $uri );
+
+                //lien vers l'appel du controleur pour le telechargement
+                $tmpLink = 'seances' . DS . 'downloadAttachedFile' . DS . 'ordredujour' . DS . $seance_id . DS . $model_id . DS . $acteur['Acteur']['id'];
+               
+                if($file->exists())
+                {
+                    $acteur['Acteur']['fichier'] = Configure::read('App.baseUrl') .DS. $tmpLink;
+                    $acteur['Acteur']['nom_fichier'] = $uri;
+                }
+                else
+                {
+                    $acteur['Acteur']['nom_fichier'] = 'Pas de document';
+                }
                 $acteur['Acteur']['date_envoi'] = !empty($dates) ? $dates['Acteurseance']['date_envoi'] : null;
                 $acteur['Acteur']['date_reception'] = !empty($dates) ? $dates['Acteurseance']['date_reception'] : null;
             }
@@ -1198,12 +1262,23 @@ class SeancesController extends AppController {
                         'conditions' => array('Acteur.id' => $acteur_id),
                         'recursive' => -1));
 
-                    if (file_exists(WEBROOT_PATH . "/files/seances/$seance_id/$model_id/{$acteur['Acteur']['id']}.pdf")) {
-                        $filepath = WEBROOT_PATH . "/files/seances/$seance_id/$model_id/{$acteur['Acteur']['id']}.pdf";
-                    } else if (file_exists(WEBROOT_PATH . "/files/seances/$seance_id/$model_id/{$acteur['Acteur']['id']}.odt")) {
-                        $filepath = WEBROOT_PATH . "/files/seances/$seance_id/$model_id/{$acteur['Acteur']['id']}.odt";
-                    } else {
-                        $message .= $acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'] . " : Pas de Document <br />";
+                    //creation du dossier contenant le(s) pdf et test de la présence du pdf de convocation
+                    $tmpFile = 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id;
+                    $folder = new Folder(TMP . $tmpFile, true, 0777);
+                    $uri = 'convocation_' . $acteur['Acteur']['id'] .'.pdf';
+                    $file = new File($folder->pwd() . DS . $uri );
+
+                    //lien vers l'appel du controleur pour le telechargement
+                    $tmpLink = 'seances' . DS . 'downloadAttachedFile' . DS . 'convocation' . DS . $seance_id . DS . $model_id . DS . $acteur['Acteur']['id'];
+
+                    if($file->exists())
+                    {
+                        $acteur['Acteur']['fichier'] = Configure::read('App.baseUrl') .DS. $tmpLink;
+                        $acteur['Acteur']['nom_fichier'] = $uri;
+                    }
+                    else
+                    {
+                        $acteur['Acteur']['nom_fichier'] = 'Pas de document';
                         continue;
                     }
 
@@ -1285,7 +1360,7 @@ class SeancesController extends AppController {
     }
 
     function downloadZip($seance_id, $model_id) {
-        $dirpath = WEBROOT_PATH . DS . 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id;
+        $dirpath = TMP . DS . 'files' . DS . 'seances' . DS . $seance_id . DS . $model_id;
         if (file_exists($dirpath . DS . 'convocations.zip'))
             unlink($dirpath . DS . 'convocations.zip');
 
@@ -1557,7 +1632,7 @@ class SeancesController extends AppController {
 
             // initialisation du répertoire de destination des convocations
             App::import('Lib', 'AppGestfichiers');
-            $dirpath = AppGestfichiers::formatDirName(WEBROOT_PATH, 'files', 'seances', $id, $modelTemplateId);
+            $dirpath = AppGestfichiers::formatDirName(TMP, 'files', 'seances', $id, $modelTemplateId);
             if (is_dir($dirpath))
                 AppGestfichiers::clearDir($dirpath);
             AppGestfichiers::creeRepertoire($dirpath);
@@ -1570,7 +1645,7 @@ class SeancesController extends AppController {
             //FIX les convocations sont automatiquement regénérées au lieu d'être gardées lorsqu'elle sont envoyées
             if ($acteurPresentTemplate) {
                 foreach ($convoques as $acteur) {
-                    $filename = $acteur['Acteur']['id'] . '.' . $formatConversion;
+                    $filename = $typeFusion . '_' . $acteur['Acteur']['id'] . '.pdf';
                     $this->Seance->odtFusion(array('modelOptions' => array('acteurId' => $acteur['Acteur']['id'])));
                     $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', $formatConversion);
                     unset($this->Seance->odtFusionResult);
@@ -1582,7 +1657,7 @@ class SeancesController extends AppController {
                 $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', $formatConversion);
                 unset($this->Seance->odtFusionResult);
                 foreach ($convoques as $acteur) {
-                    $filename = $acteur['Acteur']['id'] . '.' . $formatConversion;
+                    $filename = 'convocation_' . $acteur['Acteur']['id'] . '.pdf';
                     file_put_contents($dirpath . $filename, $content);
                 }
                 unset($content);
