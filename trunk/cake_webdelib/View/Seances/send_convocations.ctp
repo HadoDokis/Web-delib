@@ -69,7 +69,7 @@ echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstr
              'label' =>false,
              'disabled' => true,
              'title' => 'Envoi impossible, l\'adresse mail de l\'acteur n\'est pas renseigné'));
-         elseif (empty($acteur['Acteur']['fichier']))
+         elseif (empty($acteur['Acteur']['link']))
               $cell_checkbox = $this->BsForm->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
              'label' =>false,
              'disabled' => true,
@@ -85,15 +85,15 @@ echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstr
          //cellule élu
              $cell_elu = $this->Html->link($acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'], array('controller' => 'acteurs', 'action' => 'view', $acteur['Acteur']['id']));
          
-         //cellule fichier
-         if (isset($acteur['Acteur']['fichier']))
-             $cell_fichier = $this->Bs->btn('Télécharger', $acteur['Acteur']['fichier'],
+         //cellule link
+         if (isset($acteur['Acteur']['link']))
+             $cell_link = $this->Bs->btn('Télécharger', $acteur['Acteur']['link'],
             array(
                 'escape' => false, 
                 'type'=>'default',
                 'icon'=>'fa fa-file-pdf-o'));
          else
-             $cell_fichier = 'Pas de document';
+             $cell_link = 'Pas de document';
 
          //cellule date envoi
          if ($acteur['Acteur']['date_envoi'] == null)
@@ -110,7 +110,7 @@ echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstr
          } else {
              $cell_reception = __('Reçu le : ') . $this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_reception']);
          }
-         echo $this->Bs->cell($cell_checkbox).$this->Bs->cell($cell_elu).$this->Bs->cell($cell_fichier).$this->Bs->cell($cell_envoi).$this->Bs->cell($cell_reception);
+         echo $this->Bs->cell($cell_checkbox).$this->Bs->cell($cell_elu).$this->Bs->cell($cell_link).$this->Bs->cell($cell_envoi).$this->Bs->cell($cell_reception);
      }
      echo $this->Bs->endTable();  
      
