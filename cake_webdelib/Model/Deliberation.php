@@ -187,10 +187,6 @@ class Deliberation extends AppModel {
         )
     );
     
-    var $actsAs = array('Acl'=>'controlled');//A VOIR
-    // 'controlled' means you want to create a 'aco'
-    // 'requester' means you want to create an 'aro' 
-
     /**
      * Si vous avez besoin d’exécuter de la logique juste après chaque opération de sauvegarde,
      * placez-la dans cette méthode de rappel. Les données sauvegardées seront disponibles dans $this->data
@@ -995,7 +991,7 @@ class Deliberation extends AppModel {
 					Deliberation.etat, Deliberation.anterieure_id, Deliberation.etat,
 					Deliberation.date_limite, Deliberation.num_pref, Deliberation.titre,
 					Deliberation.signee, Deliberation.redacteur_id, Deliberation.typeacte_id,
-					Deliberation.service_id, Service.libelle, Nature.libelle, Theme.libelle,
+					Deliberation.service_id, Service.name, Nature.libelle, Theme.libelle,
 					Deliberation.theme_id';
         elseif ($fields == 'id')
             $fields = 'Deliberation.id';
@@ -1136,16 +1132,18 @@ class Deliberation extends AppModel {
     }
 
     function is_delib($acte_id) {
-        $this->Behaviors->load('Containable');
         $acte = $this->find('first', array(
+            'fields' => array('Deliberation.typeacte_id'),
             'conditions' => array('Deliberation.id' => $acte_id),
             'contain' => array('Typeacte.nature_id'),
-            'fields' => array('Deliberation.typeacte_id')));
+            ));
+        
         $nature = $this->Typeacte->Nature->find('first', array(
-            'conditions' => array('Nature.id' => $acte['Typeacte']['nature_id']),
             'fields' => array('Nature.code'),
+            'conditions' => array('Nature.id' => $acte['Typeacte']['nature_id']),
             'recursive' => -1));
-        return ($nature['Nature']['code'] == 'DE');
+        
+        return $nature['Nature']['code'] == 'DE';
     }
 
     function is_arrete($acte_id) {
@@ -1686,11 +1684,15 @@ class Deliberation extends AppModel {
     }
     
     public function beforeFind($query = array()) {
+        
         $query['conditions'] = (is_array($query['conditions'])) ? $query['conditions'] : array();
         $db = $this->getDataSource();
         
         //Gestion des droits sur les types d'actes
-        if (!isset($query['Deliberation.typeacte_id']))
+        //  'allow' => array()
+        // if (&& !isset($query['Deliberation.typeacte_id']))
+        //if (!empty($query['allow']) && in_array( $query['allow'], 'Deliberation.typeacte_id'))
+        if (!empty($query['allow']) && in_array('typeacte_id', $query['allow']))
         {
             $Aro = ClassRegistry::init('Aro');
 
@@ -1710,18 +1712,18 @@ class Deliberation extends AppModel {
                 'conditions' => array(
                     'Aro.foreign_key' => AuthComponent::user('id'),
                     'Permission._read' => 1,
-                    'Aro.model' => 'User',
                     'Aco.model' => 'Typeacte'
                 )
             );
 
             $subQuery=$Aro->sq($subQuery);
             
-            $subQuery = ' "Deliberation"."typeacte_id" IN (' . $subQuery . ') ';
+            $subQuery = ' "'.$this->alias.'"."typeacte_id" IN (' . $subQuery . ') ';
             $subQueryExpression = $db->expression($subQuery);
             $conditions[] = $subQueryExpression;
+        
+            $query['conditions'] = array_merge($query['conditions'], $conditions);
         }
-        $query['conditions'] = array_merge($query['conditions'], $conditions);
         
         return $query;
     }

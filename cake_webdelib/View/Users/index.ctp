@@ -15,18 +15,14 @@ foreach ($users as $user) {
     $services='';
     foreach ($user['Service'] as $service)
         if (is_array($service))
-            $services.=$service['libelle'] . $this->Html->tag(null, '<br />');
-        $natures='';
-        if(!empty($user['Natures']))
-        foreach ($user['Natures'] as $nature)
-            $natures.=$nature . $this->Html->tag(null, '<br />');                   
+            $services.=$service['name'] . $this->Html->tag(null, '<br />');
     echo $this->Bs->tableCells(array(
         $user['User']['username'],
         $user['User']['nom'],
         $user['User']['prenom'],
         $user['Profil']['name'],
         $services,
-        $natures,
+        $this->Html->nestedList($user['Typeacte']),
         $this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'users', 'action' => 'view', $user['User']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn($this->Bs->icon('lock'), array('controller' => 'users', 'action' => 'changeMdp', $user['User']['id']), array('type' => 'default', 'title' => 'Nouveau mot de passe','escape'=>false)) .

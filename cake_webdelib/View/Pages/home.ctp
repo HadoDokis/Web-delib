@@ -2,25 +2,44 @@
 echo $this->Bs->tag('h3', __('Mon tableau de bord'));
 //<div id="content">
 //    <div id="tableau_bord">
-if ($this->permissions->check('Deliberations/mesProjetsATraiter', 'update')) {
+if ($this->permissions->check('mesProjetsATraiter')) {
     echo $this->requestAction(
-            array('controller' => 'deliberations', 'action' => 'mesProjetsATraiter'), 
+            array(  
+                'admin'=>false,
+                'prefix'=> null,
+                'plugin'=> null,
+                'controller' => 'deliberations', 
+                'action' => 'mesProjetsATraiter'), 
             array('return', 'render' => 'banette')
             ) .
     $this->Bs->tag(null, '<br/><br/>');
 }
-if ($this->permissions->check('Deliberations/mesProjetsValidation', 'update')) {
+if ($this->permissions->check('mesProjetsValidation')) {
     echo $this->requestAction(
-            array('controller' => 'deliberations', 'action' => 'mesProjetsValidation'), 
+            array(
+                'admin'=>false,
+                'prefix'=> null,
+                'plugin'=> null,
+                'controller' => 'deliberations', 
+                'action' => 'mesProjetsValidation'), 
             array('return', 'render' => 'banette')
             ) .
     $this->Bs->tag(null, '<br/><br/>');
 }
-if ($this->permissions->check('Deliberations/mesProjetsRedaction', 'create')) {
+if ($this->permissions->check('Deliberations', 'create')) {
     echo $this->requestAction(
-            array('controller' => 'deliberations', 'action' => 'mesProjetsRedaction'), array('return', 'render' => 'banette')) .
+            array('admin'=>false,
+                'prefix'=> null,
+                'plugin'=> null,
+                'controller' => 'deliberations', 
+                'action' => 'mesProjetsRedaction'), array('return', 'render' => 'banette')) .
     $this->Bs->tag(null, '<br/><br/>');
 }
-if ($this->permissions->check('Seances.index', 'create')) {
-    echo $this->requestAction(array('controller' => 'seances', 'action' => 'index'), array('return', 'render' => 'banette'));
+if ($this->permissions->check('Seances', 'create')) {
+    echo $this->requestAction(array(
+        'admin'=>false,
+        'prefix'=> null,
+        'plugin'=> null,
+        'controller' => 'seances', 
+        'action' => 'index'), array('return', 'render' => 'banette'));
 }

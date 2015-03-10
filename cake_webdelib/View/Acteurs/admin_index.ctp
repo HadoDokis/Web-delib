@@ -12,7 +12,7 @@ echo $this->Bs->tag('h3', 'Liste des acteurs') .
     array('title' => $this->Paginator->sort('position', 'N° d\'ordre')),
     array('title' => 'Téléphone'),
     array('title' => 'Suppléant'),
-    array('title' => $this->Paginator->sort('Service.libelle',  'Délégation(s)')),
+    array('title' => $this->Paginator->sort('Service.name',  'Délégation(s)')),
     array('title' => 'Actions'),
         ), array('hover', 'striped'));
 foreach ($acteurs as $acteur) {

@@ -1,13 +1,16 @@
 <?php
-    $urlPage =  FULL_BASE_URL . $this->webroot;
-    echo ("<br />Choix du format de sortie des &eacute;ditions : ");
-    $format = $this->Session->read('user');
-    $selected = @$format['format']['sortie'];
-
-    echo $this->Form->input('User.Sortie', array('id' => "$urlPage",
-                                                 'options' =>  array (0=>'pdf', 1=>'odt'), 
-                                                 'selected' => $selected, 
-                                                 'empty'=> false,  
-                                                 'label'=> false,  
-                                                 'onChange'=>'changeFormat(this)'));
-?>
+echo $this->BsForm->create(null, array('url'=>array(
+    'prefix'=> null,
+    'controller'=>'users',
+    'action'=>'changeformat'
+)));
+echo $this->BsForm->select('User.Sortie', 
+        array(
+            0 => __('Pdf'), 
+            1 => __('Odt')), 
+        array(  'selected' => AuthComponent::user('format.sortie'), 
+                'empty'=> false,  
+                'label'=> __('Format'),  
+                'help'=>__('Choix du format de sortie des &eacute;ditions'),
+                'onChange'=>'javascript: this.form.submit()'));
+echo $this->BsForm->end();

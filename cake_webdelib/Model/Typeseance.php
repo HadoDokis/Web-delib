@@ -142,6 +142,60 @@ class Typeseance extends AppModel {
             'finderQuery' => '',
             'deleteQuery' => '')
     );
+    
+    public function beforeFind($query = array()) {
+        $query['conditions'] = (is_array($query['conditions'])) ? $query['conditions'] : array();
+        $db = $this->getDataSource();
+        
+        //Gestion des droits sur les types d'actes
+        if (!isset($query['Typeseance.id']))
+        {
+            $Aro = ClassRegistry::init('Aro');
+
+            $Aro->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Aco->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Aco->bindModel(
+                array('belongsTo' => array(
+                        'Typeacte' => array(
+                            'className' => 'Typeacte',
+                            'foreignKey'=> false,
+                            'conditions'=> array(
+                                'Aco.model' => 'Typeacte',
+                                'Typeacte.id = Aco.foreign_key'
+                            ),
+                        )
+                    )
+                )
+            );
+
+            $subQuery = array(
+                'fields' => array(
+                    'Typeseance.id'
+                ),
+                'contain' => false,
+                'joins' => array(
+                    $Aro->join( 'Permission', array( 'type' => 'INNER' ) ),
+                    $Aro->Permission->join( 'Aco', array( 'type' => 'INNER' ) ),
+                    $Aro->Permission->Aco->join( 'Typeacte', array( 'type' => 'INNER') ),
+                    $Aro->Permission->Aco->Typeacte->join( 'TypeseancesTypeacte', array( 'type' => 'INNER') ),
+                    $Aro->Permission->Aco->Typeacte->TypeseancesTypeacte->join( 'Typeseance', array( 'type' => 'INNER') ),
+                ),
+                'conditions' => array(
+                    'Aro.foreign_key' => AuthComponent::user('id'),
+                    'Permission._read' => 1,
+                    'Aro.model' => 'User'
+                )
+            );
+            $subQuery=$Aro->sq($subQuery);
+            $subQuery = ' "Typeseance"."id" IN (' . $subQuery . ') ';
+            $subQueryExpression = $db->expression($subQuery);
+            $conditions[] = $subQueryExpression;
+        }
+        $query['conditions'] = array_merge($query['conditions'], $conditions);
+        
+        return $query;
+    }
 
     /**
      * retourne le libellé correspondant au champ action 0 : voter, 1 donner un avis , 2 sans action

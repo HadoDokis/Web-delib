@@ -31,14 +31,17 @@ App::uses('Controller', 'Controller');
  * @link        http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-    public $theme = "Webdelib";
+    public $theme = "Normal";
     
     public $components = array(
         'Acl', 
         'Auth' => array(
-            'loginAction' => array('controller' => 'users', 'action' => 'login', 'admin'=>false),
-            'logoutRedirect' => array('controller' => 'users', 'action' => 'login'),
-            'loginRedirect' => array('controller' => 'pages', 'action' => 'display', 'home'),
+            'loginAction' => array('admin'=> false, 'plugin'=> null, 'controller' => 'users', 'action' => 'login'),
+            'logoutRedirect' => array('admin'=> false, 'plugin'=> null,'controller' => 'users', 'action' => 'login'),
+            //'unauthorizedRedirect' => array('admin'=> false, 'plugin'=> null,'controller' => 'pages', 'action' => 'display', 'home'),
+            'loginRedirect' => array('admin'=> false, 'plugin'=> null,'controller' => 'pages', 'action' => 'display', 'home'),
+            'authError' => 'Vous n\'étes autorisés à effectuer cette action !',
+            'allowedActions'=>array('Pages','Deliberations'),
             'authenticate' => array(
                 //Paramêtre a passer à tous les objets d'authentifications
                 'all' => array( 
@@ -50,14 +53,12 @@ class AppController extends Controller {
                         'className' => 'AuthManager.SimpleNotSecuritySalt',
                         'hashType' => 'md5'
                     )
-                )
+                )                
                     /*'AuthManager.Cas',
                     'AuthManager.Ldap',*/
             ),
-            'authorize'=> array('Actions' => array('actionPath' => 'controllers/'),
-                                'Controller')
+            'authorize' => array('Controller'),
         ),
-        /*'Droits',*/ 
         'Session',
         'History' => array(
                 'unAuthorize' =>  array('components/',
@@ -66,7 +67,7 @@ class AppController extends Controller {
                                         'files/',
                 )
             ),
-        'DebugKit.Toolbar'
+        //'DebugKit.Toolbar'
         );
     
     public $helpers = array(
@@ -80,30 +81,32 @@ class AppController extends Controller {
         'Navbar' => array(
             'className' => 'Bootstrap3.BootstrapNavbar')
         );
-    public $aucunDroit = array('Pages:format', 'Pages:service');
     public $previous;
     public $user_id;
 
     function beforeFilter() {
         
         //$this->Auth->allow(); //Ne pas mettre
+        //Pas d'autentification pour les requesteds
+        if (isset($this->params['requested'])) $this->Auth->allow($this->action);
+        
+        //initialisation des mapActions pour les droits CRUD
+        if (isset($this->components['Auth']['mapActions'])) {
+            $this->Auth->mapActions($this->components['Auth']['mapActions']);
+        }
         
         // Désactivation du cache du navigateur: (quand on revient en arrière dans l'historique de
         // navigation, la page n'est pas cachée du côté du navigateur, donc il ré-exécute la demande)
         //CakeResponse::disableCache();
         
-        return;
+        // passage de paramètre en utilisant 'all'
         
-        $this->set('Droits', $this->Droits);
+        return;
         $this->set('name', $this->name);
-        $this->set('Droit', $this->Droits);
         
         $this->set('agentServices', $this->Session->read('user.Service'));
         $this->set('lienDeconnexion', true);
         $this->set('session_service_id', $this->Session->read('user.User.service'));
-        $this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
-
-        
         // ????
         //if (CRON_DISPATCHER) return true;
         // Exception pour le bon déroulement de cron
@@ -171,16 +174,28 @@ class AppController extends Controller {
         return $array;
     }
 
-    public function isAuthorized($user) {
-        return true;
-        //parent::isAuthorized($user);
-                /*
-        // Admin peut accéder à toute action
-        if (isset($user['profil_id']) && $user['profil_id'] === 1) {
-            return true;
+    public function isAuthorized($user = null) {
+        
+        App::uses('Component', 'Controller');
+        App::uses('ComponentCollection', 'Controller');
+        App::uses('CrudAuthorize', 'AuthManager.Controller/Component/Auth');
+        $collection = new ComponentCollection();
+        $CrudAuthorize = new CrudAuthorize($collection);
+        
+        //initialisation des mapActions pour les droits CRUD
+        if (isset($this->components['Auth']['mapActions'])) {
+            $CrudAuthorize->mapActions($this->components['Auth']['mapActions']);
         }
-
-        // Refus par défaut pour tous
-        return false;*/
+        // Seulement les administrateurs peuvent accéder aux fonctions d'administration
+        if (isset($this->request->params['manager']) && $user['Profil']['role_id'] !== 3) {
+            return false;
+        }
+        
+        // Seulement les administrateurs peuvent accéder aux fonctions d'administration
+        if (isset($this->request->params['admin']) && $user['Profil']['role_id'] !== 2) {
+            return false;
+        }
+        // Par défaut n'autorise pas
+        return $CrudAuthorize->authorize(array('id' => $this->Auth->user('id')), $this->request);
     }
 }

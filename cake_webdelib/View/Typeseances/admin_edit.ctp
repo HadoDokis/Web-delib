@@ -38,9 +38,9 @@ $this->BsForm->select('Typeseance.compteur_id', $compteurs, array(
     'class' => 'selectone',
     'default'=>$this->Html->value('Typeseance.compteur_id'), 
     'empty'=>(count($compteurs)>1) && (!$this->Html->value('Typeseance.id')))).
-$this->BsForm->select('Typeacte', $natures, array(
+$this->BsForm->select('Typeacte', $typeActes, array(
     'label'=>'Type d\'acte <abbr title="obligatoire">*</abbr>', 
-    'default'=>$selectedNatures, 
+    'default' => $selectedTypeActes, 
     'multiple' => 'multiple', 
     'class' => 'selectmultiple', 
     'empty'=>false)).
@@ -105,7 +105,9 @@ $this->Bs->col('lg6').
             'empty' => true)).
 $this->Bs->close(6);
 
-if ($this->action == 'edit')
+if ($this->action == 'edit') {
     echo $this->BsForm->hidden('Typeseance.id');
+}
+
 echo $this->Html2->btnSaveCancel('', $previous).
         $this->BsForm->end();

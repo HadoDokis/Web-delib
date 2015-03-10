@@ -95,6 +95,64 @@ class Seance extends AppModel
         }
         return true;
     }
+    
+    public function beforeFind($query = array()) {
+        $query['conditions'] = (is_array($query['conditions'])) ? $query['conditions'] : array();
+        $db = $this->getDataSource();
+        
+        //Gestion des droits sur les types d'actes
+        if (!isset($query['Seance.typeseance_id']))
+        {
+            $Aro = ClassRegistry::init('Aro');
+
+            $Aro->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Aco->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Aco->bindModel(
+                array('belongsTo' => array(
+                        'Typeacte' => array(
+                            'className' => 'Typeacte',
+                            'foreignKey'=> false,
+                            'conditions'=> array(
+                                'Aco.model' => 'Typeacte',
+                                'Typeacte.id = Aco.foreign_key'
+                            ),
+                        )
+                    )
+                )
+            );
+
+            $subQuery = array(
+                'fields' => array(
+                    'Typeseance.id'
+                ),
+                'contain' => false,
+                'joins' => array(
+                    $Aro->join( 'Permission', array( 'type' => 'INNER' ) ),
+                    $Aro->Permission->join( 'Aco', array( 'type' => 'INNER' ) ),
+                    $Aro->Permission->Aco->join( 'Typeacte', array( 'type' => 'INNER') ),
+                    $Aro->Permission->Aco->Typeacte->join( 'TypeseancesTypeacte', array( 'type' => 'INNER') ),
+                    $Aro->Permission->Aco->Typeacte->TypeseancesTypeacte->join( 'Typeseance', array( 'type' => 'INNER') ),
+                ),
+                'conditions' => array(
+                    'Aro.foreign_key' => AuthComponent::user('id'),
+                    'Permission._read' => 1,
+                    'Aro.model' => 'User'
+                )
+            );
+            
+            $subQuery=$Aro->sq($subQuery);
+            $subQuery = ' "Seance"."type_id" IN (' . $subQuery . ') ';
+            $subQueryExpression = $db->expression($subQuery);
+            $conditions[] = $subQueryExpression;
+            
+            $query['conditions'] = array_merge($query['conditions'], $conditions);
+        }
+        
+        
+        return $query;
+    }
+    
     /*
      * 
      */
@@ -127,17 +185,19 @@ class Seance extends AppModel
         $generateList = array();
         App::import('model', 'TypeseancesTypeacte');
         $TypeseancesTypeacte = new TypeseancesTypeacte();
-        $typeseances = $TypeseancesTypeacte->getTypeseanceParNature($natures);
+        
+        
+        //$typeseances = $TypeseancesTypeacte->getTypeseanceParNature($natures);
 
         $conditions = array();
-        $conditions['Seance.type_id'] = $typeseances;
+        //$conditions['Seance.type_id'] = $typeseances;
         $conditions['Seance.traitee'] = '0';
 
         if (!empty($conditionSup))
             $conditions = Set::pushDiff($conditions, $conditionSup);
 
-        $this->Behaviors->load('Containable');
-        $seances = $this->find('all', array('conditions' => $conditions,
+        $seances = $this->find('all', array(
+            'conditions' => $conditions,
             'order' => array('date ASC'),
             'fields' => array('Seance.id', 'Seance.date'),
             'contain' => array('Typeseance.action', 'Typeseance.retard', 'Typeseance.libelle')));

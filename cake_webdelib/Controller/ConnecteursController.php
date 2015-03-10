@@ -7,7 +7,7 @@ class ConnecteursController extends AppController {
     public $components = array(
         'Auth' => array(
             'mapActions' => array(
-                'create' => array('admin_edit','admin_index','makeconf')
+                'create' => array('admin_edit','admin_index','admin_makeconf')
             )
         )
     );

@@ -76,7 +76,7 @@ class User extends AppModel
             'foreignKey' => 'profil_id')
     );
     
-    public $hasOne = array(
+   /* public $hasOne = array(
         'Aro' => array(
             'className' => 'Aro',
             'foreignKey' => false,
@@ -86,7 +86,7 @@ class User extends AppModel
             ),
             'dependent' => false
         )
-    );
+    );*/
 
     public $hasAndBelongsToMany = array(
         'Service' => array(
@@ -174,6 +174,62 @@ class User extends AppModel
         if (empty($this->data['Service']['Service'])) {
             $this->invalidate('Service', true);
         }
+    }
+    
+    public function beforeFind($query = array()) {
+        
+        $query['conditions'] = (is_array($query['conditions'])) ? $query['conditions'] : array();
+        $db = $this->getDataSource();
+        
+        //Gestion des droits sur les types d'actes
+        //  'allow' => array()
+        if (!empty($query['allow']) && in_array('Service.id', $query['allow']))
+        {
+            $Aro = ClassRegistry::init(array('class' => 'Aro', 'alias' => 'AllowAro'));
+            $Aro->Behaviors->attach('DatabaseTable');
+            $Aro->Permission->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Aco->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Permission->Aco->bindModel(
+                array('belongsTo' => array(
+                        'UserService' => array(
+                            'className' => 'UserService',
+                            'foreignKey'=> false,
+                            'conditions'=> array(
+                                'Aco.model' => 'Service',
+                                'UserService.service_id = Aco.foreign_key'
+                            ),
+                        )
+                    )
+                )
+            );
+
+            $subQuery = array(
+                'fields' => array(
+                    'User.id'
+                ),
+                'contain' => false,
+                'joins' => array(
+                    $Aro->join( 'Permission', array( 'type' => 'INNER' ) ),
+                    $Aro->Permission->join( 'Aco', array( 'type' => 'INNER' ) ),
+                    $Aro->Permission->Aco->join( 'UserService', array( 'type' => 'INNER') ),
+                    $Aro->Permission->Aco->UserService->join( 'User', array( 'type' => 'INNER') ),
+                ),
+                'conditions' => array(
+                    'Aro.foreign_key' => AuthComponent::user('id'),
+                    'Permission._read' => 1,
+                    'Aco.model' => 'Service'
+                )
+            );
+
+            $subQuery=$Aro->sq($subQuery);
+            $subQuery = ' "'.$this->alias.'"."id" IN (' . $subQuery . ') ';
+            $subQueryExpression = $db->expression($subQuery);
+            $conditions[] = $subQueryExpression;
+        
+            $query['conditions'] = array_merge($query['conditions'], $conditions);
+        }
+        
+        return $query;
     }
     
     /* Retourne le circuit par défaut défini pour l'utilisateur $id */
@@ -428,5 +484,43 @@ class User extends AppModel
         }
         
         return array('User' => array('alias' => $data['User']['username']));
+    }
+    
+    function getTypeActes($userId)
+    {
+        $this->Aro->Behaviors->attach( 'DatabaseTable' );
+        $this->Aro->Permission->Behaviors->attach( 'DatabaseTable' );
+        $this->Aro->Permission->Aco->Behaviors->attach( 'DatabaseTable' );
+        $this->Aro->Permission->Aco->bindModel(
+            array('belongsTo' => array(
+                    'Typeacte' => array(
+                        'className' => 'Typeacte',
+                        'foreignKey'=> false,
+                        'conditions'=> array(
+                            'Aco.model' => 'Typeacte',
+                            'Typeacte.id = Aco.foreign_key'
+                        ),
+                    )
+                )
+            )
+        );
+
+        $typeactes=$this->find('list',array(
+            'fields' => array('Typeacte.name'),
+            'joins' => array(
+                $this->join( 'Aro', array( 'type' => 'INNER' ) ),
+                $this->Aro->join( 'Permission', array( 'type' => 'INNER' ) ),
+                $this->Aro->Permission->join( 'Aco', array( 'type' => 'INNER' ) ),
+                $this->Aro->Permission->Aco->join( 'Typeacte', array( 'type' => 'INNER') ),
+            ),
+            'conditions' => array(
+                'User.id' => $userId,
+                'Permission._read' => '1',
+                'Aco.model' => 'Typeacte',
+                'Aro.model' => 'User'
+            )
+        ));
+        
+        return $typeactes;
     }
 }

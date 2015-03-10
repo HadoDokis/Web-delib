@@ -3,6 +3,9 @@
 class ProfilsController extends AppController {
 
     var $helpers = array('Tree', 'Fck');
+    
+    var $uses = array('Profil','Role');
+    
     var $components = array('Progress', 'Email',
         'Auth' => array(
             'mapActions' => array(
@@ -13,7 +16,7 @@ class ProfilsController extends AppController {
         ),
         'AuthManager.AclManager',
         );
-    var $uses = array('Profil');
+    
 
     function admin_index() {
         $profils = $this->Profil->find('threaded', array('order' => 'Profil.id ASC', 'recursive' => -1));
@@ -116,6 +119,7 @@ class ProfilsController extends AppController {
                 'order' => array('Profil.name ASC')));
             $this->set('profils', $profils);
             $this->set('selectedProfil', $this->data['Profil']['parent_id']);
+            $this->set('roles', $this->Profil->Role->find('list',array('recursive'=>-1)));
         }
     }
 

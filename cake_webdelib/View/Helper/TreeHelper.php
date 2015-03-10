@@ -47,7 +47,7 @@ class TreeHelper extends AppHelper {
      */
     public function generateIndex($threaded, $modelname, $fields = array(), $level = 0){
         if (empty($fields['id'])) $fields['id'] = 'id';
-        if (empty($fields['display'])) $fields['display'] = 'libelle';
+        if (empty($fields['display'])) $fields['display'] = 'name';
         $treelist = '<ul>';
         foreach ($threaded as $thread){
             $id = $thread[$modelname][$fields['id']];
