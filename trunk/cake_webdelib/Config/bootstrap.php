@@ -79,14 +79,16 @@ Inflector::rules('plural', array('irregular' => array(
  * CakePlugin::load('DebugKit'); //Loads a single plugin named DebugKit
  *
  */
+
 CakePlugin::loadAll(array(
 		array('bootstrap' => true),
- 		'DebugKit' => array('routes' => false, 'bootstrap' => false),
-                'AclManager' => array('routes' => false, 'bootstrap' => true),
-                'Cakeflow' => array('routes' => false, 'bootstrap' => true),
-                'Appchecks' => array('routes' => false, 'bootstrap' => false),
-                'AclExtras' => array('routes' => false, 'bootstrap' => false),
-                'Bootstrap3' => array('routes' => false, 'bootstrap' => false)
+ 		'DebugKit' => array('bootstrap' => false, 'routes' => false),
+                'AclManager' => array('bootstrap' => false, 'routes' => false),
+                'Cakeflow' => array('bootstrap' => true, 'routes' => false),
+                'Appchecks' => array('bootstrap' => false, 'routes' => false),
+                'AclExtras' => array('bootstrap' => false, 'routes' => false),
+                'Bootstrap3' => array('bootstrap' => false, 'routes' => false),
+                'ModelOdtValidator' => array('bootstrap' => true, 'routes' => false)
  	));
 
 /**
@@ -137,7 +139,15 @@ spl_autoload_register(array('App', 'load'), true, true);
 
 Configure::write('I18n.preferApp', true);
 
-Configure::write('AclManager.ignorePlugins', array('AclExtras','AclManager','Gedooo','DebugKit','Cakeflow','Appchecks','AuthManager'));
+Configure::write('AclManager.ignorePlugins', array(
+    'AclManager',
+    'Gedooo',
+    'DebugKit',
+    'Appchecks',
+    'AuthManager',
+    'ModelOdtValidator',
+    'Bootstrap3'
+    ));
 Configure::write('AclManager.ignoreActions', array('isAuthorized'));
 Configure::write('AclManager.ignoreControllers', array(
     'Annexes',
@@ -147,10 +157,11 @@ Configure::write('AclManager.ignoreControllers', array(
     'Infosups',
     'Historiques',
     'Nature',
+    'Cakeflow.Traitements',
     'ModelOdtValidator.Modeltemplates',
     )
 );
-Configure::write('AclManager.models', array('Profil', 'User','Typeacte'));
+Configure::write('AclManager.models', array('Profil', 'User','Typeacte','Cakeflow.Circuit','Service'));
 Configure::write('AclManager.aros', array('Profil', 'User'));
 
 require_once('webdelib.inc');
