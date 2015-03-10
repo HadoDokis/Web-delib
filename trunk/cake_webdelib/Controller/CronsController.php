@@ -7,6 +7,7 @@
 class CronsController extends AppController {
 
     public $helpers = array('DurationPicker');
+    
     public $components = array(
         'VueDetaillee',
         'Applist',
@@ -19,8 +20,6 @@ class CronsController extends AppController {
             )
         )
     );
-
-    public $demandeDroit = array('index');
 
     const FORMAT_DATE = 'Y-m-d H:i:s';
 
@@ -204,7 +203,7 @@ class CronsController extends AppController {
         } else {
             $this->Session->setFlash(__('Tâche planifiée numéro ', true) . $id . __(' introuvable !', true), 'growl', array('type' => 'erreur'));
         }
-        $this->redirect($this->referer());
+        $this->redirect($this->previous);
     }
 
     function admin_unlock($id) {
@@ -215,7 +214,7 @@ class CronsController extends AppController {
         } else {
             $this->Session->setFlash(__('Tâche planifiée numéro ', true) . $id . __(' introuvable !', true), 'growl', array('type' => 'erreur'));
         }
-        $this->redirect($this->referer());
+        $this->redirect($this->previous);
     }
 
     /**
@@ -239,7 +238,7 @@ class CronsController extends AppController {
             $this->Crons->runCronId($id);
             $this->Session->setFlash(__('Tâche', true) . ' \'' . $cron['Cron']['nom'] . '\' ' . __('exécutée.', true), 'growl');
         }
-        return $this->redirect($this->referer());
+        return $this->redirect($this->previous);
     }
 
     /**

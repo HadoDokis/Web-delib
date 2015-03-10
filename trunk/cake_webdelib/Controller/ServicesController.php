@@ -23,7 +23,7 @@ class ServicesController extends AppController {
     }
 
     function admin_index() {
-        $this->view='index';
+        //$this->view='index';
         $services = $this->Service->generateTreeList(array( 'Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;');
         $this->set('services', $services);
         $services = $this->Service->find('threaded', array('conditions' => array('actif' => 1), 'order' => 'Service.id ASC', 'recursive' => -1));
@@ -134,8 +134,8 @@ class ServicesController extends AppController {
     function autoComplete() {
         $this->layout = 'ajax';
         $data = $this->Service->find('all', array(
-            'conditions' => array('Service.libelle LIKE' => $this->params['url']['q'] . '%'),
-            'fields' => array('libelle', 'id')));
+            'conditions' => array('Service.name LIKE' => $this->params['url']['q'] . '%'),
+            'fields' => array('name', 'id')));
         $this->set('data', $data);
     }
     

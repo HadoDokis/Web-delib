@@ -24,43 +24,28 @@ class DeliberationsController extends AppController {
 
     public $helpers = array('Fck');
     public $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
-    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Email', 'Acl'/*, 'Droits'*/, 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'S2low', 'Paginator',
+    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Email', 'Acl', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'S2low', 'Paginator',
         'Auth' => array(
             'mapActions' => array(
-                'read' => array('view','download','downloadDelib',
+                'read' => array('view','download','downloadDelib','quicksearch','toSend',
                     'getTypeseancesParTypeacteAjax','quicksearch', 'genereFusionToClient',
                     'textsynthesevue','deliberationvue','textprojetvue'),
-                'create' => array('add'),
+                'deleteDebat'=>array('deleteDebat'),
+                'create' => array('add','mesProjetsRedaction','addIntoCircuit','attribuercircuit'),
                 'update'=> array('edit','admin_add'),
                 'delete'=> array('delete','admin_add'),
-                
-                'mesProjetsRedaction' => array('attribuercircuit'),
-                'mesProjetsRedaction' => array('addIntoCircuit'),
-                'mesProjetsATraiter' => array('traiter'),
-                'mesProjetsATraiter' => array('retour'),
+                'mesProjetsATraiter' => array('traiter','retour'),
                 'tousLesProjetsSansSeance' => array('attribuerSeance'),
-                'autresActesAValider' => array('autreActesValides'),
-                'autresActesAValider' => array('autresActesAEnvoyer'),
-                'autresActesAValider' => array('autresActesEnvoyes'),
+                'autresActesAValider' => array('autreActesValides','autresActesAEnvoyer','autresActesEnvoyes'),
                 'sendActesToSignature' => array('sendToParapheur','refreshSignature','majEtatParapheur',
-                    'downloadSignature','downloadBordereau'),
-                'sendToTdt' => array('getTampon','getClassification','getBordereauTdt','transmit',
-                    'downloadTdtMessage','majEchangesTdt','majArTdt','classification'),
+                'downloadSignature','downloadBordereau'),
+                'toSend' => array('sendToTdt', 'getTampon','getClassification','getBordereauTdt','transmit',
+                'downloadTdtMessage','majEchangesTdt','majArTdt','classification'),
                 
             )
         )
         );
-    /*public $libelleControleurDroit = 'Projets';
-    public $libellesActionsDroit = array(
-        'edit' => "Modification d'un projet",
-        'delete' => "Suppression d'un projet",
-        'goNext' => 'Sauter une étape',
-        'validerEnUrgence' => 'Valider un projet en urgence',
-        'rebond' => 'Effectuer un rebond',
-        'sendToParapheur' => 'Envoie à la signature',
-        'editerTous' => 'Editer tous les projets',
-    );*/
-
+    
     function view($id = null) {
         $projet = $this->Deliberation->find('first', array(
             'fields' => array(
@@ -78,7 +63,7 @@ class DeliberationsController extends AppController {
                 'Rapporteur' => array('fields' => array('id', 'nom', 'prenom')),
                 'Infosup',
                 'Annex' => array('fields' => array('id', 'titre', 'joindre_ctrl_legalite', 'filename')),
-                'Service' => array('fields' => array('libelle')),
+                'Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
                 'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
@@ -101,13 +86,11 @@ class DeliberationsController extends AppController {
 
         $projet['Deliberation']['num_pref'] = $projet['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($projet['Deliberation']['num_pref']);
 
-        $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'create') ;
-        
-        if (!$this->Droits->check($this->user_id, "Pages:tous_les_projets")) {
+        if (!$this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'admin')) {
             $conditions['Deliberation.id'] = $id;
             $conditions['OR']['redacteur_id'] = $this->user_id;
 
-            if ($this->Droits->check($this->user_id, "Deliberations:projetsMonService")) {
+            if ($this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'manage')) {
                 $services = array();
                 $conditions['Deliberation.id'] = $id;
                 $conditions['OR']['redacteur_id'] = $this->user_id;
@@ -120,7 +103,6 @@ class DeliberationsController extends AppController {
                 if(!empty($user['User'])){
                     $conditions['OR']['redacteur_id'] = $user['Deliberation']['redacteur_id'];
                 }
-                $this->User->Behaviors->load('Containable');
                 $user_services = $this->User->find('first', array('conditions' => array('User.id' => $this->user_id),
                     'fields' => array('User.id'),
                     'contain' => array('Service.id')));
@@ -156,9 +138,9 @@ class DeliberationsController extends AppController {
         //Lecture de la version supérieure
         $this->set('versionsup', $this->Deliberation->chercherVersionSuivante($id));
 
-        $this->set('userCanEdit', $this->Droits->check($this->user_id, "Deliberations:edit") && $this->Deliberation->estModifiable($id, $this->user_id, $this->Droits->check($this->user_id, "Deliberations:editerTous")));
+        $this->set('userCanEdit', $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'edit') && $this->Deliberation->estModifiable($id, $this->user_id, $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'admin')));
 
-        $this->set('userCanadd', $this->Droits->check($this->user_id, "Deliberations:add"));
+        $this->set('userCanadd', $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'create'));
         
         $this->set('inBannette', in_array($this->user_id, $this->Traitement->whoIs($id, 'current', 'RI', false)));
 
@@ -218,7 +200,7 @@ class DeliberationsController extends AppController {
         }
         $projet['listeSeances'] = Hash::sort($projet['listeSeances'], '{n}.action', 'asc');
 
-        $projet['Service']['libelle'] = $this->Deliberation->Service->doList($projet['Deliberation']['service_id']);
+        $projet['Service']['name'] = $this->Deliberation->Service->doList($projet['Deliberation']['service_id']);
         $projet['Circuit']['libelle'] = $this->Circuit->getLibelle($projet['Deliberation']['circuit_id']);
 
         // Définitions des infosup
@@ -293,11 +275,8 @@ class DeliberationsController extends AppController {
     function add() {
         // initialisations
         $sortie = false;
-        /* initialisation du lien de redirection */
-        $redirect = '/deliberations/mesProjetsRedaction';
-        /* initialisation du rédateur et du service emetteur */
-        $user = $this->Session->read('user');
-        $canEditAll = $this->Droits->check($this->user_id, "Deliberations:editerTous");
+        
+        $canEditAll = $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'admin');
 
         $this->set('USE_PASTELL', Configure::read('USE_PASTELL'));
         if (Configure::read('TDT') == 'PASTELL' && Configure::read('USE_PASTELL') && Configure::read('USE_TDT')) {
@@ -311,7 +290,7 @@ class DeliberationsController extends AppController {
             $success = true;
             $this->Deliberation->begin();
             $this->request->data['Deliberation']['redacteur_id'] = $this->user_id;
-            $this->request->data['Deliberation']['service_id'] = $user['User']['service'];
+            $this->request->data['Deliberation']['service_id'] = $this->Auth->user('service');//FIX
             if (empty($this->data['Deliberation']['objet_delib']))
                 $this->request->data['Deliberation']['objet_delib'] = $this->data['Deliberation']['objet'];
 
@@ -414,11 +393,12 @@ class DeliberationsController extends AppController {
             if (isset($this->request->data['nameTab'])) {
                 return $this->redirect(array('controller' => 'deliberations', 'action' => 'edit', $delibId, 'nameTab' => $this->request->data['nameTab']));
             }
-            return $this->redirect($redirect);
+            
+            return $this->redirect($this->previous);
         } else {
-            $this->request->data['Service']['libelle'] = $this->Deliberation->Service->doList($user['User']['service']);
-            $this->request->data['Redacteur']['nom'] = $this->User->field('nom', array('User.id' => $user['User']['id']));
-            $this->request->data['Redacteur']['prenom'] = $this->User->field('prenom', array('User.id' => $user['User']['id']));
+            $this->request->data['Service']['name'] = $this->Deliberation->Service->doList($this->Auth->user('service_id'));
+            $this->request->data['Redacteur']['nom'] = $this->User->field('nom', array('User.id' => $this->Auth->user('id')));
+            $this->request->data['Redacteur']['prenom'] = $this->User->field('prenom', array('User.id' => $this->Auth->user('id')));
 
             if (!empty($this->data['Deliberation']['num_pref'])) {
                 $this->request->data['Deliberation']['num_pref_libelle'] = $this->data['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
@@ -427,8 +407,9 @@ class DeliberationsController extends AppController {
 
             $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
-            $this->set('selectedRapporteur', $this->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
-            $this->set('date_seances', $this->Seance->generateList(null, $canEditAll, array_keys($this->Session->read('user.Nature'))));
+            $this->set('selectedRapporteur', $this->Acteur->selectActeurEluIdParDelegationId($this->Auth->user('service_id')));
+            
+            $this->set('date_seances', $this->Seance->generateList(null, $canEditAll));
 
             if (!empty($this->request->data['Deliberation']['date_limite'])) {
                 App::uses('CakeTime', 'Utility');
@@ -436,14 +417,14 @@ class DeliberationsController extends AppController {
             }
 
             
-            $this->set('profil_id', $user['User']['profil_id']);
+            $this->set('profil_id', $this->Auth->user('profil_id'));
             $this->Infosupdef->Behaviors->load('Containable');
             $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions' => array('model' => 'Deliberation', 'actif' => true),
                         'order' => 'ordre',
                         'contain' => array('Profil.id'))));
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
             $this->set('DELIBERATIONS_MULTIPLES', Configure::read('DELIBERATIONS_MULTIPLES'));
-            $this->set('redirect', $redirect);
+            $this->set('redirect', $this->previous);
 
             /* valeurs initiales des info supplémentaires */
             $this->request->data['Infosup'] = $this->Infosupdef->valeursInitiales('Deliberation');
@@ -488,18 +469,10 @@ class DeliberationsController extends AppController {
                 }
             }
 
-
-            $nature_ids = $this->Deliberation->Typeacte->Nature->find('all', array(
-                'conditions' => array('Nature.code' => 'DE'),
+            $this->set('typeActes', $this->Deliberation->Typeacte->find('list', array(
                 'recursive' => -1,
-                'fields' => array('Nature.id')
-            ));
-
-            $typeacte_ids = $this->Deliberation->Typeacte->find('all', array(
-                'conditions' => array('Typeacte.nature_id' => Set::extract('/Nature/id', $nature_ids)),
-                'recursive' => -1,
-                'fields' => array('Typeacte.id')
-            ));
+            )));
+            
             $services = $this->Deliberation->Redacteur->find('first',array(
                 'fields' => array('Redacteur.id'),
                 'conditions' => array('Redacteur.id' => $this->user_id),
@@ -507,8 +480,11 @@ class DeliberationsController extends AppController {
                 'recursive' => -1,
             ));
             $listeservices = array();
-            foreach ($services['Service'] as $service){
-                $listeservices[] = $service['id'];
+            if(!empty($services))
+            {
+                foreach ($services['Service'] as $service){
+                    $listeservices[] = $service['id'];
+                }
             }
             $condition = array();
             if(!empty($listeservices)){
@@ -521,20 +497,20 @@ class DeliberationsController extends AppController {
             $users = $this->Deliberation->Service->find('all',array(
                 'fields' => array('Service.id'),
                 'conditions' => $condition,
-                'contain' => array('User' => array('fields' => array('User.id','User.login','User.nom','User.prenom'),'conditions' => array('User.id <>' => $this->user_id))),
+                'contain' => array('User' => array(
+                    'fields' => array('id','username','nom','prenom'),
+                    'conditions' => array('User.id <>' => $this->user_id))),
                 'recursive' => -1,
                 ));
             $listeusers = array();
             foreach($users as $user){
                 foreach($user['User'] as $data){
-                   $listeusers[$data['id']] = '('.$data['login'].') '.$data['prenom'].' '.$data['nom']; 
+                   $listeusers[$data['id']] = '('.$data['username'].') '.$data['prenom'].' '.$data['nom']; 
                 }
             }
             $this->set('redacteurs', $listeusers);
 
-            $this->set('typesactemulti', Set::extract('/Typeacte/id', $typeacte_ids));
             $this->set('seances', $seances);
-            return $this->render('add');
         }
     }
 
@@ -888,7 +864,7 @@ class DeliberationsController extends AppController {
 
             $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->request->data['Infosup']);
             $this->request->data['Deliberation']['date_limite'] = date("d/m/Y", (strtotime($this->data['Deliberation']['date_limite'])));
-            $this->request->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->request->data['Deliberation']['service_id']);
+            $this->request->data['Service']['name'] = $this->Deliberation->Service->doList($this->request->data['Deliberation']['service_id']);
 
             $this->set('gabarits_acte', $this->Deliberation->Typeacte->find('list', array('fields' => array('id', 'gabarit_acte_name'))));
             $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
@@ -1556,7 +1532,7 @@ class DeliberationsController extends AppController {
             'contain' => array(
                 'Typeacte.name',
                 'Theme.libelle',
-                'Service.libelle',
+                'Service.name',
                 'Seance.date',
                 'Seance.Typeseance.libelle',
                 'Redacteur.nom',
@@ -1696,7 +1672,7 @@ class DeliberationsController extends AppController {
                 'User',
                 'Typeacte.name',
                 'Theme.libelle',
-                'Service.libelle',
+                'Service.name',
                 'Seance.date',
                 'Seance.Typeseance.libelle',
                 'Redacteur.id',
@@ -1742,7 +1718,7 @@ class DeliberationsController extends AppController {
                 $this->set('tab_anterieure', $this->Deliberation->chercherVersionAnterieure($projet['Deliberation']['id'], $nb_recursion, array(), $action));
 
                 $id_service = $projet['Deliberation']['service_id'];
-                $projet['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+                $projet['Service']['name'] = $this->Deliberation->Service->doList($id_service);
                 $projet['Circuit']['libelle'] = $this->Circuit->getLibelle($projet['Deliberation']['circuit_id']);
                 $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/' . $id, array('return')));
                 $this->set('projet', $projet);
@@ -1839,6 +1815,7 @@ class DeliberationsController extends AppController {
             $this->Session->setFlash('Le tiers de télétransmission est désactivé. Veuillez contacter votre administrateur', 'growl');
             return $this->redirect($this->previous);
         }
+        
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
         $conditions = $this->_handleConditions($this->Filtre->conditions());
@@ -1846,10 +1823,12 @@ class DeliberationsController extends AppController {
             $seance_id = $conditions['Seance.id'];
             unset($conditions['Seance.id']);
         }
-        if ($seance_id != null)
+        if ($seance_id != null){
             $conditions['Deliberation.id'] = $this->Seance->getDeliberationsId($seance_id);
+        }                    
         $conditions['Deliberation.typeacte_id'] = $this->Deliberation->Typeacte->getIdDesNaturesDelib();
         $conditions['Deliberation.etat'] = 5;
+        
         // $conditions['Deliberationseance.Seance.Typeseance.action'] = 0;
         $conditions[] = 'Deliberation.id IN ('
                 . 'SELECT deliberations_seances.deliberation_id'
@@ -1880,14 +1859,14 @@ class DeliberationsController extends AppController {
                     'Deliberation.circuit_id',),
                 'conditions' => $conditions,
                 'contain' => array(
-                    'Service' => array('fields' => array('libelle')),
+                    'Service' => array('fields' => array('name')),
                     'Theme' => array('fields' => array('libelle')),
                     'Annex' => array(
                         'fields' => array('id', 'filename_pdf'),
                         'conditions' => array('joindre_ctrl_legalite' => true)
                     ),
                     'Typeacte' => array(
-                        'fields' => array('libelle', 'teletransmettre'),
+                        'fields' => array('name', 'teletransmettre'),
                         'conditions' => array('Typeacte.teletransmettre' => true)),
                     'Circuit' => array('fields' => array('nom')),
                     'TdtMessage' => array('fields' => array('tdt_id', 'tdt_type', 'tdt_etat', 'parent_id'),
@@ -1900,7 +1879,8 @@ class DeliberationsController extends AppController {
                         'Seance' => array('fields' => array('id', 'date', 'type_id'),
                             'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
                 'order' => 'Deliberation.id DESC',
-                'limit' => 10));
+                'limit' => 10,
+                'recursive' => -1));
 
         $this->set('tdt', Configure::read('TDT'));
         $this->set('tdt_host', Configure::read(Configure::read('TDT') . '_HOST'));
@@ -1940,9 +1920,11 @@ class DeliberationsController extends AppController {
         }
 
         $seances = $this->Seance->find('all', array(
+            'fields' => array('Seance.id', 'Seance.date'),
             'conditions' => array('Seance.traitee' => 1),
             'recursive' => -1,
-            'fields' => array('Seance.id', 'Seance.date')));
+            )
+        );
 
         foreach ($seances as $seance)
             $toutes_seances[$seance['Seance']['id']] = $seance['Seance']['date'];
@@ -2010,7 +1992,7 @@ class DeliberationsController extends AppController {
                 'Deliberation.service_id'),
             'conditions' => $conditions,
             'contain' => array(
-                'Service.libelle',
+                'Service.name',
                 'Theme.libelle',
                 'Typeacte.name',
                 'Circuit.nom',
@@ -2658,7 +2640,7 @@ class DeliberationsController extends AppController {
                 'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'
             ),
             'contain' => array(
-                'Service' => array('fields' => array('libelle')),
+                'Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
                 'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
@@ -2725,7 +2707,7 @@ class DeliberationsController extends AppController {
                 'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'
             ),
             'contain' => array(
-                'Service' => array('fields' => array('libelle')),
+                'Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
                 'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
@@ -2787,7 +2769,7 @@ class DeliberationsController extends AppController {
             'order' => $ordre,
             'limit' => $limit,
             'contain' => array(
-                'Service' => array('fields' => array('libelle')),
+                'Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
                 'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
@@ -2843,7 +2825,7 @@ class DeliberationsController extends AppController {
                 'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                 'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
             'contain' => array(
-                'Service' => array('fields' => array('libelle')),
+                'Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
                 'Typeacte' => array('fields' => array('libelle')),
                 'Circuit' => array('fields' => array('nom')),
@@ -2951,7 +2933,7 @@ class DeliberationsController extends AppController {
             }
 
             if (isset($this->data[$i]['Service']['id']))
-                $this->request->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($projet['Service']['id']);
+                $this->request->data[$i]['Service']['name'] = $this->Deliberation->Service->doList($projet['Service']['id']);
             if (isset($this->data[$i]['Deliberation']['date_limite']))
                 $this->request->data[$i]['Deliberation']['date_limite'] = $projet['Deliberation']['date_limite'];
         }
@@ -2991,7 +2973,7 @@ class DeliberationsController extends AppController {
                 'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                 'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
             'conditions' => $conditions,
-            'contain' => array('Service' => array('fields' => array('libelle')),
+            'contain' => array('Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
                 'Typeacte' => array('fields' => array('libelle')),
                 'Circuit' => array('fields' => array('nom')),
@@ -3045,7 +3027,7 @@ class DeliberationsController extends AppController {
                 'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
                 'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                 'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
-            'contain' => array('Service' => array('fields' => array('libelle')),
+            'contain' => array('Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
                 'Typeacte' => array('fields' => array('libelle')),
                 'Circuit' => array('fields' => array('nom')),
@@ -3098,7 +3080,7 @@ class DeliberationsController extends AppController {
                     'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
                     'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                     'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
-                'contain' => array('Service' => array('fields' => array('libelle')),
+                'contain' => array('Service' => array('fields' => array('name')),
                     'Theme' => array('fields' => array('libelle')),
                     'Typeacte' => array('fields' => array('libelle')),
                     'Circuit' => array('fields' => array('nom')),
@@ -3163,7 +3145,7 @@ class DeliberationsController extends AppController {
                 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                 'Deliberation.typeacte_id',
                 'Deliberation.theme_id', 'Deliberation.service_id'),
-            'contain' => array('Service' => array('fields' => array('libelle')),
+            'contain' => array('Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
                 'Typeacte' => array('fields' => array('libelle')),
                 'Circuit' => array('fields' => array('nom')),
@@ -3245,7 +3227,7 @@ class DeliberationsController extends AppController {
                 'inputOptions' => array(
                     'label' => __('Service émetteur', true),
                     'multiple' => true,
-                    'options' => Hash::combine($projets, '{n}.Deliberation.service_id', '{n}.Service.libelle')
+                    'options' => Hash::combine($projets, '{n}.Deliberation.service_id', '{n}.Service.name')
             )));
 
             $this->Filtre->addCritere('CircuitId', array(
@@ -3284,7 +3266,7 @@ class DeliberationsController extends AppController {
                 'inputOptions' => array(
                     'label' => __('Service émetteur', true),
                     'multiple' => true,
-                    'options' => Hash::combine($projets, '{n}.Deliberation.service_id', '{n}.Service.libelle')
+                    'options' => Hash::combine($projets, '{n}.Deliberation.service_id', '{n}.Service.name')
             )));
 
             $this->Filtre->addCritere('CircuitId', array(
@@ -3485,7 +3467,7 @@ class DeliberationsController extends AppController {
                         'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                         'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
                     'conditions' => $conditions,
-                    'contain' => array('Service' => array('fields' => array('libelle')),
+                    'contain' => array('Service' => array('fields' => array('name')),
                         'Theme' => array('fields' => array('libelle')),
                         'Typeacte' => array('fields' => array('libelle')),
                         'Circuit' => array('fields' => array('nom')),
@@ -3603,7 +3585,7 @@ class DeliberationsController extends AppController {
                         'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
                         'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                         'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
-                    'contain' => array('Service' => array('fields' => array('libelle')),
+                    'contain' => array('Service' => array('fields' => array('name')),
                         'Theme' => array('fields' => array('libelle')),
                         'Typeacte' => array('fields' => array('libelle')),
                         'Circuit' => array('fields' => array('nom')),
@@ -3810,7 +3792,7 @@ class DeliberationsController extends AppController {
                     'Deliberation.service_id'),
                 'conditions' => $conditions,
                 'contain' => array(
-                    'Service.libelle',
+                    'Service.name',
                     'Theme.libelle',
                     'Typeacte.name',
                     'Circuit.nom',
@@ -3865,7 +3847,7 @@ class DeliberationsController extends AppController {
                         'Deliberation' => array(
                             'Typeacte.nature_id',
                             'Typeacte.name',
-                            'Service.libelle',
+                            'Service.name',
                             'Theme.libelle',
                             'Circuit.nom'
                         )
@@ -3949,7 +3931,7 @@ class DeliberationsController extends AppController {
         $this->paginate = array('conditions' => array('Deliberation.etat' => 5),
             'fields' => array('Deliberation.id', 'Deliberation.objet_delib', 'Deliberation.num_pref',
                 'Deliberation.num_delib', 'sae_etat'),
-            'contain' => array('Service.libelle', 'Theme.libelle'),
+            'contain' => array('Service.name', 'Theme.libelle'),
             'limit' => 20,
             'order' => 'Deliberation.id DESC');
 
@@ -4277,7 +4259,7 @@ class DeliberationsController extends AppController {
         );
         $contain = array(
             'Typeacte.name',
-            'Service.libelle',
+            'Service.name',
             'Circuit.nom',
             'Theme.libelle',
             'Seance.id',
@@ -4339,7 +4321,7 @@ class DeliberationsController extends AppController {
             'Typeacte.modeleprojet_id',
             'Typeacte.modelefinal_id',
             'Typeacte.nature_id',
-            'Service.libelle',
+            'Service.name',
             'Circuit.nom',
             'Theme.libelle',
             'Seance.id',
@@ -4452,7 +4434,7 @@ class DeliberationsController extends AppController {
         );
         $contain = array(
             'Typeacte.name',
-            'Service.libelle',
+            'Service.name',
             'Circuit.nom',
             'Theme.libelle',
             'Seance.id',
@@ -4493,7 +4475,7 @@ class DeliberationsController extends AppController {
             ),
             'contain' => array(
                 'Typeacte.name',
-                'Service.libelle',
+                'Service.name',
             ),
             'fields' => array(
                 'Deliberation.id',
@@ -4540,7 +4522,7 @@ class DeliberationsController extends AppController {
         );
         $contain = array(
             'Typeacte.name',
-            'Service.libelle',
+            'Service.name',
             'Circuit.nom',
             'Theme.libelle',
             'Seance.id',
@@ -4671,7 +4653,9 @@ class DeliberationsController extends AppController {
         }
         $field = trim($this->request->data['User']['search']);
         $conditionsDroits = array();
-        if (!$this->Droits->check($this->user_id, 'Deliberations:tousLesProjetsRecherche')) {
+        
+        
+        if (!$this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations/tousLesProjetsRecherche','read')) {
             $listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($this->user_id);
             if (!empty($listeCircuits))
                 $conditionsDroits['OR']['Deliberation.circuit_id'] = explode(',', $listeCircuits);
@@ -4700,9 +4684,9 @@ class DeliberationsController extends AppController {
                 'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                 'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
             'conditions' => $conditions,
-            'contain' => array('Service' => array('fields' => array('libelle')),
+            'contain' => array('Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
-                'Typeacte' => array('fields' => array('libelle')),
+                'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
                     'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
@@ -4712,7 +4696,7 @@ class DeliberationsController extends AppController {
                         'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
             'order' => $ordre));
         $this->_sortProjetSeanceDate($projets);
-        $this->_afficheProjets('index', $projets, 'R&eacute;sultat de la recherche parmi mes projets', array('view'), array());
+        $this->_afficheProjets('quicksearch', $projets, 'R&eacute;sultat de la recherche parmi mes projets', array('view'), array());
     }
 
     public function majArTdt($cookieToken = null) {
@@ -4899,6 +4883,6 @@ class DeliberationsController extends AppController {
     public function beforeFilter() {
         parent::beforeFilter();
         
-        $this->History->deny('getBordereauTdt','attribuercircuit','getTampon','sendToTdt','downloadDelib');
+        //$this->History->deny('getBordereauTdt','attribuercircuit','getTampon','sendToTdt','downloadDelib');
     }
 }

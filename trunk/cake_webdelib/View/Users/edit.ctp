@@ -170,7 +170,8 @@ echo $this->Bs->tabPane('droits') .
  $this->Html->tag('div', null, array('class' => 'panel-body')) ;
 if ($this->Html->value('User.id')){
     echo $this->element('AuthManager.permissions', array('model' => 'Typeacte'));
-    echo $this->element('AuthManager.permissions', array('model' => 'Profil'));
+    echo $this->element('AuthManager.permissions', array('model' => 'Service'));
+    echo $this->element('AuthManager.permissions', array('model' => 'Circuit'));
     echo $this->element('AuthManager.permissions', array('model' => 'User'));
 }
 else {

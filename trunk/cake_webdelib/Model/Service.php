@@ -2,10 +2,9 @@
 class Service extends AppModel
 {
     public $name = 'Service';
-    public $displayField = "libelle";
-    public $actsAs = array('Tree');
+    public $displayField = "name";
     public $validate = array(
-        'libelle' => array(
+        'name' => array(
             array(
                 'rule' => 'notEmpty',
                 'message' => 'Entrer le libellé.'
@@ -36,8 +35,12 @@ class Service extends AppModel
             'finderQuery' => '',
             'deleteQuery' => '')
     );
-
-    /* retourne le libelle du service $id et de ses parents sous la forme parent1/parent12/service_id */
+    
+    public $actsAs = array(
+        'Tree', 
+        'AuthManager.AclManager' => array('type' => 'both'));
+    
+    /* retourne le name du service $id et de ses parents sous la forme parent1/parent12/service_id */
     function doList($id)
     {
         return $this->_doList($id);
@@ -48,17 +51,17 @@ class Service extends AppModel
     {
         $service = $this->find('first', array(
             'conditions' => array('Service.id' => $id),
-            'fields' => array('libelle', 'parent_id'),
+            'fields' => array('name', 'parent_id'),
             'recursive' => -1));
         if (empty($service))
             return "Impossible de récupérer le service";
         if (!Configure::read('AFFICHE_HIERARCHIE_SERVICE'))
-            return $service['Service']['libelle'];
+            return $service['Service']['name'];
 
         if (empty($service['Service']['parent_id']))
-            return $service['Service']['libelle'];
+            return $service['Service']['name'];
         else
-            return $this->_doList($service['Service']['parent_id']) . '/' . $service['Service']['libelle'];
+            return $this->_doList($service['Service']['parent_id']) . '/' . $service['Service']['name'];
     }
 
     /**
@@ -127,9 +130,24 @@ class Service extends AppModel
      */
     function setVariablesFusion(&$aData, &$modelOdtInfos, $id) {
         if ($modelOdtInfos->hasUserFieldDeclared('service_emetteur'))
-            $aData['service_emetteur'] = $this->field('libelle', array('id'=>$id));
+            $aData['service_emetteur'] = $this->field('name', array('id'=>$id));
         if ($modelOdtInfos->hasUserFieldDeclared('service_avec_hierarchie'))
             $aData['service_avec_hierarchie'] = $this->_doList($id);
     }
+    
+    public function parentNode() {
+        return null;
+    }
+    
+    public function parentNodeAlias() {
+        if (!$this->id && empty($this->data)) {
+        return null;
+        }
+        $data = $this->data;
+        if (empty($this->data)) {
+            $data = $this->read();
+        }
+        
+        return array('Service' => array('alias' => $data['Service']['name']));
+    }
 }
-?>

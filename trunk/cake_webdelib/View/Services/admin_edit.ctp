@@ -3,10 +3,10 @@ $this->Html->addCrumb('Liste des services', array('action'=>'index'));
 
 $this->Html->addCrumb(__('Modification d\'un service'));
 
-echo $this->Bs->tag('h3', __('Modification du service : ').$this->Html->value('Service.libelle'));
+echo $this->Bs->tag('h3', __('Modification du service : ').$this->Html->value('Service.name'));
 
-echo $this->BsForm->create('Service', array('action' => 'edit', 'type' => 'post'));
-echo $this->BsForm->input('Service.libelle', array('label' => 'Libellé')); 
+echo $this->BsForm->create('Service', array('action' => 'admin_edit', 'type' => 'post'));
+echo $this->BsForm->input('Service.name', array('label' => 'Libellé')); 
 echo $this->BsForm->select('Service.parent_id', $services, array(
     'label' => __('Appartient à'),
     'placeholder'=>__('Choisir un service'),

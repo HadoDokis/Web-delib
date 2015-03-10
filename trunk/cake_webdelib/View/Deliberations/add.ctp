@@ -38,12 +38,12 @@ echo $this->Html->tag(null, '<br />') .
 $this->Html->tag('div', null, array('class' => 'well well-lg')) .
 '<b><u>Rédacteur</u></b> : <i>' . $this->Html->value('Redacteur.prenom') . ' ' . $this->Html->value('Redacteur.nom') . '</i>'.
 $this->Html->tag(null, '<br />') .
-'<b><u>Service émetteur</u></b> : <i>' . $this->Html->value('Service.libelle') . '</i>'.
+'<b><u>Service émetteur</u></b> : <i>' . $this->Html->value('Service.name') . '</i>'.
 $this->Bs->close();
 
 echo    $this->BsForm->input('Deliberation.typeacte_id', array(
             'label' => 'Type d\'acte <abbr title="obligatoire">*</abbr>',
-            'options' => $this->Session->read('user.Nature'),
+            'options' => $typeActes,
             'empty' => true,
             'id' => 'listeTypeactesId',
             'onChange' => "updateTypeseances(this);",

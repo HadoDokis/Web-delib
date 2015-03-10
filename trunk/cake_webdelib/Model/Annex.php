@@ -193,7 +193,7 @@ class Annex extends AppModel {
             'recursive' => -1,
             'fields' => $fields,
             'conditions' => array (
-                'model' => $modelName,
+                //'model' => $modelName, FIX Problème multidélibération
                 'foreign_key' => $foreignKey,
                 'joindre_fusion' => true),
             'order' => array('id ASC')));

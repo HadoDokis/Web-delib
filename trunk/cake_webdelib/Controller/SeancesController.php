@@ -7,7 +7,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Fck');
-        var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
+        var $uses = array('Deliberation', 'Deliberationseance', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup', 'Typeseance');
 	var $components = array('Email', 'Gedooo', 'Conversion', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav',
             'Auth' => array(
             'mapActions' => array(
@@ -73,12 +73,7 @@ class SeancesController extends AppController {
             $this->redirect(array('action' => 'listerFuturesSeances'));
         } else {
             $this->set('date', $date);
-            $natures = array_keys($this->Session->read('user.Nature'));
-            App::import('model', 'TypeseancesTypeacte');
-            $TypeseancesTypeacte = new TypeseancesTypeacte();
-            $types = $TypeseancesTypeacte->getTypeseanceParNature($natures);
-
-            $this->set('typeseances', $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' => $types))));
+            $this->set('typeseances', $this->Typeseance->find('list'));
             $this->set('infosupdefs', $this->Infosupdef->find('all', array(
                         'recursive' => -1,
                         'conditions' => array('model' => 'Seance', 'actif' => true),
@@ -296,7 +291,7 @@ class SeancesController extends AppController {
       'contain' => array(
       'Deliberation'=>array(
       'Typeacte.nature_id','Typeacte.name',
-      'Service.libelle',
+      'Service.name',
       'Theme.libelle',
       'Circuit.nom'
       ),
@@ -429,7 +424,7 @@ class SeancesController extends AppController {
 
                 'contain' => array(
                     'Theme'=>array('fields'=>array('libelle')), 
-                    'Service'=>array('fields'=>array('libelle')),
+                    'Service'=>array('fields'=>array('name')),
                     'Rapporteur'=>array('fields'=>array('nom','prenom')),
                     'President'=>array('fields'=>array('nom','prenom')),
                 ),
@@ -705,7 +700,7 @@ class SeancesController extends AppController {
         foreach ($delibs as $delib_id) {
             $deliberations[] = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
                 'fields' => array('id', 'objet', 'objet_delib', 'titre', 'etat', 'num_delib'),
-                'contain' => array('Theme.libelle', 'Rapporteur.nom', 'Rapporteur.prenom', 'Service.libelle')));
+                'contain' => array('Theme.libelle', 'Rapporteur.nom', 'Rapporteur.prenom', 'Service.name')));
         }
         $date_tmpstp = strtotime($this->Seance->getDate($seance_id));
         $toutesVisees = true;

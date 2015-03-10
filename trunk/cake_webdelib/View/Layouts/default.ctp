@@ -81,9 +81,10 @@ endif;
 <!-- Contents -->
 <div id="principal" class="container-fluid">
     <?php 
-    echo $this->Html->getCrumbList(array('class'=>'breadcrumb'), __('Mon tableau de bord')); ?>
-    <?php echo $this->Session->flash(); ?>
-    <?php echo $this->fetch('content'); ?>
+    echo $this->Html->getCrumbList(array('class'=>'breadcrumb'), __('Mon tableau de bord'));
+    echo $this->Session->flash(); 
+    echo $this->Session->flash('auth', array('element'=>'growl', 'params' => array('type' => 'danger'))); 
+    echo $this->fetch('content'); ?>
 </div>
 <!--Footer-->
 <?php echo $this->element('footer');

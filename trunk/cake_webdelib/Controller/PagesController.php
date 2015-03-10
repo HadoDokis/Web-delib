@@ -31,18 +31,16 @@ App::uses('AppController', 'Controller');
  */
 class PagesController extends AppController {
     
-    // Gestion des droits
-    public $aucunDroit;
-    
-    public $demandeDroit = array();
-    /*public $ajouteDroit = array(
-        'home',
-    );
-    public $libellesActionsDroit = array(
-        'home' => "Page d'accueil ",
-    );*/
     public $uses = array();
-    public $components = array();
+    
+    public function beforeFilter() {
+        parent::beforeFilter();
+        
+        $user=$this->Auth->user('id');
+        if (!empty($user)) {
+            $this->Auth->allow('display');
+        }
+    }
 
     /**
      * Displays a view
@@ -71,5 +69,4 @@ class PagesController extends AppController {
         $this->set(compact('page', 'subpage', 'title_for_layout'));
         $this->render(implode('/', $path));
     }
-
 }

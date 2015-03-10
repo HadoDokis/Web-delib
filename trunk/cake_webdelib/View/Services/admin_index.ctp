@@ -34,7 +34,7 @@ echo $this->BsForm->inputGroup('search_tree', array(array(
 echo $this->Bs->close();
 
 echo $this->Bs->div('btn-group', null, array('role'=>"group"));
-echo $this->Bs->btn('Nouveau', array('action' => 'add'), array(
+echo $this->Bs->btn('Nouveau', array('action' => 'admin_add'), array(
         'escape' => false, 
         'title' => __('Nouveau service'),
         'icon'=>'glyphicon glyphicon-plus',
@@ -93,7 +93,7 @@ echo $this->Bs->btn('Supprimer', '#', array(
 echo $this->Bs->close(2);
 echo $this->Bs->tag('/br');
 echo $this->Bs->div( null, $this->Tree->generateIndex($data, 'Service', 
-         array('id' => 'id', 'display' => 'libelle', 'order' => 'order')), array('id'=>'arbre'));
+         array('id' => 'id', 'display' => 'name', 'order' => 'order')), array('id'=>'arbre'));
 ?>
 <script>
     function addAction() {
@@ -156,11 +156,11 @@ echo $this->Bs->div( null, $this->Tree->generateIndex($data, 'Service',
             $("a#boutonDelete").hide().prop('href','#');
             if (data.selected.length) {
                 var node = data.instance.get_node(data.selected);
-                $("a#boutonEdit").show().prop('href', '/services/edit/' + data.instance.get_node(data.selected).data.id);
+                $("a#boutonEdit").show().prop('href', '/services/admin_edit/' + data.instance.get_node(data.selected).data.id);
                 $("button#boutonFusion").show().prop('href', '/services/fusion/' + data.instance.get_node(data.selected).data.id);
                 $("#service_a_fusionner").val(data.instance.get_node(data.selected).data.id);
                 if ($('#' + node.id).hasClass('deletable')) {
-                    $("a#boutonDelete").show().prop('href', '/services/delete/' + data.instance.get_node(data.selected).data.id);
+                    $("a#boutonDelete").show().prop('href', '/services/admin_delete/' + data.instance.get_node(data.selected).data.id);
                 }
             }
         });

@@ -21,9 +21,8 @@ class Typeacte extends AppModel
             'conditions' => array('Modelprojet.modeltype_id' => array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)),
             'foreignKey' => 'modelefinal_id'),
     );
-    public $hasMany = array('Deliberation');
-
-
+    public $hasMany = array('Deliberation', 'TypeseancesTypeacte');
+    
     public $validate = array(
         'name' => array(
             array(

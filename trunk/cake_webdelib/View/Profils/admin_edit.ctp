@@ -28,6 +28,11 @@ echo $this->Html->tag('br /');
     'label' => __('Appartient à'),
     'class' => 'selectone', 'empty' => true)); 
     
+    echo $this->BsForm->select('Profil.role_id', $roles, array(
+    'placeholder'=> __('Choisir un type'),
+    'label' => __('Choisir un type'),
+    'class' => 'selectone', 'empty' => true)); 
+    
     if(Configure::read('USE_LDAP')){
     echo $this->BsForm->select('Profil.ldap_name', $profils, array(
     'placeholder'=> __('Choisir un groupe LDAP'),

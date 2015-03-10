@@ -45,7 +45,7 @@ echo $this->Bs->tabPane('infos', array('class' => isset($nameTab) ? $nameTab : '
 echo $this->Html->tag(null, '<br />') .
 $this->Html->tag('div', null, array('class' => 'well well-lg')) .
         $this->Bs->row().$this->Bs->col('xs6').
-'<b><u>Service émetteur</u></b> : <i>' . $this->Html->value('Service.libelle') . '</i>' .
+'<b><u>Service émetteur</u></b> : <i>' . $this->Html->value('Service.name') . '</i>' .
 $this->Html->tag(null, '<br />') .
 '<b><u>Rédacteur</u></b> : <i>' . $this->Html->value('Redacteur.prenom') . ' ' . $this->Html->value('Redacteur.nom') . '</i>'.
 $this->Bs->close().

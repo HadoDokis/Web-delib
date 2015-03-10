@@ -17,6 +17,10 @@ class Profil extends AppModel {
             'className' => 'Profil',
             'foreignKey' => 'parent_id'
         ),
+        'Role' => array(
+            'className' => 'Role',
+            'foreignKey' => 'role_id'
+        ),
     );
     public $hasMany = array(
         'ProfilEnfant' => array(
@@ -30,7 +34,7 @@ class Profil extends AppModel {
     );
     public $hasAndBelongsToMany = array('Infosupdef');
     
-    public $actsAs = array('AuthManager.AclManager' => array('type' => 'both'));
+    public $actsAs = array('AuthManager.AclManager' => array('type' => 'requester'));
     
     public function parentNode() {
         if (!$this->id && empty($this->data)) {

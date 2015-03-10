@@ -4,6 +4,7 @@
  * 
  * 
  */
+
 $this->Html->scriptStart(array('inline' => false));
 
 if(empty($settings))
