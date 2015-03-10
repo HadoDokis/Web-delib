@@ -73,11 +73,6 @@ function changeService(params) {
 }
 
 
-function changeFormat(params) {
-    var url = params.id + "users/changeFormat/" + params.value;
-    document.location = url;
-}
-
 function add_field(num) {
 
     var a = document.getElementById('lien_annexe');
