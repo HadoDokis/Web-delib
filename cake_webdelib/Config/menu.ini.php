@@ -32,7 +32,7 @@ $navbar = array(
                 array(
                     'html' => 'link',
                     'libelle' => 'En cours de rédaction',
-                    'check'=> array('Deliberations/mesProjetsRedaction'),
+                    'check'=> array('Deliberations','create'),
                     'title'=> 'Projets que j\'ai créés',
                     'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'mesProjetsRedaction')
                 ),
@@ -63,7 +63,7 @@ $navbar = array(
                 array(
                     'html' => 'link',
                     'libelle' => 'Rechercher',
-                    'check'=> array('Deliberations/mesProjetsRecherche'),
+                    'check'=> array('Deliberations/mesProjetsRecherche', array('create','read')),
                     'title'=> 'Parmi les projets qui sont dans mes circuits d\'élaboration et de validation ou que j\'ai créés',
                     'icon' => 'search',
                     'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'mesProjetsRecherche')
@@ -82,21 +82,21 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'A attibuer',
-                                'check'=> array('Deliberations/tousLesProjetsSansSeance'),
+                                'check'=> array('Deliberations/tousLesProjetsSansSeance','read'),
                                 'title'=> 'Projets en cours de rédaction ou d\'élaboration ou validés non associés à une séance',
                                 'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'autresActesAValider')
                             ),
                             array(
                                 'html' => 'link',
                                 'libelle' => 'A valider',
-                                'check'=> array('Deliberations/tousLesProjetsValidation'),
+                                'check'=> array('Deliberations/tousLesProjetsValidation','read'),
                                 'title'=> 'Projets en cours d\'élaboration et de validation',
                                 'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'tousLesProjetsValidation')
                             ),
                             array(
                                 'html' => 'link',
                                 'libelle' => 'A faire voter',
-                                'check'=> array('Deliberations/tousLesProjetsAFaireVoter'),
+                                'check'=> array('Deliberations/tousLesProjetsAFaireVoter','read'),
                                 'title'=> 'Projets validés associés à une séance',
                                 'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'tousLesProjetsAFaireVoter')
                             ),
@@ -113,14 +113,14 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'A valider',
-                                'check'=> array('Deliberations/autresActesAValider'),
+                                'check'=> array('Deliberations/autresActesAValider','read'),
                                 'title'=> 'Projets en cours de rédaction ou d\'élaboration ou validés non associés à une séance',
                                 'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'autresActesAValider')
                             ),
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Validés',
-                                'check' => array('Deliberations/autreActesValides'),
+                                'check' => array('Deliberations/autreActesValides','read'),
                                 'title' => 'Projets en cours de rédaction ou d\'élaboration ou validés non associés à une séance',
                                 'icon' => 'check-square-o',
                                 'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'autreActesValides')
@@ -129,7 +129,7 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'A télétranmettre',
-                                'check'=> array('Deliberations/autreActesAEnvoyer'),
+                                'check'=> array('Deliberations/autreActesAEnvoyer','read'),
                                 'title'=> 'Projets en cours de rédaction ou d\'élaboration ou validés non associés à une séance',
                                 'icon' => 'envelope',
                                 'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'autreActesAEnvoyer')
@@ -137,7 +137,7 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Télétranmis',
-                                'check'=> array('Deliberations/autreActesEnvoyes'),
+                                'check'=> array('Deliberations/autreActesEnvoyes','read'),
                                 'title'=> 'Projets en cours de rédaction ou d\'élaboration ou validés non associés à une séance',
                                 'icon' => 'institution',
                                 'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'autreActesEnvoyes')
@@ -145,7 +145,7 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Non Transmis',
-                                'check'=> array('Deliberations/nonTransmis'),
+                                'check'=> array('Deliberations/nonTransmis','read'),
                                 'title'=> 'Projets en cours de rédaction ou d\'élaboration ou validés non associés à une séance',
                                 'icon' => 'hdd-o',
                                 'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'nonTransmis')
@@ -224,7 +224,7 @@ $navbar = array(
             array(
                 'html' => 'link',
                 'libelle' => 'A télétransmettres',
-                'check'=> array('Deliberations/toSend'),
+                'check'=> array('Deliberations/toSend', 'read'),
                 'title'=> 'Envoi des délibérations au contrôle de légalité',
                 'icon' => 'envelope',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'Deliberations', 'action' => 'toSend')
@@ -299,9 +299,9 @@ $navbar = array(
                             ),
                             array(
                                 'html' => 'link',
-                                'libelle' => 'Compteurs',
+                                'libelle' => 'Types d\'acte',
                                 'check'=> array('Compteurs'),
-                                'title'=> 'Gestion des types d\'actes',
+                                'title'=> 'Gestion des types d\'acte',
                                 'icon' => 'book',
                                 'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'typeactes', 'action'=>'index')
                             ),
@@ -311,7 +311,7 @@ $navbar = array(
                                 'check'=> array('Typeseance'),
                                 'title'=> 'Gestion des types de séance',
                                 'icon' => 'leanpub',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'typeactes', 'action'=>'index')
+                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'typeseances', 'action'=>'index')
                             ),
                         )
                     ),
@@ -324,7 +324,15 @@ $navbar = array(
                                 'check'=> array('Users', 'create'),
                                 'title'=> 'Gestion des utilisateurs',
                                 'icon' => 'user',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'users', 'action'=>'index')
+                                'url' => array('admin' => true, 'prefix' => 'admin', 'plugin'=>null, 'controller'=>'users', 'action'=>'index')
+                            ),
+                            array(
+                                'html' => 'link',
+                                'libelle' => 'Utilisateurs',
+                                'check'=> array('Users', 'create'),
+                                'title'=> 'Gestion des utilisateurs',
+                                'icon' => 'user',
+                                'url' => array('manager' => true, 'prefix' => 'manager', 'plugin'=>null, 'controller'=>'users', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -345,10 +353,18 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Circuits',
-                                'check'=> array('Profils', 'create'),
+                                'check'=> array('Cakeflow/Circuits', 'read'),
                                 'title'=> 'Informations sur la collectivité',
                                 'icon' => 'road',
-                                'url' => array('admin' => true, 'plugin'=> 'Cakeflow', 'controller'=>'circuits', 'action'=>'index')
+                                'url' => array('manager' => true, 'prefix' => 'manager', 'plugin'=> 'cakeflow', 'controller'=>'circuits', 'action'=>'index')
+                            ),
+                            array(
+                                'html' => 'link',
+                                'libelle' => 'Circuits',
+                                'check'=> array('Cakeflow/Circuits', 'read'),
+                                'title'=> 'Informations sur la collectivité',
+                                'icon' => 'road',
+                                'url' => array('admin' => true, 'prefix' => 'admin', 'plugin'=> 'cakeflow', 'controller'=>'circuits', 'action'=>'index')
                             ),
                         )
                     ),
@@ -363,7 +379,7 @@ $navbar = array(
                                 'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'typeacteurs', 'action'=>'index')
                             ),
                             array(
-                                'html' => 'Liste',
+                                'html' => 'link',
                                 'libelle' => 'Profils',
                                 'check'=> array('Acteurs'),
                                 'title'=> 'Gestion des acteurs',
@@ -383,10 +399,10 @@ $navbar = array(
                                 'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index')
                             ),
                             array(
-                                'html' => 'Liste',
+                                'html' => 'link',
                                 'libelle' => 'Séance',
                                 'check'=> array('Infosupdefs'),
-                                'title'=> 'Gestion des informations suplémentaires de projet',
+                                'title'=> 'Gestion des informations suplémentaires de séance',
                                 'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index_seance')
                             ),
                         )
@@ -398,17 +414,17 @@ $navbar = array(
                                 'html' => 'link',
                                 'libelle' => 'Connecteurs',
                                 'check'=> array('Connecteurs'),
-                                'title'=> 'Gestion des informations suplémentaires de projet',
+                                'title'=> 'Gestion des connecteurs de l\'application',
                                 'icon' => 'connectdevelop',
                                 'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'connecteurs', 'action'=>'index')
                             ),
                             array(
-                                'html' => 'Liste',
-                                'libelle' => 'Séance',
+                                'html' => 'link',
+                                'libelle' => 'Tâches automatiques',
                                 'check'=> array('Crons'),
-                                'title'=> 'Gestion des informations suplémentaires de projet',
+                                'title'=> 'Gestion des tâches automatiques',
                                 'icon' => 'clock-o',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'crons', 'action'=>'index_seance')
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'crons', 'action'=>'index')
                             ),
                         )
                     ),
