@@ -148,7 +148,7 @@ class Typeseance extends AppModel {
         $db = $this->getDataSource();
         
         //Gestion des droits sur les types d'actes
-        if (!isset($query['Typeseance.id']))
+        if (!empty($query['allow']) && in_array('Typeseance.id', $query['allow']))
         {
             $Aro = ClassRegistry::init('Aro');
 
