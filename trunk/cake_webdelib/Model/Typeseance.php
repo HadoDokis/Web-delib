@@ -191,8 +191,10 @@ class Typeseance extends AppModel {
             $subQuery = ' "Typeseance"."id" IN (' . $subQuery . ') ';
             $subQueryExpression = $db->expression($subQuery);
             $conditions[] = $subQueryExpression;
+            
+            $query['conditions'] = array_merge($query['conditions'], $conditions);
         }
-        $query['conditions'] = array_merge($query['conditions'], $conditions);
+        
         
         return $query;
     }

@@ -1696,9 +1696,9 @@ class Deliberation extends AppModel {
         {
             $Aro = ClassRegistry::init('Aro');
 
-            $Aro->Behaviors->attach( 'DatabaseTable' );
-            $Aro->Permission->Behaviors->attach( 'DatabaseTable' );
-            $Aro->Permission->Aco->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Behaviors->attach( 'Database.DatabaseTable' );
+            $Aro->Permission->Behaviors->attach( 'Database.DatabaseTable' );
+            $Aro->Permission->Aco->Behaviors->attach( 'Database.DatabaseTable' );
 
             $subQuery = array(
                 'fields' => array(
@@ -1716,7 +1716,7 @@ class Deliberation extends AppModel {
                 )
             );
 
-            $subQuery=$Aro->sq($subQuery);
+            $subQuery=$Aro->sql($subQuery);
             
             $subQuery = ' "'.$this->alias.'"."typeacte_id" IN (' . $subQuery . ') ';
             $subQueryExpression = $db->expression($subQuery);

@@ -39,7 +39,7 @@
  */
 class AppModel extends Model {
     
-    public $actsAs = array( 'Containable', 'DatabaseTable' );
+    public $actsAs = array( 'Containable', 'Database.DatabaseTable' );
 
     /**
      * Validation du format de fichier par FIDO

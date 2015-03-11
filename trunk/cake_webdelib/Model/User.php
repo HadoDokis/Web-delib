@@ -186,9 +186,9 @@ class User extends AppModel
         if (!empty($query['allow']) && in_array('Service.id', $query['allow']))
         {
             $Aro = ClassRegistry::init(array('class' => 'Aro', 'alias' => 'AllowAro'));
-            $Aro->Behaviors->attach('DatabaseTable');
-            $Aro->Permission->Behaviors->attach( 'DatabaseTable' );
-            $Aro->Permission->Aco->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Behaviors->attach('Database.DatabaseTable');
+            $Aro->Permission->Behaviors->attach( 'Database.DatabaseTable' );
+            $Aro->Permission->Aco->Behaviors->attach( 'Database.DatabaseTable' );
             $Aro->Permission->Aco->bindModel(
                 array('belongsTo' => array(
                         'UserService' => array(
@@ -221,7 +221,7 @@ class User extends AppModel
                 )
             );
 
-            $subQuery=$Aro->sq($subQuery);
+            $subQuery=$Aro->sql($subQuery);
             $subQuery = ' "'.$this->alias.'"."id" IN (' . $subQuery . ') ';
             $subQueryExpression = $db->expression($subQuery);
             $conditions[] = $subQueryExpression;

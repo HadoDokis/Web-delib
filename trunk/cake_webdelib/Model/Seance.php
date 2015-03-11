@@ -105,9 +105,9 @@ class Seance extends AppModel
         {
             $Aro = ClassRegistry::init('Aro');
 
-            $Aro->Behaviors->attach( 'DatabaseTable' );
-            $Aro->Permission->Behaviors->attach( 'DatabaseTable' );
-            $Aro->Permission->Aco->Behaviors->attach( 'DatabaseTable' );
+            $Aro->Behaviors->attach( 'Database.DatabaseTable' );
+            $Aro->Permission->Behaviors->attach( 'Database.DatabaseTable' );
+            $Aro->Permission->Aco->Behaviors->attach( 'Database.DatabaseTable' );
             $Aro->Permission->Aco->bindModel(
                 array('belongsTo' => array(
                         'Typeacte' => array(
@@ -141,7 +141,7 @@ class Seance extends AppModel
                 )
             );
             
-            $subQuery=$Aro->sq($subQuery);
+            $subQuery=$Aro->sql($subQuery);
             $subQuery = ' "Seance"."type_id" IN (' . $subQuery . ') ';
             $subQueryExpression = $db->expression($subQuery);
             $conditions[] = $subQueryExpression;
