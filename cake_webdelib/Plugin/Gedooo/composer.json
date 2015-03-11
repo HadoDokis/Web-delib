@@ -1,0 +1,31 @@
+{
+    "name": "cakephp/Gedooo",
+    "version": "0.9.00",
+    "description": "Manager for Gedooo for CakePhp",
+    "authors": [
+        {
+            "name": "christian BUFFIN",
+            "homepage": "http://www.adullact-projet.coop",
+            "email": "christian.buffin@adullact-projet.coop",
+            "role": "Developer"
+        }
+    ],
+    "type": "cakephp-plugin",
+    "homepage": "http://adullact.net/projects/plugins-cakephp/",
+    "license": "CECILL-2.0",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "svn://scm.adullact.net/scmrepos/svn/plugins-cakephp/cakeflow",
+            "trunk-path": "trunk",
+            "branches-path": "branches",
+            "tags-path": "tags"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "config": {
+        "vendor-dir": "Vendor/"
+    }
+}
