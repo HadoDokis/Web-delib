@@ -1468,7 +1468,7 @@ class SeancesController extends AppController {
             $this->Progress->at(10 + ($i + 1) * (50 / $num_delib), 'Génération du projet ' . ($i + 1) . '/' . $num_delib . '...');
             $delib = $this->Deliberation->find('first', array(
                 'conditions' => array('Deliberation.id' => $delib_id),
-                'contain' => array('Theme.libelle'),
+                'contain' => array('Theme.libelle','Theme.order'),
                 'fields' => array(
                     'Deliberation.objet',
                     'Deliberation.objet_delib',

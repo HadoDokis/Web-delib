@@ -465,13 +465,16 @@ class UsersController extends AppController {
                 $userGroup = $this->User->Profil->findById($this->Auth->user('profil_id'));
                 $this->Session->write('User.role', $userGroup['Profil']['role_id']);
                 
+                $this->User->Service->recursive=-1;
+                $userServices = $this->User->UserService->findAllByUserId($this->Auth->user('id'));
+                 //$user = $this->User->findByLogin($this->data['User']['username']);
                 //services auquels appartient l'agent
-                /*$services = array();
-                foreach ($user['Service'] as $service)
-                    $services[$service['id']] = $this->Service->doList($service['id']);
+                $services = array();
+                foreach ($userServices as $service)
+                    $services[$service['UserService']['service_id']] = $this->Service->doList($service['UserService']['service_id']);
 
-                $this->Session->write('user.Service', $services);
-                $this->Session->write('user.User.service', key($services));*/
+                $this->Session->write('User.Service', $services);
+                $this->Session->write('User.service', key($services));
                 
                 include(ROOT . DS . APP_DIR . DS . 'Config' . DS . 'menu.ini.php');
                 $this->_purgeMenuDroit($navbar);
