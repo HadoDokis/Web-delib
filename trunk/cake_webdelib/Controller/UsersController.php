@@ -242,8 +242,8 @@ class UsersController extends AppController {
 
             $this->set('selectedServices', $this->_selectedArray($this->data['Service']));
 
-            $this->AclManager->permissionsTypeacte($id);
-            $this->AclManager->permissionsService($id);
+            $this->AclManager->permissionsTypeacte($id, null, array('read'));
+            $this->AclManager->permissionsService($id, null, array('create','update','delete','manager'));
             $this->AclManager->permissionsCircuit($id, 'Cakeflow');
             $this->AclManager->permissionsUser($id, null, array('read','create','update','delete'));
 
