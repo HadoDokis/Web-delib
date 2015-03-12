@@ -82,11 +82,12 @@ Inflector::rules('plural', array('irregular' => array(
 
 CakePlugin::loadAll(array(
 		array('bootstrap' => true),
+                'AuthManager' => array('bootstrap' => true, 'routes' => false),
  		'DebugKit' => array('bootstrap' => false, 'routes' => false),
-                'AclManager' => array('bootstrap' => false, 'routes' => false),
+                //<'AclManager' => array('bootstrap' => false, 'routes' => false),
                 'Cakeflow' => array('bootstrap' => true, 'routes' => false),
                 'Appchecks' => array('bootstrap' => false, 'routes' => false),
-                'AclExtras' => array('bootstrap' => false, 'routes' => false),
+                //'AclExtras' => array('bootstrap' => false, 'routes' => false),
                 'Database' => array('bootstrap' => false, 'routes' => false),
                 'Bootstrap3' => array('bootstrap' => false, 'routes' => false),
                 'ModelOdtValidator' => array('bootstrap' => true, 'routes' => false)
