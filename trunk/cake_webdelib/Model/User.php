@@ -76,7 +76,7 @@ class User extends AppModel
             'foreignKey' => 'profil_id')
     );
     
-   /* public $hasOne = array(
+    public $hasOne = array(
         'Aro' => array(
             'className' => 'Aro',
             'foreignKey' => false,
@@ -86,7 +86,7 @@ class User extends AppModel
             ),
             'dependent' => false
         )
-    );*/
+    );
 
     public $hasAndBelongsToMany = array(
         'Service' => array(
@@ -200,14 +200,22 @@ class User extends AppModel
                             ),
                         )
                     )
-                )
+                )/*, false*/
             );
+            
+/*bindModel(
+                array('belongsTo' => array(
+                        'UserService'
+                    )
+                ),true
+            );*/
 
             $subQuery = array(
                 'fields' => array(
                     'User.id'
                 ),
                 'contain' => false,
+                //'alias'=>'AllowAro',
                 'joins' => array(
                     $Aro->join( 'Permission', array( 'type' => 'INNER' ) ),
                     $Aro->Permission->join( 'Aco', array( 'type' => 'INNER' ) ),
