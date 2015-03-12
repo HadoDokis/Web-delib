@@ -2827,7 +2827,7 @@ class DeliberationsController extends AppController {
             'contain' => array(
                 'Service' => array('fields' => array('name')),
                 'Theme' => array('fields' => array('libelle')),
-                'Typeacte' => array('fields' => array('libelle')),
+                'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
                     'Typeseance' => array('fields' => array('id', 'libelle', 'action'))),

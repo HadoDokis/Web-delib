@@ -55,7 +55,7 @@ class ActeursController extends AppController
         $this->set('acteurs', $acteurs);
     }
 
-    public function view($id = null)
+    public function admin_view($id = null)
     {
         $acteur = $this->Acteur->read(null, $id);
         if (empty($acteur)) {
@@ -63,7 +63,8 @@ class ActeursController extends AppController
             $this->redirect(array('action'=>'index'));
         } else{
             $this->set('acteur', $acteur);
-            $this->set('canEdit', $this->Droits->check($this->user_id, 'Acteurs:edit'));
+            $this->set('canEdit', 
+                    $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Acteurs', 'read'));
         }
     }
 

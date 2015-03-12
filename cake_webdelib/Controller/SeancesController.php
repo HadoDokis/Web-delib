@@ -365,7 +365,7 @@ class SeancesController extends AppController {
                 ),
             'contain' => array(
                 'Theme'=>array('fields'=>array('order','libelle')), 
-                'Service'=>array('fields'=>array('order','libelle')),  
+                'Service'=>array('fields'=>array('order','name')),  
                 ),
             'joins' => array($this->Deliberation->join('Deliberationseance',array( 'type' => 'INNER' ))),
             'order' => array("$sortby_champ  ASC")));
