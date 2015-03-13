@@ -263,7 +263,7 @@ $navbar = array(
                                 'check'=> array('Collectivites'),
                                 'title'=> 'Informations sur la collectivité',
                                 'icon' => 'building-o',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'collectivites', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'collectivites', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -271,7 +271,7 @@ $navbar = array(
                                 'check'=> array('Themes'),
                                 'title'=> 'Informations sur la collectivité',
                                 'icon' => 'bookmark',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'themes', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'themes', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -279,7 +279,7 @@ $navbar = array(
                                 'check'=> array('modelOdtValidator/modeltemplates'),
                                 'title'=> 'Informations sur la collectivité',
                                 'icon' => 'book',
-                                'url' => array('admin' => true, 'plugin'=>'model_odt_validator', 'controller'=>'modeltemplates', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>'model_odt_validator', 'controller'=>'modeltemplates', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -287,7 +287,7 @@ $navbar = array(
                                 'check'=> array('Sequences'),
                                 'title'=> 'Séquences des compteurs',
                                 'icon' => 'list-ol',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'sequences', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'sequences', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -295,7 +295,7 @@ $navbar = array(
                                 'check'=> array('Compteurs'),
                                 'title'=> 'Compteurs des types d\'actes',
                                 'icon' => 'dashboard',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'compteurs', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'compteurs', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -303,7 +303,7 @@ $navbar = array(
                                 'check'=> array('Compteurs'),
                                 'title'=> 'Gestion des types d\'acte',
                                 'icon' => 'book',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'typeactes', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeactes', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -311,7 +311,7 @@ $navbar = array(
                                 'check'=> array('Typeseance'),
                                 'title'=> 'Gestion des types de séance',
                                 'icon' => 'leanpub',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'typeseances', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeseances', 'action'=>'index')
                             ),
                         )
                     ),
@@ -340,7 +340,7 @@ $navbar = array(
                                 'check'=> array('Profils', 'create'),
                                 'title'=> 'Gestion des profils',
                                 'icon' => 'users',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'profils', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'profils', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -348,7 +348,7 @@ $navbar = array(
                                 'check'=> array('Services', 'create'),
                                 'title'=> 'Gestion des services',
                                 'icon' => 'sitemap',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'services', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'services', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -376,7 +376,7 @@ $navbar = array(
                                 'libelle' => 'Types',
                                 'check'=> array('Acteurs'),
                                 'title'=> 'Types des Acteurs',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'typeacteurs', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'typeacteurs', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -384,7 +384,7 @@ $navbar = array(
                                 'check'=> array('Acteurs'),
                                 'title'=> 'Gestion des acteurs',
                                 'icon' => 'list',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'acteurs', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'acteurs', 'action'=>'index')
                             ),
                         )
                     ),
@@ -396,14 +396,14 @@ $navbar = array(
                                 'libelle' => 'Projet',
                                 'check'=> array('Infosupdefs'),
                                 'title'=> 'Gestion des informations suplémentaires de projet',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Séance',
                                 'check'=> array('Infosupdefs'),
                                 'title'=> 'Gestion des informations suplémentaires de séance',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index_seance')
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index_seance')
                             ),
                         )
                     ),
@@ -416,7 +416,7 @@ $navbar = array(
                                 'check'=> array('Connecteurs'),
                                 'title'=> 'Gestion des connecteurs de l\'application',
                                 'icon' => 'connectdevelop',
-                                'url' => array('admin' => true, 'plugin'=>null, 'controller'=>'connecteurs', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix'=> 'admin' , 'plugin'=>null, 'controller'=>'connecteurs', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
