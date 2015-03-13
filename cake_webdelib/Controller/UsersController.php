@@ -152,7 +152,7 @@ class UsersController extends AppController {
         } else {
             $this->set('user', $user);
             $this->set('circuitDefautLibelle', $this->User->circuitDefaut($id, 'nom'));
-            $this->set('canEdit', $this->Droits->check($this->user_id, 'Users:edit'));
+            $this->set('canEdit', $this->Droits->check($this->Auth->user('id'), 'Users:edit'));
         }
     }
 
@@ -473,8 +473,8 @@ class UsersController extends AppController {
                 foreach ($userServices as $service)
                     $services[$service['UserService']['service_id']] = $this->Service->doList($service['UserService']['service_id']);
 
-                $this->Session->write('User.Service', $services);
-                $this->Session->write('User.service', key($services));
+                $this->Session->write('Auth.User.Service', $services);
+                $this->Session->write('Auth.User.ServiceEmetteur.id', key($services));
                 
                 include(ROOT . DS . APP_DIR . DS . 'Config' . DS . 'menu.ini.php');
                 $this->_purgeMenuDroit($navbar);
@@ -679,12 +679,12 @@ class UsersController extends AppController {
      */
     public function changeTheme() {
         if (empty($this->request->data)) {
-            $this->User->id = $this->user_id;
+            $this->User->id = $this->Auth->user('id');
             $this->request->data['User']['theme'] = $this->User->field('theme');
             if (empty($this->request->data['User']['theme']))
                 $this->request->data['User']['theme'] = 'Normal';
         } else {
-            $this->User->id = $this->user_id;
+            $this->User->id = $this->Auth->user('id');
             if ($this->User->saveField('theme', $this->data['User']['theme'])) {
                 $this->Session->write('user.User.theme', $this->data['User']['theme']);
                 $this->Session->setFlash('Nouveau thême utilisateur : ' . $this->data['User']['theme'], 'growl');
