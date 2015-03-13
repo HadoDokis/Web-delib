@@ -116,7 +116,10 @@ class ActeursController extends AppController
                 $this->request->data = $acteur;
             }
         } else {
-            $this->request->data['Acteur']['date_naissance'] = CakeTime::format( $this->data['date'], '%Y-%m-%d 00:00:00');
+            if (!empty($this->request->data['date'])) {
+                $this->request->data['Acteur']['date_naissance'] = CakeTime::format($this->request->data['date'], '%Y-%m-%d 00:00:00');
+            }
+
             if ($this->_controleEtSauve()) {
                 $this->Session->setFlash('L\'acteur \'' . $this->request->data['Acteur']['prenom'] . ' ' . $this->request->data['Acteur']['nom'] . '\' a été modifié', 'growl');
                 $sortie = true;
