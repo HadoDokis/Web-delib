@@ -81,8 +81,8 @@ $this->Html->tag('div', null, array('class' => 'panel-body')).
 $this->BsForm->input('Acteur.note', array('type' => 'textarea', 'label' => 'Note', 'cols' => '30')).
 $this->Bs->close(4);      
 
-if ($this->action == 'edit')
-    echo $this->BsForm->hidden('Acteur.id');
+echo $this->BsForm->hidden('Acteur.id');
+
 echo $this->Html2->btnSaveCancel('', $previous).
         $this->BsForm->end();
 ?>
