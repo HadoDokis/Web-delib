@@ -8,7 +8,7 @@ class ThemesController extends AppController {
     public $components = array(
         'Auth' => array(
             'mapActions' => array(
-                'admin_index' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view',
+                'read' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view',
                     'getLibelle','isEditable','view')
             )
         )
@@ -36,7 +36,7 @@ class ThemesController extends AppController {
             $this->redirect($this->referer());
         }
         $this->set('theme', $this->Theme->read(null, $id));
-        $this->set('user_id', $this->user_id);
+        $this->set('user_id', $this->Auth->user('id'));
         $this->set('Droits', $this->Droits);
     }
 
