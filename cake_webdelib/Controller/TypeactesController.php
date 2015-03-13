@@ -226,10 +226,16 @@ class TypeactesController extends AppController {
             'conditions' => array('Typeacte.id' => $id),
             'fields' => array('Typeacte.' . $type, 'Typeacte.' . $type . '_name')
         ));
-        $this->response->disableCache();
-        $this->response->body($typeacte['Typeacte'][$type]);
-        $this->response->type('application/odt');
-        $this->response->download($typeacte['Typeacte'][$type .'_name']);
-        return $this->response;
+        if (!empty($typeacte['Typeacte'][$type]))
+        {
+            $this->response->disableCache();
+            $this->response->body($typeacte['Typeacte'][$type]);
+            $this->response->type('application/vnd.oasis.opendocument.text');
+            $this->response->download($typeacte['Typeacte'][$type .'_name']);
+            return $this->response;
+        } else {
+            $this->Session->setFlash('Type d\'acte introuvable', 'growl');
+            return $this->redirect(array('controller' => 'typeactes', 'action' => 'edit', $id));
+        }
     }
 }
