@@ -54,7 +54,6 @@ $this->Html->tag('div', null, array('class' => 'panel-body'));
             $suppleant_id = null;
         echo $this->BsForm->input('Acteur.suppleant_id', array('empty' => true, 'label' => 'Élus', 'selected' => $suppleant_id, 'options' => $acteurs)).
 $this->Bs->close(2);
-
 echo $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
 $this->Html->tag('div', 'Type', array('class' => 'panel-heading')) .
 $this->Html->tag('div', null, array('class' => 'panel-body')).
