@@ -602,6 +602,27 @@ class BsHelper extends HtmlHelper {
 		return $out;
 	}
  
+
+/**
+ * Creation du panel
+ * 
+ * @param string $title set panel title
+ * @return string
+ */        
+        function panel($title="&nbsp;") {
+
+            $out = parent::div('panel panel-default') .
+                   parent::div('panel-heading', $title) . 
+                     parent::div('panel-body');
+            return $out;
+        }
+
+        function endPanel() {
+
+            return $this->close(2);
+
+        }
+
 /**
  * Set number of column for a table (<tr>)
  * 
