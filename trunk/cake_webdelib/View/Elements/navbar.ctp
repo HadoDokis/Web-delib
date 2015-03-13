@@ -89,7 +89,7 @@ $this->Navbar->link('Changer le format de sortie des éditions',
             array('escape'=>false));
 }
 $this->Navbar->link('Changer le service émetteur', 
-            array('admin' => false, 'plugin' => null, 'controller' => 'pages', 'action' => 'service'),
+            array('admin' => false, 'plugin' => null, 'controller' => 'users', 'action' => 'service'),
             array('escape'=>false));
 if ($this->permissions->check('changeUserMdp')) {
 $this->Navbar->link('Changer de mot de passe', 
