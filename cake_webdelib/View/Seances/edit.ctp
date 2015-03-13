@@ -106,7 +106,7 @@ if (!empty($infosupdefs))
                     echo '</span>';
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-                echo $this->BsForm->s($fieldName, $infosuplistedefs[$infosupdef['Infosupdef']['code']], array('label' => false, 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'class' => 'select2 selectone'));
+                echo $this->BsForm->select($fieldName, $infosuplistedefs[$infosupdef['Infosupdef']['code']], array('label' => false, 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'class' => 'select2 selectone'));
             } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
                 if (!$disabled) {
                     echo $this->BsForm->select($fieldName, $infosuplistedefs[$infosupdef['Infosupdef']['code']], 
