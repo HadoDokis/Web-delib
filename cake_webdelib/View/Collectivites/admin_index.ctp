@@ -16,4 +16,3 @@ echo $this->Bs->tag('h3', 'Information de votre collectivité') .
     $this->Bs->close()
 )).
 $this->Bs->endTable();
-?>

@@ -108,13 +108,10 @@ if ($USE_PASTELL) {
     'value'=>isset($date)?$date:''));
     echo $this->BsForm->select('multiRedactor',$redacteurs,array('label' => 'Autre(s) rédacteur(s)','title' => 'Ajouter un rédacteur ayant les droits d\'incérer le projet dans un circuit','class' => 'select2 selectone','multiple' => true, 'style' => 'width:100%')); 
     //if ($DELIBERATIONS_MULTIPLES)
-$this->BsForm->setLeft(0);
 echo $this->BsForm->checkbox('Deliberation.is_multidelib', array(
      'autocomplete' => 'off',
      'label' => 'Multi-Délibération',
  ));
-$this->BsForm->setLeft(3);
-   // $this->BsForm->setLeft(3);
 echo $this->Bs->tabClose().
 $this->Bs->tabPaneClose();
 

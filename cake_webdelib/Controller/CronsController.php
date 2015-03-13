@@ -166,7 +166,7 @@ class CronsController extends AppController {
             unset($this->request->data[$this->modelClass]['next_execution_heure']);
             $this->request->data[$this->modelClass]['plugin'] = strtolower($this->request->data[$this->modelClass]['plugin']);
             $this->request->data[$this->modelClass]['model'] = strtolower($this->request->data[$this->modelClass]['model']);
-            $this->request->data[$this->modelClass]['modified_user_id'] = $this->user_id;
+            $this->request->data[$this->modelClass]['modified_user_id'] = $this->Auth->user('id');
             if ($this->{$this->modelClass}->save($this->request->data)) {
                 $nomCron = $this->{$this->modelClass}->field('nom');
                 $this->Session->setFlash(__('La tâche planifiée ', true) . ' \'' . $nomCron . '\' ' . __('a été sauvegardée.', true), 'growl');
