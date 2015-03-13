@@ -5,10 +5,14 @@ class TypeactesController extends AppController {
     var $name = 'Typeactes';
     var $uses = array('Typeacte', 'ModelOdtValidator.Modeltemplate', 'Compteur', 'Nature');
     
-    public $components = array(
-        'Auth' => array(
+    public $components = array('Email', 'Gedooo', 'Conversion', 'Progress', 'S2low', 'ModelOdtValidator.Fido','SabreDav',
+            'Auth' => array(
             'mapActions' => array(
-                'create' => array('admin_add','admin_edit','admin_index','admin_view','admin_delete','admin_downloadgabarit')
+                'create' => array(
+                    'admin_add','admin_edit',
+                    'admin_index','admin_view',
+                    'admin_delete',
+                    'admin_deleteGabarit', 'admin_downloadGabarit')
             )
         )
     );
@@ -53,9 +57,6 @@ class TypeactesController extends AppController {
                         $this->Typeacte->invalidate('gabarit_projet_upload', 'Nom de fichier invalide : maximum 75 caractères');
                     $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_projet_name'] = $this->request->data['Typeacte']['gabarit_projet_upload']['name'];
-                } elseif ($this->request->data['Typeacte']['gabarit_projet_upload_erase']) {
-                    $this->request->data['Typeacte']['gabarit_projet'] = null;
-                    $this->request->data['Typeacte']['gabarit_projet_name'] = null;
                 }
 
                 if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4) {
@@ -63,9 +64,6 @@ class TypeactesController extends AppController {
                         $this->Typeacte->invalidate('gabarit_synthese_upload', 'Nom de fichier invalide : maximum 75 caractères');
                     $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_synthese_name'] = $this->request->data['Typeacte']['gabarit_synthese_upload']['name'];
-                } elseif ($this->request->data['Typeacte']['gabarit_synthese_upload_erase']) {
-                    $this->request->data['Typeacte']['gabarit_synthese'] = null;
-                    $this->request->data['Typeacte']['gabarit_synthese_name'] = null;
                 }
 
                 if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4) {
@@ -73,9 +71,6 @@ class TypeactesController extends AppController {
                         $this->Typeacte->invalidate('gabarit_acte_upload', 'Nom de fichier invalide : maximum 75 caractères');
                     $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_acte_name'] = $this->request->data['Typeacte']['gabarit_acte_upload']['name'];
-                } elseif (empty($this->request->data['Typeacte']['gabarit_acte_upload_erase'])) {
-                    $this->request->data['Typeacte']['gabarit_acte'] = null;
-                    $this->request->data['Typeacte']['gabarit_acte_name'] = null;
                 }
                 if (empty($this->Typeacte->validationErrors) && $this->Typeacte->save($this->request->data)) {
                     $this->Session->setFlash('Le type d\'acte \'' . $this->data['Typeacte']['name'] . '\' a été sauvegardé', 'growl');
@@ -85,10 +80,9 @@ class TypeactesController extends AppController {
                 }
             }
         }
-
-        if ($sortie)
+        if ($sortie) {
             $this->redirect($this->previous);
-        else {
+        } else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
             $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
             $this->set('models_docfinal', $this->Modeltemplate->getModelsByTypes(array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)));
@@ -100,7 +94,6 @@ class TypeactesController extends AppController {
 
     function admin_edit($id = null) {
         $sortie = false;
-
         if (empty($this->request->data)) {
             $this->request->data = $this->Typeacte->find('first', array(
                 'conditions' => array('Typeacte.id' => $id),
@@ -113,38 +106,25 @@ class TypeactesController extends AppController {
         } else {
             $this->Typeacte->set($this->request->data);
             if ($this->Typeacte->validates()) {
-
                 if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4) {
                     if (strlen($this->request->data['Typeacte']['gabarit_projet_upload']['name'])>75)
                         $this->Typeacte->invalidate('gabarit_projet_upload', 'Nom de fichier invalide : maximum 75 caractères');
-
                     $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_projet_name'] = $this->request->data['Typeacte']['gabarit_projet_upload']['name'];
-                } elseif (!empty($this->request->data['Typeacte']['gabarit_projet_upload_erase'])) {
-                    $this->request->data['Typeacte']['gabarit_projet'] = null;
-                    $this->request->data['Typeacte']['gabarit_projet_name'] = null;
                 }
 
                 if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4) {
                     if (strlen($this->request->data['Typeacte']['gabarit_synthese_upload']['name'])>75)
                         $this->Typeacte->invalidate('gabarit_synthese_upload', 'Nom de fichier invalide : maximum 75 caractères');
-
                     $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_synthese_name'] = $this->request->data['Typeacte']['gabarit_synthese_upload']['name'];
-                } elseif (!empty($this->request->data['Typeacte']['gabarit_synthese_upload_erase'])) {
-                    $this->request->data['Typeacte']['gabarit_synthese'] = null;
-                    $this->request->data['Typeacte']['gabarit_synthese_name'] = null;
                 }
 
                 if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4) {
                     if (strlen($this->request->data['Typeacte']['gabarit_acte_upload']['name'])>75)
                         $this->Typeacte->invalidate('gabarit_acte_upload', 'Nom de fichier invalide : maximum 75 caractères');
-
                     $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_acte_name'] = $this->request->data['Typeacte']['gabarit_acte_upload']['name'];
-                } elseif (!empty($this->request->data['Typeacte']['gabarit_acte_upload_erase'])) {
-                    $this->request->data['Typeacte']['gabarit_acte'] = null;
-                    $this->request->data['Typeacte']['gabarit_acte_name'] = null;
                 }
 
                 if (empty($this->Typeacte->validationErrors) && $this->Typeacte->save($this->data)) {
@@ -162,9 +142,9 @@ class TypeactesController extends AppController {
                 }
             }
         }
-        if ($sortie)
+        if ($sortie){
             $this->redirect($this->previous);
-        else {
+        }else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
             $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
             $this->set('models_docfinal', $this->Modeltemplate->getModelsByTypes(array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)));
@@ -173,9 +153,27 @@ class TypeactesController extends AppController {
                 1 => $this->Typeacte->libelleAction(1, true),
                 2 => $this->Typeacte->libelleAction(2, true)));
             $this->set('natures', $this->Typeacte->Nature->generateList('Nature.name'));
+            //remplie les champs files
+            $typeacte = $this->Typeacte->find('first', array(
+                'conditions' => array('Typeacte.id' => $id)));
+            $this->request->data = $typeacte;
+            $this->set('typeacte_id', $id);
+            if (!empty($this->request->data['Typeacte']['gabarit_projet']))
+            {
+                $this->set('file_gabarit_projet', $this->SabreDav->newFileDav($this->request->data['Typeacte']['gabarit_projet_name'], $this->request->data['Typeacte']['gabarit_projet']));
+            }
+            if (!empty($this->request->data['Typeacte']['gabarit_synthese']))
+            {
+                $this->set('file_gabarit_synthese', $this->SabreDav->newFileDav($this->request->data['Typeacte']['gabarit_synthese_name'], $this->request->data['Typeacte']['gabarit_synthese']));
+            }
+            if (!empty($this->request->data['Typeacte']['gabarit_acte']))
+            {
+                $this->set('file_gabarit_acte', $this->SabreDav->newFileDav($this->request->data['Typeacte']['gabarit_acte_name'], $this->request->data['Typeacte']['gabarit_acte']));
+            }
         }
     }
-
+    
+    
     function admin_delete($id = null) {
         $typeacte = $this->Typeacte->read('id, name', $id);
         if (empty($typeacte)) {
@@ -190,33 +188,48 @@ class TypeactesController extends AppController {
         $this->Session->setFlash($message, 'growl');
         $this->redirect(array('action' => 'index'));
     }
+    
+    public function admin_deleteGabarit($id,$type=null) {
+        $this->_deleteGabarit($id,$type);
+    }
 
-    function admin_downloadgabarit($id = null, $type = null) {
-        if (empty($id)) {
-            $this->Session->setFlash('identifiant incorrect', 'growl');
-            return $this->redirect(array('action' => 'index'));
-        }
-        if (empty($type) || !in_array($type, array('projet', 'synthese', 'acte'))) {
-            $this->Session->setFlash('Type de gabarit incorrect. Types de gabarit disponibles : projet, synthese, acte', 'growl');
-            return $this->redirect(array('action' => 'index'));
-        }
-
+    private function _deleteGabarit($id,$type=null) {
+        $type = 'gabarit_' . $type;
+        $this->Typeacte->id = $id;
         $typeacte = $this->Typeacte->find('first', array(
             'recursive' => -1,
             'conditions' => array('Typeacte.id' => $id),
-            'fields' => array('Typeacte.gabarit_' . $type)
+            'fields' => array('Typeacte.name')
         ));
-
-        if (!empty($typeacte)) {
-            $this->response->disableCache();
-            $this->response->body($typeacte['Typeacte']['gabarit_' . $type]);
-            $this->response->type('application/vnd.oasis.opendocument.text');
-            $this->response->download($typeacte['Typeacte']['gabarit_' . $type. '_name']);
-            return $this->response;
+        $data = array(
+            'name' => $typeacte['Typeacte']['name'],
+            $type => '',
+            $type . '_name' => ''
+        );
+        if ($this->Typeacte->save($data, false)) {
+            $this->Session->setFlash('Fichier supprimé !', 'growl');
+            return $this->redirect($this->previous);
         } else {
-            $this->Session->setFlash('Type d\'acte introuvable', 'growl');
-            return $this->redirect(array('action' => 'index'));
+            $this->Session->setFlash("Problème survenu lors de la suppression des débats généraux", 'growl', array('type' => 'error'));
+            return $this->redirect($this->here);
         }
     }
 
+    public function admin_downloadGabarit($id,$type=null) {
+        return $this->_downloadGabarit($id,$type);
+    }
+    
+    private function _downloadGabarit($id,$type=null) {
+        $type = 'gabarit_' . $type;
+        $typeacte = $this->Typeacte->find('first', array(
+            'recursive' => -1,
+            'conditions' => array('Typeacte.id' => $id),
+            'fields' => array('Typeacte.' . $type, 'Typeacte.' . $type . '_name')
+        ));
+        $this->response->disableCache();
+        $this->response->body($typeacte['Typeacte'][$type]);
+        $this->response->type('application/odt');
+        $this->response->download($typeacte['Typeacte'][$type .'_name']);
+        return $this->response;
+    }
 }
