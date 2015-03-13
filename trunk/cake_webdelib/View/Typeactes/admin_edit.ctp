@@ -1,139 +1,271 @@
 <?php
+
+echo $this->Html->script('/components/bootstrap-filestyle/src/bootstrap-filestyle.js');
+echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min') .
+     $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr') .
+     $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+
 $this->Html->addCrumb('Liste des types d\'acte', array('controller'=>$this->request['controller'],'action'=>'index'));
 
 if ($this->Html->value('Typeacte.id')) {
     echo $this->Bs->tag('h3', 'Modification d\'un type d\'acte');
     $this->Html->addCrumb('Modification d\'un type d\'acte');
-    echo $this->BsForm->create('Typeacte', array('controller' => 'typeactes', 'action' => 'edit', 'type' => 'post', $this->Html->value('Typeacte.id')));
+    echo $this->BsForm->create('Typeacte', array(
+        'controller' => 'typeactes', 
+        'action' => 'edit', 
+        'type' => 'file', 
+        $this->Html->value('Typeacte.id')));
 } else {
     echo $this->Bs->tag('h3', 'Ajout d\'un type d\'acte');
     $this->Html->addCrumb('Ajout d\'un type d\'acte');
-    echo $this->BsForm->create('Typeacte', array('controller' => 'typeactes', 'action' => 'add', 'type' => 'post', 'type' => 'file'));
+    echo $this->BsForm->create('Typeacte', array(
+        'controller' => 'typeactes', 
+        'action' => 'add', 
+        'type' => 'file'));
 }
-?>
+echo $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
+    $this->Html->tag('div', 'Informations générales', array('class' => 'panel-heading')) .
+    $this->Html->tag('div', null, array('class' => 'panel-body')) .
+    $this->BsForm->input('Typeacte.name', array(
+        'label' => 'Libellé <abbr title="obligatoire">*</abbr>',
+        'type'=> 'text')) .
+    $this->BsForm->select('Typeacte.compteur_id', $compteurs,
+    array(
+    'id' => 'Typeacte.nature_id',
+    'label' => 'Compteur <abbr title="obligatoire">*</abbr>', 
+    'class' => 'select2 selectone',
+    'empty' => (count($compteurs) > 1) && (!$this->Html->value('Typeacte.id')),
+    'default' => $this->Html->value('Typeacte.compteur_id'),
+    'inline' => true,
+    'autocomplete' => 'off'
+    )) .
+    $this->BsForm->select('Typeacte.nature_id', $natures,
+    array(
+    'id' => 'Typeacte.nature_id',
+    'label' => 'Nature <abbr title="obligatoire">*</abbr>', 
+    'class' => 'select2 selectone',
+    'empty' => true,
+    'inline' => true,
+    'autocomplete' => 'off',
+    'value' => !empty($this->request->data['Typeacte']['nature_id']) ? $this->request->data['Typeacte']['nature_id'] : false
+    )) .
+    $this->BsForm->checkbox('Typeacte.teletransmettre', array(
+        'label' => 'Télétransmettre', 
+        'div'=>false, 
+        'checked'=>($this->action == 'add')?true:false)) .
+$this->Bs->close(2) .
 
-<div class="demi">
-    <fieldset>
-        <legend>Informations générales</legend>
-        <?php echo $this->Form->input('Typeacte.name', array('label' => 'Libellé <abbr title="obligatoire">*</abbr>', 'size' => '40', 'type' => 'text')); ?>
-        <br/>
-        <?php echo $this->Form->input('Typeacte.compteur_id', array('label' => 'Compteur <abbr title="obligatoire">*</abbr>', 'options' => $compteurs, 'default' => $this->Html->value('Typeacte.compteur_id'), 'empty' => (count($compteurs) > 1) && (!$this->Html->value('Typeacte.id')))); ?>
-        <br/>
-        <?php
-        if (empty($selectedNatures) && !empty($this->request->data))
-            $selectedNatures = $this->request->data['Typeacte']['nature_id'];
-        echo $this->Form->input('Typeacte.nature_id', array('label' => 'Nature <abbr title="obligatoire">*</abbr>', 'options' => $natures, 'default' => $selectedNatures, 'empty' => false)); ?>
-        <br/>
-        <?php
-        if ($this->action == 'add')
-            echo $this->Form->input('Typeacte.teletransmettre', array('label' => 'Télétransmettre', 'div'=>false, 'checked'=>true));
-        else
-            echo $this->Form->input('Typeacte.teletransmettre', array('label' => 'Télétransmettre', 'div'=>false));
-        ?>
-    </fieldset>
-</div>
 
-<div class="demi">
-    <fieldset>
-        <legend>Modèles pour les éditions</legend>
-        <?php echo $this->Form->input('Typeacte.modeleprojet_id', array('label' => 'projet <abbr title="obligatoire">*</abbr>', 'options' => $models_projet, 'default' => $this->Html->value('Typeacte.modelprojet_id'), 'empty' => false)); ?>
-        <br/>
-        <?php echo $this->Form->input('Typeacte.modelefinal_id', array('label' => 'document final <abbr title="obligatoire">*</abbr>', 'options' => $models_docfinal, 'default' => $this->Html->value('Typeacte.modeldeliberation_id'), 'empty' => false)); ?>
-    </fieldset>
-</div>
-<div class="spacer"></div>
+$this->Html->tag('div', null, array('class' => 'panel panel-default')) .
+$this->Html->tag('div', 'Modèles pour les éditions', array('class' => 'panel-heading')) .
+$this->Html->tag('div', null, array('class' => 'panel-body')) .    
+    $this->BsForm->select('Typeacte.modeleprojet_id', $models_projet,
+    array(
+    'id' => 'Typeacte.nature_id',
+    'label' => 'Projet <abbr title="obligatoire">*</abbr>', 
+    'class' => 'select2 selectone',
+    'empty' => false,
+    'inline' => true,
+    'autocomplete' => 'off',
+    'value' => $this->Html->value('Typeacte.modelprojet_id')
+    )) .
+    $this->BsForm->select('Typeacte.modelefinal_id', $models_docfinal,
+    array(
+    'id' => 'Typeacte.nature_id',
+    'label' => 'Document final <abbr title="obligatoire">*</abbr>', 
+    'class' => 'select2 selectone',
+    'empty' => false,
+    'inline' => true,
+    'autocomplete' => 'off',
+    'value' => $this->Html->value('Typeacte.modeldeliberation_id')
+    )) .
+$this->Bs->close(2) .
 
-<div class="demi">
-    <fieldset>
-        <legend>Gabarits / Textes par défaut</legend>
-        <?php
-        echo $this->Form->input('Typeacte.gabarit_projet_upload', array(
-            'label' => 'Texte projet',
-            'type' => 'file',
-            'div' => array('id' => 'div_gabarit_projet')
-        ));
-        echo $this->Form->hidden('Typeacte.gabarit_projet_upload_erase', array('value' => '0'));
-        ?>
-        <div class="spacer"></div>
-        <?php
-        echo $this->Form->input('Typeacte.gabarit_synthese_upload', array(
-            'label' => 'Note synthese',
-            'type' => 'file',
-            'div' => array('id' => 'div_gabarit_synthese')
-        ));
-        echo $this->Form->hidden('Typeacte.gabarit_synthese_upload_erase', array('value' => '0'));
-        ?>
-        <div class="spacer"></div>
-        <?php
-        echo $this->Form->input('Typeacte.gabarit_acte_upload', array(
-            'label' => 'Texte acte',
-            'type' => 'file',
-            'div' => array('id' => 'div_gabarit_acte')
-        ));
-        echo $this->Form->hidden('Typeacte.gabarit_acte_upload_erase', array('value' => '0'));
-        ?>
-    </fieldset>
-</div>
-<div class="spacer"></div>
+$this->Bs->div('spacer') . $this->Bs->close() .
 
-<div class="submit">
-    <?php
-    echo $this->Form->hidden('Typeacte.id');
-    echo $this->Html2->btnSaveCancel('', array('action' => 'index'));
-    ?>
-</div>
-<?php $this->Form->end(); ?>
-<script type="application/javascript">
-    $(document).ready(function () {
-        <?php if ($this->action == 'edit' && !empty($this->request->data['Typeacte']['gabarit_projet'])) : ?>
-        var gabaritProjet = $('#TypeacteGabaritProjetUpload');
-        var btnEraseProjet = '<?php echo $this->Form->button('Effacer', array('class'=>'btn btn-mini btn-danger pull-right', 'id'=>'erase_gabarit_projet', 'type'=>'button', 'title'=>'Effacer le gabarit')); ?>';
-        gabaritProjet.hide();
-        gabaritProjet.prop('disabled', true);
-        gabaritProjet.before('<?php echo $this->Html->link($this->request->data['Typeacte']['gabarit_projet_name'], array('action'=>'downloadgabarit', $this->request->data['Typeacte']['id'], 'projet'), array('id'=>'link_gabarit_projet', 'download'=>$this->request->data['Typeacte']['gabarit_projet_name'])) ?>');
-        gabaritProjet.after(btnEraseProjet);
-        $('#erase_gabarit_projet').click(function () {
-            gabaritProjet.prop('disabled', false);
-            $('#link_gabarit_projet').remove();
-            gabaritProjet.val(null);
-            gabaritProjet.show();
-            $('#erase_gabarit_projet').remove();
-            $('#TypeacteGabaritProjetUploadErase').val('1');
-        });
-        <?php endif; ?>
 
-        <?php if ($this->action == 'edit' && !empty($this->request->data['Typeacte']['gabarit_synthese'])) : ?>
-        var gabaritSynthese = $('#TypeacteGabaritSyntheseUpload');
-        var btnEraseSynthese = '<?php echo $this->Form->button('Effacer', array('class'=>'btn btn-mini btn-danger pull-right', 'id'=>'erase_gabarit_synthese', 'type'=>'button', 'title'=>'Effacer le gabarit')); ?>';
-        gabaritSynthese.hide();
-        gabaritSynthese.prop('disabled', true);
-        gabaritSynthese.before('<?php echo $this->Html->link($this->request->data['Typeacte']['gabarit_synthese_name'], array('action'=>'downloadgabarit', $this->request->data['Typeacte']['id'], 'synthese'), array('id'=>'link_gabarit_synthese', 'download'=>$this->request->data['Typeacte']['gabarit_synthese_name'])) ?>');
-        gabaritSynthese.after(btnEraseSynthese);
-        $('#erase_gabarit_synthese').click(function () {
-            gabaritSynthese.prop('disabled', false);
-            $('#link_gabarit_synthese').remove();
-            gabaritSynthese.val(null);
-            gabaritSynthese.show();
-            $('#erase_gabarit_synthese').remove();
-            $('#TypeacteGabaritSyntheseUploadErase').val('1');
-        });
-        <?php endif; ?>
+$this->Html->tag('div', null, array('class' => 'panel panel-default')) .
+$this->Html->tag('div', 'Gabarits / Textes par défaut', array('class' => 'panel-heading')) .
+$this->Html->tag('div', null, array('class' => 'panel-body'));   
+    
+    //champ file projet
+    if (!empty($this->data['Typeacte']['gabarit_projet']))
+    {
+        echo $this->Bs->div('media').
+             $this->Bs->link($this->Bs->icon('file-text-o',array('4x')),'#',array('class'=>'media-left','escape'=>false)).
+             $this->Bs->div('media-body').
+             $this->Bs->tag('h4', $this->data['Typeacte']['gabarit_projet_name'] ,array('class'=>'media-heading')).
+            
+             $this->Bs->div('btn-group').
+             $this->Bs->btn('Telecharger' , array(
+                 'controller'=>'typeactes',
+                 'action'=>'downloadGabarit', 
+                 $typeacte_id, 'projet'), array(
+                 'type'=>'default',
+                 'size' => 'xs',
+                 'class'=>'media-left',
+                 'icon'=>'glyphicon glyphicon-download',
+             )).
+             $this->Bs->btn('Editer' , $file_gabarit_projet, array(
+                 'type'=>'primary',
+                 'size' => 'xs',
+                 'class'=>'media-left',
+                 'icon'=>'glyphicon glyphicon-edit',
+             )).
+             $this->Bs->btn('Supprimer' , array(
+                 'controller'=>'typeactes',
+                 'action'=>'deleteGabarit', $typeacte_id, 'projet'), array(
+                 'type'=>'danger',
+                 'size' => 'xs',
+                 'class'=>'media-left',
+                 'icon'=>'glyphicon glyphicon-floppy-remove',
+                 'confirm'=>'Voulez-vous vraiment supprimer '.$this->data['Typeacte']['gabarit_projet_name'].' du projet ?'
+            )).
+            $this->Bs->close(3).$this->Bs->tag('br/', null);
+    }
+    
+    echo $this->BsForm->setLeft(0) .
+    $this->Bs->row().
+    $this->Bs->col('xs8').
+    $this->BsForm->input('Typeacte.gabarit_projet_upload', 
+        array('label' => false, 
+            'type' => 'file', 
+            'data-buttonText'=>'Texte projet',
+            'data-iconName'=>'fa fa-file-text-o',
+            'data-badge'=> false,
+            'help' => 'Les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.',
+            'title' => 'Choisir un fichier', 
+            'class' => 'filestyle')).$this->Bs->close().
+    $this->Bs->col('xs4').
+    $this->Bs->div('btn-group btn-group-right').
+    $this->Bs->btn('Effacer' , '#TypeacteGabaritProjetUpload', array(
+        'type'=>'danger',
+        'class'=>'btn-danger-right',
+        'icon'=>'glyphicon glyphicon-floppy-remove',
+        'onclick'=>'$("#TypeacteGabaritProjetUpload").filestyle(\'clear\');',
+    )).
+    $this->Bs->close(3) .
+    $this->Bs->div('spacer') . $this->Bs->close();
+    
+    //champ file Synthese
+    if (!empty($this->data['Typeacte']['gabarit_synthese']))
+    {
+        echo $this->Bs->div('media').
+             $this->Bs->link($this->Bs->icon('file-text-o',array('4x')),'#',array('class'=>'media-left','escape'=>false)).
+             $this->Bs->div('media-body').
+             $this->Bs->tag('h4', $this->data['Typeacte']['gabarit_synthese_name'] ,array('class'=>'media-heading')).
+            
+             $this->Bs->div('btn-group').
+             $this->Bs->btn('Telecharger' , array(
+                 'controller'=>'typeactes',
+                 'action'=>'downloadGabarit', 
+                 $typeacte_id, 'synthese'), array(
+                 'type'=>'default',
+                 'size' => 'xs',
+                 'class'=>'media-left',
+                 'icon'=>'glyphicon glyphicon-download',
+             )).
+             $this->Bs->btn('Editer' , $file_gabarit_synthese, array(
+                 'type'=>'primary',
+                 'size' => 'xs',
+                 'class'=>'media-left',
+                 'icon'=>'glyphicon glyphicon-edit',
+             )).
+             $this->Bs->btn('Supprimer' , array(
+                 'controller'=>'typeactes',
+                 'action'=>'deleteGabarit', $typeacte_id, 'synthese'), array(
+                 'type'=>'danger',
+                 'size' => 'xs',
+                 'class'=>'media-left',
+                 'icon'=>'glyphicon glyphicon-floppy-remove',
+                 'confirm'=>'Voulez-vous vraiment supprimer '.$this->data['Typeacte']['gabarit_synthese_name'].' du projet ?'
+            )).
+            $this->Bs->close(3).$this->Bs->tag('br/', null);
+    }
+    echo $this->BsForm->setLeft(0) .
+    $this->Bs->row().
+    $this->Bs->col('xs8').
+    $this->BsForm->input('Typeacte.gabarit_synthese_upload', 
+        array('label' => false, 
+            'type' => 'file', 
+            'data-buttonText'=>'Texte synthese',
+            'data-iconName'=>'fa fa-file-text-o',
+            'data-badge'=> false,
+            'help' => 'Les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.',
+            'title' => 'Choisir un fichier', 
+            'class' => 'filestyle')).$this->Bs->close().
+    $this->Bs->col('xs4').
+    $this->Bs->div('btn-group btn-group-right').
+    $this->Bs->btn('Effacer' , '#TypeacteGabaritSyntheseUpload', array(
+        'type'=>'danger',
+        'class'=>'btn-danger-right',
+        'icon'=>'glyphicon glyphicon-floppy-remove',
+        'onclick'=>'$("#TypeacteGabaritSyntheseUpload").filestyle(\'clear\');',
+    )).
+    $this->Bs->close(3) .
+    $this->Bs->div('spacer') . $this->Bs->close();
+   
+    //champ file Acte
+    if (!empty($this->data['Typeacte']['gabarit_acte']))
+    {
+        echo $this->Bs->div('media').
+             $this->Bs->link($this->Bs->icon('file-text-o',array('4x')),'#',array('class'=>'media-left','escape'=>false)).
+             $this->Bs->div('media-body').
+             $this->Bs->tag('h4', $this->data['Typeacte']['gabarit_acte_name'] ,array('class'=>'media-heading')).
+            
+             $this->Bs->div('btn-group').
+             $this->Bs->btn('Telecharger' , array(
+                 'controller'=>'typeactes',
+                 'action'=>'downloadGabarit', 
+                 $typeacte_id, 'acte'), array(
+                 'type'=>'default',
+                 'size' => 'xs',
+                 'class'=>'media-left',
+                 'icon'=>'glyphicon glyphicon-download',
+             )).
+             $this->Bs->btn('Editer' , $file_gabarit_acte, array(
+                 'type'=>'primary',
+                 'size' => 'xs',
+                 'class'=>'media-left',
+                 'icon'=>'glyphicon glyphicon-edit',
+             )).
+             $this->Bs->btn('Supprimer' , array(
+                 'controller'=>'typeactes',
+                 'action'=>'deleteGabarit', $typeacte_id, 'acte'), array(
+                 'type'=>'danger',
+                 'size' => 'xs',
+                 'class'=>'media-left',
+                 'icon'=>'glyphicon glyphicon-floppy-remove',
+                 'confirm'=>'Voulez-vous vraiment supprimer '.$this->data['Typeacte']['gabarit_acte_name'].' du projet ?'
+            )).
+            $this->Bs->close(3).$this->Bs->tag('br/', null);
+    }
+    echo $this->BsForm->setLeft(0) .
+         $this->Bs->row().
+         $this->Bs->col('xs8').
+         $this->BsForm->input('Typeacte.gabarit_acte_upload', 
+            array('label' => false, 
+                'type' => 'file', 
+                'data-buttonText'=>'Texte acte',
+                'data-iconName'=>'fa fa-file-text-o',
+                'data-badge'=> false,
+                'help' => 'Les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.',
+                'title' => 'Choisir un fichier', 
+                'class' => 'filestyle')).$this->Bs->close().
+         $this->Bs->col('xs4').
+         $this->Bs->div('btn-group btn-group-right').
+         $this->Bs->btn('Effacer' , '#TypeacteGabaritActeUpload', array(
+            'type'=>'danger',
+            'class'=>'btn-danger-right',
+            'icon'=>'glyphicon glyphicon-floppy-remove',
+            'onclick'=>'$("#TypeacteGabaritActeUpload").filestyle(\'clear\');',
+         )).
+         $this->Bs->close(5) .
 
-        <?php if ($this->action == 'edit' && !empty($this->request->data['Typeacte']['gabarit_acte'])) : ?>
-        var gabaritActe = $('#TypeacteGabaritActeUpload');
-        var btnEraseActe = '<?php echo $this->Form->button('Effacer', array('class'=>'btn btn-mini btn-danger pull-right', 'id'=>'erase_gabarit_acte', 'type'=>'button', 'title'=>'Effacer le gabarit')); ?>';
-        gabaritActe.hide();
-        gabaritActe.prop('disabled', true);
-        gabaritActe.before('<?php echo $this->Html->link($this->request->data['Typeacte']['gabarit_acte_name'], array('action'=>'downloadgabarit', $this->request->data['Typeacte']['id'], 'acte'), array('id'=>'link_gabarit_acte', 'download'=>$this->request->data['Typeacte']['gabarit_acte_name'])) ?>');
-        gabaritActe.after(btnEraseActe);
-        $('#erase_gabarit_acte').click(function () {
-            gabaritActe.prop('disabled', false);
-            $('#link_gabarit_acte').remove();
-            gabaritActe.val(null);
-            gabaritActe.show();
-            $('#erase_gabarit_acte').remove();
-            $('#TypeacteGabaritActeUploadErase').val('1');
-        });
-        <?php endif; ?>
-    });
-</script>
+$this->Bs->div('spacer') . $this->Bs->close() .
+
+$this->Bs->div('submit') .
+    $this->Form->hidden('Typeacte.id') .
+    $this->Html2->btnSaveCancel('', array('action' => 'index', 'class' => 'btn btn-primary col-md-offset-5')) .
+$this->Bs->close() .
+$this->Form->end();
