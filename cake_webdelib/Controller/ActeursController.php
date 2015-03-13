@@ -101,9 +101,10 @@ class ActeursController extends AppController
         if (empty($this->data)) {
             $acteur=$this->Acteur->read(null, $id);
             
-            if (!empty($acteur['Acteur']['date_naissance']))
+            if (!empty($acteur['Acteur']['date_naissance'])) {
                 $acteur['Acteur']['date_naissance'] = date('d/m/Y', strtotime($acteur['Acteur']['date_naissance']));
-            
+            }
+
             $this->set('acteurs', $this->Acteur->generateListElus());
             $this->set('acteur', $acteur);
             if (empty($acteur)) {
@@ -120,7 +121,21 @@ class ActeursController extends AppController
                 $this->request->data['Acteur']['date_naissance'] = CakeTime::format($this->request->data['date'], '%Y-%m-%d 00:00:00');
             }
 
-            if ($this->_controleEtSauve()) {
+            if (!empty($this->request->data['Acteur']['typeacteur_id'])) {
+                if ($this->Acteur->Typeacteur->field('elu', array('id' => $this->request->data['Acteur']['typeacteur_id']))) {
+                    // pour un élu : initialisation de 'position' si non définie
+                    if (!$this->request->data['Acteur']['position']) {
+                        $this->request->data['Acteur']['position'] = $this->Acteur->getPostionMaxParActeursElus() + 1;
+                    }
+                } else {
+                    // pour un non élu : suppression des informations éventuellement saisies (service, position, date naissance)
+                    if (array_key_exists('Service', $this->request->data))
+                        $this->request->data['Service']['Service'] = array();
+                    $this->request->data['Acteur']['position'] = 999;
+                }
+            }
+
+            if ($this->Acteur->save($this->request->data)) {
                 $this->Session->setFlash('L\'acteur \'' . $this->request->data['Acteur']['prenom'] . ' ' . $this->request->data['Acteur']['nom'] . '\' a été modifié', 'growl');
                 $sortie = true;
             } else {
@@ -134,28 +149,14 @@ class ActeursController extends AppController
         if ($sortie)
             $this->redirect(array('action'=>'index'));
         else {
-            $this->Acteur->Typeacteur->recursive = 0;
-            $this->set('typeacteurs', $this->Acteur->Typeacteur->find('all', array('fields' => array('id', 'nom', 'elu'))));
+            $this->set('typeacteurs', $this->Acteur->Typeacteur->find('list', array(
+                'fields' => array('id', 'nom'),
+                'recursive'=>-1
+                ))
+            );
             $this->set('services', $this->Acteur->Service->generateTreeList(array('Service.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
             if (isset($date)) $this->set('date', $date);
         }
-    }
-
-    public function _controleEtSauve()
-    {
-        if (!empty($this->request->data['Acteur']['typeacteur_id'])) {
-            if ($this->Acteur->Typeacteur->field('elu', 'id = ' . $this->request->data['Acteur']['typeacteur_id'])) {
-                // pour un élu : initialisation de 'position' si non définie
-                if (!$this->request->data['Acteur']['position'])
-                    $this->request->data['Acteur']['position'] = $this->Acteur->getPostionMaxParActeursElus() + 1;
-            } else {
-                // pour un non élu : suppression des informations éventuellement saisies (service, position, date naissance)
-                if (array_key_exists('Service', $this->request->data))
-                    $this->request->data['Service']['Service'] = array();
-                $this->request->data['Acteur']['position'] = 999;
-            }
-        }
-        return $this->Acteur->save($this->request->data);
     }
 
     /* dans le controleur car utilisé dans la vue index pour l'affichage */
