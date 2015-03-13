@@ -66,13 +66,13 @@ $this->BsForm->select('Acteur.typeacteur_id', $typeacteurs, array(//data[Acteur]
 
 echo $this->BsForm->input('Acteur.position', array('label' => 'Ordre dans le conseil', 'size' => '3')) .
 $this->BsForm->select('Service.Service',$services,  array('label' => 'Délégation(s)', 'default' => $selectedServices, 'multiple' => 'multiple', 'class' => 'selectMultiple', 'empty' => true, 'escape' => false)); 
-echo $this->BsForm->datetimepicker('date', array('language'=>'fr', 'autoclose'=>'true','format' => 'dd/mm/yyyy','startView'=>'decade','minView'=>'day'), array(
+echo $this->BsForm->datetimepicker('date_naissance', array('language'=>'fr', 'autoclose'=>'true','format' => 'dd/mm/yyyy','startView'=>'decade','minView'=>'day'), array(
     'label' => 'Date de naissance',
     'title' => 'Choisissez une date',
     'style' => 'cursor:pointer',
     'help' => 'Cliquez sur le champs ci-dessus pour choisir la date',
     'readonly' => 'readonly',
-    'value'=>isset($date)?$date:'')).
+    'value'=>isset($acteur['Acteur']['date_naissance'])?$acteur['Acteur']['date_naissance']:'')).
 $this->Bs->close(2);
 
 echo $this->Html->tag('div', null, array('class' => 'panel panel-default')) .

@@ -18,7 +18,7 @@ echo $this->Bs->tag('h3', 'Liste des acteurs') .
 foreach ($acteurs as $acteur) {
     $service='';
     foreach ($acteur['Service'] as $aService) 
-        $service.=$aService['libelle'].$this->Html->tag(null, '<br />');
+        $service.=$aService['name'].$this->Html->tag(null, '<br />');
           
     echo $this->Bs->tableCells(array(
         $acteur['Acteur']['salutation'],

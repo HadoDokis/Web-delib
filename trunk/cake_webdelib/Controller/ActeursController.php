@@ -117,8 +117,8 @@ class ActeursController extends AppController
                 $this->request->data = $acteur;
             }
         } else {
-            if (!empty($this->request->data['date'])) {
-                $this->request->data['Acteur']['date_naissance'] = CakeTime::format($this->request->data['date'], '%Y-%m-%d 00:00:00');
+            if (!empty($this->request->data['date_naissance'])) {
+                $this->request->data['Acteur']['date_naissance'] = CakeTime::format($this->request->data['date_naissance'], '%Y-%m-%d 00:00:00');
             }
 
             if (!empty($this->request->data['Acteur']['typeacteur_id'])) {
@@ -155,7 +155,7 @@ class ActeursController extends AppController
                 ))
             );
             $this->set('services', $this->Acteur->Service->generateTreeList(array('Service.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
-            if (isset($date)) $this->set('date', $date);
+            //if (isset($date_naissance)) $this->set('date_naissance', $date_naissance);
         }
     }
 

@@ -19,7 +19,7 @@ $panel_left = '<b>Identité : </b>'.$acteur['Acteur']['salutation'] . ' ' . $act
 $panel_right = '<b>Type : </b>' . $acteur['Typeacteur']['nom'] . '<br>' .
                ($acteur['Typeacteur']['elu'] ? '<b>Numéro d\'ordre dans le conseil : </b>'. 
                $acteur['Acteur']['position'] . '<br>' . 
-               '<b>Délégations : </b>' . implode(',', $services).'<br>' . 
+               '<b>Délégations : </b>' . (!empty($service) ? implode(',', $services) : '').'<br>' . 
                '<b>Date Naissance : </b>' . $acteur['Acteur']['date_naissance'] . '<br>' :  '');
 
 $panel_bottom = $this->Bs->row() .
