@@ -1,45 +1,22 @@
 <?php
-echo $this->Bs->tag('h3', 'Séquence');
-?>
-<div class="panel panel-default">
-    <div class="panel-heading">Fiche S&eacute;quence: <?php echo $sequence['Sequence']['nom'] ?></div>
-    <div class="panel-body">
-<div class="imbrique">
-	<div class="gauche">
-		<dt>Libelle</dt>
-		<dd>&nbsp;<?php echo $sequence['Sequence']['nom']?></dd>
-	</div>
-	<div class="droite">
-		<dt>Commentaire</dt>
-		<dd>&nbsp;<?php echo $sequence['Sequence']['commentaire']?></dd>
-	</div>
-</div>
 
-<div class="imbrique">
-	<div class="gauche">
-		<dt>Num&eacute;ro de la s&eacute;quence</dt>
-		<dd>&nbsp;<?php echo $sequence['Sequence']['num_sequence']?></dd>
-	</div>
-</div>
+$panel_left = '<b>Libelle : </b>'.$sequence['Sequence']['nom'].'<br>' .
+              '<b>Numéro de la séquence : </b>'.$sequence['Sequence']['num_sequence'].'<br>' .
+              '<b>Date de création : </b>'.$sequence['Sequence']['created'].'<br>';
+$panel_right = '<b>Commentaire : </b>'.$sequence['Sequence']['commentaire'].'<br>' .
+               '<b>Date de modification : </b>'.$sequence['Sequence']['modified'].'<br>';
 
-<div class="imbrique">
-	<div class="gauche">
-		<dt>Date de cr&eacute;ation</dt>
-		<dd>&nbsp;<?php echo $sequence['Sequence']['created']?></dd>
-	</div>
-	<div class="droite">
-		<dt>Date de modification</dt>
-		<dd>&nbsp;<?php echo $sequence['Sequence']['modified']?></dd>
-	</div>
-</div>
-
-</dl>        </ul>
-
-    <br/>
-<?php
-echo $this->Bs->row().
-$this->Bs->col('md4 of5');
-echo $this->Bs->div('btn-group', null,array('id'=>"actions_fiche" )) .
-    $this->Html2->btnCancel(),
-    $this->Bs->btn('Modifier', array('controller' => 'sequences', 'action' => 'edit', $sequence['Sequence']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-    $this->Bs->close(6);
+echo $this->Bs->tag('h3', 'Séquence') .
+$this->Bs->panel('Fiche séquence : '.$sequence['Sequence']['nom']) .
+    $this->Bs->row() .
+    $this->Bs->col('xs6').$panel_left .
+    $this->Bs->close() .
+    $this->Bs->col('xs6').$panel_right .
+    $this->Bs->close(2) .
+$this->Bs->endPanel() .
+$this->Bs->row() .
+$this->Bs->col('md4 of5') .
+$this->Bs->div('btn-group', null,array('id'=>"actions_fiche" )) .
+$this->Html2->btnCancel() .
+$this->Bs->btn('Modifier', array('controller' => 'sequences', 'action' => 'edit', $sequence['Sequence']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+$this->Bs->close(6);
