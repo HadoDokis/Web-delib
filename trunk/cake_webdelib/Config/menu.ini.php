@@ -291,7 +291,7 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Types d\'acte',
-                                'check'=> array('Compteurs'),
+                                'check'=> array('Typesactes'),
                                 'title'=> 'Gestion des types d\'acte',
                                 'icon' => 'book',
                                 'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeactes', 'action'=>'index')
@@ -299,7 +299,7 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Types de séance',
-                                'check'=> array('Typeseance'),
+                                'check'=> array('Typeseances'),
                                 'title'=> 'Gestion des types de séance',
                                 'icon' => 'leanpub',
                                 'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeseances', 'action'=>'index')
