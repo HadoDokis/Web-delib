@@ -58,16 +58,7 @@ $navbar = array(
                     'check'=> array('Deliberations/projetsMonService'),
                     'title'=> 'Projets rédigés par mon service',
                     'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'projetsMonService')
-                ),
-                array('html' => 'divider'),
-                array(
-                    'html' => 'link',
-                    'libelle' => 'Rechercher',
-                    'check'=> array('Deliberations/mesProjetsRecherche', array('create','read')),
-                    'title'=> 'Parmi les projets qui sont dans mes circuits d\'élaboration et de validation ou que j\'ai créés',
-                    'icon' => 'search',
-                    'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'mesProjetsRecherche')
-                ),
+                )
             )
     ),
     'Tous les projets'=>array(
@@ -157,16 +148,16 @@ $navbar = array(
             array('html' => 'divider'),
             array(
                 'html' => 'link',
-                'libelle' => 'Rechercher',
-                'check'=> array('Deliberations/tousLesProjetsRecherche'),
-                'title'=> 'Rechercher parmi tous les projets',
+                'libelle' => 'Tableau de bord',
+                'check'=> array('Deliberations/board'),
+                'title'=> 'Tableau de bord de tous les projets',
                 'icon' => 'search',
-                'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'tousLesProjetsRecherche')
+                'url' => array('admin' => false, 'plugin'=>null, 'controller'=>'deliberations', 'action'=>'board')
             ),
         )
     ),
     'Seances'=>array(
-    'title' => '',//FIX
+    'title' => 'Gestion des Séances en cours',
     'subMenu' => array(
             array(
                 'html' => 'link',
@@ -215,7 +206,7 @@ $navbar = array(
             array(
                 'html' => 'link',
                 'libelle' => 'Signatures',
-                'check'=> array('Deliberations/sendToParapheur'),
+                'check'=> array('sendToParapheur'),
                 'title'=> 'Signature des délibérations',
                 'icon' => 'certificate',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'Deliberations', 'action' => 'sendToParapheur')
@@ -224,7 +215,7 @@ $navbar = array(
             array(
                 'html' => 'link',
                 'libelle' => 'A télétransmettres',
-                'check'=> array('Deliberations/toSend', 'read'),
+                'check'=> array('Deliberations/toSend'),
                 'title'=> 'Envoi des délibérations au contrôle de légalité',
                 'icon' => 'envelope',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'Deliberations', 'action' => 'toSend')
@@ -232,7 +223,7 @@ $navbar = array(
             array(
                 'html' => 'link',
                 'libelle' => 'Télétransmises',
-                'check'=> array('Deliberations/transmit'),
+                'check'=> array('Deliberations/toSend'),
                 'title'=> 'Délibérations télétransmises au contrôle de légalité',
                 'icon' => 'institution',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'Deliberations', 'action' => 'transmit')
@@ -241,7 +232,7 @@ $navbar = array(
             array(
                 'html' => 'link',
                 'libelle' => 'Versement SAE',
-                'check'=> array('Deliberations/sendToSae'),
+                'check'=> array('sendToSae'),
                 'title'=> 'Envoi des délibérations au SAE',
                 'icon' => 'archive',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'Deliberations', 'action' => 'sendToSae')
@@ -380,7 +371,7 @@ $navbar = array(
                             ),
                             array(
                                 'html' => 'link',
-                                'libelle' => 'Profils',
+                                'libelle' => 'Liste',
                                 'check'=> array('Acteurs'),
                                 'title'=> 'Gestion des acteurs',
                                 'icon' => 'list',
