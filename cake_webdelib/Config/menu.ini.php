@@ -291,7 +291,7 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Types d\'acte',
-                                'check'=> array('Typesactes'),
+                                'check'=> array('Typeactes'),
                                 'title'=> 'Gestion des types d\'acte',
                                 'icon' => 'book',
                                 'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeactes', 'action'=>'index')
