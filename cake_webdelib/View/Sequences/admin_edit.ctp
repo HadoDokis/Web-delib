@@ -1,37 +1,60 @@
 <?php
 if ($this->Html->value('Sequence.id')) {
-    echo $this->Bs->tag('h3', 'Modification d\'une séquence');
-    echo $this->Form->create('Sequence', array('url' => '/sequences/edit/' . $this->Html->value('Sequence.id'), 'type' => 'post'));
+    echo $this->Bs->tag('h3', 'Modification d\'une séquence') .
+    $this->Form->create('Sequence', array(
+         'admin' => 'true',
+         'prefix' => 'admin',
+         'url' => array(
+             'controller' => 'sequences', 
+             'action' => 'edit'
+             ), 
+        'type' => 'post'));
 } else {
-    echo $this->Bs->tag('h3', 'Ajout d\'une séquence');
-    echo $this->Form->create('Sequence', array('url' => '/sequences/add/', 'type' => 'post'));
+    echo $this->Bs->tag('h3', 'Ajout d\'une séquence') .
+    $this->Form->create('Sequence', array(
+         'admin' => 'true',
+         'prefix' => 'admin',
+         'url' => array(
+             'controller' => 'sequences', 
+             'action' => 'add'
+             ), 
+        'type' => 'post'));
 }
-?>
 
-<div class="required">
-    <?php echo $this->Form->input('Sequence.nom', array('label' => 'Nom <acronym title="obligatoire">(*)</acronym>', 'size' => '60')); ?>
-</div>
-<br/>
-<div class="required">
-    <?php echo $this->Form->input('Sequence.commentaire', array('label' => 'Commentaire', 'size' => '100')); ?>
-</div>
-<br/>
-<div class="required">
-    <?php
-    if (Configure::read('INIT_SEQ') && $this->action == 'add')
-        echo $this->Form->input('Sequence.num_sequence', array('label' => 'Num&eacute;ro de s&eacute;quence', 'size' => '10', 'value' => 0));
-    elseif ($this->action == 'edit')
-        echo $this->Form->input('Sequence.num_sequence', array('label' => 'Num&eacute;ro de s&eacute;quence', 'size' => '10', 'disabled' => true));
-    elseif ($this->action == 'add')
-        echo $this->Form->input('Sequence.num_sequence', array('label' => 'Num&eacute;ro de s&eacute;quence', 'size' => '10', 'readonly' => true, 'value' => 0));
-    ?>
-</div>
-<br/><br/>
-<div class="submit">
-    <?php
-    echo $this->Form->hidden('Typeacte.id');
-    echo $this->Html2->btnSaveCancel('', array('action' => 'index'));
-    ?>
-</div>
+echo $this->Bs->div('required') .
+$this->BsForm->input('Sequence.nom', array(
+    'label' => 'Nom <acronym title="obligatoire">(*)</acronym>')) .       
+$this->Bs->close() . 
+$this->Bs->div('spacer').$this->Bs->close() . 
+$this->Bs->div('required') .
+$this->BsForm->input('Sequence.commentaire', array(
+    'label' => 'Commentaire')) .
+$this->Bs->close() . 
+$this->Bs->div('spacer').$this->Bs->close() . 
+$this->Bs->div('required');
 
-<?php echo $this->Form->end(); ?>
+if (Configure::read('INIT_SEQ') && $this->action == 'add')
+    echo $this->BsForm->input(
+            'Sequence.num_sequence', array(
+                'label' => 'Num&eacute;ro de s&eacute;quence', 
+                'value' => 0));
+elseif ($this->action == 'edit')
+    echo $this->BsForm->input(
+            'Sequence.num_sequence', array(
+                'label' => 'Num&eacute;ro de s&eacute;quence', 
+                'disabled' => true));
+elseif ($this->action == 'add')
+    echo $this->BsForm->input(
+            'Sequence.num_sequence', array(
+                'label' => 'Num&eacute;ro de s&eacute;quence', 
+                'type' => 'number',
+                'readonly' => true, 
+                'value' => 0));
+
+$this->BsForm->setLeft(5);
+echo $this->Bs->close() . 
+$this->Bs->div('spacer').$this->Bs->close() . 
+$this->Form->hidden('Sequence.id') .
+$this->Html2->btnSaveCancel('', $previous, 'Enregistrer', 'Enregistrer') .
+$this->Form->end();
+
