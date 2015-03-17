@@ -67,7 +67,7 @@ class AppController extends Controller {
                                         'files/',
                 )
             ),
-        //'DebugKit.Toolbar'
+        'DebugKit.Toolbar'
         );
     
     public $helpers = array(
@@ -128,11 +128,11 @@ class AppController extends Controller {
                 if (in_array($controllerAction, $Pages)) {
                     return true;
                 } elseif ($controllerAction != 'Deliberations:delete') {
-                    if (!$this->Droits->check($this->user_id, $controllerAction)) {
+                    if (!$this->Droits->check($this->Auth->user('id'), $controllerAction)) {
                         $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : $controllerAction", 'growl', array('type' => 'erreur'));
                         return $this->redirect($this->previous);
                     } else
-                        $this->log("{$this->user_id} => $controllerAction", 'trace');
+                        $this->log("{$this->Auth->user('id')} => $controllerAction", 'trace');
                 }
             }
         }
@@ -146,8 +146,7 @@ class AppController extends Controller {
         if ($this->Session->check('User')) {
             $this->set('infoUser', $this->Session->read('Auth.User.prenom') . ' ' . $this->Session->read('Auth.User.nom'));
             $this->set('collectivite', array('nom'=> $this->Session->read('Collective.nom')));
-            $this->user_id = $this->Session->read('User.id');
-            $this->set('user_id', $this->user_id);
+            $this->set('user_id', $this->Auth->user('id'));//FIX
             /*
             if ($this->Session->check('User.theme')) {
                 $this->theme = $this->Session->read('User.theme');
@@ -179,6 +178,7 @@ class AppController extends Controller {
         App::uses('Component', 'Controller');
         App::uses('ComponentCollection', 'Controller');
         App::uses('CrudAuthorize', 'AuthManager.Controller/Component/Auth');
+        
         $collection = new ComponentCollection();
         $CrudAuthorize = new CrudAuthorize($collection);
         
@@ -195,6 +195,7 @@ class AppController extends Controller {
         if (isset($this->request->params['admin']) && $user['Profil']['role_id'] !== 2) {
             return false;
         }
+        
         // Par défaut n'autorise pas
         return $CrudAuthorize->authorize(array('id' => $this->Auth->user('id')), $this->request);
     }
