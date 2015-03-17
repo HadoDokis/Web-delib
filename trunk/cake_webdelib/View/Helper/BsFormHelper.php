@@ -60,6 +60,16 @@ class BsFormHelper extends FormHelper {
 	}
         
 /**
+ * Reset the dafault value of $left and $right
+ *
+ * @return void
+ */
+	public function setMax() {
+		$this->__left = 0;
+                $this->__right = 12;
+	}
+        
+/**
  * Return the current value of $_left
  * 
  * @return int

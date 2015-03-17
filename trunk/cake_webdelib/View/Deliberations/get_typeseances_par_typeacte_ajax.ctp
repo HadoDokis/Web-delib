@@ -1,19 +1,18 @@
 <?php
 
 if (!empty($typeseances)){
- echo $this->BsForm->input('Typeseance', array(
+ echo $this->BsForm->select('Deliberation.Seance.Typeseance', $typeseances, array(
                  'options' => $typeseances,
-                 'id' => 'TypeseanceTypeseance',
-                 'name' => 'data[Typeseance][Typeseance]',
-                 'type' => 'select',
+                 'class' => 'select2 selectmultiple',
                  'label' => 'Types de séance',
+                 'placeholder'=> __('Choisir un type de séance'),
                  'onchange' => "updateDatesSeances(this);",
-                 'multiple' => true));    
-echo $this->Bs->scriptBlock('
-                 $("#TypeseanceTypeseance").select2({
+                 'multiple' => true)
+         );
+ echo $this->Bs->scriptBlock('
+                 $("#DeliberationSeanceTypeseance").select2({
                      width: "100%",
                      allowClear: true,
-                     placeholder: "Selection vide"
                  });
-                   ');
+    ');
 }

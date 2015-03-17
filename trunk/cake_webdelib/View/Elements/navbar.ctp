@@ -53,8 +53,45 @@ if ($this->fetch('filtre')){
             'admin'=>false,
             'plugin' => null,
             'controller' => 'deliberations',
-            'action' => 'quicksearch')));
+            'action' => 'search')));
+ 
+    $block.= $this->BsForm->hidden('type', array('value'=>'quick'));
+    $this->BsForm->setMax();
     $block.= '<div class="form-group">';
+    $block.= $this->BsForm->inputGroup('User.search', array(array(
+                                'content'=>'',
+                                'id' => 'search_tree_button',
+                                'icon'=>'glyphicon glyphicon-search',
+                                'title' => __('Rechercher un service'),
+                                'type' => 'button',
+                                'state' => 'primary',
+    ), array(
+    'content'=>'<span class="caret"></span>',
+                                'class' => 'dropdown-toggle',
+                                'title' => __('Option de recherche'),
+                                'data-toggle' => 'dropdown',
+                                'icon'=>'glyphicon glyphicon-cog',
+                                'after'=>'<ul class="dropdown-menu dropdown-menu-right" role="menu">
+            <li><a id="search_tree_erase_button" title="Remettre à zéro la recherche">Effacer la recherche</a></li>
+            <li class="divider"></li>
+            <li>'.$this->Bs->btn('Recherche détaillée', array(
+                'admin'=>false,
+                'prefix'=> null,
+                'controller'=>'deliberations', 'action'=>'search', 'all'),
+                    array('title'=>'Recherche détaillée')).'</i></li>
+        </ul>',
+                                'type' => 'button',
+                                'state' => 'default')
+    ), array(
+        'placeholder'=>__('Rechercher'),
+        'class' => 'form-control span2',
+        'autocomplete' => 'off'
+    ), array('multiple'=>true, 'side'=>'right', 
+        ));
+    $block.= '</div>';
+    $this->BsForm->setDefault();
+    
+    /*$block.= '<div class="form-group">';
     $block.= $this->Form->input('User.search', array(
         'class' => 'form-control span2',
         'div' => false,
@@ -62,7 +99,17 @@ if ($this->fetch('filtre')){
         'id' => 'searchInput',
         'placeholder' => 'Rechercher',
         'autocomplete' => 'off'));
-    $block.= '</div>';
+    $block.= '</div>';*/
+         
+    /*block.= '<div class="form-group">';
+    $block.= $this->Form->input('User.search', array(
+        'class' => 'form-control span2',
+        'div' => false,
+        'label' => false,
+        'id' => 'searchInput',
+        'placeholder' => 'Rechercher',
+        'autocomplete' => 'off'));
+    $block.= '</div>';*/
     $block.= $this->Form->end();
      $this->Navbar->block($block, array('list'=>false));
      
@@ -106,16 +153,4 @@ $this->Navbar->link('Se déconnecter',
             array('escape'=>false));
 $this->Navbar->endMenu();
 
-
-
-//        'id' => 'quickSearch',
-//        'role'=>'search',
-//        'url' => array(
-//            'plugin' => null,
-//            'controller' => 'deliberations',
-//            'action' => 'quicksearch',
-//        )),
-//        'placeholder' => 'Rechercher',
-//        'autocomplete' => 'off'
-//                
 echo $this->Navbar->end(true);

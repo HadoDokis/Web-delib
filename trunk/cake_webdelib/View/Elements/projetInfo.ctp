@@ -2,7 +2,7 @@
 echo    $this->Bs->div('well').
             $this->Bs->row().
                 $this->Bs->col('xs6')
-                    .'<b>Service émetteur :</b> ' . $projet['Service']['libelle'] . $this->Bs->tag('br /')
+                    .'<b>Service émetteur :</b> ' . $projet['Service']['name'] . $this->Bs->tag('br /')
                     .'<b>Rédacteur :</b> ' . $this->Html->link($projet['Redacteur']['prenom'] . ' ' . $projet['Redacteur']['nom'], array('controller'=> 'users', 'action'=>'view', $projet['Redacteur']['id']))
                 .$this->Bs->close().
                 $this->Bs->col('xs6')

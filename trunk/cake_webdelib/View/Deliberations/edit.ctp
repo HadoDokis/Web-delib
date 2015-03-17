@@ -58,14 +58,13 @@ $this->Bs->close(3);
 
 echo $this->Bs->row().
     $this->Bs->col('xs6');
-echo    $this->BsForm->input('Deliberation.typeacte_id', array(
+echo    $this->BsForm->select('Deliberation.typeacte_id', $typeActes, array(
             'label' => 'Type d\'acte <abbr title="obligatoire">*</abbr>',
-            'options' => $this->Session->read('user.Nature'),
-            'empty' => true,
-            'id' => 'listeTypeactesId',
-            'onChange' => "updateTypeseances(this);",
             'escape' => false,
-            'required'
+            'class' => 'select2 selectone',
+            'required' => true,
+            'empty' => false,
+            'selected'=> $this->Html->value('Deliberation.typeacte_id')
         )).
 $this->BsForm->input('Deliberation.objet', array(
     'type' => 'textarea', 
@@ -78,43 +77,26 @@ $this->BsForm->input('Deliberation.titre', array(
     'label' => 'Titre', 
     'rows' => '2'
     )).
-$this->BsForm->input('Deliberation.rapporteur_id', array(
+$this->BsForm->select('Deliberation.rapporteur_id', $rapporteurs, array(
             'label' => 'Rapporteur',
-            'options' => $rapporteurs,
             'class' => 'select2 selectone',
+            'selected' => $this->Html->value('Deliberation.raporteur_id'),
             'empty' => true)).
- $this->BsForm->input('Deliberation.theme_id', array(
+ $this->BsForm->select('Deliberation.theme_id', $themes, array(
             'label' => 'Thème <abbr title="obligatoire">*</abbr>',
-            'empty' => true,
+            'selected' => $this->Html->value('Deliberation.theme_id'),
+            'empty' => false,
             'class' => 'select2 selectone',
             'escape' => false));
 
-if ($USE_PASTELL) {
-        echo $this->BsForm->input('Deliberation.num_pref', array(
-            'label' => 'Nomenclature',
-            'options' => $nomenclatures,
-            'default' => $this->Html->value('Deliberation.num_pref'),
-            'disabled' => empty($nomenclatures),
-            'empty' => true,
-            'class' => 'select2 selectone',
-            'escape' => false));
-    } else {
-        echo $this->BsForm->inputGroup('Deliberation.num_pref_libelle', array(
-                            'content'=>'<i class="fa fa-eraser"></i>',
-                            'type' => 'button',
-                            'id'=>'deselectClassif',
-                            'state' => 'primary',
-                            'side'=>'right'), array(
-                                'label' => 'Classification',
-                                'placeholder' => 'Cliquer ici pour choisir la classification',
-                                'onclick' => "javascript:window.open('" . Router::url(array('controller' => 'deliberations', 'action' => 'classification')) . "', 'Select_attribut', 'scrollbars=yes,width=570,height=450');",
-                                'id' => 'classif1',
-                                'title' => 'Selection de la classification',
-                                'readonly' => 'readonly',
-                                'class'=>'pull-left'));
-        echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
-
-    }
+    echo $this->BsForm->select('Deliberation.num_pref', $nomenclatures, array(
+        'label' => 'Classification',
+        'selected' => $this->Html->value('Deliberation.num_pref'),
+        'placeholder' => 'Cliquer ici pour choisir la classification',
+        'disabled' => empty($nomenclatures),
+        'empty' => true,
+        'class' => 'select2 selectone',
+        'escape' => false));
     
     echo $this->BsForm->datetimepicker('Deliberation.date_limite', array('language'=>'fr', 'autoclose'=>'true','format' => 'dd/mm/yyyy',), array(
     'label' => 'Date limite',
@@ -184,7 +166,7 @@ echo $this->Html->tag(null, '<br />') .
     echo  $this->Bs->tabPane('annexes', array('class' => (isset($nameTab) && $nameTab=='annexes' ? 'active' : ''))); 
     echo $this->Html->tag(null, '<br />') .   
         '<div id="DelibOngletAnnexes"><div id="DelibPrincipaleAnnexes">';
-    echo $this->element('annexe_edit', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $annexes['Annex'])));
+    echo $this->element('annexe_edit', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => !empty($annexes['Annex'])?$annexes['Annex']:null)));
     echo '</div></div>';
     echo $this->Html->tag('span', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.',array('class'=>'help-block'));
     

@@ -36,6 +36,7 @@ echo $this->Bs->tabPane('seance', array('class' => 'active')) .
 //$this->Html->tag('div', null, array('class' => 'panel-body')) .
         $this->BsForm->select('Seance.type_id',$typeseances, array('label' => 'Type de s&eacute;ance',
             'default' => $this->Html->value('Seance.type_id'),
+            'class'=>'select2 selectone',
             'empty' => true)).
         $this->BsForm->dateTimepicker('Seance.date', //TODO
                 array('language'=>'fr', 

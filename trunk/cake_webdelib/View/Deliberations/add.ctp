@@ -41,15 +41,22 @@ $this->Html->tag(null, '<br />') .
 '<b><u>Service émetteur</u></b> : <i>' . $this->Html->value('Service.name') . '</i>'.
 $this->Bs->close();
 
-echo    $this->BsForm->input('Deliberation.typeacte_id', array(
+echo $this->Bs->row().
+    $this->Bs->col('xs6');
+
+echo    $this->BsForm->select('Deliberation.typeacte_id', $typeActes, array(
             'label' => 'Type d\'acte <abbr title="obligatoire">*</abbr>',
-            'options' => $typeActes,
-            'empty' => true,
-            'id' => 'listeTypeactesId',
             'onChange' => "updateTypeseances(this);",
             'escape' => false,
-            'required'
+            'class' => 'select2 selectone',
+            'placeholder'=> __('Sélection du type d\'acte'),
+            'autocomplete' => 'off',
+            'required' => true,
+            'empty' => true,
         )).
+        /*$this->Bs->scriptBlock('
+            updateTypeseances($("#DeliberationTypeacteId"));
+        ').*/
 $this->BsForm->input('Deliberation.objet', array(
     'type' => 'textarea', 
     'label' => 'Libellé <abbr title="obligatoire">*</abbr>', 
@@ -61,57 +68,48 @@ $this->BsForm->input('Deliberation.titre', array(
     'label' => 'Titre', 
     'rows' => '2'
     )).
-$this->BsForm->input('Deliberation.rapporteur_id', array(
-            'label' => 'Rapporteur',
-            'options' => $rapporteurs,
-            'class' => 'select2 selectone',
-            'empty' => true)).
- $this->BsForm->input('Deliberation.theme_id', array(
+ $this->BsForm->select('Deliberation.theme_id', $themes, array(
             'label' => 'Thème <abbr title="obligatoire">*</abbr>',
             'empty' => true,
+            'placeholder' => 'Cliquer ici pour choisir un thème',
             'class' => 'select2 selectone',
+            'autocomplete' => 'off',
             'escape' => false));
 
-if ($USE_PASTELL) {
-        echo $this->BsForm->input('Deliberation.num_pref', array(
-            'label' => 'Nomenclature',
-            'options' => $nomenclatures,
-            'default' => $this->Html->value('Deliberation.num_pref'),
-            'disabled' => empty($nomenclatures),
-            'empty' => true,
-            'class' => 'select2 selectone',
-            'escape' => false));
-    } else {
-        echo $this->BsForm->inputGroup('Deliberation.num_pref_libelle', array(
-                            'content'=>'<i class="fa fa-eraser"></i>',
-                            'type' => 'button',
-                            'id'=>'deselectClassif',
-                            'state' => 'primary',
-                            'side'=>'right'), array(
-                                'label' => 'Classification',
-                                'placeholder' => 'Cliquer ici pour choisir la classification',
-                                'onclick' => "javascript:window.open('" . Router::url(array('controller' => 'deliberations', 'action' => 'classification')) . "', 'Select_attribut', 'scrollbars=yes,width=570,height=450');",
-                                'id' => 'classif1',
-                                'title' => 'Selection de la classification',
-                                'readonly' => 'readonly',
-                                'class'=>'pull-left'));
-        echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
-
-    }
+    echo $this->BsForm->select('Deliberation.num_pref', $nomenclatures, array(
+        'label' => 'Classification',
+        'placeholder' => 'Cliquer ici pour choisir la classification',
+        'disabled' => empty($nomenclatures),
+        'empty' => true,
+        'class' => 'select2 selectone',
+        'escape' => false));
     
-    echo $this->BsForm->datetimepicker('Deliberation.date_limite', array('language'=>'fr', 'autoclose'=>'true','format' => 'dd/mm/yyyy',), array(
-    'label' => 'Date limite',
-    'title' => 'Choisissez une date',
-    'style' => 'cursor:pointer',
-    'help' => 'Cliquez sur le champs ci-dessus pour choisir la date',
-    'readonly' => 'readonly',
-    'value'=>isset($date)?$date:''));
     echo $this->BsForm->select('multiRedactor',$redacteurs,array('label' => 'Autre(s) rédacteur(s)','title' => 'Ajouter un rédacteur ayant les droits d\'incérer le projet dans un circuit','class' => 'select2 selectone','multiple' => true, 'style' => 'width:100%')); 
     //if ($DELIBERATIONS_MULTIPLES)
 echo $this->BsForm->checkbox('Deliberation.is_multidelib', array(
      'autocomplete' => 'off',
      'label' => 'Multi-Délibération',
  ));
+echo $this->Bs->close().
+    $this->Bs->col('xs6');
+echo $this->Bs->close().
+    $this->Bs->col('xs6');
+  
+echo $this->BsForm->select('Deliberation.rapporteur_id', $rapporteurs, array(
+            'label' => 'Rapporteur',
+            'class' => 'select2 selectone',
+            'empty' => true)).
+ $this->BsForm->datetimepicker('Deliberation.date_limite', array('language'=>'fr', 'autoclose'=>'true','format' => 'dd/mm/yyyy',), array(
+    'label' => 'Date limite',
+    'title' => 'Choisissez une date',
+    'style' => 'cursor:pointer',
+    'help' => 'Cliquez sur le champs ci-dessus pour choisir la date',
+    'readonly' => 'readonly',
+    'value'=>isset($date)?$date:''));
+
+echo $this->Bs->div('','',array('id'=>'selectTypeseances'));
+echo $this->Bs->div('','',array('id'=>'selectDatesSeances'));
+echo $this->Bs->close(2);
 echo $this->Bs->tabClose().
 $this->Bs->tabPaneClose();
 
@@ -131,6 +129,7 @@ echo $this->Bs->scriptBlock('
                         $(\'#DeliberationAddForm\').append(\'<input type=\"hidden\" name=\"nameTab\" value=\"\' + $(e.target).text() + \'\" />\');
                         $(\'#DeliberationAddForm\').submit();
                       })');
+if(!empty($typesactemulti)){
 ?>
 <script type="text/javascript">
     <?php echo "var allowedMulti = ". json_encode($typesactemulti). ";\n"; ?>
@@ -144,3 +143,4 @@ echo $this->Bs->scriptBlock('
         }).change();
     });
 </script>
+<?php } ?>

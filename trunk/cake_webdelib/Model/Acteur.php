@@ -81,10 +81,11 @@ class Acteur extends AppModel
                                                 'conditions' => array('Typeacteur.elu'=> true,  'Acteur.actif' => true), 
                                                 'order'     => (empty($order_by)?'Acteur.position':$order_by).' ASC',
                                                 'joins' => array($this->join('Typeacteur',array( 'type' => 'INNER' ))),
+                                                'group' => 'Acteur.id',
                                                 'recursive' => -1
                     ));
             foreach($acteurs as $acteur) {
-                $generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
+                $generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['nom'].' '.$acteur['Acteur']['prenom'];
             }
             return $generateListElus;
 	}
