@@ -197,9 +197,9 @@ if (!empty($infosupdefs)) {
         echo '<dd><br>';
         foreach ($infosupdefs as $infosupdef) {
             echo $infosupdef['Infosupdef']['nom'] . ' : ';
-            if (array_key_exists($infosupdef['Infosupdef']['code'], $this->data['Infosup'])) {
+            if (array_key_exists($infosupdef['Infosupdef']['code'], $projet['Infosup'])) {
                 if ($infosupdef['Infosupdef']['type'] == 'richText') {
-                    if (!empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']])) {
+                    if (!empty($projet['Infosup'][$infosupdef['Infosupdef']['code']])) {
                         echo $this->Html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque' . $infosupdef['Infosupdef']['code'] . '\', \'' . $infosupdef['Infosupdef']['code'] . '\')', array(
                             'id' => 'afficheMasque' . $infosupdef['Infosupdef']['code'], 'affiche' => 'masque'));
                         echo '<div class="annexesGauche"></div>';
@@ -210,9 +210,9 @@ if (!empty($infosupdefs)) {
                         echo '<div class="spacer"></div>';
                     }
                 } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
-                    echo implode(', ', $this->data['Infosup'][$infosupdef['Infosupdef']['code']]);
+                    echo implode(', ', $projet['Infosup'][$infosupdef['Infosupdef']['code']]);
                 } else
-                    echo $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
+                    echo $projet['Infosup'][$infosupdef['Infosupdef']['code']];
             }
             echo '<br>';
         }

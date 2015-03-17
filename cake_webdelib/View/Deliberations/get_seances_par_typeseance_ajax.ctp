@@ -1,18 +1,16 @@
 <?php
 
 if (!empty($seances)){
-    echo $this->Form->input('Seance', array(
+    echo $this->BsForm->select('Deliberation.Deliberationseance', $seances, array(
                         'options' => $seances,
-                        'id' => 'SeanceSeance',
-                        'name' => 'data[Seance][Seance]',
-                        'type' => 'select',
+                        'class' => 'select2 selectmultiple',
                         'label' => 'Dates de séance',
+                        'selected' => isset($seances_selected) ? $seances_selected : '',
                         'multiple' => true));
     echo $this->Bs->scriptBlock('
-                        $("#SeanceSeance").select2({
-                            width: "80%",
-                            allowClear: true,
-                            placeholder: "Selection vide"
-                        });
-                          ');
+                 $("#DeliberationDeliberationseance").select2({
+                     width: "100%",
+                     allowClear: true,
+                 });
+    ');
  }

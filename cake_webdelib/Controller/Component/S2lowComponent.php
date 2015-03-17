@@ -93,6 +93,7 @@ class S2lowComponent extends Component {
                 $sucess = false;
             $file->close();
         }
+        
         //echo "Impossible d'ecrire dans le fichier ($filename)";
         return $sucess;
     }
@@ -152,13 +153,6 @@ class S2lowComponent extends Component {
         $curl_return = curl_exec($ch);
         curl_close($ch);
         return $curl_return;
-    }
-
-    function getDateClassification() {
-        $doc = new DOMDocument();
-        if (!@$doc->load(Configure::read('S2LOW_CLASSIFICATION')))
-            return false;
-        return $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
     }
 
     function sendMail($data) {
