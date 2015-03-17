@@ -8,7 +8,7 @@ class ThemesController extends AppController {
     public $components = array(
         'Auth' => array(
             'mapActions' => array(
-                'read' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view',
+                'create' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view',
                     'getLibelle','isEditable','view')
             )
         )

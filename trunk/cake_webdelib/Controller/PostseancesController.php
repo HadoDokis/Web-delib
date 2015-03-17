@@ -21,10 +21,10 @@ class PostseancesController extends AppController {
         $this->set('format', $format);
 
         $actions = array();
-        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToGed") && Configure::read('USE_GED'))
+        
+        if ($this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations/sendToGed') && Configure::read('USE_GED'))
             array_push($actions, 'ged');
 
-        $this->Seance->Behaviors->attach('Containable');
         $seances = $this->Seance->find('all', array(
             'conditions' => array('Seance.traitee' => 1),
             'order' => 'Seance.date DESC',
@@ -35,7 +35,9 @@ class PostseancesController extends AppController {
                 'Typeseance.modelconvocation_id',
                 'Typeseance.modelordredujour_id',
                 'Typeseance.modelpvsommaire_id',
-                'Typeseance.modelpvdetaille_id')));
+                'Typeseance.modelpvdetaille_id'),
+                'recursive'=>-1
+            ));
 
         for ($i = 0; $i < count($seances); $i++) {
             $seances[$i]['Seance']['Actions'] = $actions;

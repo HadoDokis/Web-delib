@@ -9,7 +9,7 @@ class ServicesController extends AppController {
     public $components = array(
         'Auth' => array(
             'mapActions' => array(
-                'admin_index' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view','admin_fusionner',
+                'create' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view','admin_fusionner',
                     'changeService','isEditable','view','autoComplete')
             )
         )

@@ -6,7 +6,7 @@ class TypeacteursController extends AppController
         var $components = array(
             'Auth' => array(
             'mapActions' => array(
-                'admin_index' => array('admin_index','admin_add','admin_delete','admin_edit','admin_view')
+                'create' => array('admin_index','admin_add','admin_delete','admin_edit','admin_view')
             )
         ));
 

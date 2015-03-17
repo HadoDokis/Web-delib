@@ -32,10 +32,11 @@ class SeancesController extends AppController {
                         'sendToIdelibre',
 			'saisirCommentaire','genereFusionToFiles','genereFusionMultiSeancesToClient'
                     ,'genererConvocation','genererOrdredujour','downloadZip','genereFusionToClient',
-                    'download','getFileType','getFileName','getSize','getData'
+                    'download','getFileType','getFileName','getSize','getData',
+                    'downloadAttachedFileConvocation','downloadAttachedFileOrdredujour'
                 ),
                 'update' => array('edit','clore','sendOrdredujour','getSeancesParTypeseanceAjax'),
-                'delete' => array('delete','deleteDebatGlobal','effacerVote','resetVote')),
+                'delete' => array('deleteDebatGlobal','effacerVote','resetVote')),
         ));
 	
 	var $cacheAction = 0;

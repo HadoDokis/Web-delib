@@ -101,7 +101,8 @@ class ConnecteursController extends AppController {
                 break;
             default:
                 $this->Session->setFlash('Ce connecteur n\'est pas valide', 'growl', array('type' => 'erreur'));
-                return $this->redirect(array('action' => 'index'));
+                
+                return $this->redirect($this->previous);
         }
     }
 
@@ -275,7 +276,7 @@ class ConnecteursController extends AppController {
                 break;
             default :
                 $this->Session->setFlash('Ce connecteur n\'est pas valide', 'growl', array('type' => 'erreur'));
-                return $this->redirect(array('action' => 'index'));
+                return $this->redirect(array('admin'=> true, 'prefix'=>'admin', 'controller'=>'Connecteurs','action'=>'index'));
         }
         if (!$file->writable()) {
             $this->Session->setFlash('Impossible de modifier le fichier de configuration, veuillez donner les droits sur fichier webdelib.inc', 'growl', array('type' => 'erreur'));
@@ -285,12 +286,12 @@ class ConnecteursController extends AppController {
             $success &= $file->append($content);
             $success &= $file->close();
             if ($success)
-                $this->Session->setFlash('La configuration du module &quot;' . $type . '&quot; a été enregistrée', 'growl');
+                $this->Session->setFlash('La configuration du module "' . $type . '" a été enregistrée', 'growl');
             else
                 $this->Session->setFlash('Un problème est survenu lors de la modification du fichier de configuration webdelib.inc', 'growl', array('type' => 'erreur'));
         }
 
-        return $this->redirect($this->previous);
+        return $this->redirect(array('admin'=> true, 'prefix'=>'admin', 'controller'=>'Connecteurs','action'=>'index'));
     }
 
 }
