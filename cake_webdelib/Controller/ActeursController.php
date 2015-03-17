@@ -8,7 +8,7 @@ class ActeursController extends AppController
         'Auth' => array(
             'mapActions' => array(
                 'create' => array('admin_add'),
-                'read' => array('admin_index', 'view'),
+                'read' => array('admin_index', 'admin_view'),
                 'update' => array('admin_edit'),
                 'delete' => array('admin_delete')),
         )
