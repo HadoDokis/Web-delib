@@ -107,10 +107,11 @@ class Connecteurlib {
     {
       return !empty($this->connecteur)?$this->connecteur:false;   
     }
+    
     /**
      * @return array
      */
-    public function listClassification() {
+    public function listClassificationPastell() {
         if($this->connecteur!='PASTELL') return NULL;
         $liste = array();
         App::uses('Nomenclature', 'Model');
