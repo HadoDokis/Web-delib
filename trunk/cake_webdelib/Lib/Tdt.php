@@ -213,9 +213,35 @@ class Tdt extends ConnecteurLib {
         }
         return false;
     }
+    
+    public function getDateClassificationS2low() {
+        $doc = new DOMDocument();
+        if (!@$doc->load(Configure::read('S2LOW_CLASSIFICATION'))) {
+            $this->updateClassificationS2low();
+        }
+
+        return $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
+    }
 
     public function updateClassificationS2low() {
-        return $this->S2low->getClassification();
+        
+        $classification = $this->getClassificationS2low();
+        
+        App::uses('Nomenclature', 'Model');
+        $Nomenclature = new Nomenclature();
+        
+        $Nomenclature->deleteAll(array('1 = 1'), false);
+
+        foreach ($classification as $key => $matiere) {
+            $Nomenclature->create();
+            $data['Nomenclature']['parent_id'] = null;
+            $data['Nomenclature']['name'] = $matiere['name'];
+            $data['Nomenclature']['libelle'] = $matiere['libelle'];
+            $Nomenclature->save($data);
+            
+            $this->_saveMatieres($matiere['children'], $Nomenclature->getInsertID());
+        }
+        return $classification;
     }
 
     public function updateClassificationPastell() {
@@ -342,10 +368,6 @@ class Tdt extends ConnecteurLib {
             return false;
     }
 
-    public function getDateClassificationS2low(){
-        return $this->S2low->getDateClassification();
-    }
-
     /**
      * Date de la derniere mise à jour de la classification
      * @return string
@@ -364,5 +386,81 @@ class Tdt extends ConnecteurLib {
             return strftime("%A %d %B %Y", strtotime($nomenc['Nomenclature']['modified']));
         }
 
+    }
+    
+    /**
+     * @return array
+     */
+    public function getClassificationS2low() {
+        
+        if (!$this->S2low->getClassification()) {
+            throw new Exception('Erreur récupération classification.');
+        }
+            
+        $liste = array();
+        try {
+            $xmlObject = Xml::build(Configure::read('S2LOW_CLASSIFICATION'));
+            $xmlArray = Xml::toArray($xmlObject);
+            
+        } catch (XmlException $e) {
+            //throw new InternalErrorException();
+            return false;
+        }
+        return $this->_getMatieres(1, null, $xmlArray['RetourClassification']['actes:Matieres']['actes:Matiere1']);
+    }
+    
+    function _getMatieres($start, $key, $aMatiere) {
+        $liste=array();
+        $i=0;
+        foreach ($aMatiere as $matiere) {
+            $name=(!empty($key)?$key.'.':'').$matiere['@actes:CodeMatiere'];
+            $liste[$i] = array(
+                            'name'=> $name,
+                            'libelle'=>$name .' '.$matiere['@actes:Libelle']);
+            
+            $rangChild=$start+1;
+            if (isset($matiere['actes:Matiere'.$rangChild])) {
+                $matiereOrdonne = $this->_getMatieresOrdonne($matiere['actes:Matiere'.$rangChild], 'actes:Matiere'.$rangChild);
+                $liste[$i]['children']=$this->_getMatieres($rangChild, $name, $matiereOrdonne);
+            }
+            $i++;
+        }
+        
+        return $liste;
+    }
+    
+    function _getMatieresOrdonne($matiere, $key) {
+        
+        if (count($matiere) == 1) {
+            if (count($matiere[$key]) == 1) {
+                return array($matiere[$key]);
+            } else {
+                return $matiere[$key];
+            }
+        }
+        if (isset($matiere['@actes:CodeMatiere'])) {
+            return array($matiere);
+        }
+
+        $matiere = Hash::sort($matiere, '{n}.@actes:CodeMatiere', 'asc');
+
+        return $matiere;
+    }
+    
+    function _saveMatieres($aMatieres, $parent) {
+        App::uses('Nomenclature', 'Model');
+        $Nomenclature = new Nomenclature();
+        
+        foreach ($aMatieres as $matiere) {
+            $Nomenclature->create();
+            $data['Nomenclature']['parent_id'] = $parent;
+            $data['Nomenclature']['name'] = $matiere['name'];
+            $data['Nomenclature']['libelle'] = $matiere['libelle'];
+            $Nomenclature->save($data);
+            
+            if (!empty($matiere['children'])) {
+                $this->_saveMatieres($matiere['children'], $Nomenclature->getInsertID());
+            }
+        }
     }
 }
