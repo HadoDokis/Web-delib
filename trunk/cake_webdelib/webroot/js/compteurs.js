@@ -8,8 +8,8 @@
 /* @param input_name Nom du champ input                                       */
 /* @access public                                                             */
 /******************************************************************************/
-function InsertSelectedValueInToInput(select_element, form_name, input_name){
-	var input_element = document.forms[form_name].elements[input_name];
+function InsertSelectedValueInToInput(e, input_name){
+	var input_element =  document.getElementById (input_name);
 	input_element.focus();
 
 	/* pour Internet Explorer */
@@ -17,7 +17,7 @@ function InsertSelectedValueInToInput(select_element, form_name, input_name){
 		/* Insertion du code de formatage */
 		var range = document.selection.createRange();
 		var insText = range.text;
-		range.text = select_element.value;
+		range.text = e.value;
 		/* Ajustement de la position du curseur */
 		range.select();
 	}
@@ -27,9 +27,9 @@ function InsertSelectedValueInToInput(select_element, form_name, input_name){
 		/* Insertion du code de formatage */
 		var start = input_element.selectionStart;
 		var end = input_element.selectionEnd;
-		input_element.value = input_element.value.substr(0, start) + select_element.value + input_element.value.substr(end);
+		input_element.value = input_element.value.substr(0, start) + e.value + input_element.value.substr(end);
 		/* Ajustement de la position du curseur */
-		var pos = start + select_element.value.length;
+		var pos = start + e.value.length;
 		input_element.selectionStart = pos;
 		input_element.selectionEnd = pos;
 	}
@@ -39,5 +39,5 @@ function InsertSelectedValueInToInput(select_element, form_name, input_name){
 		alert("Fonction non implémentée pour votre navigateur");
 	};
 
-	select_element.selectedIndex = 0;
+	e.selectedIndex = 0;
 };
