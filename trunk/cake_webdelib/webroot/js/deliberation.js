@@ -7,12 +7,6 @@ $(document).ready(function () {
         $(this).after('<a href="javascript:void(0)" class="purge_file btn btn-mini btn-danger"  onclick="resetUpload(\'file_input_container_' + file_input_index + '\')"><i class="fa fa-eraser"></i> Effacer</a>');
     });*/
 
-    $("#listeTypeactesId").select2({
-        width: "element",
-        dropdownAutoWidth: true,
-        placeholder: "Sélection du type d'acte"
-    });
-
     $("#DeliberationIsMultidelib").change();
 
     //Déclenché lors de la fermeture de la modale
@@ -26,11 +20,6 @@ $(document).ready(function () {
 
     $("form#DeliberationAddForm a").on('click', disableExitWarning);
     $("form#DeliberationEditForm a").on('click', disableExitWarning);
-
-    $('#deselectClassif').click(function () {
-        resetClassification();
-        return false;
-    });
 
     $('.file-texte').change(function () {
         if ($(this).val() != '') {

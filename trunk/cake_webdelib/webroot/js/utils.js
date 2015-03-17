@@ -66,13 +66,6 @@ function disable(id, val) {
         document.getElementById(id).disabled = false;
 }
 
-
-function changeService(params) {
-    var url = params.id + "services/changeService/" + params.value;
-    document.location = url;
-}
-
-
 function add_field(num) {
 
     var a = document.getElementById('lien_annexe');
@@ -267,13 +260,4 @@ function afficheOngletEnErreur() {
             return;
         }
     }
-}
-
-function changeClassification() {
-    window.open('/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');
-}
-
-function resetClassification() {
-    $("#classif1").val('');
-    return false;
 }
