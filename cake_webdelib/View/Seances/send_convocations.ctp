@@ -77,7 +77,7 @@ echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstr
          elseif ($acteur['Acteur']['date_envoi'] == null)
              $cell_checkbox = $this->BsForm->checkbox('Acteur.id_' . $acteur['Acteur']['id'], array(
              'label' =>false,
-             'class' => 'checkbox_acteur_convoc',
+             'class' => 'checkbox_liste',
              'title' => "Impossible d'envoyer à cet acteur, la convocation n'a pas encore été générée."));
          else
              $cell_checkbox = '<i class="fa fa-check" title="Convocation déjà envoyée"></i>';
@@ -129,7 +129,7 @@ $this->Bs->close();
         selectionChange();
     });
     function selectionChange() {
-        var nbChecked = $('input[type=checkbox].checkbox_acteur_convoc:checked').length;
+        var nbChecked = $('input[type=checkbox].checkbox_liste:checked').length;
         //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
         if (nbChecked > 0) {
             $('#boutonValider').removeClass('disabled');
