@@ -1,114 +1,124 @@
-<div class="deliberations">
-    <h2>Versement SAE</h2>
-    <?php echo $this->Form->create('Deliberation', array('type' => 'file', 'url' => array('action'=>'sendToSae'))); ?>
-    <table style='width:100%'>
-        <tr>
-            <th style="width: 2px;"><input type='checkbox' id='masterCheckbox'/></th>
-            <th style="width: 30px;">Id</th>
-            <th>Numéro Délibération</th>
-            <th>Libellé de l'acte</th>
-            <th>Classification</th>
-            <th>Statut</th>
-        </tr>
-        <?php
-        $numLigne = 1;
-        foreach ($deliberations as $delib) {
-            $rowClass = ($numLigne & 1) ? array('height' => '36px') : array('height' => '36px', 'class' => 'altrow');
-            echo $this->Html->tag('tr', null, $rowClass);
-            $numLigne++;
+<?php
+echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min') .
+     $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr') .
+     $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+     $this->Html->addCrumb('Versement SAE');//, array($this->request['controller'], 'action'=>'index'));
 
-            if ($delib['Deliberation']['sae_etat'] == null)
-                echo("<td>" . $this->Form->checkbox('Deliberation.id_' . $delib['Deliberation']['id']) . "</td>");
-            else
-                echo("<td></td>");
-            ?>
-        <td>
-                <?php echo($delib['Deliberation']['id']); ?>
-            </td>
+echo $this->Bs->div('deliberations').
+     //debut du form
+     $this->Form->create('Seance', array(
+         'url' => array(
+             'controller' => 'deliberation', 
+             'action' => 'sendToSae'), 
+         'class'=>'waiter', 
+         'data-modal' => 'Envoi de l\'ordre du jour')) .
+     $this->Bs->tag('h2', 'Versement SAE') .
+     $this->Bs->lineAttributes(array('class'=>'colonne_checkbox')) .
+     $this->Bs->setTableNbColumn(4) .
+     $this->Bs->table(
+     array(
+        array('title' => __($this->BsForm->checkbox('masterCheckbox', array(
+         'label' =>false,
+         //'checked'=>$selected
+         )))),
+        array('title' => __('Id')),
+        array('title' => __('Numéro Délibération')),
+        array('title' => __('Libellé de l\'acte')),
+        array('title' => __('Classification')),
+        array('title' => __('Statut'))
+     ), array('hover', 'striped'));
+          
+     foreach ($deliberations as $delib) {
+         //cellule checkbox
+          if ($delib['Deliberation']['sae_etat'] == null)
+          {
+              $cell_checkbox = $this->BsForm->checkbox(
+                      'Deliberation.id_' . $delib['Deliberation']['id'], array(
+                            'label' =>false,
+                            'class' => 'checkbox_liste',
+                            ));
+          }
+          
+         //cellule deliberation id
+         $cell_delib_id =  $delib['Deliberation']['id'];
 
-            <td>
-                <?php echo $this->Html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/' . $delib['Deliberation']['id']);?>
-            </td>
-            <td>
-                <?php echo($delib['Deliberation']['objet_delib']); ?>
-            </td>
-            <td style="text-align:center">
-                <?php
-                    if (Configure::read('SAE') == 'PASTELL' && empty($delib['Deliberation']['sae_etat'])) {
-                        
-                        if (empty($nomenclatures)) $nomenclatures = array();
-                        echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
-                            'name' => $delib['Deliberation']['id'] . 'classif2',
-                            'label' => false,
-                            'options' => $nomenclatures,
-                            'default' => $delib['Deliberation']['num_pref'],
-                            'readonly' => empty($nomenclatures),
-                            'empty' => true,
-                            'class' => 'select2 selectone',
-                            'style' => 'width:auto; max-width:400px;',
-                            'div' => array('style' => 'text-align:center;font-size: 1.1em;'),
-                            'escape' => false
-                        ));
-                    }else
-                    echo !empty($delib['Deliberation']['num_pref']) ? $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>';
-                ?>
-            </td>
 
-            <?php
-            if ($delib['Deliberation']['sae_etat'] == 1) {
-                echo("<td>Versé au SAE</td>");
-            } else {
-                echo("<td>&nbsp;</td>");
-            }
-            ?>
-            </tr>
-        <?php } ?>
+         //cellule link
+         if (!empty($delib['Deliberation']['id']))
+            $cell_link = $this->Bs->btn('Télécharger' , array('controller'=>'deliberations',
+                                            'action'=>'downloadDelib', 
+                                            $delib['Deliberation']['id']), array(
+            'type'=>'default',
+            'class'=>'media-left',
+            'icon'=>'glyphicon glyphicon-download',
+            ));
+         else
+             $cell_link = 'Pas de document';
 
-    </table>
-    <div class='paginate'>
-        <!-- Affiche les numéros de pages -->
-        <?php
-        echo $this->Paginator->prev('« Précédent ', null, null, array('tag' => 'span', 'class' => 'disabled'));
-        echo $this->Paginator->numbers();
+         //cellule libellé 
+         $cell_obj_delib = $delib['Deliberation']['objet_delib'];
+        
+         //cellule classification
+         if (Configure::read('SAE') == 'PASTELL' && empty($delib['Deliberation']['sae_etat'])) {
+            if (empty($nomenclatures)) $nomenclatures = array();
+            $cell_nomenclature = $this->BsForm->select('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', $nomenclatures, array(
+                'class' => 'select2 selectone',
+                'label' => false,
+                'inline' => true,
+                'autocomplete' => 'off',
+                'readonly' => empty($nomenclatures),
+                'default' => $delib['Deliberation']['num_pref'],
+                'selected' => !empty($present['Listepresence']['suppleant_id']) ? $present['Listepresence']['suppleant_id'] : NULL
+            ));
+        }else
+        $cell_nomenclature = !empty($delib['Deliberation']['num_pref']) ? $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>';
 
-        ?>
-        <!-- Affiche les liens des pages précédentes et suivantes -->
-        <?php
+        //dernier statut
+        if ($delib['Deliberation']['sae_etat'] == 1) {
+           $cell_sae_etat = "Versé au SAE";
+        } else {
+           $cell_sae_etat = '&nbsp;';
+        }
 
-        echo $this->Paginator->next(' Suivant »', null, null, array('tag' => 'span', 'class' => 'disabled'));
-        ?>
-        <!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
-        <?php echo $this->Paginator->counter(array('format' => 'Page %page% sur %pages%')); ?>
-    </div>
+        echo $this->Bs->cell($cell_checkbox).$this->Bs->cell($cell_delib_id).$this->Bs->cell($cell_link).$this->Bs->cell($cell_obj_delib).$this->Bs->cell($cell_nomenclature).$this->Bs->cell($cell_sae_etat);
+     }
+     echo $this->Bs->endTable() .
+     
+     //paginate
+     $this->Bs->div('paginate col-md-offset-5') . 
+     $this->Paginator->prev('« Précédent ', null, null, array('tag' => 'span', 'class' => 'disabled')) .
+     $this->Paginator->numbers() .
+     $this->Paginator->next(' Suivant »', null, null, array('tag' => 'span', 'class' => 'disabled')) .
+     $this->Paginator->counter(array('format' => 'Page %page% sur %pages%')) .
+     $this->Bs->close() .
+     
+      //spacer
+     $this->Bs->div('spacer') . $this->Bs->close() .
+     $this->Bs->div('spacer') . $this->Bs->close();
+     
+     $this->BsForm->setLeft(5);
+echo $this->Html2->btnSaveCancel('', $previous, 'Envoyer', 'Envoyer');
+     $this->Form->end() .
+$this->Bs->close();
 
-    <br/>
+?>
 
-    <div class="submit">
-        <?php
-        if (!empty($deliberations))
-            echo $this->Form->button('<i class="fa fa-cloud-upload"></i> Envoyer', array('escape' => false, 'type' => 'submit', 'class' => 'btn btn-primary'));
-        ?>
-    </div>
-
-    <?php $this->Form->end(); ?>
-</div>
-<script type="application/javascript">
-    /**
-     * Actions au chargement de la page
-     */
+<script type="text/javascript">
     $(document).ready(function () {
-        $('#ParapheurCircuitId').select2({ width: 'resolve' });
-        $('.selectone').select2({
-            width: 'resolve',
-            allowClear: true,
-            placeholder: 'Aucune classification'
-        });
-        $('input[type="checkbox"]').change(changeSelection);
-        changeSelection();
+        //Lors d'action sur une checkbox :
+        $('input[type=checkbox]').change(selectionChange);
+        selectionChange();
     });
-</script>
-<style>
-    .select2-container .select2-choice {
-        border-radius: 0;
+    function selectionChange() {
+        var nbChecked = $('input[type=checkbox].checkbox_liste:checked').length;
+        //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
+        if (nbChecked > 0) {
+            $('#boutonValider').removeClass('disabled');
+            $("#boutonValider").prop("disabled", false);
+        } else {
+            $('#boutonValider').addClass('disabled');
+            $("#boutonValider").prop("disabled", true);
+        }
+        $('#nbActeursChecked').text('(' + nbChecked + ')');
     }
-</style>
+</script>
