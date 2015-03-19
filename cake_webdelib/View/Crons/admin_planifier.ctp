@@ -1,35 +1,43 @@
-<style>
-    div.date select, div.time select{
-        width: auto;
-    }
-    label{
-        text-align: left;
-        width: auto;
-        min-width: 200px;
-    }
-    select, input{
-        margin: 5px;
-    }
-</style>
-<?php
-echo $this->Html->tag('h2', __('Planification de la tâche', true) . ' : ' . $this->data['Cron']['nom']);
-echo $this->Form->create(null, array('action' => "planifier/"));
-echo $this->Form->input('next_execution_date', array('label' => __('Date de la prochaine exécution', true),
+<?php        
+$panel_left ='<b>'.__('Date de la prochaine exécution', true) .' : </b><br><br>' .
+             '<b>'.__('Heure de la prochaine exécution', true).' : </b><br><br>' .
+             '<b>'.__('Délais entre deux exécutions', true).' : </b><br><br>' .
+             '<b>'.__('Activation', true).' : </b>';
+        
+$panel_right = $this->Form->input('next_execution_date', array(
+    'label' => false,
     'type' => 'date',
     'dateFormat' => 'DMY',
     'minYear' => date('Y') - 0,
     'maxYear' => date('Y') + 2,
     'monthNames' => false,
     'empty' => true
-));
+)).'<br>' .
+$this->Form->input('next_execution_heure', array(
+    'label' => false, 
+    'type' => 'time', 
+    'timeFormat' => '24', 
+    'interval' => 15)).'<br>' .
+$this->DurationPicker->picker('Cron.execution_duration', array(
+    'label' => false, 
+    'empty' => true, 
+    'value' => $this->data['Cron']['execution_duration'])) .'<br>' .
+$this->Form->input('active', array('label' => false));
 
-echo $this->Form->input('next_execution_heure', array('label' => __('Heure de la prochaine exécution', true), 'type' => 'time', 'timeFormat' => '24', 'interval' => 15));
-echo $this->DurationPicker->picker('Cron.execution_duration', array('label' => 'Délais entre deux exécutions', 'empty' => true, 'value' => $this->data['Cron']['execution_duration']));
-echo $this->Form->input('active', array('label' => __('Activation', true)));
-echo $this->Form->hidden('id');
-echo $this->Html->tag("div", null, array("class" => "btn-group", 'style'=>'clear: both; left: 210px;'));
-echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'index'), array('class' => 'btn', 'escape' => false));
-echo $this->Form->button('<i class="fa fa-check"></i> Valider', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false));
-echo $this->Html->tag('/div', null);
-echo $this->Form->end();
-?>
+echo $this->Html->tag('h3', __('Planification de la tâche', true) . ' : ' . $this->data['Cron']['nom']) .
+$this->BsForm->create('Crons',array('type'=>'post', 'url' => array(
+    'controller' => 'crons', 
+    'action' => 'planifier'))) .
+$this->Bs->panel('Planification de la tâche') .
+    $this->Bs->row() .
+    $this->Bs->col('xs2') .
+    $this->Bs->close() .
+    $this->Bs->col('xs3').$panel_left .
+    $this->Bs->close() .
+    $this->Bs->col('xs7').$panel_right .
+    $this->Bs->close(2) .
+    $this->Bs->div('spacer').$this->Bs->close() .
+$this->Bs->endPanel() .
+$this->Html2->btnSaveCancel('', $previous, 'Valider', 'Valider') .
+$this->Form->hidden('id') .
+$this->BsForm->end();

@@ -1,48 +1,42 @@
 <?php
-// Affichage du titre de la vue
-if (!empty($contenuVue['titreVue']))
-    echo '<h1>' . $contenuVue['titreVue'] . '</h1>';
-
-// Affichage de l'entête des onglets si il y en a plus d'un
-if (count($contenuVue['onglets']) > 1) {
-    $onglets = array();
-    foreach ($contenuVue['onglets'] as $i => $onglet) {
-        $onglets[] = empty($onglet['titre']) ? 'Onglet ' . $i : $onglet['titre'];
-    }
-    echo $this->element('onglets', array('listeOnglets' => $onglets));
-}
+$this->Html->addCrumb('Circuits de traitement');
+echo $this->Bs->tag('h3', $contenuVue['titreVue']);
 
 // Affichage du contenu de chaque onglet
 foreach ($contenuVue['onglets'] as $i => $onglet) {
-    echo $this->Html->tag('div', null, array('id' => 'vue_detaille'));
     // Affichage des sections principales
     foreach ($onglet['sections'] as $section) {
         // affichage du titre de la section
-        if (!empty($section['titre']))
-            echo $this->Html->tag($section['tag'], $section['titre'], $section['htmlAttributes']);
-        echo '<dl>';
+        echo $this->Bs->panel($section['titre']);
         // Parcours des lignes de la section
         foreach ($section['lignes'] as $iLigne => $ligne) {
-            echo $this->element('viewLigne', array('ligne' => $ligne, 'altrow' => ($iLigne & 1)));
+            echo '<b>'.$ligne[0]['libelle'].' : </b>'.$ligne[0]['valeur'].'<br>';
         }
-        echo '</dl>';
+        echo $this->Bs->endPanel();
     }
-    echo $this->Html->tag('/div');
 }
-// Affichage du lien de retour
-echo $this->Html->tag('div', null, array('class' => 'submit btn-group'));
-echo $this->Html->link('<i class="fa fa-arrow-left"></i> ' . $contenuVue['lienRetour']['title'], $contenuVue['lienRetour']['url'], array('class' => 'btn', 'escape' => false));
+
+echo $this->Bs->div('text-center') .
+$this->Bs->div('btn-group') .
+$this->Bs->btn($this->Bs->icon('arrow-left') . ' Retour', $previous, 
+        array('type' => 'default', 'escape' => false, 
+            'title' => $contenuVue['lienRetour']['title']));
+
 if ($this->request->data['Cron']['lock'])
-    echo $this->Html->link('<i class="fa fa-unlock"></i> Déverrouiller', array('action'=>'unlock', $this->request->data['Cron']['id']), array('class' => 'btn btn-danger', 'escape' => false));
+    echo $this->Bs->btn('Déverrouiller', array(
+        'controller' => 'crons', 
+        'action' => 'unlock', 
+        $this->request->data['Cron']['id']),
+        array('type' => 'danger', 
+            'icon' => 'fa fa-unlock', 
+            'title' => 'Déverrouiller'));
 else
-    echo $this->Html->link('<i class="fa fa-cog"></i> Exécuter', array('action'=>'executer', $this->request->data['Cron']['id']), array('class' => 'btn btn-primary', 'escape' => false));
-echo $this->Html->tag('/div');
-?>
-<style>
-    dt{
-        margin: 10px;
-    }
-    #vue_detaille{
-        padding: 10px;
-    }
-</style>
+    echo $this->Bs->btn('Exécuter', array(
+        'controller' => 'crons', 
+        'action' => 'executer', 
+        $this->request->data['Cron']['id']),
+        array('type' => 'primary', 
+            'icon' => 'fa fa-cog', 
+            'title' => 'Exécuter'));
+
+echo $this->Bs->close(2);

@@ -129,7 +129,7 @@ class CronsController extends AppController {
                 $this->Session->setFlash(__('Veuillez corriger les erreurs du formulaire.', true), 'growl', array('type' => 'erreur'));
         } else {
             $plugin_model_method = $this->Applist->construireArbreModel();
-            $this->set('plugin_ctrl_method', $plugin_model_method);
+            $this->set('plugin_model_method', $plugin_model_method);
         }
         $this->pageTitle = Configure::read('appName') . ' : ' . __('Création de tâche planifiée', true);
     }
