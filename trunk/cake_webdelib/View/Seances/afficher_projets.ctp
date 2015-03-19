@@ -58,7 +58,7 @@ foreach ($projets as $projet) {
             $this->Html->link(null, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/1', array('class' => 'link_descendre', 'title' => 'Descendre', 'escape' => false), false):'')
         */
         echo $this->Bs->cell('['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle']);
-        echo $this->Bs->cell($projet['Service']['libelle']);
+        echo $this->Bs->cell($projet['Service']['name']);
         echo $this->Bs->cell($this->BsForm->select('deliberation.rapporteur_id',$rapporteurs, array(
             'default' =>$projet['Deliberation']['rapporteur_id'],
             'class'=>'input-sm select2 selectone',
