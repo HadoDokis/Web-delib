@@ -786,7 +786,17 @@ class BsHelper extends HtmlHelper {
 		if ($tag != 'a') {
 			return parent::tag($tag, $text, $options);
 		} else {
-			return parent::link($text, $url, $options, $confirmMessage);
+                        //ancienne méthode avec probleme encode utf8_encode
+                        //return parent::link($text, $url, $options, $confirmMessage);
+			
+                        //patch
+                        $result = parent::link($text, $url, $options, $confirmMessage);
+                        $result = str_replace('\u00e9','é',$result);
+                        $result = str_replace('\u00e8','è',$result);
+                        $result = str_replace('\u00e7','ç',$result);
+                        $result = str_replace('\u00eA','ê',$result);
+                        $result = str_replace('\u00eB','ë',$result);
+                        return $result;
 		}
 	}
 
