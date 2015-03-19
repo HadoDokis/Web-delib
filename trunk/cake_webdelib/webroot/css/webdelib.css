@@ -767,14 +767,6 @@ div.aModifier {
     padding: 5px;
 }
 
-#seances, #emetteur, #circuit, #acteur, #etat, #description, #limite, #classification, #theme, #objet, #nature {
-    margin:  1px;
-    padding: 1px;
-    width:   180px;
-    display: block;
-    border:  2px outset black;
-}
-
 input[type="file"]{width: auto}
 
 .nomcourante {
@@ -998,13 +990,6 @@ table.month {border: thin groove #800080}
     margin-bottom: 25px;
 }
 
-#TypeacteEditForm .input.file,
-#TypeacteAddForm .input.file,
-#TypeacteEditForm label,
-#TypeacteAddForm label
-{
-    line-height: 30px;
-}
 #vue_cadre h2 .label{
     font-size: 15px;
 }

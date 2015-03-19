@@ -1,74 +1,124 @@
 <?php
 $superadmin = false;
-echo $this->Html->css('crons');
-echo $this->Html->tag('h1', __('Liste des tâches automatiques', true));
+echo $this->Html->css('crons') .
+$this->Bs->tag('h2', __('Liste des tâches automatiques', true)) .
+$this->Bs->table(
+array(
+   array('title' => __('Etat', true)),
+   array('title' => __('Nom', true)),
+   array('title' => __('Date exécution prévue', true)),
+   array('title' => __('Délai entre 2 exécutions', true)),
+   array('title' => __('Date dernière exécution', true)),
+   array('title' => __('Active', true)),
+   array('title' => __('Actions', true))
+), array('hover', 'striped'));
 
-echo $this->Html->tag('table', null, array('class' => "table table-bordered table-hover"));
-// initialisation de l'entête du tableau
-$listeColonnes = array();
-$listeColonnes[] = __('Etat', true);
-$listeColonnes[] = __('Nom', true);
-$listeColonnes[] = __('Date exécution prévue', true);
-$listeColonnes[] = __('Délai entre 2 exécutions', true);
-$listeColonnes[] = __('Date dernière exécution', true);
-$listeColonnes[] = __('Active', true);
-$listeColonnes[] = __('Actions', true);
-
-echo $this->Html->tag('thead', $this->Html->tableHeaders($listeColonnes));
-echo $this->Html->tag('tbody', null);
 foreach ($this->data as $rownum => $rowElement) {
-    if ($rowElement['Cron']['lock'])
-        $rowClass = array('class' => 'error');
-    elseif ($rowElement['Cron']['last_execution_status'] == Cron::EXECUTION_STATUS_FAILED)
-        $rowClass = array('class' => 'error');
-    elseif ($rowElement['Cron']['last_execution_status'] == Cron::EXECUTION_STATUS_WARNING)
-        $rowClass = array('class' => 'warning');
-    elseif ($rowElement['Cron']['last_execution_status'] == Cron::EXECUTION_STATUS_SUCCES)
-        $rowClass = array('class' => 'success');
-    else
-        $rowClass = array('class' => 'info');
-
-    echo $this->Html->tag('tr', null, $rowClass);
 
     if ($rowElement['Cron']['lock']) {
-        $verrou = $this->Html->link('<i class="fa fa-lock"></i>', array('action' => 'unlock', $rowElement['Cron']['id']), array('escape' => false, 'title' => 'Devérrouiller la tâche', 'style' => 'color:white'));
-        $rowElement['Cron']['statusLibelle'] = $this->Html->tag('span', "$verrou Vérrouillée", array('class' => 'label label-important', 'title' => "La tâche est vérrouillée, ce qui signifie qu'elle est en cours d'exécution ou dans un état bloqué suite à une erreur"));
+        $verrou = $this->Html->link('<i class="fa fa-lock"></i>', array(
+            'action' => 'unlock', $rowElement['Cron']['id']), array(
+                'escape' => false, 'title' => 'Devérrouiller la tâche', 
+                'style' => 'color:white'));
+        $rowElement['Cron']['statusLibelle'] = $this->Html->tag(
+                'span', "$verrou Vérrouillée", array(
+                    'class' => 'label label-warning', 
+                    'title' => "La tâche est vérrouillée, ce qui signifie qu'elle est en cours d'exécution ou dans un état bloqué suite à une erreur"));
     }
-    echo $this->Html->tag('td', $rowElement['Cron']['statusLibelle'], array('style' => 'text-align:center;'));
-    echo $this->Html->tag('td', $rowElement['Cron']['nom']);
-    echo $this->Html->tag('td', $this->Time->format("d-m-Y à H:i", $rowElement['Cron']['next_execution_time']));
-    echo $this->Html->tag('td', $rowElement['Cron']['durationLibelle']);
-    if ($rowElement['Cron']['last_execution_start_time'] != null)
-        echo $this->Html->tag('td', $this->Time->format("d-m-Y à H:i:s", $rowElement['Cron']['last_execution_start_time']));
     else
-        echo $this->Html->tag('td', 'Jamais');
-    echo $this->Html->tag('td', $rowElement['Cron']['activeLibelle']);
-    echo $this->Html->tag('td', null, array('class' => 'actions'));
-
-    echo $this->Html->tag('div', null, array('class' => 'btn-toolbar'));
-
-    echo $this->Html->tag('div', null, array("class" => 'btn-group'));
-    echo $this->Html->link($this->Html->tag('i', '', array("class" => "fa fa-info-circle fa-lg")), array('action' => 'view', $rowElement['Cron']['id']), array('class' => 'btn', 'title' => 'Voir les détails', 'escape' => false), false, false);
-    if ($superadmin) {
-        echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-edit fa-lg")), '/crons/edit/' . $rowElement['Cron']['id'], array('class' => 'btn', 'title' => 'Modifier', 'escape' => false), false, false);
-        echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-trash-o fa-lg")), '/crons/delete/' . $rowElement['Cron']['id'], array('class' => 'btn suppr_cron', 'title' => 'Supprimer', 'escape' => false), false, 'Vous confirmez vouloir supprimer cette tâche automatique ?');
-        echo $this->Html->tag('/div', null);
-        echo $this->Html->tag('div', null, array("class" => 'btn-group'));
+    {
+        switch ($rowElement['Cron']['last_execution_status']) {
+            case 'LOCKED':
+                $rowElement['Cron']['statusLibelle'] = '<span class="label label-info" title="La tâche est vérrouillée, ce qui signifie qu\'elle est en cours d\'exécution ou dans un état bloqué suite à une erreur"><i class="fa fa-lock"></i> ' . __('Vérrouillée', true) . '</span>';
+                break;
+            case 'SUCCES':
+                $rowElement['Cron']['statusLibelle'] = '<span class="label label-success" title="Opération exécutée avec succès"><i class="fa fa-check"></i> ' . __('Exécutée avec succès', true) . '</span>';
+                break;
+            case 'WARNING':
+                $rowElement['Cron']['statusLibelle'] = '<span class="label label-warning" title="Avertissement(s) détecté(s) lors de l\'exécution, voir les détails de la tâche"><i class="fa fa-info"></i> ' . __('Exécutée, en alerte', true) . '</span>';
+                break;
+            case 'FAILED':
+                $rowElement['Cron']['statusLibelle'] = '<span class="label label-danger" title="Erreur(s) détectée(s) lors de l\'exécution, voir les détails de la tâche"><i class="fa fa-warning"></i> ' . __('Non exécutée : erreur', true) . '</span>';
+                break;
+            default:
+                $rowElement['Cron']['statusLibelle'] = '<span class="label label-default" title="La tâche n\'a jamais été exécutée">' . __('En attente', true) . '</span>';
+        }
     }
-    echo $this->Html->link($this->Html->tag('i', '', array('class' => 'fa fa-clock-o fa-lg')), array('action' => 'planifier', $rowElement['Cron']['id']), array('class' => 'btn', 'title' => 'Planifier', 'escape' => false), false, false);
-    echo $this->Html->link($this->Html->tag('i', '', array('class' => 'fa fa-cog fa-lg')), array('action' => 'executer', $rowElement['Cron']['id']), array('class' => 'btn waiter', 'title' => 'Exécuter maintenant', 'escape' => false), false, false);
-    echo $this->Html->tag('/div', null);
+   
+    //cell date derniere execution
+    if ($rowElement['Cron']['last_execution_start_time'] != null)
+        $date_last_exec = $this->Time->format("d-m-Y à H:i:s", $rowElement['Cron']['last_execution_start_time']);
+    else
+        $date_last_exec = 'Jamais';
+    
+    //liste des actions
+    $liste_bouton = $this->Bs->btn(null, array(
+                        'controller' => 'crons',
+                        'action' => 'view', 
+                        $rowElement['Cron']['id']), 
+                            array(
+                                'type' => 'default', 
+                                'icon' => 'fa fa-info-circle fa-lg', 
+                                'title' => 'Voir les détails'));
 
-    echo $this->Html->tag('/div', null);
+    if ($superadmin) {
 
-    echo $this->Html->tag('/td');
-    echo $this->Html->tag('/tr');
+        $liste_bouton .= $this->Bs->btn(null, array(
+                        'controller' => 'crons',
+                        'action' => 'edit', 
+                        $rowElement['Cron']['id']), 
+                            array(
+                                'type' => 'default', 
+                                'icon' => 'fa fa-edit fa-lg', 
+                                'title' => 'Modifier'));
+
+        $liste_bouton .= $this->Bs->btn(null, array(
+                        'controller' => 'crons',
+                        'action' => 'delete', 
+                        $rowElement['Cron']['id']), 
+                            array(
+                                'type' => 'default', 
+                                'icon' => 'fa fa-trash-o fa-lg', 
+                                'title' => 'Supprimer'),'Vous confirmez vouloir supprimer cette tâche automatique ?' );
+    }
+
+    $liste_bouton .= $this->Bs->btn(null, array(
+                    'controller' => 'crons',
+                    'action' => 'planifier', 
+                    $rowElement['Cron']['id']), 
+                        array(
+                            'type' => 'primary', 
+                            'icon' => 'fa fa-clock-o fa-lg', 
+                            'title' => 'Planifier'));
+
+    $liste_bouton .= $this->Bs->btn(null, array(
+                'controller' => 'crons',
+                'action' => 'executer', 
+                $rowElement['Cron']['id']), 
+                    array(
+                        'type' => 'success', 
+                        'icon' => 'fa fa-cog fa-lg', 
+                        'title' => 'Exécuter maintenant'));
+   
+    $liste_bouton = $this->Bs->div('btn-group') . $liste_bouton . $this->Bs->close();
+    
+    echo $this->Bs->tableCells(array(
+        $rowElement['Cron']['statusLibelle'],
+        $rowElement['Cron']['nom'],
+        $this->Time->format("d-m-Y à H:i", $rowElement['Cron']['next_execution_time']),
+        $rowElement['Cron']['durationLibelle'],
+        $date_last_exec,
+        $rowElement['Cron']['activeLibelle'],
+        $liste_bouton
+    ));
 }
-echo $this->Html->tag('/tbody');
-echo $this->Html->tag('/table');
 
-echo $this->Html->tag('div', null, array('style' => 'text-align:center; margin-top:10px;'));
+echo $this->Bs->endTable();
+
+
+echo $this->Bs->div('text-center');
 if ($superadmin)
-    echo $this->Html->link('<i class="fa fa-plus-circle fa-lg"></i> Nouvelle tâche', array('action' => 'add'), array('title' => 'Créer une nouvelle tâche planifiée', 'class' => 'btn', 'escape' => false));
-echo $this->Html->link('<i class="fa fa-cogs fa-lg"></i> Exécuter toutes les tâches', array("action" => "runCrons"), array('id' => 'run-crons', 'class' => 'btn btn-primary waiter', 'escape' => false, 'title' => 'Exécuter toutes les tâches planifiées maintenant'));
-echo $this->Html->tag('/div');
+echo $this->Bs->btn('Nouvelle tâche', array('controller' => 'crons', 'action' => 'add'), array('type' => 'default', 'icon' => 'fa fa-plus-circle fa-lg', 'title' => 'Créer une nouvelle tâche planifiée'));
+        
+echo $this->Bs->btn('Exécuter toutes les tâches', array('controller' => 'crons', 'action' => 'runCrons'), array('type' => 'default', 'icon' => 'fa fa-cogs fa-lg', 'title' => 'Exécuter toutes les tâches planifiées maintenant'));
+echo $this->Bs->close();

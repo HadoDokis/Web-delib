@@ -1,21 +1,74 @@
-<style>
-    h2 {
-        margin-bottom: 30px;
+<?php
+$plugins = array();
+foreach ($plugin_model_method as $plugin => $models) {
+    if ($plugin !== '')
+        $plugins[$plugin] = $plugin;
+    else {
+        foreach ($models as $model => $method)
+            $modelList[$model] = $model;
     }
-    div.date select, div.time select{
-        width: auto;
-    }
-    label{
-        text-align: left;
-        width: auto;
-        min-width: 200px;
-        padding: 4px;
-    }
-    .checkbox input[type="checkbox"]{
-        margin-top: 7px;
-        margin-left: -12px;
-    }
-</style>
+}
+
+echo $this->Html->tag('h3', __('Edition de la tâche planifiée', true) . ' : ' . $this->data['Cron']['nom']) .
+$this->Form->create(null, array(
+    'plugin' => 'Crons', 
+    'controller' => 'crons', 
+    'action' => 'edit'));
+
+$panel['left'][] ='<b>'.__('Nom de la tâche planifiée', true) .' : </b>';
+$panel['left'][] ='<b>'.__('Description', true).' : </b>';
+$panel['left'][] ='<b>'.__('Plugin', true).' : </b>';
+$panel['left'][] ='<b>'.__('Model', true) .' : </b>';
+$panel['left'][] ='<b>'.__('Action', true).' : </b>';
+$panel['left'][] ='<b>'.__('Paramètre(s) (séparateur: ",")', true).' : </b>';
+$panel['left'][] ='<b>'.__('Date de la prochaine exécution', true).' : </b>';
+$panel['left'][] ='<b>'.__('Heure de la prochaine exécution', true).' : </b>';
+$panel['left'][] ='<b>'.__('Délais entre deux exécutions', true).' : </b>';
+$panel['left'][] ='<b>'.__('Activation', true).' : </b>';
+
+$panel['right'][] = $this->Form->input('nom', array('label' => false ));
+$panel['right'][] = $this->Form->input('description', array('label' => false));
+$panel['right'][] = $this->Form->input('plugin', array('label' => false,'type' => 'select', 'empty' => true, 'options' => $plugins));
+$panel['right'][] = $this->Form->input('model', array('label' => false, 'type' => 'select', 'empty' => true, 'options' => $modelList));
+$panel['right'][] = $this->Form->input('action', array('label' => false, 'type' => 'select', 'empty' => true));
+$panel['right'][] = $this->Form->input('params', array('label' => false));
+$panel['right'][] = $this->Form->input('next_execution_date', array('label' => false,
+                    'type' => 'date',
+                    'dateFormat' => 'DMY',
+                    'minYear' => date('Y') - 0,
+                    'maxYear' => date('Y') + 2,
+                    'monthNames' => false,
+                    'empty' => true
+                ));
+$panel['right'][] = $this->Form->input('next_execution_heure', array('label' => false, 'type' => 'time', 'timeFormat' => '24', 'interval' => 15));
+$panel['right'][] = $this->DurationPicker->picker('Cron.execution_duration', array('label' => false, 'empty' => true, 'value' => $this->data['Cron']['execution_duration']));
+$panel['right'][] = $this->Form->input('active', array('label' => false));
+
+
+
+echo $this->Bs->panel('Edition de la tâche');
+foreach($panel['left'] as $i => $temp)
+{
+   echo $this->Bs->row() .
+        $this->Bs->col('xs2') .
+        $this->Bs->close() .
+        $this->Bs->col('xs3').$panel['left'][$i] .
+        $this->Bs->close() .
+        $this->Bs->col('xs7').$panel['right'][$i] .
+        $this->Bs->close(2) .
+        $this->Bs->div('spacer').$this->Bs->close();
+}
+unset($panel);
+echo $this->Bs->endPanel() .
+$this->Html2->btnSaveCancel('', $previous, 'Valider', 'Valider') .
+$this->Form->hidden('id') .
+$this->Form->hidden('has_params', array('value' => '0')) .
+$this->Form->end();
+?>
+
+
+
+
 <script type="text/javascript">
     $(document).ready(function() {
         var plugin_ctrl_method = <?php echo json_encode($plugin_model_method); ?>;
@@ -67,42 +120,3 @@
 
     });
 </script>
-<?php
-$plugins = array();
-foreach ($plugin_model_method as $plugin => $models) {
-    if ($plugin !== '')
-        $plugins[$plugin] = $plugin;
-    else {
-        foreach ($models as $model => $method)
-            $modelList[$model] = $model;
-    }
-}
-echo $this->Html->tag('h2', __('Edition de la tâche planifiée', true) . ' : ' . $this->data['Cron']['nom']);
-echo $this->Form->create(null, array('action' => "edit/"));
-echo $this->Form->input('nom', array('label' => __('Nom de la tâche planifiée', true)));
-echo $this->Form->input('description', array('label' => __('Description', true), 'type' => 'textarea'));
-echo $this->Form->input('plugin', array('type' => 'select', 'empty' => true, 'options' => $plugins));
-echo $this->Form->input('model', array('type' => 'select', 'empty' => true, 'options' => $modelList));
-echo $this->Form->input('action', array('type' => 'select', 'empty' => true));
-echo $this->Form->input('params', array('label' => __('Paramètre(s) (séparateur: ",")', true)));
-echo $this->Form->hidden('has_params', array('value' => '0'));
-
-echo $this->Form->input('next_execution_date', array('label' => __('Date de la prochaine exécution', true),
-    'type' => 'date',
-    'dateFormat' => 'DMY',
-    'minYear' => date('Y') - 0,
-    'maxYear' => date('Y') + 2,
-    'monthNames' => false,
-    'empty' => true
-));
-
-echo $this->Form->input('next_execution_heure', array('label' => __('Heure de la prochaine exécution', true), 'type' => 'time', 'timeFormat' => '24', 'interval' => 15));
-echo $this->DurationPicker->picker('Cron.execution_duration', array('label' => 'Délais entre deux exécutions', 'empty' => true, 'value' => $this->data['Cron']['execution_duration']));
-echo $this->Form->input('active', array('label' => __('Activation', true)));
-echo $this->Form->hidden('id');
-echo $this->Html->tag("div", null, array("class" => "btn-group", 'style' => 'clear: both; left: 210px;'));
-echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'index'), array('class' => 'btn', 'escape' => false));
-echo $this->Form->button('<i class="fa fa-check"></i> Valider', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false));
-echo $this->Html->tag('/div', null);
-echo $this->Form->end();
-?>
