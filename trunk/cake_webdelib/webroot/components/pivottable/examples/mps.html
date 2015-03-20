@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pivot Demo</title>
+        <link rel="stylesheet" type="text/css" href="../dist/pivot.css">
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript" src="ext/jquery-1.8.3.min.js"></script>
+        <script type="text/javascript" src="ext/jquery-ui-1.9.2.custom.min.js"></script>
+        <script type="text/javascript" src="../dist/pivot.js"></script>
+        <script type="text/javascript" src="../dist/pivot.fr.js"></script>
+        <script type="text/javascript" src="../dist/gchart_renderers.js"></script>
+        
+        <style>
+            * {font-family: Verdana;}
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var data = [
+	    {
+	    	ServiceC : "Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources",
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.1',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service de la commande Publique',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.2',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service de la commande Publique',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.1',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service de la commande Publique',
+	    	amount : 2,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.2',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service de la commande Publique',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.3',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service de la commande Publique',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Assemblée',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service de la commande Publique',
+	    	amount : 2,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service de la commande Publique',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services',
+	    	ServiceCH: '33',
+                SServiceC : 'Mission Développement Durable',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service de la commande Publique',
+	    	amount : 1,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.1',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Affaires Juridiques',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.2',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Affaires Juridiques',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.1',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Affaires Juridiques',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.2',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Affaires Juridiques',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.3',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Affaires Juridiques',
+	    	amount : 3,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Assemblée',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Affaires Juridiques',
+	    	amount : 2,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Affaires Juridiques',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services',
+	    	ServiceCH: '33',
+                SServiceC : 'Mission Développement Durable',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Affaires Juridiques',
+	    	amount : 2,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.1',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Assemblées',
+	    	amount : 1,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.2',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Assemblées',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.1',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Assemblées',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.2',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Assemblées',
+	    	amount : 2,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.3',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Assemblées',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Assemblée',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Assemblées',
+	    	amount : 2,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Assemblées',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services',
+	    	ServiceCH: '33',
+                SServiceC : 'Mission Développement Durable',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Service des Assemblées',
+	    	amount : 2,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.1',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	amount : 1,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.2',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.1',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	amount : 1,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.2',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.3',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	amount : 2,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Assemblée',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	amount : 2,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	amount : 4,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services',
+	    	ServiceCH: '33',
+                SServiceC : 'Mission Développement Durable',
+	    	ServiceL : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	SServiceL : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.1',
+	    	ServiceL : 'Direction Générale des Services',
+	    	SServiceL : 'Mission Développement Durable',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service de la commande Publique',
+	    	SSServiceC : 'Src1.2',
+	    	ServiceL : 'Direction Générale des Services',
+	    	SServiceL : 'Mission Développement Durable',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.1',
+	    	ServiceL : 'Direction Générale des Services',
+	    	SServiceL : 'Mission Développement Durable',
+	    	amount : 1,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.2',
+	    	ServiceL : 'Direction Générale des Services',
+	    	SServiceL : 'Mission Développement Durable',
+	    	amount : 0,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Affaires Juridiques',
+	    	SSServiceC : 'Src2.3',
+	    	ServiceL : 'Direction Générale des Services',
+	    	SServiceL : 'Mission Développement Durable',
+	    	amount : 1,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Service des Assemblée',
+	    	ServiceL : 'Direction Générale des Services',
+	    	SServiceL : 'Mission Développement Durable',
+	    	amount : 3,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services Adjoint, Statégies, Contractualisation, Ressources',
+	    	ServiceCH: '49',
+                SServiceC : 'Direction des Affaires Juridiques et de la Commande Publique',
+	    	ServiceL : 'Direction Générale des Services',
+	    	SServiceL : 'Mission Développement Durable',
+	    	amount : 1,
+	    },
+	    {
+	    	ServiceC : 'Direction Générale des Services',
+	    	ServiceCH: '33',
+                SServiceC : 'Mission Développement Durable',
+	    	ServiceL : 'Direction Générale des Services',
+	    	SServiceL : 'Mission Développement Durable',
+	    	amount : '<a href="#">1</a>',
+	    }, 
+	];
+        //console.log(data);
+        google.load("visualization", "1", {packages:["corechart", "charteditor"]});
+            $(function(){
+                var derivers = $.pivotUtilities.derivers;
+                var tpl = $.pivotUtilities.aggregatorTemplates;
+                var renderers = $.extend($.pivotUtilities.renderers, 
+                    $.pivotUtilities.gchart_renderers);
+               
+                    $("#output").pivotUI(data, {
+                        /*derivedAttributes: {
+                            "Age Bin": derivers.bin("Age", 10),
+                            "Gender Imbalance": function(mp) {
+                                return mp["Gender"] == "Male" ? 1 : -1;
+                            }
+                        }*/ 
+                        renderers: renderers,
+                        aggregators: {
+                            "somme":      function() {return tpl.sum()(["amount"]) },
+                            "Average": function() { return tpl.average()(["amount"])},
+                            "Sum as Fraction of Total": function() { return tpl.fractionOf(tpl.sum(), "total")(["amount"])},
+                        },
+                        rows: ["ServiceL","SServiceL"], 
+                        cols: ["ServiceC", "SServiceC","SSServiceC"],
+                        //vals: ["amount"],
+                        hiddenAttributes: ["amount","ServiceCH"],
+                    },false,"fr");
+                
+             });
+        </script>
+        <p><a href="index.html">&laquo; back to examples</a></p>
+
+        <p style="width: 800px">This example simply loads up a pivot table, ready for interaction.</p>
+
+        
+        <div id="output" style="margin: 30px;"></div>
+
+    </body>
+</html>
