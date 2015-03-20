@@ -41,7 +41,8 @@ foreach ($annexes as $key=>$annexe) {
     if ($mode == 'edit'){
     $aOptions=array(
         'id' => $mode.'Annexe' . $annexe['id'],
-        'data-annexeid' => $annexe['id'], 
+        'data-annexeid' => $annexe['id'],
+        'data-position' => $annexe['position']
     );
     if (!empty($ref))
         $aOptions['data-ref'] = $ref;
@@ -55,7 +56,7 @@ foreach ($annexes as $key=>$annexe) {
             'autocomplete'=>'off',
             'label'=>false,
             'class'=>'input-sm select2 selectone',
-            'id'=>'modifieAnnexeOrdre'.$annexe['id'],
+            'id'=>'modifieAnnexeOrdre[]',
     ));
     $sPosition.= $this->Bs->close();
         
@@ -135,7 +136,7 @@ foreach ($annexes as $key=>$annexe) {
     echo $this->Bs->cell($sJoindreFusion);
     
     $sActions=$this->Bs->div('btn-group annexe-edit-btn');
-    $sActions.=$this->Bs->btn('Télécharger', array('controller'=>'annexes','action'=>'download', $annexe['id']), array(
+    $sActions.=$this->Bs->btn('', array('controller'=>'annexes','action'=>'download', $annexe['id']), array(
         'type'=>'default',
         'size' => 'sm',
         'icon'=>'glyphicon glyphicon-download',    
@@ -144,7 +145,7 @@ foreach ($annexes as $key=>$annexe) {
             'id' => 'voirAnnexe' . $annexe['id'] . $ref,
         ));
         
-    $sActions.=$this->Bs->btn('Modifier', 'javascript:void(0);', array(
+    $sActions.=$this->Bs->btn('', 'javascript:void(0);', array(
         'type'=>'primary',
         'size' => 'sm',
         'icon'=>'fa fa-edit',    
@@ -154,7 +155,7 @@ foreach ($annexes as $key=>$annexe) {
             'onclick' => 'modifierAnnexe(' . $annexe['id'] . ')'
         ));
 
-    $sActions.= $this->Bs->btn('Supprimer', 'javascript:void(0);', array(
+    $sActions.= $this->Bs->btn('', 'javascript:void(0);', array(
             'type'=>'danger',
             'size' => 'sm',
             'icon'=>'fa fa-trash-o',

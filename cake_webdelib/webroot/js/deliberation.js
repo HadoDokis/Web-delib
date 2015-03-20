@@ -72,6 +72,25 @@ $(document).ready(function () {
             }
         }
     });
+    
+    //modifier l'ordre des annnexes 
+    $('#tableAnnexesdelibPrincipale .selectone').change(function(){
+        var new_position = $( this ).val();
+        var latest_position = $(this).closest('tr').attr('data-position');
+        //on met a jour la position
+        if (latest_position != new_position){
+            //console.log('Avant : ' + $(this).closest('tr').attr('data-position') + ' Devient :' + new_position );
+            $(this).closest('tr').attr('data-position', new_position);
+            //on boucle sur le tableau pour reorganiser les positions inférieurs
+            /*$('#tableAnnexesdelibPrincipale tr').each(function(){
+                //on decale d'un cran en dessous la ligne
+                console.log('Avant : ' + $(this).attr('data-position') + ' Devient :' + (parseInt($(this).attr('data-position')) + 1) );
+                $(this).attr('data-position', (parseInt($(this).attr('data-position')) + 1) );
+            });*/
+        }
+        //on met a jour l'affichage
+        mettreEnOrdre('tableAnnexesdelibPrincipale', 'data-position');
+    });
 });
 
 function disableExitWarning() {
@@ -271,7 +290,7 @@ function resetAnnexeModal() {
     $('#Annex0File').filestyle('clear');
     $('#Annex0Ctrl').prop('checked', false);
     $('#Annex0Fusion').prop('checked', true);
-    $("#annexeModal").find('input').prop('disabled', true);
+    $("#annexeModal").find('input').prop('disabled', 'disabled');
     //RAZ affichage
     $('#Annex0Ctrl').closest('div').show();
     $('#Annex0Fusion').closest('div').show();
@@ -301,49 +320,19 @@ function annulerSupprimerAnnexe(annexeId) {
     $bloc.find('.annexe-edit-btn').show();
 }
 
-// Fonction de modification de l'annexe
-function modifierAnnexe(annexeId) {
-    var $bloc = $('#editAnnexe' + annexeId);
 
-    //Activation conditionnelle des checkboxes fusion et ctrl_legalite selon extension annexe
-    var fileext = $bloc.find('.annexefilename').text().split('.').pop().toLowerCase();
-    if ($.inArray(fileext, extensionsFusion) === -1) {
-        $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', false).prop('disabled', true);
-    } else {
-        $bloc.find('#modifieAnnexeFusion' + annexeId).prop('disabled', false);
-    }
-    if ($.inArray(fileext, extensionsCtrl) === -1) {
-        $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('checked', false).prop('disabled', true);
-    } else {
-        $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('disabled', false);
-    }
-    $bloc.find('#modifieAnnexeTitre' + annexeId).prop('disabled', false);
-    
-    $bloc.find('#urlWebdavAnnexe' + annexeId).show();
-
-    $bloc.addClass('warning').addClass('aModifier').attr('title', 'Annexe à modifier');
-
-    $bloc.find('.annexe-edit').each(function () {
-       // $(this).removeAttr('disabled');
-        $(this).show();
-    });
-    $bloc.find('.annexe-view').hide();
-    $bloc.find('.annexe-edit-btn').hide();
-    $bloc.find('.annexe-edit').show();
-    $bloc.find('.annexe-cancel-btn').show();
-}
 
 // Fonction d'annulation de la modification de l'annexe
 function annulerModifierAnnexe(annexeId) {
     var $bloc = $('#editAnnexe' + annexeId);
     $bloc.find('#modifieAnnexeTitre' + annexeId).val($bloc.find('#afficheAnnexeTitre' + annexeId).attr('data-valeurinit'));
-    $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('checked', $bloc.find('#afficheAnnexeCtrl' + annexeId).attr('data-valeurinit') == 1);
-    $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', $bloc.find('#afficheAnnexeFusion' + annexeId).attr('data-valeurinit') == 1);
+    $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('checked', $bloc.find('#afficheAnnexeCtrl' + annexeId).attr('data-valeurinit'));
+    $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', $bloc.find('#afficheAnnexeFusion' + annexeId).attr('data-valeurinit'));
    
     $bloc.removeClass('warning').removeClass('aModifier').removeAttr('title');
     
 //    $bloc.find('.annexe-cancel').each(function () {
-//       // $(this).prop('disabled', true);
+//       // $(this).prop('disabled', 'disabled');
 //        $(this).hide();
 //    });
 
@@ -364,4 +353,54 @@ function editerTexte(obj, textId, afficheTextId) {
 function reset_html(id) {
     $('#' + id + ' input[type=file]').val(null);
     $('#' + id + ' a').remove();
+}
+
+// Fonction de modification de l'annexe
+function modifierAnnexe(annexeId) {
+    var $bloc = $('#editAnnexe' + annexeId);
+
+    //Activation conditionnelle des checkboxes fusion et ctrl_legalite selon extension annexe
+    var fileext = $bloc.find('.annexefilename').text().split('.').pop().toLowerCase();
+    if ($.inArray(fileext, extensionsFusion) === -1) {
+        $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', false).prop('disabled', 'disabled');
+    } else {
+        $bloc.find('#modifieAnnexeFusion' + annexeId).prop('disabled', false);
+    }
+    if ($.inArray(fileext, extensionsCtrl) === -1) {
+        $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('checked', false).prop('disabled', 'disabled');
+    } else {
+        $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('disabled', false);
+    }
+    $bloc.find('#modifieAnnexeTitre' + annexeId).prop('disabled', false);
+    
+    $bloc.find('#urlWebdavAnnexe' + annexeId).show();
+
+    $bloc.addClass('warning').addClass('aModifier').attr('title', 'Annexe à modifier');
+
+    $bloc.find('.annexe-edit').each(function () {
+       // $(this).removeAttr('disabled');
+        $(this).show();
+    });
+    $bloc.find('.annexe-view').hide();
+    $bloc.find('.annexe-edit-btn').hide();
+    $bloc.find('.annexe-edit').show();
+    $bloc.find('.annexe-cancel-btn').show();
+}
+
+//modifier l'ordre des annnexes 
+function mettreEnOrdre(table_id, type){
+
+    var $table=$('#' + table_id);
+
+    var rows = $table.find('tr').get();
+    rows.sort(function(a, b) {
+    var keyA = $(a).attr(type);
+    var keyB = $(b).attr(type);
+    if (keyA < keyB) return -1;
+    if (keyA > keyB) return 1;
+    return 0;
+    });
+    $.each(rows, function(index, row) {
+    $table.children('tbody').append(row);
+    });
 }
