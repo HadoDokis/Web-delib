@@ -1,7 +1,7 @@
 <div class='spacer'> </div>
 <?php  
 
-    echo $this->BsForm->create('Connecteur',array('url'=>'/connecteurs/makeconf/conversion', 'type'=>'file' )); 
+    echo $this->BsForm->create('Connecteur',array('url'=>array('admin'=> true,'prefix'=>'admin', 'controller'=>'connecteurs', 'action'=>'makeconf', 'conversion'), 'type'=>'file' )); 
 
 ?>
     <fieldset>
@@ -11,7 +11,7 @@
                                 array('type' => 'text', 
                                       "placeholder"=>"Exemple : http://127.0.0.1:8880/ODFgedooo/OfficeService?wsdl", 
                                       'label' => 'WSDL de ODFGEDOOo : ' , 
-                                      'value' => Configure::read('GEDOOO_WSDL')));
+                                      'value' => Configure::read('FusionConv.Gedooo.wsdl')));
 ?>
     </fieldset>
     <fieldset>
@@ -21,7 +21,7 @@
                                               "placeholder"=>"fourni avec votre certificat", 
                                               "placeholder"=>"Exemple : 127.0.0.1",
                                               'label' => 'Adresse de CLOUDOOo :',
-                                              'value' => Configure::read('CLOUDOOO_HOST')));
+                                              'value' => Configure::read('FusionConv.cloudooo_host')));
 ?>
     <div class='spacer'> </div>
 <?php
@@ -29,11 +29,11 @@
                              array('type' => 'text',
                                    "placeholder"=>"Exemple : 8011",
                                    'label'  => 'Port de CLOUDOOo :',
-                                   'value' => Configure::read('CLOUDOOO_PORT'))); 
+                                   'value' => Configure::read('FusionConv.cloudooo_port'))); 
 ?>
     </fieldset>
     <div class='spacer'> </div>
 <?php
-    echo $this->Html2->btnSaveCancel('','/connecteurs/index');
+    echo $this->Html2->btnSaveCancel('',array('admin'=>true,'prefix'=>'admin','controller'=>'connecteurs', 'action'=>'index'));
     echo $this->Form->end();
 ?>
