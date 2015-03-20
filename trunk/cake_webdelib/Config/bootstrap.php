@@ -142,8 +142,9 @@ spl_autoload_register(array('App', 'load'), true, true);
 Configure::write('I18n.preferApp', true);
 
 Configure::write('AclManager.ignorePlugins', array(
-    'AclManager',
-    'Gedooo',
+    'Gedooo',//FIX delete
+    'Database',
+    'FusionConv',
     'DebugKit',
     'Appchecks',
     'AuthManager',

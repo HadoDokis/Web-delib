@@ -15,7 +15,7 @@ if ($mode == 'edit' && empty($ref))
 $aTableOptions=array('caption'=>'Liste des annexes');
 
 $aTitles=array(
-    array('title' => 'Ordre'),
+    array('title' => 'Position'),
     array('title' => 'Nom du fichier'),
     array('title' => 'Titre'),
     array('title' => 'Joindre au contrôle de légalité'),
@@ -31,12 +31,12 @@ if (empty($annexes)) {
         $aTableOptions['class'] = 'bootstrap-table';
 }
 echo $this->Bs->table($aTitles, array('hover', 'striped'), $aTableOptions);
+
 //Mettre dans le modèle
 $aPosition=array();
 for ($index = 0; $index < count($annexes); $index++) {
     $aPosition[$index+1]=$index+1;
 }
-
 foreach ($annexes as $key=>$annexe) {
     if ($mode == 'edit'){
     $aOptions=array(
@@ -48,10 +48,10 @@ foreach ($annexes as $key=>$annexe) {
         
     $this->Bs->lineAttributes($aOptions);
     
-    $sPosition=$this->Html->tag('div', !empty($annexe['ordre'])?$annexe['ordre']:$key+1, array('class' => 'annexe-view'));
+    $sPosition=$this->Html->tag('div', $annexe['position'], array('class' => 'annexe-view'));
     $sPosition.=$this->Bs->div('annexe-edit', null, array('style' => 'display:none;'));
-    $sPosition.=$this->BsForm->select('Deliberationseance.position', $aPosition, array(
-            'value' => !empty($annexe['ordre'])?$annexe['ordre']:$key+1,
+    $sPosition.=$this->BsForm->select('Annex.position', $aPosition, array(
+            'value' => $annexe['position'],
             'autocomplete'=>'off',
             'label'=>false,
             'class'=>'input-sm select2 selectone',
@@ -195,17 +195,8 @@ if ($mode != 'edit') return;
 // div pour la suppression des annexes
 echo $this->Html->tag('div', '', array('id' => 'supprimeAnnexes' . $ref, 'style' => 'display:none'));
 
-// div pour l'ajout des annexes
+// div pour l'ajout des annexes 
 echo $this->Html->tag('div', '', array('id' => 'ajouteAnnexes' . $ref, 'style' => 'display:none'));
 echo $this->Html->tag(null, '<br />');
 
-// lien pour ajouter une nouvelle annexes
-echo $this->Bs->btn('Ajouter une annexe', 'javascript:void(0);', array(
-    'type'=>'success',
-    'icon'=>'glyphicon glyphicon-plus',
-    'id' => 'annexeModalAddLink' . $ref,
-    'class' => 'annexeModalAddLink',
-    'data-ref' => $ref,
-    'onclick' => 'afficherAnnexeModal(this);',
-    'escape' => false
-));
+ echo $this->element('annexeModal', array('ref'=>$ref)); 
