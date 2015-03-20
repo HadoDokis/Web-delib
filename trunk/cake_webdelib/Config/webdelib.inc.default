@@ -20,9 +20,11 @@ Configure::write('LIMIT', 5); //limitation du nombre de projets par banette
 Configure::write('PROTOCOLE_DL', 'vnd.sun.star.webdav');
 
 /* Configuration pour la conversion de format des documents */
-Configure::write('CONVERSION_TYPE', 'CLOUDOOO');
-Configure::write('CLOUDOOO_HOST', '127.0.0.1');
-Configure::write('CLOUDOOO_PORT', '8011');
+/* Configuration FusionConv */
+Configure::write('FusionConv.Gedooo.wsdl', 'http://127.0.0.1:8880/GEDOOo/OfficeService?wsdl');
+Configure::write('FusionConv.method', 'GedoooCloudooo');
+Configure::write('FusionConv.cloudooo_host', '127.0.0.1');
+Configure::write('FusionConv.cloudooo_port', '8011');
 
 /* Configuration pour la manipulation des pdf */
 Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
@@ -44,11 +46,6 @@ Configure::write('SMTP_USERNAME', '');
 Configure::write('SMTP_PASSWORD', '');
 Configure::write('SMTP_CLIENT', '');
 
-/* Configuration GEDOOo */
-Configure::write('Gedooo.wsdl', 'http://127.0.0.1:8880/GEDOOo/OfficeService?wsdl');
-Configure::write('Gedooo.method', 'GedoooCloudooo');
-Configure::write('Gedooo.cloudooo_host', '127.0.0.1');
-Configure::write('Gedooo.cloudooo_port', '8011');
 /**
  * Parapheur (Signature électronique, délégation)
  */
