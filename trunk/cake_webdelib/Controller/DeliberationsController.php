@@ -40,6 +40,7 @@ class DeliberationsController extends AppController {
                 'deleteDebat',
                 'validerEnUrgence',
                 'goNext',
+                'tableauBord',
                 'mesProjetsATraiter' => array('traiter','retour'),
                 'tousLesProjetsSansSeance' => array('attribuerSeance'),
                 'autresActesAValider' => array('autreActesValides','autresActesAEnvoyer','autresActesEnvoyes'),
@@ -56,7 +57,7 @@ class DeliberationsController extends AppController {
         )
         );
     
-    function view($id = null) {
+    public function view($id = null) {
         $projet = $this->Deliberation->find('first', array(
             'fields' => array(
                 'id', 'anterieure_id', 'service_id', 'circuit_id', 'typeacte_id',
@@ -273,16 +274,16 @@ class DeliberationsController extends AppController {
         /*         * *************************** */
     }
 
-    function majEtatParapheur($id = null) {
+    public function majEtatParapheur($id = null) {
         $this->requestAction(array('plugin' => 'cakeflow', 'controller' => 'traitements', 'action' => 'majTraitementsParapheur', $id, 'true'));
         return $this->redirect(array('action' => 'view', $id));
     }
 
-    function _getFileData($fileName, $fileSize) {
+    private function _getFileData($fileName, $fileSize) {
         return @fread(fopen($fileName, "r"), $fileSize);
     }
 
-    function add() {
+    public function add() {
         // initialisations
         $sortie = false;
         
@@ -415,9 +416,11 @@ class DeliberationsController extends AppController {
             $this->set('date_seances', $this->Seance->generateList(null, $canEditAll));
 
             if (!empty($this->request->data['Deliberation']['date_limite'])) {
+                App::uses('CakeTime', 'Utility');
                 $this->set('date_limite', CakeTime::format($this->request->data['Deliberation']['date_limite'], '%d/%m/%Y', 'invalid'));
             }
 
+            
             $this->set('profil_id', $this->Auth->user('profil_id'));
             $this->Infosupdef->Behaviors->load('Containable');
             $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions' => array('model' => 'Deliberation', 'actif' => true),
@@ -440,10 +443,6 @@ class DeliberationsController extends AppController {
             }
             $this->set('typeseances', $typeseances);
 
-            //       foreach ($seances AS $id => $seance) {
-//           $seances[$id] = $seance['libelle']. ' : '. $this->Time->i18nFormat($seances[$id]['date'], '%d/%m/%Y à %k:%M');
-//       }
-//       
             // initialisation dekjhlkjlkjlkj la liste des séances
             $seances = array();
             if (!empty($this->request->data['Typeseance'])) {
@@ -520,7 +519,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function download($id, $file) {
+    public function download($id, $file) {
 
         $this->autoRender = false;
 
@@ -537,7 +536,7 @@ class DeliberationsController extends AppController {
         $this->response->body($delib['Deliberation'][$file]);
     }
 
-    function deleteDebat($delib_id, $seance_id) {
+    public function deleteDebat($delib_id, $seance_id) {
         $this->Deliberation->id = $delib_id;
         $data = array(
             'debat' => '',
@@ -555,7 +554,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function downloadDelib($delib_id) {
+    public function downloadDelib($delib_id) {
         $this->Deliberation->id = $delib_id;
         $delib_pdf = $this->Deliberation->field('delib_pdf');
         $num_delib = $this->Deliberation->field('num_delib');
@@ -573,7 +572,7 @@ class DeliberationsController extends AppController {
         return $this->response;
     }
 
-    function downloadSignature($delib_id) {
+    public function downloadSignature($delib_id) {
         $this->Deliberation->id = $delib_id;
         $signature = $this->Deliberation->field('signature');
         $num_delib = $this->Deliberation->field('num_delib');
@@ -586,7 +585,7 @@ class DeliberationsController extends AppController {
         return $this->response;
     }
 
-    function downloadBordereau($delib_id) {
+    public function downloadBordereau($delib_id) {
         $this->Deliberation->id = $delib_id;
         $bordereau = $this->Deliberation->field('parapheur_bordereau');
         $num_delib = $this->Deliberation->field('num_delib');
@@ -605,7 +604,7 @@ class DeliberationsController extends AppController {
      * @param array $annexesErrors
      * @return bool
      */
-    function _saveAnnexe($delibId, $annexe, &$annexesErrors) {
+    private function _saveAnnexe($delibId, $annexe, &$annexesErrors) {
         App::uses('File', 'Utility');
         //Pour la gestion des erreurs des annexes
         $titre = !empty($annexe['titre']) ? $annexe['titre'] : $annexe['file']['name'];
@@ -662,7 +661,7 @@ class DeliberationsController extends AppController {
         return false;
     }
 
-    function edit($id = null) {
+    public function edit($id = null) {
         
             
         $annexesErrors = array();
@@ -744,7 +743,7 @@ class DeliberationsController extends AppController {
 
             $this->Session->setFlash("Vous n'avez pas les droits pour editer le projet '$id'.", 'growl', array('type' => 'erreur'));
             return $this->redirect($this->previous);
-        }
+                    }
             
             if (!empty($this->request->data['Deliberation']['parent_id'])) {
                 return $this->redirect(array('action' => 'edit', $this->request->data['Deliberation']['parent_id']));
@@ -805,7 +804,7 @@ class DeliberationsController extends AppController {
                     $this->request->data['Multidelib'][$imd] = $multiDelib['Multidelib'];
                 }
             }
-            
+
             // initialisation des fichiers des textes
             $this->Gedooo->createFile($path_projet, 'texte_projet.odt', $this->data['Deliberation']['texte_projet']);
             $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
@@ -889,7 +888,7 @@ class DeliberationsController extends AppController {
                         'conditions' => array('model' => 'Deliberation', 'actif' => true),
                         'order' => 'ordre',
                         'contain' => array('Profil.id'))));
-            
+
             $this->set('nomenclatures', $this->Nomenclature->generateTreeList(null, '{n}.Nomenclature.name', '{n}.Nomenclature.libelle', '&nbsp;'));
             
             $this->set('DELIBERATIONS_MULTIPLES', Configure::read('DELIBERATIONS_MULTIPLES'));
@@ -957,8 +956,7 @@ class DeliberationsController extends AppController {
 
             if (empty($this->data['Deliberation']['theme_id']))
                 unset($this->request->data['Deliberation']['theme_id']);
-
-            debug($this->data);exit;
+debug($this->data);exit;
             $seances_selected = array();
             if (isset($this->data['Seance']['Typeseance'])) {
                 if (!empty($this->data['Seance']['Typeseance'])) {
@@ -1086,7 +1084,7 @@ class DeliberationsController extends AppController {
                                 'titre' => $annexe['titre'],
                                 'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
                                 'joindre_fusion' => $annexe['joindre_fusion'],
-                                'data' => file_get_contents(WEBROOT_PATH . DS . 'files' . DS . 'generee' . DS . 'projet' . DS . $annex_filename['Annex']['foreign_key'] . DS . $annex_filename['Annex']['filename']),
+                                'data' => file_get_contents(TMP . 'files' . DS . 'generee' . DS . 'projet' . DS . $annex_filename['Annex']['foreign_key'] . DS . $annex_filename['Annex']['filename']),
                                 'edition_data' => NULL,
                                 'data_pdf' => NULL));
                         } else {
@@ -1343,7 +1341,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function delete($id = null) {
+    public function delete($id = null) {
 
         $delib = $this->Deliberation->find('first', array(
             'recursive' => -1,
@@ -1372,7 +1370,7 @@ class DeliberationsController extends AppController {
      * @param type $id
      * @param type $users
      */
-    function _addUsersIntoCircuit($id = null,$users = array()){
+    private function _addUsersIntoCircuit($id = null,$users = array()){
         $message = "Projet injecté au circuit : " . $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
         foreach ($users as $user){
              $this->Historique->enregistre($id, $user, $message);
@@ -1386,7 +1384,7 @@ class DeliberationsController extends AppController {
      * @param type $id id du projet
      * @param type $users listes des corédacteurs possibles
      */
-    function _addIntoCircuit($id = null,$users = array()) {
+    private function _addIntoCircuit($id = null,$users = array()) {
 
         try {
             // enregistrement de l'historique
@@ -1486,7 +1484,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function attribuercircuit($id = null) {
+    public function attribuercircuit($id = null) {
 
         if (!$id) {
             $this->Session->setFlash('Invalide id pour la deliberation', 'growl', array('type' => 'erreur'));
@@ -1580,9 +1578,9 @@ class DeliberationsController extends AppController {
         }
         //on récupaire tout les utilisateurs
             $redacteurs = $this->Deliberation->Redacteur->find('all',array(
-               'fields' => array('Redacteur.id','Redacteur.login','Redacteur.nom','Redacteur.prenom'), 
+               'fields' => array('Redacteur.id','Redacteur.username','Redacteur.nom','Redacteur.prenom'), 
                 'recursive' => -1,
-            ));
+                ));
             // on format les données pour le select id => text
             foreach($redacteurs as $id => $redacteur){
                 $redacteurs[$redacteur['Redacteur']['id']] = '('.$redacteur['Redacteur']['login'].') '.$redacteur['Redacteur']['prenom'].' '.$redacteur['Redacteur']['nom'];
@@ -1594,7 +1592,7 @@ class DeliberationsController extends AppController {
         $this->set('previous', $this->previous);
     }
 
-    function retour($delib_id) {
+    public function retour($delib_id) {
         $delib = $this->Deliberation->find('first', array(
             'recursive' => -1,
             'conditions' => array('Deliberation.id' => $delib_id)
@@ -1622,7 +1620,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function traiter($id = null, $valid = null) {
+    public function traiter($id = null, $valid = null) {
 
         $this->Deliberation->id = $id;
         if (!$this->Deliberation->exists()) {
@@ -1783,7 +1781,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function _refuseDossier($id) {
+    private function _refuseDossier($id) {
         $nouvelId = $this->Deliberation->refusDossier($id);
         $this->Traitement->execute('KO', $this->Auth->user('id'), $id);
         $destinataires = $this->Traitement->whoIs($id, 'in', array('OK', 'IN'));
@@ -1793,7 +1791,7 @@ class DeliberationsController extends AppController {
         $this->Historique->enregistre($id, $this->Auth->user('id'), 'Projet refusé');
     }
 
-    function _accepteDossier($id) {
+    private function _accepteDossier($id) {
         $traitementTermine = $this->Traitement->execute('OK', $this->Auth->user('id'), $id);
         $this->Historique->enregistre($id, $this->Auth->user('id'), 'Projet accepté');
         if ($traitementTermine) {
@@ -1807,7 +1805,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function transmit($seance_id = null) {
+    public function transmit($seance_id = null) {
         if (!Configure::read('USE_TDT')) {
             $this->Session->setFlash('Le tiers de télétransmission est désactivé. Veuillez contacter votre administrateur', 'growl');
             return $this->redirect($this->previous);
@@ -1939,8 +1937,7 @@ class DeliberationsController extends AppController {
         $this->set('deliberations', $deliberations);
     }
 
-    function toSend($seance_id = null) {
-        
+    public function toSend($seance_id = null) {
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
         App::uses('Tdt', 'Lib');
@@ -2047,7 +2044,7 @@ class DeliberationsController extends AppController {
     /**
      * Tri pour les dates de séance
      */
-    function _sortProjetSeanceDate(&$projets) {
+    private function _sortProjetSeanceDate(&$projets) {
         foreach ($projets as $keyProjet => $projet) {
             if (!empty($projets[$keyProjet]['Deliberationtypeseance']))
                 $projets[$keyProjet]['Deliberationtypeseance'] = Hash::sort($projet['Deliberationtypeseance'], '{n}.Typeseance.action', 'asc');
@@ -2058,7 +2055,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function _getNatureListe() {
+    private function _getNatureListe() {
         $tab = array();
         $doc = new DOMDocument('1.0', 'UTF-8');
         if (!@$doc->load(Configure::read('S2LOW_CLASSIFICATION')))
@@ -2089,7 +2086,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function _object2array($object) {
+    private function _object2array($object) {
         $return = NULL;
         if (is_array($object)) {
             foreach ($object as $key => $value)
@@ -2109,7 +2106,7 @@ class DeliberationsController extends AppController {
      * Envoi par lot de deliberations au TDT (s2low ou pastell)
      * @return mixed
      */
-    function sendToTdt() {
+    public function sendToTdt() {
         App::uses('Tdt', 'Lib');
         App::uses('Folder', 'Utility');
         App::uses('File', 'Utility');
@@ -2306,7 +2303,7 @@ class DeliberationsController extends AppController {
         return $this->redirect($this->referer());
     }
 
-    function getClassification() {
+    public function getClassification() {
         App::uses('Tdt', 'Lib');
         $this->Tdt = new Tdt();
         if ($this->Tdt->updateClassification()) {
@@ -2318,7 +2315,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function positionner($seance_id, $id = null, $delta) {
+    public function positionner($seance_id, $id = null, $delta) {
         $projet_courant = $this->Deliberationseance->find('first', array(
             'conditions' => array('Deliberation.id' => $id, 'Seance.id' => $seance_id, 'Deliberation.etat <>' => '-1'),
             'fields' => array('id', 'deliberation_id', 'position')));
@@ -2341,22 +2338,22 @@ class DeliberationsController extends AppController {
         return $this->redirect(array('controller' => 'seances', 'action' => 'afficherProjets', $seance_id));
     }
 
-    function textprojetvue($id = null) {
+    public function textprojetvue($id = null) {
         $this->set('deliberation', $this->Deliberation->read(null, $id));
         $this->set('delib_id', $id);
     }
 
-    function textsynthesevue($id = null) {
+    public function textsynthesevue($id = null) {
         $this->set('deliberation', $this->Deliberation->read(null, $id));
         $this->set('delib_id', $id);
     }
 
-    function deliberationvue($id = null) {
+    public function deliberationvue($id = null) {
         $this->set('deliberation', $this->Deliberation->read(null, $id));
         $this->set('delib_id', $id);
     }
 
-    function _getListPresent($delib_id) {
+    private function _getListPresent($delib_id) {
         $this->Listepresence->Behaviors->load('Containable');
 
         $acteurs = $this->Listepresence->find('all', array(
@@ -2408,7 +2405,7 @@ class DeliberationsController extends AppController {
         return $acteurs;
     }
 
-    function listerPresents($delib_id, $seance_id) {
+    public function listerPresents($delib_id, $seance_id) {
         if (empty($this->data)) {
 
             $presents = $this->_getListPresent($delib_id);
@@ -2469,7 +2466,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function _reporteDelibs($delib_id) {
+    private function _reporteDelibs($delib_id) {
         $seance_id = $this->Deliberation->getCurrentSeance($delib_id);
         $position = $this->Deliberation->getCurrentPosition($delib_id);
         $conditions = "Deliberation.seance_id=$seance_id AND Deliberation.position>=$position";
@@ -2486,7 +2483,7 @@ class DeliberationsController extends AppController {
      * 
      * @param type $id id de la délibération
      */
-    function duplicate($id = null){
+    public function duplicate($id = null){
         $newId = $this->Deliberation->duplicate($id);
         //$previous = $this->Session->read('User');
         $this->Session->setFlash('Le projet a été dupliqué.', 'growl', array('type' => 'info'));
@@ -2499,7 +2496,7 @@ class DeliberationsController extends AppController {
      * est le rédacteur.
      */
 
-    function mesProjetsRedaction() {
+    public function mesProjetsRedaction() {
         
         if (isset($this->params['render']) && ($this->params['render'] == 'banette')) {
             $limit = Configure::read('LIMIT');
@@ -2593,7 +2590,7 @@ class DeliberationsController extends AppController {
      * Affiche la liste des projets en cours de validation (etat = 1) qui sont dans les circuits
      * de validation de l'utilisateur connecté et dont le tour de validation est venu.
      */
-    function mesProjetsATraiter() {
+     public function mesProjetsATraiter() {
         if (isset($this->params['filtre']) && ($this->params['filtre'] == 'hide'))
             $limit = intval(Configure::read('LIMIT'));
         else
@@ -2662,7 +2659,7 @@ class DeliberationsController extends AppController {
      * dont il est le rédacteur
      */
 
-    function mesProjetsValidation() {
+    public function mesProjetsValidation() {
         if (isset($this->params['render']) && ($this->params['render'] == 'banette'))
             $limit = Configure::read('LIMIT');
         else
@@ -2723,7 +2720,7 @@ class DeliberationsController extends AppController {
      * ou qu'il est dans les circuits de validation des projets
      */
 
-    function mesProjetsValides() {
+    public function mesProjetsValides() {
         if (isset($this->params['render']) && ($this->params['render'] == 'banette'))
             $limit = Configure::read('LIMIT');
         else
@@ -2774,7 +2771,7 @@ class DeliberationsController extends AppController {
     /**
      * fonction générique pour afficher les projets sour forme d'index
      */
-    function _afficheProjets($render = 'index', &$projets, $titreVue, $listeActions, $listeLiens = array(), $nbProjets = null) {
+    private function _afficheProjets($render = 'index', &$projets, $titreVue, $listeActions, $listeLiens = array(), $nbProjets = null) {
         // initialisation de l'utilisateur connecté et des droits
         $this->set('typeseances', $this->Seance->Typeseance->find('list', array('recursive' => -1)));
 
@@ -2883,7 +2880,7 @@ class DeliberationsController extends AppController {
      * Affiche la liste de tous les projets dont le rédacteur fait parti de mon/mes services
      * Permet de valider en urgence un projet
      */
-    function projetsMonService() {
+    public function projetsMonService() {
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
@@ -2935,7 +2932,7 @@ class DeliberationsController extends AppController {
      * Permet de valider en urgence un projet
      */
 
-    function tousLesProjetsValidation() {
+    public function tousLesProjetsValidation() {
         $this->set('traitement_lot', true);
         $this->set('actions_possibles', array('validerUrgence' => 'Valider en urgence'));
         $this->set('modeles', $this->Modeltemplate->find('list', array(
@@ -2988,7 +2985,7 @@ class DeliberationsController extends AppController {
      * Permet de modifier un projet validé si l'utilisateur à les droits editerTous
      */
 
-    function tousLesProjetsSansSeance() {
+    public function tousLesProjetsSansSeance() {
         $canEditAll = $this->Droits->check($this->Auth->user('id'), "Deliberations:editerTous");
         $this->set('canEditAll', $canEditAll);
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
@@ -3044,7 +3041,7 @@ class DeliberationsController extends AppController {
      * Affiche la liste de tous les projets validés liés à une séance
      */
 
-    function tousLesProjetsAFaireVoter() {
+    public function tousLesProjetsAFaireVoter() {
         $projets_id = array();
 
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
@@ -3095,7 +3092,7 @@ class DeliberationsController extends AppController {
         $this->_afficheProjets('index', $projets, 'Projets validés associés &agrave; une séance', $actions);
     }
 
-    function _ajouterFiltre(&$projets) {
+    private function _ajouterFiltre(&$projets) {
         if (!$this->Filtre->critereExists()) {
             $Deliberationseances = array();
             foreach ($projets as $projet) {
@@ -3172,7 +3169,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function _ajouterFiltreSeance(&$projets) {
+    private function _ajouterFiltreSeance(&$projets) {
         if (!$this->Filtre->critereExists()) {
             $this->Filtre->addCritere('Typeacte', array(
                 'field' => 'Deliberation.typeacte_id',
@@ -3216,7 +3213,7 @@ class DeliberationsController extends AppController {
      * Appelée depuis la vue deliberations/tous_les_projets
      */
 
-    function attribuerSeance() {
+    public function attribuerSeance() {
         if (!empty($this->data['Deliberation']['seance_id'])) {
             $nbSeancesDeliberantes = 0;
             $this->Seance->Behaviors->load('Containable');
@@ -3249,7 +3246,7 @@ class DeliberationsController extends AppController {
      * Appelée depuis la vue deliberations/tous_les_projets
      */
 
-    function validerEnUrgence($delibId, $redirect = true) {
+    public function validerEnUrgence($delibId, $redirect = true) {
         // Lecture de la délibération
         $this->Deliberation->recursive = -1;
         $this->request->data = $this->Deliberation->find('first', array(
@@ -3290,10 +3287,7 @@ class DeliberationsController extends AppController {
             $this->redirect($this->previous);
     }
 
-    /***
-     * @deprecated
-     */
-    function mesProjetsRecherche() {
+    public function mesProjetsRecherche() {
         if (empty($this->data)) {
             $this->set('action', array('controller' => 'deliberations', 'action' => 'mesProjetsRecherche'));
             $this->set('titreVue', 'Recherche multi-critères parmi mes projets');
@@ -3431,10 +3425,10 @@ class DeliberationsController extends AppController {
     }
 
     function search() {
-        
+
         if ($this->request->is('post')) {
-            
-        
+
+
         if (empty($this->request->data['User']['search']) OR ( !ctype_digit(trim($this->request->data['User']['search'])) && strlen(trim($this->request->data['User']['search'])) < 4)) {
             $this->Session->setFlash('Vous devez saisir au moins un mot. (plus de 3 caractères)', 'growl', array('type' => 'erreur'));
             
@@ -3619,8 +3613,8 @@ class DeliberationsController extends AppController {
             $this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
 
             $this->render('search');
-        }
-        
+    }
+
         $this->set('action', array('controller' => 'deliberations', 'action' => 'search'));
         $this->set('titreVue', 'Recherche');
     }
@@ -3633,7 +3627,7 @@ class DeliberationsController extends AppController {
      * @param $editerTous droit d'éditer les projets validés
      *
      */
-    function _iconeEtat($id, $etat, $editerTous = false, $estDansCircuit = false, $estRedacteur = false, $tourDansCircuit = 0) {
+    private function _iconeEtat($id, $etat, $editerTous = false, $estDansCircuit = false, $estRedacteur = false, $tourDansCircuit = 0) {
         switch ($etat) {
             case -2 : // refusé
                 return array(
@@ -3713,7 +3707,7 @@ class DeliberationsController extends AppController {
      * @param null $seance_id
      * @return mixed
      */
-    function sendToParapheur($seance_id = null) {
+    public function sendToParapheur($seance_id = null) {
         App::uses('Signature', 'Lib');
         try {
             $this->Signature = new Signature();
@@ -3869,7 +3863,7 @@ class DeliberationsController extends AppController {
         $this->set('circuits', $circuits);
     }
 
-    function sendToSae() {
+    public function sendToSae() {
         if (!Configure::read('USE_SAE')) {
             $this->Session->setFlash('Erreur : SAE désactivé. Pour activer ce service, veuillez contacter votre administrateur.', 'growl', array('type' => 'erreurSAE'));
             return $this->redirect($this->referer());
@@ -4062,7 +4056,7 @@ class DeliberationsController extends AppController {
           return $this->redirect(array('action'=>'verserAsalae')); */
     }
 
-    function goNext($delib_id) {
+    public function goNext($delib_id) {
         $delib = $this->Deliberation->read(null, $delib_id);
 
         if (empty($delib)) {
@@ -4117,7 +4111,7 @@ class DeliberationsController extends AppController {
      * @param type $delib_id id de la délibération
      * @return type Page courante
      */
-    function rebond($delib_id) {
+    public function rebond($delib_id) {
         $this->set('delib_id', $delib_id);
         $acte = $this->Deliberation->find('first', array(
             'conditions' => array('Deliberation.id' => $delib_id),
@@ -4195,7 +4189,7 @@ class DeliberationsController extends AppController {
         return $this->redirect($this->referer());
     }
 
-    function _handleConditions($conditions) {
+    private function _handleConditions($conditions) {
         $projet_type_ids = array();
         $projet_seance_ids = array();
 
@@ -4230,7 +4224,7 @@ class DeliberationsController extends AppController {
         return ($conditions);
     }
 
-    function autresActesAValider() {
+    public function autresActesAValider() {
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
         $this->set('titreVue', 'Autres actes en cours d\'élaboration');
@@ -4280,7 +4274,7 @@ class DeliberationsController extends AppController {
         $this->render('autres_actes');
     }
 
-    function autreActesValides() {
+    public function autreActesValides() {
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
         $this->set('titreVue', 'Autres actes validés');
@@ -4349,7 +4343,7 @@ class DeliberationsController extends AppController {
      * Envoi d'actes en signature
      * @return mixed
      */
-    function sendActesToSignature() {
+    public function sendActesToSignature() {
         if (!Configure::read('USE_PARAPHEUR') && $this->data['Parapheur']['circuit_id'] != -1) {
             $this->Session->setFlash('Parapheur désactivé', 'growl');
             return $this->redirect($this->referer());
@@ -4391,7 +4385,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function autreActesAEnvoyer() {
+    public function autreActesAEnvoyer() {
 
         if (!Configure::read('USE_TDT')) {
             $this->Session->setFlash('TDT désactivé. Veuillez contacter votre administrateur.', 'growl');
@@ -4488,7 +4482,7 @@ class DeliberationsController extends AppController {
             'order' => array('Deliberation.num_delib ASC')));
     }
 
-    function autreActesEnvoyes() {
+    public function autreActesEnvoyes() {
         $delibs_id = array();
         $this->set('titreVue', 'Autres actes envoyés au contrôle de légalité');
 
@@ -4547,8 +4541,8 @@ class DeliberationsController extends AppController {
         $this->render('transmit');
     }
 
-    function getTypeseancesParTypeacteAjax($typeacte_id = null) {
-        if ($typeacte_id == null) {
+    public function getTypeseancesParTypeacteAjax($typeacte_id = null) {
+        if ($typeacte_id == null){
             exit;
         }
         //$typeacte_id =
@@ -4592,13 +4586,13 @@ class DeliberationsController extends AppController {
         $this->layout = 'ajax';
     }
 
-    function copyFromPrevious($delib_id, $seance_id) {
+    public function copyFromPrevious($delib_id, $seance_id) {
         $this->Deliberation->_effacerListePresence($delib_id);
         $this->Deliberation->_copyFromPreviousList($delib_id, $seance_id);
         return $this->redirect(array('controller' => 'seances', 'action' => 'voter', $delib_id, $seance_id));
     }
 
-    function traitementLot() {
+    public function traitementLot() {
         $deliberationIds = array();
         $redirect = $this->referer();
         if (isset($this->data['Deliberation']['action']) && empty($this->data['Deliberation']['action'])) {
@@ -4660,7 +4654,7 @@ class DeliberationsController extends AppController {
         return $this->redirect($this->referer());
     }
 
-    function downloadTdtMessage($tdt_id = null) {
+    public function downloadTdtMessage($tdt_id = null) {
 
         try {
             if (empty($tdt_id)) {
@@ -4689,7 +4683,7 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function getTampon($delib_id) {
+    public function getTampon($delib_id) {
         
         $delib = $this->Deliberation->find('first', array(
             'conditions' => array('id' => $delib_id),
@@ -4713,7 +4707,7 @@ class DeliberationsController extends AppController {
      * @param int $delib_id
      * @return CakeResponse|string
      */
-    function getBordereauTdt($delib_id) {
+    public function getBordereauTdt($delib_id) {
         $delib = $this->Deliberation->find('first', array(
             'conditions' => array('id' => $delib_id),
             'fields' => array('num_delib', 'tdt_data_bordereau_pdf'),
@@ -4738,7 +4732,7 @@ class DeliberationsController extends AppController {
      * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
      * @return CakeResponse
      */
-    function genereFusionToClient($id, $cookieToken = null) {
+    private function genereFusionToClient($id, $cookieToken = null) {
         try {
             // vérification de l'existence du projet/délibération en base de données
             if (!$this->Deliberation->hasAny(array('id' => $id)))
@@ -4791,7 +4785,7 @@ class DeliberationsController extends AppController {
      * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
      * @return CakeResponse
      */
-    function _genereFusionRechercheToClient($ids, $modelTemplateId, $cookieToken) {
+    private function _genereFusionRechercheToClient($ids, $modelTemplateId, $cookieToken) {
         // fusion du document
         $this->Seance->Behaviors->load('OdtFusion', array('modelTemplateId' => $modelTemplateId));
         $this->Deliberation->Behaviors->load('OdtFusion', array('modelTemplateId' => $modelTemplateId));
@@ -4824,5 +4818,920 @@ class DeliberationsController extends AppController {
         parent::beforeFilter();
         
         //$this->History->deny('getBordereauTdt','attribuercircuit','getTampon','sendToTdt','downloadDelib');
+    }
+    
+ 
+    /**
+     * récupération de la profondeur de l'arbre passé
+     * @param type $tree arbre des différents services(tous)
+     */
+    private function _depth($tree) {
+        $depth = 0;
+        foreach ($tree as $id => $val) {
+            if ($depth < substr_count($val, '_'))
+                $depth = substr_count($val, '_');
+        }
+        return $depth;
+    }
+
+    /**
+     * mais ajour l'élément tmp avec tout les noeud parents correspondant 
+     * à l'id passé, et retourn le noeud de premied niveau correspondant
+     * 
+     * @param type $tmp représente un élément du futur tableau json
+     * @param type $id id du noeud d'ont on doit trouver l'id du père
+     * @param type $depth profondeur actuel du noeud passer
+     * @param type $name nom du service
+     * @return type retourne le noeud de premier niveau
+     */
+    private function _dadTree(&$tmp, $id, $depth, $name, $tree, $eert) {
+        $val = false;
+        $depth = $depth;
+        $ret = null;
+        foreach ($eert as $element) {
+            if ($element == $tree[$id]) {
+                $val = true;
+                $currentdepth = substr_count($element, '_');
+                $tmp[$depth > 0 ? 'Service_' . $name . '_de_niveau_' . $depth : 'Service_' . $name] = trim($element, '_');
+            }
+            if ($val) {
+                $currentdepth = substr_count($element, '_');
+                if ($currentdepth < $depth) {
+                    $ret = trim($element, '_');
+                    $depth = $currentdepth;
+                    $tmp[$depth > 0 ? 'Service_' . $name . '_de_niveau_' . $depth : 'Service_' . $name] = trim($element, '_');
+                }
+            }
+        }
+        return $ret;
+    }
+
+    /**
+     * mais ajour l'élément tmp avec des cases vide jusqu'a la profondeur
+     * maximale, afin de ne pas avoir de null qui apparaisent
+     * 
+     * @param type $tmp représente un élément du futur tableau json
+     * @param type $depth profondeur total
+     * @param type $current profondeur actuel du noeud passer
+     * @param type $name nom du service
+     */
+    private function _nullTree(&$tmp, $depth, $current, $name) {
+        $current++;
+        while ($current <= $depth) {
+            $tmp[$current > 0 ? 'Service_' . $name . '_de_niveau_' . $current : 'Service_' . $name] = '';
+            $current++;
+        }
+    }
+    
+    /**
+     * renvoie pour chaque cellule du tableau identifié par l'id passé en 
+     * argument, le nombre de proget en retard lié à la cellule et le nombre
+     * de projet de la cellule, les projet en retard sont compri ds le total
+     * 
+     * @param type $target id de cellule "validateurs"A"redacteurs"
+     * @return type le nombre de projet et le nombre de projet en retard
+     */
+    private function _getMaxforTotal($target){
+        $id = explode('A', $target);
+
+        $id[0] = explode('|', $id[0]);
+        $id[1] = explode('|', $id[1]);
+
+        $conditions = $this->Session->read('Deliberations.conditions');
+
+        if (empty($conditions)) {
+            $conditions['Visas.date IS'] = null;
+        }
+        $conditions['Deliberation.service_id IS NOT'] = null;
+        $conditions['Deliberation.etat <> '] = -1;
+        $conditions['Deliberation.parapheur_etat IS '] = null;
+        $conditions['Deliberation.vote_id'] = 0;
+            $db = $this->Deliberation->Vote->getDataSource();
+            $subQuery = $db->buildStatement(
+                array(
+                    'fields'     => array('"Vote"."delib_id"'),
+                    'table'      => $db->fullTableName($this->Deliberation->Vote),
+                    'alias'      => 'Vote',
+                    'limit'      => null,
+                    'offset'     => null,
+                    'joins'      => array(),
+                    'conditions' => array(),
+                    'order'      => null,
+                    'group'      => array('"Vote"."delib_id"')
+                ),
+                $this->User
+            );
+            $subQuery = ' "Deliberation"."id" NOT IN (' . $subQuery . ') ';
+            $subQueryExpression = $db->expression($subQuery);
+
+            $conditions[] = $subQueryExpression;
+            
+        $conditions['Deliberation.vote_nb_oui IS '] = null;
+        $options['conditions'] = $conditions;
+
+        if (count($id[0]) != 1) {
+            $options['conditions']['"Service"."id" IN '] = $id[0];
+        } else {
+            $options['conditions']['"Service"."id"'] = $id[0];
+        }
+        if (count($id[1]) != 1) {
+            $options['conditions']['"Deliberation"."service_id" IN '] = $id[1];
+        } else {
+            $options['conditions']['"Deliberation"."service_id"'] = $id[1];
+        }
+        $options['fields'] = array(
+            'Deliberation.id',
+            'Deliberation.date_limite',
+            'Deliberation.etat'
+            );
+        $options['group'] = array(
+            'Deliberation.id',
+            );
+            
+        $services = $this->Deliberation->Service->_getDataJson($options);
+        $dateLimite = 0;
+        foreach ($services as $service){
+            if(!empty($service['Deliberation']['date_limite']) && $service['Deliberation']['etat'] < 2){
+                $now = date("Y-m-d");
+                $dateLimite += $service['Deliberation']['date_limite'] < $now?1:0; 
+            }
+        }
+        return array('amount' => count($services), 'date_limite' => $dateLimite);
+    }
+
+    /**
+     * récupère toute les id pour le croisement des colonnes/lignes total
+     * 
+     * @param type $id
+     * @param type $data
+     */
+    private function _idTotal(&$id,$data){
+        $tabid = !empty($id)?explode('|', $id):array();
+        $tabdata = explode('|',$data);
+        foreach($tabdata as $val){
+            if(!in_array ($val,$tabid))
+                  $tabid[] = $val;  
+        }
+        $id = implode('|',$tabid);
+    }
+    /**
+     * ajout descolonnes totals pour les validateurs et redacteurs
+     * 
+     * @param type $json  json envoyé a la vue
+     * @param type $total tableau des total a insérer dans le json
+     * @param type $depth profondeur actuel du noeud passer
+     */
+    private function _constructTotalJson(&$json, $total, $depth,$max=false) {
+        $tmp = array();
+        $tree = $this->Deliberation->Service->generateTreeList(array('actif' => 1));
+        $eert = array_reverse($tree);
+        foreach ($total['v'] as $validateur => $redacteurs) {
+            foreach ($redacteurs as $redacteur => $cells) {
+                $sum = 0;
+                $date_limite = 0;
+                //on vérifie le nombre de fils des rédacteurs pour oui ou non afficher le total
+                if (count($total['r'][$redacteur][$validateur]) > 1) {
+                    $tabSR = '';
+                    foreach ($cells as $cell => $data) {
+                        $tmp['Service_Validateur'] = $validateur;
+                        $tmp['Service_Rédacteurs'] = $redacteur;
+                        $tmp['Service_Rédacteurs_de_niveau_1'] = 'Total';
+                        for ($i = 2; $i <= $depth; $i++) {
+                            $tmp['Service_Rédacteurs_de_niveau_' . $i] = '';
+                        }
+                        $tmp['SV'] = $data['SV'];
+                        $tmp['SR'] = $data['SR'];
+                        $this->_idTotal($tabSR,$data['SR']);
+                        $tmp['amount'] = $data['amount'];
+                        $tmp['date_limite'] = !empty($data['date_limite'])?$data['date_limite']:0;
+                        $date_limite += $tmp['date_limite'];
+                        $tmp['url'] = $total['url'];
+                        $sum += $data['amount'];
+                        if ($data['depth'] != 0) {
+                            $this->_nullTree(&$tmp, $depth, $data['depth'], 'Validateur');
+                            $tmp['Service_Validateur_de_niveau_' . $data['depth']] = $cell;
+                            $this->_dadTree($tmp, $tmp['SV'], $data['depth'], 'Validateur', $tree, $eert);
+                        } else {
+                            for ($i = 1; $i <= $depth; $i++) {
+                                $tmp['Service_Validateur_de_niveau_' . $i] = '';
+                            }
+                        }
+                        $json[] = $tmp;
+                        $tmp = array();
+                    }
+                    if (count($total['v'][$validateur][$redacteur]) > 1) {
+                        //$totalCross[$validateur][$redacteur] = $sum;
+                        $tmp['Service_Validateur'] = $validateur;
+                        $tmp['Service_Rédacteurs'] = $redacteur;
+                        $tmp['Service_Rédacteurs_de_niveau_1'] = 'Total';
+                        $tmp['Service_Validateur_de_niveau_1'] = 'Total';
+                        for ($i = 2; $i <= $depth; $i++) {
+                            $tmp['Service_Rédacteurs_de_niveau_' . $i] = '';
+                            $tmp['Service_Validateur_de_niveau_' . $i] = '';
+                        }
+                        if($max){
+                            $tmp['amount'] = 0;
+                            $tmp['date_limite'] = 0;
+                        } else {
+                            $tmp['amount'] = $sum;
+                            $tmp['date_limite'] = $date_limite; 
+                        }
+                        //debug($data['SR']);
+                        $total['v'][$validateur][$redacteur]['SR'] = $tabSR;
+                        $tmp['url'] = $total['url'];
+                        $json[] = $tmp;
+                        $tmp = array();
+                    }
+                }
+            }
+        }
+        foreach ($total['r'] as $redacteur => $validateurs) {
+            foreach ($validateurs as $validateur => $cells) {
+                $sum = 0;
+                $date_limite = 0;
+                //on vérifie le nombre de fils des rédacteurs pour oui ou non afficher le total
+                if (count($total['v'][$validateur][$redacteur]) > 1) {
+                    $tabSV = '';
+                    foreach ($cells as $cell => $data) {
+                        $tmp['Service_Validateur'] = $validateur;
+                        $tmp['Service_Rédacteurs'] = $redacteur;
+                        $tmp['Service_Validateur_de_niveau_1'] = 'Total';
+                        for ($i = 2; $i <= $depth; $i++) {
+                            $tmp['Service_Validateur_de_niveau_' . $i] = '';
+                        }
+                        $tmp['SV'] = $data['SV'];
+                        $tmp['SR'] = $data['SR'];
+                        $this->_idTotal($tabSV,$data['SV']);
+                        $tmp['amount'] = $data['amount'];
+                        $tmp['date_limite'] = !empty($data['date_limite'])?$data['date_limite']:0;
+                        $date_limite += $tmp['date_limite'];
+                        $tmp['url'] = $total['url'];
+                        $sum += $data['amount'];
+                        if ($data['depth'] != 0) {
+                            $this->_nullTree(&$tmp, $depth, $data['depth'], 'Rédacteurs');
+                            $tmp['Service_Rédacteurs_de_niveau_' . $data['depth']] = $cell;
+                            $this->_dadTree($tmp, $tmp['SR'], $data['depth'], 'Rédacteurs', $tree, $eert);
+                        } else {
+                            for ($i = 1; $i <= $depth; $i++) {
+                                $tmp['Service_Rédacteurs_de_niveau_' . $i] = '';
+                            }
+                        }
+                        $json[] = $tmp;
+                        $tmp = array();
+                    }
+                    if (count($total['r'][$redacteur][$validateur]) > 1) {
+                        $tmp['Service_Validateur'] = $validateur;
+                        $tmp['Service_Rédacteurs'] = $redacteur;
+                        $tmp['Service_Rédacteurs_de_niveau_1'] = 'Total';
+                        $tmp['Service_Validateur_de_niveau_1'] = 'Total';
+                        for ($i = 2; $i <= $depth; $i++) {
+                            $tmp['Service_Rédacteurs_de_niveau_' . $i] = '';
+                            $tmp['Service_Validateur_de_niveau_' . $i] = '';
+                        }
+                        $tmp['url'] = $total['url'];
+                        $tmp['SV'] = $tabSV;
+                        $tmp['SR'] = $total['v'][$validateur][$redacteur]['SR'];
+                        if($max){
+                            $result = $this->_getMaxforTotal($tmp['SV'].'A'.$tmp['SR']);
+                            $tmp['amount'] = $result['amount'];
+                            $tmp['date_limite'] = $result['date_limite'];
+                        } else {
+                            $tmp['amount'] = $sum;
+                            $tmp['date_limite'] = $date_limite;
+                        }
+                        $json[] = $tmp;
+                        $tmp = array();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * tableau de conditons sur le niveau temporel
+     * (traité à traiter à venir en retard)
+     * c'est filtres n'agissent pas directement sur 1 champ, mais sur plusieurs 
+     * en fonction du ou des status choisis
+     * 
+     * @return type retourne le/les conditions de recherche
+     * 
+     */
+    private function _filtrer() {
+        $sousrequette = '';
+        $conditions = array(); 
+        foreach ($this->data['Critere']['FiltreTemporel'] as $val) {
+            if($val == 3){// en retard
+                $conditions[] =  '(Deliberation.date_limite < now() '
+                    . 'AND "Deliberation"."date_limite" IS NOT NULL '
+                    . 'AND "Visas"."date" IS NULL '
+                    . 'AND "Deliberation"."etat" < 2)';
+            }
+            if ($val == 2) {//traité
+                if (array_key_exists('Deliberation.etat <', $conditions)){
+                    unset($conditions['Deliberation.etat <']);
+                }
+                if (array_key_exists('Visas.date IS', $conditions)) {
+                    unset($conditions['Visas.date IS']);
+                    $conditions[] = '(Visas.date IS NOT NULL OR Visas.date IS NULL)';
+                } else
+                    $conditions['Visas.date IS NOT'] = null;
+            } if ($val == 1) {//a traiter
+                $conditions['Deliberation.etat <'] = 2;
+                $conditions['Visas.date IS'] = null;
+                if (empty($sousrequette))
+                    $sousrequette = 'Visa.numero_traitement = Traitement.numero_traitement';
+                else
+                    $sousrequette = '';
+            } if ($val == 0) {//a venir
+                $conditions['Deliberation.etat <'] = 2;
+                $conditions['Visas.date IS'] = null;
+                $sousrequette = 'Visa.numero_traitement <> Traitement.numero_traitement';
+            }
+        }
+
+        if ($sousrequette != '') {
+            $options['conditions'] = $sousrequette;
+            $IdUsers = $this->Deliberation->Traitement->_getIdUsersTableauBord($options);
+        }
+
+        if (!empty($IdUsers)) {
+            $conditions['"Visas"."id" IN '] = Set::extract('/Visa/id', $IdUsers);
+        }
+        return $conditions;
+    }
+
+    /**
+     * Contruction des données total pour chaque noeud racine 
+     * 
+     * @param type $nameTotalr nom redacteur en cour
+     * @param type $nameTotalv nom validateur en cour
+     * @param type $Redacteur id redacteur
+     * @param type $Valideur id validateur
+     * @param type $currentValidateur depth validateur
+     * @param type $currentRedacteur depth redacteur
+     * @param type $data données de la cellule en cour de traitement
+     * @param type $total tableau des données
+     */
+    private function _dataJsonTotal($nameTotalr,$nameTotalv,$Redacteur,$Valideur,$currentValidateur,$currentRedacteur,$data,&$total) {
+        //v -> validateur
+        //r -> redacteur
+        if (empty($nameTotalr)) {
+            $nameTotalr = $data['redacteur']; //initialise au noeud de 1er niveau redacteur
+        }
+        if (empty($nameTotalv)) {
+            $nameTotalv = $data['validateur']; //initialise au noeud de 1er niveau validateur
+        }
+        if (empty($total['v'][$nameTotalv][$nameTotalr][$data['validateur']])) {
+            //initialisation des variables
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['date_limite'] = 0;
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['amount'] = 0;
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SR'] = $Redacteur;
+        } else {
+            //enregistre toute les id validateur lié  au total (| pour un split ultèrieur)
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SR'] .= '|' . $Redacteur;
+        }
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SV'] = $Valideur;
+        //enregistre la somme des validateurs
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['amount'] += $data['amount'];
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['depth'] = $currentValidateur; //profondeur
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['date_limite'] += !empty($data['date_limite'])?$data['date_limite']:0;
+
+        if (empty($total['r'][$nameTotalr][$nameTotalv][$data['redacteur']])) {
+            //initialisation des variables
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['date_limite'] = 0;
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['amount'] = 0;
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SV'] = $Valideur;
+        } else {
+            //enregistre toute les id redacteur lié  au total (| pour un split ultèrieur)
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SV'] .= '|' . $Valideur;
+        }
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['amount'] += $data['amount'];
+        //enregistre la somme des redacteurs
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SR'] = $Redacteur;
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['depth'] = $currentRedacteur; //profondeur
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['date_limite'] += !empty($data['date_limite'])?$data['date_limite']:0;
+        
+    }
+    
+    /**
+     * Récupère le maximun de chaque ligne colonne plutot que le total par 
+     * requette sql
+     * 
+     * @param type $nameTotalr nom redacteur en cour
+     * @param type $nameTotalv nom validateur en cour
+     * @param type $Redacteur id redacteur
+     * @param type $Valideur id validateur
+     * @param type $currentValidateur depth validateur
+     * @param type $currentRedacteur depth redacteur
+     * @param type $data données de la cellule en cour de traitement
+     * @param type $total tableau des données
+     */
+    private function _dataJsonMaxByQuery($nameTotalr,$nameTotalv,$Redacteur,$Valideur,$currentValidateur,$currentRedacteur,$data,&$total) {
+        //v -> validateur
+        //r -> redacteur
+        if (empty($nameTotalr)) {
+            $nameTotalr = $data['redacteur']; //initialise au noeud de 1er niveau redacteur
+        }
+        if (empty($nameTotalv)) {
+            $nameTotalv = $data['validateur']; //initialise au noeud de 1er niveau validateur
+        }
+        if (empty($total['v'][$nameTotalv][$nameTotalr][$data['validateur']])) {
+            //initialisation des variables
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['date_limite'] = 0;
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['amount'] = 0;
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SR'] = $Redacteur;
+        } else {
+            //enregistre toute les id validateur lié  au total (| pour un split ultèrieur)
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SR'] .= '|' . $Redacteur;
+        }
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SV'] = $Valideur;
+        $result = $this->_getMaxforTotal($total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SV'] .'A'.$total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SR']);
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['amount'] = $result['amount'];
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['date_limite'] = $result['date_limite'];
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['depth'] = $currentValidateur; //profondeur
+
+        if (empty($total['r'][$nameTotalr][$nameTotalv][$data['redacteur']])) {
+            //initialisation des variables
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['date_limite'] = 0;
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['amount'] = 0;
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SV'] = $Valideur;
+        } else {
+            //enregistre toute les id redacteur lié  au total (| pour un split ultèrieur)
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SV'] .= '|' . $Valideur;
+        }
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SR'] = $Redacteur;
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['depth'] = $currentRedacteur; //profondeur
+        $result = $this->_getMaxforTotal($total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SV'].'A'.$total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SR']);
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['amount'] = $result['amount'];
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['date_limite'] = $result['date_limite'];
+    }
+    
+    /**
+     * Récupère le maximun de chaque ligne colonne plutot que le total
+     * 
+     * @param type $nameTotalr nom redacteur en cour
+     * @param type $nameTotalv nom validateur en cour
+     * @param type $Redacteur id redacteur
+     * @param type $Valideur id validateur
+     * @param type $currentValidateur depth validateur
+     * @param type $currentRedacteur depth redacteur
+     * @param type $data données de la cellule en cour de traitement
+     * @param type $total tableau des données
+     */
+    private function _dataJsonMax($nameTotalr,$nameTotalv,$Redacteur,$Valideur,$currentValidateur,$currentRedacteur,$data,&$total) {
+        //v -> validateur
+        //r -> redacteur
+        if (empty($nameTotalr)) {
+            $nameTotalr = $data['redacteur']; //initialise au noeud de 1er niveau redacteur
+        }
+        if (empty($nameTotalv)) {
+            $nameTotalv = $data['validateur']; //initialise au noeud de 1er niveau validateur
+        }
+        if (empty($total['v'][$nameTotalv][$nameTotalr][$data['validateur']])) {
+            //initialisation des variables
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['amount'] = 0;
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SR'] = $Redacteur;
+        } else {
+            //enregistre toute les id validateur lié  au total (| pour un split ultèrieur)
+            $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SR'] .= '|' . $Redacteur;
+        }
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['SV'] = $Valideur;
+        if ($total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['amount'] < $data['amount'])
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['amount'] = $data['amount'];
+        $total['v'][$nameTotalv][$nameTotalr][$data['validateur']]['depth'] = $currentValidateur; //profondeur
+
+        if (empty($total['r'][$nameTotalr][$nameTotalv][$data['redacteur']])) {
+            //initialisation des variables
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['amount'] = 0;
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SV'] = $Valideur;
+        } else {
+            //enregistre toute les id redacteur lié  au total (| pour un split ultèrieur)
+            $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SV'] .= '|' . $Valideur;
+        }
+        if($total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['amount'] < $data['amount'])
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['amount'] = $data['amount'];
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['SR'] = $Redacteur;
+        $total['r'][$nameTotalr][$nameTotalv][$data['redacteur']]['depth'] = $currentRedacteur; //profondeur
+        
+    }
+
+    /**
+     * formatte le tableau de façon à avoir [validateur][redacteur]
+     * 
+     * @param type $array tableau a formatter
+     * @return type tableau formatter
+     */
+    public function Map($array = array()) {
+        $tmp = array();
+        //date actuel
+        $now = date("Y-m-d");
+        foreach ($array as $data) {
+
+            $idValidateur = $data['Service']['id'];
+            $nomValidateur = $data['Service']['name'];
+            $idRedacteur = $data['Deliberation']['service_id'];
+            $nomRedacteur = $data['Services2']['name'];
+            $amount = $data[0]['count'];
+            $dateLimite = $data['Deliberation']['date_limite'];
+            
+            //nombre de projet
+            if (empty($tmp[$idValidateur][$idRedacteur]['amount'])) {
+                $tmp[$idValidateur][$idRedacteur]['amount'] = $amount;
+            } else {
+                $tmp[$idValidateur][$idRedacteur]['amount'] += $amount;
+            }
+            //nombre projet en retard
+            if($now > $dateLimite && !empty($dateLimite) && $data['Deliberation']['etat'] < 2){
+                if(!empty($tmp[$idValidateur][$idRedacteur]['date_limite'])){
+                    $tmp[$idValidateur][$idRedacteur]['date_limite'] += 1;
+                }else{
+                    $tmp[$idValidateur][$idRedacteur]['date_limite'] = 1;
+                }
+            } else {
+                if(!empty($tmp[$idValidateur][$idRedacteur]['date_limite'])){
+                    if($tmp[$idValidateur][$idRedacteur]['date_limite'] != 1)
+                $tmp[$idValidateur][$idRedacteur]['date_limite'] = 0;}
+                else{
+                    $tmp[$idValidateur][$idRedacteur]['date_limite'] = 0;
+                }
+            }
+            //libelle valiidateur redacteur
+            $tmp[$idValidateur][$idRedacteur]['validateur'] = $nomValidateur;
+            $tmp[$idValidateur][$idRedacteur]['redacteur'] = $nomRedacteur;
+        }
+
+        return $tmp;
+    }
+
+    /**
+     * Affichage du tableau de bord en fonction des services validateurs et rédacteurs
+     */
+    public function tableauBord() {
+
+        if(array_key_exists('filtreFonc',$this->data)){
+            if(empty($this->data['filtreFonc']['affiche'])){
+                if(empty($this->data['Critere']['FiltreTemporel'])){
+                    $this->request->data['Critere']['FiltreTemporel'] = array(
+                    (int) 0 => '0',
+                    (int) 1 => '1'
+                    );
+                }
+            }
+        }
+        
+        //on initialise le filtre avec le retour de donné pour paramétrer le filtre
+        $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
+        $conditions = $this->_handleConditions($this->Filtre->conditions());
+        if (!empty($this->data)) {
+            if (!empty($this->data['Critere']['FiltreTemporel'])) {
+                $conditions += $this->_filtrer();
+                $this->Session->write('Deliberations.conditions', $conditions);
+            } else {
+                $this->Session->setFlash('Vous devez saisir au moins un statut', 'growl', array('type' => 'warning'));
+                return;
+            }
+        }
+        $conditionsFiltre['Deliberation.service_id IS NOT'] = null;
+        
+        //requette pour créer les filtres
+        $projets = $this->Deliberation->find('all', array(
+            'conditions' => $conditionsFiltre,
+            'fields' => array(
+                'Deliberation.id',
+                'Deliberation.typeacte_id', 'Deliberation.theme_id',
+            ),
+            'contain' => array(
+                'Seance' => array('fields' => array('created')),
+                'Theme' => array('fields' => array('libelle')),
+                'Typeacte' => array('fields' => array('name')),
+                'Deliberationtypeseance' => array('fields' => array('id'),
+                    'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action'),
+                    )),
+            ),
+            'order' => array('Deliberation.id' => 'DESC'
+            ), 'recursive' => -1));
+        $this->_ajouterFiltreTableauBord($projets);
+        //récupération de l'arbre
+        $tree = $this->Deliberation->Service->generateTreeList(array('actif' => 1));
+        //récupération de la profondeur
+        $depth = $this->_depth($tree);
+        $json = array();
+
+        //récupération des services avec le total des delibs
+        $options['fields'] = array(
+            'count(DISTINCT Service.id)',
+            'Service.id',
+            'Service.name',
+            'Deliberation.service_id',
+            'Deliberation.date_limite',
+            'Deliberation.etat',
+            'Services2.name',
+        );
+        $conditions['Deliberation.service_id IS NOT'] = null;
+        $conditions['Deliberation.etat <> '] = -1;
+        $conditions['Deliberation.parapheur_etat IS '] = null;
+        $conditions['Deliberation.vote_id'] = 0;
+            $db = $this->Deliberation->Vote->getDataSource();
+            $subQuery = $db->buildStatement(
+                array(
+                    'fields'     => array('"Vote"."delib_id"'),
+                    'table'      => $db->fullTableName($this->Deliberation->Vote),
+                    'alias'      => 'Vote',
+                    'limit'      => null,
+                    'offset'     => null,
+                    'joins'      => array(),
+                    'conditions' => array(),
+                    'order'      => null,
+                    'group'      => array('"Vote"."delib_id"')
+                ),
+                $this->User
+            );
+            $subQuery = ' "Deliberation"."id" NOT IN (' . $subQuery . ') ';
+            $subQueryExpression = $db->expression($subQuery);
+
+            $conditions[] = $subQueryExpression;
+            
+        $conditions['Deliberation.vote_nb_oui IS '] = null;
+
+        if (empty($this->data)) {
+            $this->Session->delete('Deliberations.conditions');
+            $conditions['Deliberation.etat < '] = 2;      
+            $conditions['Visas.date IS'] = null;
+        }
+        $options['conditions'] = $conditions;
+        $options['group'] = array(
+            'Service.id',
+            'Service.name',
+            'Deliberation.service_id',
+            'Services2.name',
+            'Deliberation.id'); //les delibération sons dans la requette meme si non affiché
+        $services = $this->Deliberation->Service->_getDataJson($options);
+        
+        //construction du json
+        $eert = array_reverse($tree);
+        $tmp = array();
+        $total = array();
+        $results = $this->Map($services);
+        //la boucle sur les résultats services pour construire le json
+        foreach ($results as $Valideur => $datas) {
+            foreach ($datas as $Redacteur => $data) {
+                //niveau du service validateur
+                $currentValidateur = substr_count($tree[$Valideur], '_');
+                //niveau du service redacteur
+                $currentRedacteur = substr_count($tree[$Redacteur], '_');
+                $tmp[$currentValidateur > 0 ? 'Service_Validateur_de_niveau_' . $currentValidateur : 'Service_Validateur'] = $data['validateur'];
+                $tmp['SV'] = $Valideur;
+                $tmp[$currentRedacteur > 0 ? 'Service_Rédacteurs_de_niveau_' . $currentRedacteur : 'Service_Rédacteurs'] = $data['redacteur'];
+                $tmp['SR'] = $Redacteur;
+                $tmp['amount'] = $data['amount'];
+                $tmp['date_limite'] = $data['date_limite'];
+                $total['url'] = $tmp['url'] = Router::url(array('controller' => 'deliberations', 'action' => 'viewDetailed')) . '/';
+                //ajout des service validateurs au dessus 
+                $nameTotalv = $this->_dadTree($tmp, $Valideur, $currentValidateur, 'Validateur', $tree, $eert);
+                //ajout des service validateurs en dessous
+                $this->_nullTree($tmp, $depth, $currentValidateur, 'Validateur');
+                //ajout des service Rédacteurs au dessus
+                $nameTotalr = $this->_dadTree($tmp, $Redacteur, $currentRedacteur, 'Rédacteurs', $tree, $eert);
+                //ajout des service Rédacteurs en dessous
+                $this->_nullTree($tmp, $depth, $currentRedacteur, 'Rédacteurs');
+                //v -> validateur
+                //r -> redacteur
+                // construction des données total our les rajouter au json
+                $this->_dataJsonTotal($nameTotalr,$nameTotalv,$Redacteur,$Valideur,$currentValidateur,$currentRedacteur,$data,$total);
+                //$this->_dataJsonMax($nameTotalr,$nameTotalv,$Redacteur,$Valideur,$currentValidateur,$currentRedacteur,$data,$total);                
+                //$this->_dataJsonMaxByQuery($nameTotalr,$nameTotalv,$Redacteur,$Valideur,$currentValidateur,$currentRedacteur,$data,$total);
+                
+                $json[] = $tmp;
+                $tmp = array();
+                $nameTotalv = null;
+                $nameTotalr = null;
+            }
+        }
+        debug($total);
+        //deuxième ajout au json colonnes total
+        $this->_constructTotalJson($json, $total, $depth);
+        $json = json_encode($json);
+        $this->set('json', $json);
+        $this->set('depth', $depth);
+    }
+
+    /**
+     * requette ajax du tableau de bord
+     * 
+     * @param type $target id des validateurs redaacteurs
+     */
+    public function viewDetailed($target = null) {
+        if (!empty($target)) {
+            if ($this->request->is('ajax')) {
+                $this->disableCache();
+
+                //Choix du rendu à appliquer
+                $render = 'test';
+                $ordre = array('Deliberation.id' => 'DESC');
+                //validateur;redacteur
+                //[0]        [1]
+                $id = explode('A', $target); //A sépare validateur et redacteur
+                //recuperation des id
+                $id[0] = explode('|', $id[0]);
+                $id[1] = explode('|', $id[1]);
+                //construction de la requette
+                //condition appliqué par le filtre/les filtres
+                $conditions = $this->Session->read('Deliberations.conditions');
+                if (empty($conditions)) {
+                    $conditions['Visas.date IS'] = null;
+                }
+                $conditions['Deliberation.service_id IS NOT'] = null;
+                $conditions['Deliberation.vote_id'] = 0;
+                $db = $this->Deliberation->Vote->getDataSource();
+                $subQuery = $db->buildStatement(
+                    array(
+                        'fields'     => array('"Vote"."delib_id"'),
+                        'table'      => $db->fullTableName($this->Deliberation->Vote),
+                        'alias'      => 'Vote',
+                        'limit'      => null,
+                        'offset'     => null,
+                        'joins'      => array(),
+                        'conditions' => array(),
+                        'order'      => null,
+                        'group'      => array('"Vote"."delib_id"')
+                    ),
+                    $this->User
+                );
+                $subQuery = ' "Deliberation"."id" NOT IN (' . $subQuery . ') ';
+                $subQueryExpression = $db->expression($subQuery);
+
+                $conditions[] = $subQueryExpression;
+                $conditions['Deliberation.vote_nb_oui IS '] = null;
+                $conditions['Deliberation.parapheur_etat IS '] = null;
+                $conditions['Deliberation.etat <> '] = -1;
+                $options['conditions'] = $conditions;
+
+                if (count($id[0]) != 1) {
+                    $options['conditions']['"Service"."id" IN '] = $id[0];
+                } else {
+                    $options['conditions']['"Service"."id"'] = $id[0];
+                }
+                if (count($id[1]) != 1) {
+                    $options['conditions']['"Deliberation"."service_id" IN '] = $id[1];
+                } else {
+                    $options['conditions']['"Deliberation"."service_id"'] = $id[1];
+                }
+                //debug($options['conditions']);
+                $options['fields'] = array(
+                    'Service.id',
+                    'Service.libelle',
+                    'Deliberation.service_id',
+                    'Deliberation.id',
+                    'Services2.libelle',
+                );
+                $services = $this->Deliberation->Service->_getDataJson($options);
+                // on récupere les id des déliberations
+                unset($conditions);
+                if (count($services) != 1) {
+                    $conditions['"Deliberation"."id" IN '] = Set::extract('/Deliberation/id', $services);
+                } else {
+                    $conditions['"Deliberation"."id"'] = Set::extract('/Deliberation/id', $services);
+                }
+                //deuxième requette pour afficher les delibs avec toutes les informations
+                $projets = $this->Deliberation->find('all', array(
+                    'conditions' => $conditions,
+                    'fields' => array(
+                        'Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
+                        'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
+                        'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
+                        'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'
+                    ),
+                    'contain' => array(
+                        'Service' => array('fields' => array('name')),
+                        'Theme' => array('fields' => array('libelle')),
+                        'Typeacte' => array('fields' => array('libelle')),
+                        'Circuit' => array('fields' => array('nom')),
+                        'Deliberationtypeseance' => array('fields' => array('id'),
+                            'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action'),
+                            )),
+                        'Deliberationseance' => array('fields' => array('id'),
+                            'Seance' => array('fields' => array('id', 'date', 'type_id'),
+                                'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action')))),
+                    ),
+                    'order' => $ordre));
+                $Stringprojets = '';
+                foreach (set::extract('/Deliberation/id', $projets) as $val) {
+                    $Stringprojets .= empty($Stringprojets) ? $val : '|' . $val;
+                }
+
+                $this->set('projets', $Stringprojets); //pour le telechargement CSS
+                $this->_sortProjetSeanceDate($projets);
+                $this->_afficheProjets($render, $projets, 'Vue détaillée', array('view', 'edit', 'plat'));
+            }
+        }
+    }
+    
+    private function _ajouterFiltreTableauBord($projets) {
+
+        $typeseances = array();
+        foreach ($projets as $projet) {
+            if (!empty($projet['Deliberationtypeseance'])) {
+                foreach ($projet['Deliberationtypeseance'] as $typeseance)
+                    if (!array_key_exists($typeseance['id'], $typeseances))
+                        $typeseances[$typeseance['Typeseance']['id']] = $typeseance['Typeseance']['libelle'];
+            }
+        }
+        $this->Filtre->addCritere('DeliberationtypeseanceId', array(
+            'field' => 'Deliberationtypeseance.typeseance_id',
+            'attribute' => $typeseances,
+            //'classeDiv' => 'demi',
+            'inputOptions' => array(
+                'type' => 'select',
+                'label' => __('Type de séance', true),
+            ),
+            'column' => 3));
+
+
+        $this->Filtre->addCritere('Typeacte', array(
+            'field' => 'Deliberation.typeacte_id',
+            'attribute' => Hash::combine($projets, '{n}.Deliberation.typeacte_id', '{n}.Typeacte.libelle'),
+            //'classeDiv' => 'demi',
+            //'retourLigne' => true,
+            'inputOptions' => array(
+                'type' => 'select',
+                'label' => __('Type d\'acte', true),
+                'empty' => 'tous',
+            ),
+            'column' => 3));
+
+        $this->Filtre->addCritere('ThemeId', array(
+            'field' => 'Deliberation.theme_id',
+            'attribute' => Hash::combine($projets, '{n}.Deliberation.theme_id', '{n}.Theme.libelle'),
+            //'classeDiv' => 'demi',
+            'retourLigne' => true,
+            'inputOptions' => array(
+                'type' => 'select',
+                'label' => __('Thème', true),
+            ),
+            'column' => 3));
+        $this->Filtre->addCritere('FiltreTemporel', array(
+            'attribute' => array(__('à venir'), __('à traiter'), __('traité'),__('en retard')),
+            'retourLigne' => true,
+            'inputOptions' => array(
+                //'empty' => '',
+                'default' => array(0, 1),
+                'type' => 'select',
+                'title' => __('Sélectioner le statut(temporel) des affaires vouluent'),
+                'label' => __('Statut affaires', true),
+                'multiple' => true,
+                'class' => 'form-control',
+            //'options' => array(__('à venir'), __('à traiter'), __('traité')),
+            ),
+            'column' => 3));
+
+        //champ datetimepicker
+        $this->Filtre->addCritere('dateDebut', array(
+            'field' => 'Seance.created >= DATE',
+            'inputOptions' => array(
+                'label' => __('date début', true),
+                'type' => 'date',
+                'style' => 'cursor:pointer',
+                'help' => __('Cliquez sur le champs ci-dessus pour choisir la date'),
+                //'disabled' => false,//readonly
+                'title' => __('Filtre sur les dates de séances')),
+            'Datepicker' => array(
+                'language' => 'fr',
+                'autoclose' => 'true',
+                'format' => 'yyyy-mm-dd hh:00:00',
+                'startView' => 'decade', //decade
+                'minView' => 'day',
+            ),
+            'column' => 3));
+
+        $this->Filtre->addCritere('dateFin', array(
+            'field' => 'Seance.created <= DATE',
+            'inputOptions' => array(
+                'label' => __('date de fin', true),
+                'type' => 'date',
+                'style' => 'cursor:pointer',
+                'help' => __('Cliquez sur le champs ci-dessus pour choisir la date'),
+                'readonly' => '',
+                'title' => __('Filtre sur les dates de séances')),
+            'Datepicker' => array(
+                'language' => 'fr',
+                'autoclose' => 'true',
+                'format' => 'yyyy-mm-dd hh:00:00',
+                'startView' => 'decade', //decade
+                'minView' => 'day',
+            ),
+            'column' => 3));
+
+        //champ select
+        $this->Filtre->addCritere('difDate', array(
+            'retourLigne' => true,
+            'attribute' => array(__('1 heure'), __('1 jour'), __('1 mois'), __('1 ans'), __('hier'), _('cette semaine'), __('aujourd\'hui')),
+            'inputOptions' => array(
+                'empty' => 'Aucune plage de date',
+                'type' => 'select',
+                'title' => __('Sélectioner une plage entre la date de début et de fin'),
+                'label' => __('Plage de dates', true),
+            //'options' => array(__('1 heure'), __('1 jour'),__('1 mois'),__('1 ans'))
+            ),
+            'column' => 3));
     }
 }
