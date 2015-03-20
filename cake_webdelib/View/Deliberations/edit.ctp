@@ -10,13 +10,13 @@ echo $this->Html->script('ckeditor/adapters/jquery');
 
 echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min');
 echo $this->Html->script('/components/smalot-bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.fr');
-echo $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css');
+echo $this->Html->css('/components/smalot-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min');
 
-echo $this->Html->script('/components/bootstrap-filestyle/js/bootstrap-filestyle.min.js');
-echo $this->Html->script('/components/bootstrap-jquery-sortable/js/jquery-sortable-min.js');
+echo $this->Html->script('/components/bootstrap-filestyle/src/bootstrap-filestyle');
+echo $this->Html->script('/components/jquery-sortable/source/js/jquery-sortable-min');
 
-echo $this->Html->css('/components/bootstrap-table/bootstrap-table.css');
-echo $this->Html->script('/components/bootstrap-table/bootstrap-table.js');
+echo $this->Html->css('/components/bootstrap-table/dist/bootstrap-table.min');
+echo $this->Html->script('/components/bootstrap-table/dist/bootstrap-table.min');
 
 
 $this->Html->addCrumb('Mes projets', array('controller'=>'deliberations', 'action'=>'mesProjetsRedaction'));
@@ -24,7 +24,11 @@ $this->Html->addCrumb('Modification d\'un projet');
 
 echo $this->Bs->tag('h3', 'Modification du projet : ' . $this->Html->value('Deliberation.id'));
 
-echo $this->BsForm->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'edit'), 'type' => 'file', 'novalidate' => true/*, 'name' => 'Deliberation'*/));
+//echo debug(CakeSession::read('User.History'));
+
+echo $this->BsForm->create('Deliberation', array(
+    'url' => array('controller' => 'deliberations', 
+        'action' => 'edit'), 'type' => 'file', 'novalidate' => true/*, 'name' => 'Deliberation'*/));
 
 $aTab=array(
     'infos' => 'Informations principales',
@@ -77,11 +81,6 @@ $this->BsForm->input('Deliberation.titre', array(
     'label' => 'Titre', 
     'rows' => '2'
     )).
-$this->BsForm->select('Deliberation.rapporteur_id', $rapporteurs, array(
-            'label' => 'Rapporteur',
-            'class' => 'select2 selectone',
-            'selected' => $this->Html->value('Deliberation.raporteur_id'),
-            'empty' => true)).
  $this->BsForm->select('Deliberation.theme_id', $themes, array(
             'label' => 'Thème <abbr title="obligatoire">*</abbr>',
             'selected' => $this->Html->value('Deliberation.theme_id'),
@@ -98,13 +97,12 @@ $this->BsForm->select('Deliberation.rapporteur_id', $rapporteurs, array(
         'class' => 'select2 selectone',
         'escape' => false));
     
-    echo $this->BsForm->datetimepicker('Deliberation.date_limite', array('language'=>'fr', 'autoclose'=>'true','format' => 'dd/mm/yyyy',), array(
-    'label' => 'Date limite',
-    'title' => 'Choisissez une date',
-    'style' => 'cursor:pointer',
-    'help' => 'Cliquez sur le champs ci-dessus pour choisir la date',
-    'readonly' => 'readonly',
-    'value'=>isset($date)?$date:''));
+    echo $this->BsForm->select('multiRedactor',$redacteurs,array('label' => 'Autre(s) rédacteur(s)','title' => 'Ajouter un rédacteur ayant les droits d\'incérer le projet dans un circuit','class' => 'select2 selectone','multiple' => true, 'style' => 'width:100%')); 
+    //if ($DELIBERATIONS_MULTIPLES)
+echo $this->BsForm->checkbox('Deliberation.is_multidelib', array(
+     'autocomplete' => 'off',
+     'label' => 'Multi-Délibération',
+ ));
     
 if ($DELIBERATIONS_MULTIPLES)
 echo $this->BsForm->checkbox('Deliberation.is_multidelib', array(
@@ -114,40 +112,59 @@ echo $this->BsForm->checkbox('Deliberation.is_multidelib', array(
 
 echo $this->Bs->close().
     $this->Bs->col('xs6');
-   if (!empty($typeseances))
-                echo $this->BsForm->input('Typeseance', array(
-                    'options' => $typeseances,
-                    'type' => 'select',
-                    'label' => 'Types de séance',
-                    'onchange' => "updateDatesSeances(this);",
-                    'multiple' => true,
-                    'selected' => isset($typeseances_selected) ? $typeseances_selected : ''));    
-   echo $this->Bs->scriptBlock('
+
+echo $this->BsForm->select('Deliberation.rapporteur_id', $rapporteurs, array(
+            'label' => 'Rapporteur',
+            'class' => 'select2 selectone',
+            'selected' => $this->Html->value('Deliberation.raporteur_id'),
+            'empty' => true)).
+     $this->BsForm->datetimepicker('Deliberation.date_limite', array('language'=>'fr', 'autoclose'=>'true','format' => 'dd/mm/yyyy',), array(
+    'label' => 'Date limite',
+    'title' => 'Choisissez une date',
+    'style' => 'cursor:pointer',
+    'help' => 'Cliquez sur le champs ci-dessus pour choisir la date',
+    'readonly' => 'readonly',
+    'value' => $this->Html->value('Deliberation.date_limite')
+        )
+    );
+
+$selectTypeseances='';
+   if (!empty($typeseances)){
+        $selectTypeseances .=   $this->BsForm->select('Deliberation.Seance.Typeseance', $typeseances, array(
+                 'options' => $typeseances,
+                 'class' => 'select2 selectmultiple',
+                 'label' => 'Types de séance',
+                 'placeholder'=> __('Choisir un type de séance'),
+                 'onchange' => "updateDatesSeances(this);",
+                 'multiple' => true)
+         );
+   $selectTypeseances .=  $this->Bs->scriptBlock('
                     $("#TypeseanceTypeseance").select2({
                         width: "100%",
                         allowClear: true,
                         placeholder: "Selection vide"
                     });
                       ');
-   if (!empty($seances)){
-       foreach ($seances AS $id => $seance) {
-           $seances[$id] = $seance['libelle']. ' : '. $this->Time->i18nFormat($seances[$id]['date'], '%d/%m/%Y à %k:%M');
-       }
-                echo $this->BsForm->input('Seance', array(
-                    'options' => $seances,
-                    'type' => 'select',
-                    'label' => 'Dates de séance',
-                    'multiple' => true,
-                    'selected' => isset($seances_selected) ? $seances_selected : ''));
    }
-   echo $this->Bs->scriptBlock('
+   $selectDatesSeances='';
+   if (!empty($seances)){
+                $selectDatesSeances .=  $this->BsForm->select('Deliberation.Deliberationseance', $seances, array(
+                        'options' => $seances,
+                        'class' => 'select2 selectmultiple',
+                        'label' => 'Dates de séance',
+                        'selected' => isset($seances_selected) ? $seances_selected : '',
+                        'multiple' => true)); 
+   
+   $selectDatesSeances .= $this->Bs->scriptBlock('
                     $("#SeanceSeance").select2({
                         width: "80%",
                         allowClear: true,
                         placeholder: "Selection vide"
                     });
                       ');
-echo $this->Bs->div('','',array('id'=>'selectDatesSeances'));
+   }
+echo $this->Bs->div('',$selectTypeseances,array('id'=>'selectTypeseances'));
+echo $this->Bs->div('',$selectDatesSeances,array('id'=>'selectDatesSeances'));
 echo $this->Bs->close(2);
 echo $this->Bs->tabClose();
 
@@ -166,7 +183,7 @@ echo $this->Html->tag(null, '<br />') .
     echo  $this->Bs->tabPane('annexes', array('class' => (isset($nameTab) && $nameTab=='annexes' ? 'active' : ''))); 
     echo $this->Html->tag(null, '<br />') .   
         '<div id="DelibOngletAnnexes"><div id="DelibPrincipaleAnnexes">';
-    echo $this->element('annexe_edit', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => !empty($annexes['Annex'])?$annexes['Annex']:null)));
+    echo $this->element('annexe_edit', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $this->Html->value('Annex'))));
     echo '</div></div>';
     echo $this->Html->tag('span', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.',array('class'=>'help-block'));
     
@@ -356,11 +373,8 @@ echo  $this->Bs->tabClose();
 echo $this->Bs->tabPaneClose();
 
 echo $this->Form->hidden('Deliberation.id');
-echo $this->Form->hidden('redirect', array('value' => $redirect));
 echo $this->Html2->btnSaveCancel('', $previous).
         $this->BsForm->end();
-
- echo $this->element('annexeModal'); 
 ?>
 
 <script type="text/javascript">
@@ -408,7 +422,11 @@ echo $this->Html2->btnSaveCancel('', $previous).
                 var extension = tmpArray[tmpArray.length - 1];
                 extension = extension.toLowerCase();
                 if ($.inArray(extension, extensions) === -1) {
-                    $.jGrowl("Les fichiers " + extension + " ne sont pas autorisés.", {header: "<strong>Erreur :</strong>"});
+                    $.growl( 
+                    {
+                        title: "<strong>Erreur :</strong>",
+                        message: "Les fichiers " + extension + " ne sont pas autorisés.",
+                    },{type:"danger"});
                     $(this).val(null);
                     return false;
                 } else {

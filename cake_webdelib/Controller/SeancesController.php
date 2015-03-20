@@ -166,15 +166,10 @@ class SeancesController extends AppController {
             }
         }
         if ($sortie)
-            $this->redirect(array('action' => 'listerFuturesSeances'));
+            $this->redirect($this->previous);
         else {
             $this->set('date', $date);
-            $natures = array_keys($this->Session->read('user.Nature'));
-            App::import('model', 'TypeseancesTypeacte');
-            $TypeseancesTypeacte = new TypeseancesTypeacte();
-            $types = $TypeseancesTypeacte->getTypeseanceParNature($natures);
-
-            $this->set('typeseances', $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' => $types))));
+            $this->set('typeseances', $this->Typeseance->find('list'));
             $this->set('infosupdefs', $this->Infosupdef->find('all', array(
                         'recursive' => -1,
                         'conditions' => array('model' => 'Seance', 'actif' => true),

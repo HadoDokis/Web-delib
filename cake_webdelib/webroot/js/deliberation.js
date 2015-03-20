@@ -13,6 +13,29 @@ $(document).ready(function () {
     $('#annexeModal').on('hidden', function () {
         resetAnnexeModal();
     });
+    
+    
+/**
+ * Action déclenchée lors du clic sur le bouton "Ajouter une annexe"
+ * @param element reference du lien cliqué (gestion du multi-délib)
+ */
+    $('#btnAnnexeModal').on('click', function () {
+        
+        $('#annexeModal #refDelib').val($(this).attr('data-ref'));
+        
+        resetAnnexeModal();
+        $("#annexeModal").modal('show');
+        $("#annexeModal").find('input').prop('disabled', false);
+        //Déclencheurs des boutons
+        $('#btnAnnexeModalAdd').unbind('click');
+        $('#btnAnnexeModalAdd').on('click', function () {
+            ajouterAnnexe();
+            
+            return false;
+        });
+    
+        return false;
+    });
 
     $("#DeliberationEditForm, #DeliberationAddForm").submit(function () {
         $(window).unbind("beforeunload");
@@ -27,7 +50,11 @@ $(document).ready(function () {
             //Test sur l'extension (ODT ?)
             var extension = tmpArray[tmpArray.length - 1];
             if (extension.toLowerCase() != 'odt') {
-                $.jGrowl("Format du document invalide. Seuls les fichiers au format ODT sont autorisés.", {header: "<strong>Erreur :</strong>"});
+                $.growl( 
+                {
+                    title: "<strong>Erreur :</strong>",
+                    message: 'Format du document invalide. Seuls les fichiers au format ODT sont autorisés.'
+                },{type:"danger"});
                 $(this).val(null);
                 return false;
             }
@@ -35,7 +62,11 @@ $(document).ready(function () {
             var tmpArray = $(this).val().split('\\');
             var filename = tmpArray[tmpArray.length - 1];
             if (filename.length > 75) {
-                $.jGrowl("Le nom du fichier ne doit pas dépasser 75 caractères.", {header: "<strong>Erreur :</strong>"});
+                $.growl( 
+                {
+                    title: "<strong>Erreur :</strong>",
+                    message: 'Le nom du fichier ne doit pas dépasser 75 caractères.'
+                },{type:"danger"});
                 $(this).val(null);
                 return false;
             }
@@ -48,6 +79,13 @@ function disableExitWarning() {
     objMenuTimeout = setTimeout(function () {
         onUnloadEditForm();
     }, 2000); // 2000 millisecondes = 2 secondes
+}
+
+//Gestion des sorties du formulaire
+function onUnloadEditForm() {
+    $(window).bind('beforeunload', function () {
+        return "Attention !\n\n Si vous quittez cette page vous allez perdre vos modifications.";
+    });
 }
 
 function updateTypeseances(domObj) {
@@ -88,53 +126,60 @@ function updateDatesSeances(domObj) {
     });
 }
 
-// variables globales
-var nbAnnexeAAjouter = 0;
-
 /**
  * Fonction d'ajout d'une nouvelle annexe : appelée a l'enregistrement de la modale
  * @returns {boolean}
  */
 function ajouterAnnexe() {
     if ($('#Annex0File').val() == '') {
-        $.jGrowl('Impossible d\'ajouter l\'annexe, aucun fichier selectionné !', {header: "<strong>Erreur :</strong>"});
-        $('#annexeModal #annexe-error-message').show();
+        $.growl( 
+        {
+            title: "<strong>Erreur :</strong>",
+            message: 'Impossible d\'ajouter l\'annexe, aucun fichier selectionné !'
+        },{type:"danger"});
+        
+        $("#annexeModal").modal('hide');
+        /*$('#annexeModal #annexe-error-message').show();
         setTimeout(function () {
             $('#annexeModal #annexe-error-message').hide();
-        }, 5000);
+        }, 5000);*/
         return false;
     }
-    nbAnnexeAAjouter++;
-    var ref = $('#annexeModal input#refDelib').val(),
-        $annexTable = $('table#tableAnnexes' + ref + ' > tbody:last'),
-        $addDiv = $('#ajouteAnnexes' + ref);
-
+    
+    
+    var ref = $('#annexeModal input#refDelib').val();
+    var annexTable = $('table#tableAnnexes' + ref + ' > tbody:last');
+    var numAnnexeAAjouter = $('table#tableAnnexes' + ref + ' > tbody tr').length + 1;
+    
+    $('#annexeModal input#numAnnexe').val(numAnnexeAAjouter);
+    //ajouteAnnexesdelibPrincipale
     //Copie du formulaire vers un bloc caché
-    var formulaire = $('.modal-body #annexeModalBloc').appendTo($addDiv);
+    
     //Remise en place formulaire modal
-    var $annexeModalBloc = formulaire.clone(true);
-    $('#annexeModal .modal-body').append($annexeModalBloc);
+    //var $annexeModalBloc = formulaire.clone(true);
+    //$('#annexeModal .modal-body').append($annexeModalBloc);
 
     //Changement d'attributs
-    formulaire.attr('id', 'addAnnexe' + nbAnnexeAAjouter + ref);
+    //formulaire.attr('id', 'addAnnexe' + numAnnexeAAjouter + ref);
     //Change les attributs id et name avec le numéro courant
-    $addDiv.find('input').each(function () {
-        if ($(this).attr('id') !== undefined)
-            $(this).attr('id', $(this).attr('id').replace('0', nbAnnexeAAjouter));
-        $(this).attr('name', $(this).attr('name').replace('0', nbAnnexeAAjouter));
+    $('#annexeModal').find('input').each(function () {
+        if ($(this).attr('id') !== undefined){
+        $(this).attr('id', $(this).attr('id').replace('0', numAnnexeAAjouter));
+        }
+        if ($(this).attr('name') !== undefined){
+        $(this).attr('name', $(this).attr('name').replace('0', numAnnexeAAjouter));
+        }
     });
     //Change la cible des labels avec le numéro courant
-    $addDiv.find('label').each(function () {
+    /*$('#annexeModal').find('label').each(function () {
         if ($(this).attr('for') !== undefined)
-            $(this).attr('for', $(this).attr('for').replace('0', nbAnnexeAAjouter));
-    });
+            $(this).attr('for', $(this).attr('for').replace('0', numAnnexeAAjouter));
+    });*/
 
     //Récupération des valeurs
-    var filename = $('#Annex' + nbAnnexeAAjouter + 'File').val().split("\\").pop(),
-        titre = $('#Annex' + nbAnnexeAAjouter + 'Titre').val(),
-        joindre_ctrl = $('#Annex' + nbAnnexeAAjouter + 'Ctrl').prop('checked'),
-        joindre_fusion = $('#Annex' + nbAnnexeAAjouter + 'Fusion').prop('checked'),
-        $line = $('<tr class="success" title="Annexe à ajouter" id="ligneAnnexe' + nbAnnexeAAjouter + ref + '"></tr>');
+    var joindre_ctrl = $('#Annex' + numAnnexeAAjouter + 'Ctrl').prop('checked');
+    var joindre_fusion = $('#Annex' + numAnnexeAAjouter + 'Fusion').prop('checked');
+    var line = $('<tr class="success" title="Annexe à ajouter" id="ligneAnnexe' + numAnnexeAAjouter + ref + '"></tr>');
 
     //Pour affichage
     if (joindre_ctrl) joindre_ctrl = 'Oui';
@@ -142,26 +187,37 @@ function ajouterAnnexe() {
 
     if (joindre_fusion) joindre_fusion = 'Oui';
     else joindre_fusion = 'Non';
-
-    var numeroligne = $('table#tableAnnexes' + ref + ' > tbody tr').length + 1;
+    
     //Ajout de la ligne dans le tableau des annexes
-    $line.append("<td>" + numeroligne + "</td>");
-    $line.append("<td>" + filename + "</td>");
-    $line.append("<td>" + titre + "</td>");
-    $line.append("<td>" + joindre_ctrl + "</td>");
-    $line.append("<td>" + joindre_fusion + "</td>");
+    line.append("<td>" + numAnnexeAAjouter + "</td>");
+    line.append("<td>" + $('#Annex' + numAnnexeAAjouter + 'File').val().split("\\").pop() + "</td>");
+    line.append("<td>" + $('#Annex' + numAnnexeAAjouter + 'Titre').val() + "</td>");
+    line.append("<td>" + joindre_ctrl + "</td>");
+    line.append("<td>" + joindre_fusion + "</td>");
 
     //Boutons d'action sur la nouvelle annexe
     var action = '<div class="btn-group">' +
-        '<a href="#tableAnnexes' + ref + '" id="annulerAjoutAnnexe' + nbAnnexeAAjouter + ref + '" class="btn btn-warning btn-mini annulerAjoutAnnexe" data-ref="' + ref + '" data-annexeId="' + nbAnnexeAAjouter + '" title="Annuler l\'ajout de cette annexe"><i class="fa fa-undo"></i> Annuler</a>' +
+        '<a href="#tableAnnexes' + ref + '" id="annulerAjoutAnnexe' + numAnnexeAAjouter + ref + '" class="btn btn-warning btn-mini annulerAjoutAnnexe" data-ref="' + ref + '" data-annexeId="' + numAnnexeAAjouter + '" title="Annuler l\'ajout de cette annexe"><i class="fa fa-undo"></i> Annuler</a>' +
         '</div>';
 
-    $line.append("<td style='text-align: center;'>" + action + "</td>");
+    line.append("<td style='text-align: center;'>" + action + "</td>");
 
-    $line.appendTo($annexTable);
+    line.appendTo(annexTable);
+    
+    //Copie des données pour le formulaire
+    $('#annexeModal .modal-body ').clone().appendTo($('#ajouteAnnexes' + ref));
+    
+    $('#annexeModal').find('input').each(function () {
+        if ($(this).attr('id') !== undefined){
+        $(this).attr('id', $(this).attr('id').replace(numAnnexeAAjouter, '0'));
+        }
+        if ($(this).attr('name') !== undefined){
+        $(this).attr('name', $(this).attr('name').replace(numAnnexeAAjouter,'0'));
+        }
+    });
 
     //Déclencheurs des boutons
-    $('#annulerAjoutAnnexe' + nbAnnexeAAjouter + ref).click(function () {
+    $('#annulerAjoutAnnexe' + numAnnexeAAjouter + ref).click(function () {
         annulerAjoutAnnexe(this);
     });
 
@@ -194,27 +250,6 @@ function annulerAjoutAnnexe(element) {
 }
 
 /**
- * Action déclenchée lors du clic sur le bouton "Ajouter une annexe"
- * @param element reference du lien cliqué (gestion du multi-délib)
- */
-function afficherAnnexeModal(element) {
-    console.log('toto');
-    $('#annexeModal #refDelib').val($(element).attr('data-ref'));
-    if ($(element).attr('data-annexeid') != '')
-        $('#annexeModal #numAnnexe').val($(element).attr('data-annexeId'));
-    $('#Annex0Titre').val('');
-    $("#annexeModal").find('input').prop('disabled', false);
-    $("#annexeModal").modal('show');
-    //Déclencheurs des boutons
-    $('#annexeModalSubmit').unbind('click');
-    $('#annexeModalSubmit').click(function () {
-        ajouterAnnexe();
-        return false;
-    });
-    return false;
-}
-
-/**
  * Ferme la fenêtre modale d'ajout d'annexe
  */
 function closeAnnexeModal() {
@@ -233,6 +268,7 @@ function resetAnnexeModal() {
     //RAZ des champs
     $('#Annex0Titre').val(null);
     $('#Annex0File').val(null);
+    $('#Annex0File').filestyle('clear');
     $('#Annex0Ctrl').prop('checked', false);
     $('#Annex0Fusion').prop('checked', true);
     $("#annexeModal").find('input').prop('disabled', true);
@@ -270,7 +306,7 @@ function modifierAnnexe(annexeId) {
     var $bloc = $('#editAnnexe' + annexeId);
 
     //Activation conditionnelle des checkboxes fusion et ctrl_legalite selon extension annexe
-    /*var fileext = $bloc.find('.annexefilename').text().split('.').pop().toLowerCase();
+    var fileext = $bloc.find('.annexefilename').text().split('.').pop().toLowerCase();
     if ($.inArray(fileext, extensionsFusion) === -1) {
         $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', false).prop('disabled', true);
     } else {
@@ -281,15 +317,16 @@ function modifierAnnexe(annexeId) {
     } else {
         $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('disabled', false);
     }
-
-    $bloc.find('#urlWebdavAnnexe' + annexeId).show();*/
+    $bloc.find('#modifieAnnexeTitre' + annexeId).prop('disabled', false);
+    
+    $bloc.find('#urlWebdavAnnexe' + annexeId).show();
 
     $bloc.addClass('warning').addClass('aModifier').attr('title', 'Annexe à modifier');
 
-   /* $bloc.find('.annexe-edit').each(function () {
+    $bloc.find('.annexe-edit').each(function () {
        // $(this).removeAttr('disabled');
         $(this).show();
-    });*/
+    });
     $bloc.find('.annexe-view').hide();
     $bloc.find('.annexe-edit-btn').hide();
     $bloc.find('.annexe-edit').show();
@@ -328,11 +365,3 @@ function reset_html(id) {
     $('#' + id + ' input[type=file]').val(null);
     $('#' + id + ' a').remove();
 }
-
-//Gestion des sorties du formulaire
-function onUnloadEditForm() {
-    $(window).bind('beforeunload', function () {
-        return "Attention !\n\n Si vous quittez cette page vous allez perdre vos modifications.";
-    });
-}
-
