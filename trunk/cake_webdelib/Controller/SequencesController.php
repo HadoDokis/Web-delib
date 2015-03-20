@@ -18,7 +18,7 @@ class SequencesController extends AppController {
     function admin_view($id = null) {
         if (!$this->Sequence->exists($id)) {
             $this->Session->setFlash('Invalide id pour la séquence', 'growl', array('type' => 'erreur'));
-            return $this->redirect(array('controller' => 'sequences', 'action' => 'index'));
+            $this->redirect($this->previous);
         }
         else
             $this->set('sequence', $this->Sequence->read(null, $id));
@@ -36,7 +36,7 @@ class SequencesController extends AppController {
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
         }
         if ($sortie)
-            return $this->redirect(array('controller' => 'sequences', 'action' => 'index'));
+            $this->redirect($this->previous);
         else
             $this->render('edit');
     }
@@ -58,7 +58,7 @@ class SequencesController extends AppController {
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
         }
         if ($sortie)
-             return $this->redirect(array('controller' => 'sequences', 'action' => 'index'));
+            $this->redirect($this->previous);
     }
 
     function admin_delete($id = null) {
@@ -70,7 +70,7 @@ class SequencesController extends AppController {
         } elseif ($this->Sequence->delete($id)) {
             $this->Session->setFlash('La séquence \'' . $sequence['Sequence']['nom'] . '\' a été supprimée', 'growl');
         }
-        return $this->redirect(array('controller' => 'sequences', 'action' => 'index'));
+        $this->redirect($this->previous);
     }
 
 }
