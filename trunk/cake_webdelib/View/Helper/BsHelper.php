@@ -902,6 +902,7 @@ class BsHelper extends HtmlHelper {
 		$classes = (isset($options['class'])) ? $options['class'] : '';
 		// Is it a form ?
 		$form = (isset($options['form']) && $options['form'] == true) ? true : false;
+                
 		// If it's a form then there is a submit button
 		$type = ($form) ? 'submit' : 'button';
 
@@ -992,10 +993,10 @@ class BsHelper extends HtmlHelper {
 				// Check if it's a form
 				if ($form) {
 					$class = (isset($buttons['confirm']['class'])) ? $buttons['confirm']['class'] : 'btn-success';
-					$outFooter .= $this->btn(__($buttons['confirm']['name']), null, array('tag' => 'button', 'class' => $class, 'type' => $type));
+					$outFooter .= $this->btn(__($buttons['confirm']['name']), null, array_merge( $buttons['confirm']['options'], array('tag' => 'button', 'class' => $class, 'type' => $type)));
 				} else {
 					$class = (isset($buttons['confirm']['class'])) ? $buttons['confirm']['class'] : 'btn-success';
-					$outFooter .= $this->btn(__($buttons['confirm']['name']), $buttons['confirm']['link'], array('class' => $class));
+					$outFooter .= $this->btn(__($buttons['confirm']['name']), $buttons['confirm']['link'], array_merge( $buttons['confirm']['options'], array('class' => $class)));
 				}
 
 				// If 'confirm' index exist => create the button
