@@ -6,11 +6,12 @@ class AnnexesController extends AppController {
 
     public $components = array('Conversion');
 
-    public function beforeFilter() {
-        parent::beforeFilter();
-        
-        $this->Auth->allow('download','delete');
-    }
+    public $components = array(
+            'Auth' => array(
+            'mapActions' => array(
+                'allow' => array('download', 'delete')
+        )
+    ));
     
     function delete($id = null) {
         if ($this->Annex->del($id)) {

@@ -24,14 +24,15 @@ echo $this->Bs->tabPane('infos', array('class' => isset($nOngletCourant) ? $nOng
 $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
         $this->Html->tag('div', 'Identifiant de connexion', array('class' => 'panel-heading')) .
         $this->Html->tag('div', null, array('class' => 'panel-body')) .
-        $this->BsForm->input('User.username', array('label' => 'Login <abbr title="obligatoire">*</abbr>', 'required'));
+        $this->BsForm->input('User.username', array(
+            'label' => 'Login <abbr title="obligatoire">*</abbr>', 'required'));
 if (!$this->Html->value('User.id')) {
-    echo "<div class='tiers'>";
-    echo $this->BsForm->input('User.password', array('type' => 'password', 'label' => 'Password <abbr title="obligatoire">*</abbr>'));
-    echo "</div>";
-    echo "<div class='tiers'>";
-    echo $this->BsForm->input('User.password2', array('type' => 'password', 'label' => 'Confirmez le password <abbr title="obligatoire">*</abbr>'));
-    echo "</div>";
+    echo $this->BsForm->input('User.password', array(
+        'type' => 'password', 
+        'label' => 'Password <abbr title="obligatoire">*</abbr>'));
+    echo $this->BsForm->input('User.password2', array(
+        'type' => 'password',
+        'label' => 'Confirmez le password <abbr title="obligatoire">*</abbr>'));
 }
 echo $this->Bs->close(2) . $this->Html->tag(null, '<br />');
 
@@ -168,24 +169,19 @@ echo $this->Bs->tabPane('droits') .
  $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
  $this->Html->tag('div', 'Table des droits', array('class' => 'panel-heading')).
  $this->Html->tag('div', null, array('class' => 'panel-body')) ;
-if ($this->Html->value('User.id')){
-    echo $this->element('AuthManager.permissions', array('model' => 'Typeacte'));
-    echo $this->element('AuthManager.permissions', array('model' => 'Service'));
-    echo $this->element('AuthManager.permissions', array('model' => 'Circuit'));
-    echo $this->element('AuthManager.permissions', array('model' => 'User'));
-}
-else {
-    echo $this->Html->para(null, __('Sauvegardez puis &eacute;ditez &agrave; nouveau l\'utilisateur pour modifier ses droits.', true));
-    echo $this->Html->para(null, __('Les nouveaux utilisateurs h&eacute;ritent des droits des profils auxquels ils sont rattach&eacute;s.', true));
-}
+
+echo $this->element('AuthManager.permissions', array('model' => 'Typeacte'));
+echo $this->element('AuthManager.permissions', array('model' => 'Service'));
+echo $this->element('AuthManager.permissions', array('model' => 'Circuit'));
+echo $this->element('AuthManager.permissions', array('model' => 'User'));
+
 echo $this->Bs->close(2);
 echo $this->Bs->tabClose();
 
 $this->Bs->tabPaneClose();
 //echo $this->Bs->tabPane('configuration_synthese');.
 //echo $this->Bs->tabClose();
-    if ($this->action == 'admin_edit')
-        echo $this->Form->hidden('User.id');
+echo $this->Form->hidden('User.id');
     
     $this->BsForm->setLeft(0);
     echo $this->Html2->btnSaveCancel( null, array('action' => 'index'));

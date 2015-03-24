@@ -202,7 +202,7 @@ class SeancesController extends AppController {
         $this->set('use_pastell', Configure::read('USE_PASTELL'));
         
         $this->set('canSign', $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations/sendToParapheur'));
-        $format = $this->Session->read('user.format.sortie');
+        $format = $this->Auth->User('formatSortie');
         $this->set('models', $this->Modeltemplate->find('list', array(
                     'recursive' => -1,
                     'conditions' => array('modeltype_id' => array(MODEL_TYPE_MULTISEANCE)),
@@ -1595,7 +1595,7 @@ class SeancesController extends AppController {
             $this->Seance->odtFusion();
 
             // selon le format d'envoi du document (pdf ou odt)
-            if ($this->Session->read('user.format.sortie') == 0) {
+            if ($this->Auth->User('formatSortie') == 0) {
                 $mimeType = "application/pdf";
                 $filename = $filename . '.pdf';
                 $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult, 'odt', 'pdf');
@@ -1647,7 +1647,7 @@ class SeancesController extends AppController {
                 throw new Exception('Aucun acteur convoqué pour la séance id:' . $id);
 
             // format de conversion
-            $formatConversion = $this->Session->read('user.format.sortie') == 0 ? 'pdf' : 'odt';
+            $formatConversion = $this->Auth->User('formatSortie') == 0 ? 'pdf' : 'odt';
 
             // initialisation du répertoire de destination des convocations
             App::import('Lib', 'AppGestfichiers');
@@ -1741,7 +1741,7 @@ class SeancesController extends AppController {
             $this->Seance->odtFusion(array('modelOptions' => array('seanceIds' => $seancesIds)));
 
             // selon le format d'envoi du document (pdf ou odt)
-            if ($this->Session->read('user.format.sortie') == 0) {
+            if ($this->Auth->User('formatSortie') == 0) {
                 $mimeType = "application/pdf";
                 $filename = $filename . '.pdf';
                 $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');

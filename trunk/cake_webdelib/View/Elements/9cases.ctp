@@ -204,6 +204,7 @@ foreach ($projets as $projet) {
                         array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id']), 
                         array('type' => 'default', 
                             'icon' => 'glyphicon glyphicon-cog', 
+                            'class' => 'waiter',
                             'title' => 'Générer le document du projet ' . $projet['Deliberation']['objet']
                             ));
                 /*$actions.= $this->Bs->btn('Générer <rerspan class="caret"></span>', 

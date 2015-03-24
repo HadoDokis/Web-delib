@@ -15,8 +15,7 @@ class UsersController extends AppController {
     public $components = array( 
         'Auth' => array(
                 'mapActions' => array(
-                    'read' => array(    'login',
-                                        'logout',
+                    'read' => array(   
                                         'getAdresse',
                                         'getCP',
                                         'getNom',
@@ -24,34 +23,29 @@ class UsersController extends AppController {
                                         'getVille',
                                         'view',
                                         'admin_index','manager_index'),
-                    'changeFormat',
+                    'changeformatSortie',
                     'changeUserMdp',
                     'changeTheme',
+                    'changeServiceEmetteur',
                     'create' => array('admin_add','admin_changeMdp','manager_add','manager_changeMdp'),
                     'update' => array('admin_edit','manager_edit'),
-                    'delete' => array('admin_delete','manager_delete'),
+                    'remove' => array('admin_delete','manager_delete'),
+                    'allow' => array('login', 'logout')
                                     )
         ),
         'AuthManager.AclManager', 'Filtre', 'Paginator');
 
-    public function beforeFilter() {
-        parent::beforeFilter();
-        $this->Auth->allow('logout');
-    }
-
     function admin_index() {
         $this->_index();
-        
-        $this->render('index');
     }
     
     function manager_index() {
         $this->_index(array('Service.id'));
         
-        $this->render('index');
+        $this->render('admin_index');
     }
     //FIXME -- optimisation 
-    function _index($allow=null)
+    function _index($allow = null)
     {
         $this->Filtre->initialisation($this->name.':'.$this->request->action, $this->request->data);
         $conditions =  $this->Filtre->conditions();
@@ -155,198 +149,112 @@ class UsersController extends AppController {
             $this->set('canEdit', $this->Droits->check($this->Auth->user('id'), 'Users:edit'));
         }
     }
-
+    
     function admin_add() {
-		// Initialisation
-		$sortie = false;
-
-		if (empty($this->data)){
-		    // Initialisation des données
-		    $this->request->data['User']['accept_notif'] = 0;
-		    $this->set('natures', $this->Typeacte->find('all', array('recursive' => -1) ));
-		} else {
-            //Transformation type de donnée
-            if (!empty($this->request->data['Service']['Service']))
-                $this->request->data['Service']['Service'] = explode(',', $this->request->data['Service']['Service']);
-            if ($this->User->save($this->data)) {
-                // Ajout de l'utilisateur dans la table aros
-                $user_id = $this->User->id;
-                //$this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']));
-                /*$aro = $this->Aro->find('first', array('conditions' => array('model' => 'User', 'foreign_key' => $user_id),
-                    'fields' => array('id'),
-                    'recursive' => -1));
-
-
-                foreach ($this->data['Nature'] as $nature_id => $can) {
-                    $nature_id = substr($nature_id, 3, strlen($nature_id));
-                    $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
-                        'Ado.foreign_key' => $nature_id),
-                        'fields' => array('Ado.id'),
-                        'recursive' => -1));
-
-                    if ($can)
-                        $this->ArosAdo->allow($aro['Aro']['id'], $ado['Ado']['id']);
-                    else
-                        $this->ArosAdo->deny($aro['Aro']['id'], $ado['Ado']['id']);
-                }*/
-                $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['username'] . '\' a été ajouté', 'growl');
-                $sortie = true;
-            } else
-                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
-        }
-        if ($sortie)
-            $this->redirect($this->previous);
-        else {
-            $this->set('selectedCircuits', 0);
-            $this->set('services', $this->User->Service->find('threaded', array(
-                'recursive' => -1,
-                'order' => 'name ASC',
-                'conditions' => array('actif' => 1),
-                'fields' => array('id', 'name', 'parent_id')
-            )));
-            $this->set('selectedServices', null);
-            $this->set('profils', $this->User->Profil->find('list'));
-            $this->set('notif', array('1' => 'oui', '0' => 'non'));
-            $this->set('circuits', $this->Circuit->getList());
-            $natures = $this->Typeacte->find('all', array('recursive' => -1));
-            foreach ($natures as &$nature)
-                $nature['Nature']['check'] = null;
-            $this->set('natures', $natures);
-            $this->render('edit');
-        }
+        $this->_add_edit(null);
+        
+        $this->render('admin_edit');
     }
     
-    function admin_edit($id = null) {
-        $this->_edit($id);
+    function manager_add() {
+        $this->_add_edit(null, array('Service.id'));
         
-        $this->render('edit');
+        $this->render('admin_edit');
+    }
+
+    function admin_edit($id = null) {
+        $this->_add_edit($id);
     }
     
     function manager_edit($id = null) {
-        $this->_edit($id, array('Service.id'));
-        
-        $this->render('edit');
+        $this->_add_edit($id, array('Service.id'));
     }
-
-    function _edit($id = null, $allow=null)
+    
+    function _add_edit($id = null, $allow=null)
     {
-        if (empty($this->data)) {
-            
-            $this->request->data = $this->User->find('first', array(
-                                            'conditions' => array('User.id' => $id)));
+        // Vérification de l'utilisateur
+        if(!empty($id)){
+            if (!$this->User->exists($id)) {
+                $this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
+                $this->redirect($this->previous);
+            }
+        }
         
-            if (empty($this->data)) {
-                    $this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
-                    $this->redirect($this->previous);
+        $admin=false;
+        if($this->request->param('prefix')=='admin'){
+          $admin=true;
+          
+        }
+        
+        if($this->request->is('Post')) {
+            if(!empty($id)){
+                $this->User->id=$id;
+            }else{
+                $this->User->create(); 
             }
-
-            $this->set('selectedServices', $this->_selectedArray($this->data['Service']));
-
-            $this->AclManager->permissionsTypeacte($id, null, array('read'));
-            $this->AclManager->permissionsService($id, null, array('create','update','delete','manager'));
-            $this->AclManager->permissionsCircuit($id, 'Cakeflow');
-            $this->AclManager->permissionsUser($id, null, array('read','create','update','delete'));
-
-            //$this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'User', 'foreign_key' => $id));
-            $natures = $this->Typeacte->find('all', array('recursive' => -1));
-            foreach ($natures as &$nature) {
-                $naturesAco = $this->Aco->find('first', array(
-                    'fields' => array('Aco.id'),
-                    'conditions' => array(
-                        'Aco.model' => 'Typeacte', 
-                        'Aco.foreign_key' => $nature['Typeacte']['id']),
-                    'recursive' => -1));
-
-              //  $nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
-            }
-            $this->set('natures', $natures);
-            $this->set('services', $this->User->Service->find('threaded', array(
-                'recursive' => -1,
-                'order' => 'name ASC',
-                'conditions' => array('actif' => 1),
-                'fields' => array('id', 'name', 'parent_id')
-            )));
-            $this->set('profils', $this->User->Profil->find('list'));
-            $this->set('notif', array('1' => 'oui', '0' => 'non'));
-            $this->set('circuits', $this->Circuit->getList());
-             //$this->set('listeCtrlAction', $this->Menu->menuCtrlActionAffichage());
-            /*$aro = $this->Aro->find('first', array(
-                'conditions' => array('model' => 'User', 'foreign_key' => $id),
-                'fields' => array('id'),
-                'recursive' => -1));
-
-            $natures = $this->Typeacte->find('all', array('recursive' => -1));
-            foreach ($natures as &$nature) {
-                $naturesAco = $this->Aco->find('first', array('conditions' => array('Aco.model' => 'Typeacte',
-                    'Aco.foreign_key' => $nature['Typeacte']['id']),
-                    'fields' => array('Aco.id'),
-                    'recursive' => -1));
-*/
-                //$nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
-         //   }
-            $this->set('natures', $natures);
-        } 
-        else {
-            $userDb = $this->User->find('first', array(
-                'conditions' => array('id' => $id), 
-                'recursive' => -1));
-
-            $this->AclManager->setPermissionsTypeacte('User', $id, $this->data['Aco']['Typeacte']);
-            $this->AclManager->setPermissionsService('User', $id, $this->data['Aco']['Service']);
-            $this->AclManager->setPermissionsUser('User',$id, $this->data['Aco']['User']);
-            $this->AclManager->setPermissionsCircuit('User', $id, $this->data['Aco']['Circuit']);
-            
-            $aro = $this->Aro->find('first', array(
-                'conditions' => array('model' => 'User', 'foreign_key' => $id),
-                'fields' => array('id'),
-                'recursive' => -1));
-
             //Transformation type de donnée
             if (!empty($this->request->data['Service']['Service']))
                 $this->request->data['Service']['Service'] = explode(',', $this->request->data['Service']['Service']);
 
-            if(!empty($this->data['User']['accept_notif']) && $this->data['User']['accept_notif']==true)
-                $this->request->data['User']['accept_notif']=false;
-                    else
-                     $this->request->data['User']['accept_notif']=true;
-                
-                $this->User->id=$id;   //FIX
+            if (!empty($this->data['User']['accept_notif']) && $this->data['User']['accept_notif'] == true) {
+                $this->request->data['User']['accept_notif'] = false;
+            } else {
+                $this->request->data['User']['accept_notif'] = true;
+            }
+
             if ($this->User->save($this->data)) {
-                
-                /*
-                if (!empty($this->data['Nature']))
-                    foreach ($this->data['Nature'] as $nature_id => $can) {
-                        $nature_id = substr($nature_id, 3, strlen($nature_id));
-                        $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
-                            'Ado.foreign_key' => $nature_id),
-                            'fields' => array('Ado.id'),
-                            'recursive' => -1));
-
-                        if ($can)
-                            $this->ArosAdo->allow($aro['Aro']['id'], $ado['Ado']['id']);
-                        else
-                            $this->ArosAdo->deny($aro['Aro']['id'], $ado['Ado']['id']);
-                    }
-                if ($userDb['User']['profil_id'] != $this->data['User']['profil_id']) {
-                    $this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']));
+                if(!empty($id)){
+                    $this->User->id=$this->User->getInsertID();
                 }
-
-                $this->Dbdroits->MajCruDroits(
-                    array('model' => 'User', 'foreign_key' => $id, 'alias' => $this->data['User']['login']),
-                    array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']),
-                    $this->request->data['Droits']
-                );
-                 * */
-                // */
-
+                $this->AclManager->setPermissionsUser('User', $this->User->id, $this->request->data['Aco']['User']);
+                if($admin){
+                     $this->AclManager->setPermissionsService('User', $this->User->id, $this->request->data['Aco']['Service']);
+                }
+                $this->AclManager->setPermissionsTypeacte('User', $this->User->id, $this->request->data['Aco']['Typeacte']);
+                $this->AclManager->setPermissionsCircuit('User', $this->User->id, $this->request->data['Aco']['Circuit']);
+                
                 $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['username'] . '\' a été modifié', 'growl');
+                
                 $this->redirect($this->previous);
             } else {
+                
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
                 $this->set('selectedServices', $this->data['Service']['Service']);
+                
                 $this->redirect($this->here);
             }
         }
+        
+        $this->request->data = $this->User->find('first', array(
+                                        'conditions' => array('User.id' => $id)));
+
+        if(!empty($this->data['Service'])){
+            $this->set('selectedServices', $this->_selectedArray($this->data['Service']));
+        }
+        
+        $crud=array();
+        if($admin){
+            $this->AclManager->permissionsService($id, null, array('create','update','delete','manager')); 
+            $this->AclManager->permissionsCircuit($id, 'Cakeflow', array('create','update','delete','manager'));
+            $crud[]='manager';
+        }
+        $this->AclManager->permissionsTypeacte($id, null, array_merge(array('read'), $crud));
+        $this->AclManager->permissionsUser($id, null, array_merge(array('read','create','update','delete'), $crud));
+
+        if($admin){
+            $this->set('profils', $this->User->Profil->find('list'));
+        }
+        else {
+            $this->set('profils', $this->User->Profil->find('list', array('conditions' => array('role_id'=>1))));
+        }
+        $this->set('services', $this->User->Service->find('threaded', array(
+            'recursive' => -1,
+            'order' => 'name ASC',
+            'conditions' => array('actif' => 1),
+            'fields' => array('id', 'name', 'parent_id')
+        )));
+        $this->set('notif', array('1' => 'oui', '0' => 'non'));
+        $this->set('circuits', $this->Circuit->getList());
     }
 
     /* dans le controleur car utilisé dans la vue index pour l'affichage */
@@ -473,8 +381,10 @@ class UsersController extends AppController {
                 foreach ($userServices as $service)
                     $services[$service['UserService']['service_id']] = $this->Service->doList($service['UserService']['service_id']);
 
+                $this->Session->write('Auth.User.formatSortie', 0);
                 $this->Session->write('Auth.User.Service', $services);
                 $this->Session->write('Auth.User.ServiceEmetteur.id', key($services));
+                $this->Session->write('Auth.User.ServiceEmetteur.name', $services[key($services)]);
                 
                 include(ROOT . DS . APP_DIR . DS . 'Config' . DS . 'menu.ini.php');
                 $this->_purgeMenuDroit($navbar);
@@ -615,13 +525,6 @@ class UsersController extends AppController {
         }
     }
 
-    function changeFormat($id) {
-        $this->Session->delete('user.format.sortie');
-        $this->Session->write('user.format.sortie', $id);
-        //redirection sur la page où on était avant de changer de service
-        $this->redirect($this->previous);
-    }
-
 	function _checkLDAP($login, $password) {
 		//  $DN = Configure::read('LDAP_UID')."=$login, ".LDAP_BASE_DN;
 		$conn=ldap_connect(Configure::read('LDAP_HOST'), Configure::read('LDAP_PORT')) or  die("connexion impossible au serveur LDAP");
@@ -698,6 +601,37 @@ class UsersController extends AppController {
         $dossiers = $Themed->read();
 
         $this->set('themes', array_combine($dossiers[0], $dossiers[0]));
+    }
+    
+    function changeServiceEmetteur() {
+        
+        if($this->request->is('Post')){
+            $this->Session->write('Auth.User.ServiceEmetteur.id', $this->request->data['User']['ServiceEmetteur']['id']);
+            //redirection sur la page où on était avant de changer de service
+            $this->redirect($this->previous);
+        }
+        
+        $this->User->Service->recursive=-1;
+        $userServices = $this->User->UserService->findAllByUserId($this->Auth->user('id'));
+         //$user = $this->User->findByLogin($this->data['User']['username']);
+        //services auquels appartient l'agent
+        $services = array();
+        foreach ($userServices as $service)
+            $services[$service['UserService']['service_id']] = $this->Service->doList($service['UserService']['service_id']);
+
+        $this->set('services', $services);
+        $this->request->data['User']['ServiceEmetteur']['id'] = $this->Auth->User('ServiceEmetteur.id');
+    }
+    
+    function changeFormatSortie() {
+        
+        if($this->request->is('Post')){
+            $this->Session->write('Auth.User.formatSortie', $this->request->data['User']['formatSortie']);
+            //redirection sur la page où on était avant de changer de service
+            $this->redirect($this->previous);
+        }
+        
+        $this->request->data['User']['formatSortie'] = $this->Auth->User('formatSortie');
     }
     
     private function _purgeSubMenuDroit(&$subMenu)

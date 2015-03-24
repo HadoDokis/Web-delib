@@ -12,7 +12,7 @@ class ProfilsController extends AppController {
                 'create' => array('admin_add'),
                 'read' => array('admin_index', 'view','notifier'),
                 'update' => array('admin_edit'),
-                'delete' => array('admin_delete')),
+                'remove' => array('admin_delete')),
         ),
         'AuthManager.AclManager',
         );

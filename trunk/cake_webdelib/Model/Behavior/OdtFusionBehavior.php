@@ -15,10 +15,10 @@
  *
  */
 
-App::import( 'Behavior', 'Gedooo.GedoooFusionConverter' );
+//App::import( 'Behavior', 'FusionConv.' );
 App::uses('CakeTime', 'Utility');
 
-class OdtFusionBehavior extends GedoooFusionConverterBehavior {
+class OdtFusionBehavior extends ModelBehavior {
 
     // id de l'occurence en base de données à fusionner
     protected $_id = null;
@@ -174,11 +174,26 @@ class OdtFusionBehavior extends GedoooFusionConverterBehavior {
         
         // initialisation des variables communes
         $this->_setVariablesCommunesFusion($model, $aData);
-     
+
         // initialisation des variables du model de données
         $model->beforeFusion($aData, $model->modelTemplateOdtInfos, $this->_id, $this->_modelOptions);
 
-        $model->odtFusionResult = parent::gedFusion($model, $aData, $this->_modelTemplateContent);
+        App::uses( 'FusionConvBuilder', 'FusionConv.Utility' );
+        $MainPart = new GDO_PartType();
+        $correspondances=$types=$data=array();
+        $this->_format($MainPart, $aData, $data, $types);
+        unset($aData);
+        
+        $Document = FusionConvBuilder::main( $MainPart, $data, $types );
+
+        $sMimeType = 'application/vnd.oasis.opendocument.text';
+
+        $Template = new GDO_ContentType( "", $this->_modelTemplateName, "application/vnd.oasis.opendocument.text", "binary", $this->_modelTemplateContent);
+        $Fusion = new GDO_FusionType($Template, $sMimeType, $Document);
+        
+        $Fusion->process();
+        
+        $model->odtFusionResult = $Fusion->getContent();
         
         if(is_array($model->odtFusionResult))
             throw new Exception($model->odtFusionResult['Message']);
@@ -205,6 +220,22 @@ class OdtFusionBehavior extends GedoooFusionConverterBehavior {
         // variables de la collectivité
         $myCollectivite = ClassRegistry::init('Collectivite');
         $myCollectivite->setVariablesFusion($aData, $model->modelTemplateOdtInfos, 1);
+    }
+    
+    private function _format(&$MainPart, &$aData, &$data, &$types){
+        
+        foreach($aData as $key=>$value)
+        {
+            if(ctype_digit($key))
+            {
+                $this->_format($data, $dataIteration, $typesIteration);
+                $MainPart = new GDO_PartType();
+                $result = FusionConvBuilder::iteration( $MainPart, 'IterationName', $dataIteration, $typesIteration, null );
+            }
+            $data[$key]=$value['value'];
+            $types[$key]=$value['type'];
+            
+        }
     }
 
 }

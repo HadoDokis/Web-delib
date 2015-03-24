@@ -62,9 +62,9 @@ class Theme extends AppModel {
             'conditions' => array('Theme.id' => $id)));
 
         if ($modelOdtInfos->hasUserFieldDeclared('theme_projet'))
-            $aData['theme_projet']=$theme['Theme']['libelle'];//,  'text'));
+            $aData['theme_projet']=array('value'=>$theme['Theme']['libelle'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('critere_trie_theme'))
-            $aData['critere_trie_theme']=$theme['Theme']['order'];//, 'text'));
+            $aData['critere_trie_theme']=array('value'=>$theme['Theme']['order'], 'type'=>'text');
 
         // arborescence des thèmes jusqu'au 10eme niveau
         $libelleThemesLevel = array_fill(1, 10, '');
@@ -77,7 +77,7 @@ class Theme extends AppModel {
             $libelleThemesLevel[$i+1] = $theme['Theme']['libelle'];
         foreach($libelleThemesLevel as $level=>$libelleThemeLevel)
             if(!empty($libelleThemeLevel))
-                $aData["T".$level."_theme"]=$libelleThemeLevel;//, 'text'));
+                $aData["T".$level."_theme"]=array('value'=>$libelleThemeLevel, 'type'=>'text');
         
     }
 
