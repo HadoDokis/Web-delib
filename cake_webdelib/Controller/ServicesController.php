@@ -10,17 +10,10 @@ class ServicesController extends AppController {
         'Auth' => array(
             'mapActions' => array(
                 'create' => array('admin_index','admin_add','admin_edit','admin_delete','admin_view','admin_fusionner',
-                    'changeService','isEditable','view','autoComplete')
+                    'isEditable','view','autoComplete')
             )
         )
     );
-
-    function changeService($newServiceActif) {
-        $this->Session->delete('user.User.service');
-        $this->Session->write('user.User.service', $newServiceActif);
-        //redirection sur la page où on était avant de changer de service
-        $this->redirect($this->referer());
-    }
 
     function admin_index() {
         //$this->view='index';

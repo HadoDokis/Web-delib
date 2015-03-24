@@ -12,6 +12,12 @@ App::uses('Set', 'Utility');
 class BsFormHelper extends FormHelper {
 
 /**
+ * Prefix version for Font Awesome
+ * @var bool
+ */
+	public $faPrefix = 'fa';
+        
+/**
  * The name of the helper
  *
  * @var string
@@ -464,7 +470,16 @@ class BsFormHelper extends FormHelper {
 				}
                                 
                                 if (!empty($options['icon'])) {
-                                    $options['content']='<span class="'.($options['icon']).'"></span>'.(!empty($options['content'])?' '.$options['content']:'');
+                                    $icon='';
+                                    if(substr($options['icon'],0, 9) == 'glyphicon') {
+
+                                        $icon = '<span class="' . ($options['icon']) . '"></span>';
+                                    } else {
+                                        $icon=$this->icon($options['icon']); 
+                                    }
+
+                                    $options['escapeTitle'] = false;
+                                    $options['content']=$icon.(!empty($options['content'])?' '.$options['content']:'');
                                 }
 
 				$buttonOptions['div'] = false;
@@ -999,5 +1014,34 @@ class BsFormHelper extends FormHelper {
 
 	public function end($options = null, $secureAttributes = array()) {
 		return parent::end($options, $secureAttributes);
+	}
+        
+/**
+ * Create a Font Awesome Icon
+ *
+ * @param string $iconLabel label of the icon
+ * @param array $classes like 'fixed-width', 'large', '2x', etc.
+ * @param array $attributes more attributes for the tag
+ * @return string
+ */
+	public function icon($iconLabel, $classes = array(), $attributes = array()) {
+		$class = '';
+		$more = '';
+
+		if (!empty($classes)) {
+			foreach ($classes as $opt) {
+				$class .= ' ' . $this->faPrefix . '-' . $opt;
+			}
+		}
+                
+		if (!empty($attributes)) {
+                    if (!empty($attributes['class'])) {
+                        $class .= ' ' . $attributes['class'];
+                    }
+                    foreach ($attributes as $key => $attr) {
+                            $more .= ' ' . $key . '="' . $attr . '"';
+                    }
+		}
+		return '<span class="' . $this->faPrefix . ' ' . $this->faPrefix . '-' . $iconLabel . $class . '"' . $more . '></span>';
 	}
 }

@@ -81,9 +81,7 @@ class AppController extends Controller {
         'Navbar' => array(
             'className' => 'Bootstrap3.BootstrapNavbar')
         );
-    public $previous;
-    public $user_id;
-
+    
     function beforeFilter() {
         
         //$this->Auth->allow(); //Ne pas mettre
@@ -92,6 +90,12 @@ class AppController extends Controller {
         
         //initialisation des mapActions pour les droits CRUD
         if (isset($this->components['Auth']['mapActions'])) {
+            //Mise en place des actions publiques
+            if(isset($this->components['Auth']['mapActions']['allow'])){
+                $this->Auth->allow($this->components['Auth']['mapActions']['allow']);
+                unset($this->components['Auth']['mapActions']['allow']);
+            }
+            
             $this->Auth->mapActions($this->components['Auth']['mapActions']);
         }
         
@@ -100,42 +104,14 @@ class AppController extends Controller {
         //CakeResponse::disableCache();
         
         // passage de paramètre en utilisant 'all'
-        
+        $this->log("{$this->Auth->user('id')} => ".Router::normalize($this->params['requested']), 'trace');
         return;
         $this->set('name', $this->name);
         
-        $this->set('agentServices', $this->Session->read('user.Service'));
-        $this->set('lienDeconnexion', true);
-        $this->set('session_service_id', $this->Session->read('user.User.service'));
-        // ????
         //if (CRON_DISPATCHER) return true;
         // Exception pour le bon déroulement de cron
         $action_accepted = array('runCrons', 'majTraitementsParapheur', 'traiterDelegationsPassees', 'generer');
-
         if (in_array($this->action, $action_accepted)) return true;
-
-        if (substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login'
-            && $this->action != 'writeSession'
-            && substr(substr($_SERVER['REQUEST_URI'], strlen($this->base)), 0, strlen('/cakeflow/traitements/traiter_mail')) != '/cakeflow/traitements/traiter_mail'
-        ) {
-            //si il n'y a pas d'utilisateur connecte en session
-            if (!$this->Session->Check('user')) {
-                return $this->redirect(array('controller' => 'users', 'action' => 'login', 'plugin' => ''));
-            } else {
-                // Contrôle des droits
-                $Pages = array('Pages:format', 'Pages:service');
-                $controllerAction = $this->name . ':' . ($this->name == 'Pages' ? $this->params['pass'][0] : $this->action);
-                if (in_array($controllerAction, $Pages)) {
-                    return true;
-                } elseif ($controllerAction != 'Deliberations:delete') {
-                    if (!$this->Droits->check($this->Auth->user('id'), $controllerAction)) {
-                        $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : $controllerAction", 'growl', array('type' => 'erreur'));
-                        return $this->redirect($this->previous);
-                    } else
-                        $this->log("{$this->Auth->user('id')} => $controllerAction", 'trace');
-                }
-            }
-        }
     }
 
     function afterFilter() {
@@ -144,9 +120,9 @@ class AppController extends Controller {
     function beforeRender() {
         //Si utilisateur connecté
         if ($this->Session->check('User')) {
-            $this->set('infoUser', $this->Session->read('Auth.User.prenom') . ' ' . $this->Session->read('Auth.User.nom'));
-            $this->set('collectivite', array('nom'=> $this->Session->read('Collective.nom')));
-            $this->set('user_id', $this->Auth->user('id'));//FIX
+            $this->set('infoUser', $this->Auth->user('prenom') . ' ' . $this->Auth->user('nom'));
+            $this->set('infoServiceEmeteur', $this->Auth->user('ServiceEmetteur.name'));
+            $this->set('infoCollectivite', array('nom'=> $this->Session->read('Collective.nom')));
             /*
             if ($this->Session->check('User.theme')) {
                 $this->theme = $this->Session->read('User.theme');

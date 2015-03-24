@@ -35,7 +35,7 @@ class DeliberationsController extends AppController {
                     'textsynthesevue','deliberationvue','textprojetvue'),
                 'create' => array('add','getTypeseancesParTypeacteAjax','mesProjetsRedaction','addIntoCircuit','attribuercircuit'),
                 'update' => array('edit','admin_add','getTypeseancesParTypeacteAjax'),
-                'delete' => array('admin_delete'),
+                'remove' => array('delete','admin_delete'),
                 'editerTous',
                 'deleteDebat',
                 'validerEnUrgence',
@@ -4738,14 +4738,15 @@ debug($this->data);exit;
             if (!$this->Deliberation->hasAny(array('id' => $id)))
                 throw new Exception('Projet/délibération id:' . $id . ' non trouvé(e) en base de données');
 
-            $annexesInvalide = $this->Deliberation->Annex->find('count', array(
-                'fields' => 'Annex.id',
-                'conditions' => array('foreign_key' => $id, 'joindre_fusion' => true, 'edition_data IS NULL'),
-                'recursive' => -1
-            ));
-
-            if (!empty($annexesInvalide))
-                throw new Exception('Toutes les annexes du projet :' . $id . ' ne sont pas encore converties pour générer le document. Veuillez réessayer dans quelques instants ...');
+            //FIX
+//            $annexesInvalide = $this->Deliberation->Annex->find('count', array(
+//                'fields' => 'Annex.id',
+//                'conditions' => array('foreign_key' => $id, 'joindre_fusion' => true, 'edition_data IS NULL'),
+//                'recursive' => -1
+//            ));
+//
+//            if (!empty($annexesInvalide))
+//                throw new Exception('Toutes les annexes du projet :' . $id . ' ne sont pas encore converties pour générer le document. Veuillez réessayer dans quelques instants ...');
 
             // fusion du document
             $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $id));
@@ -4753,14 +4754,14 @@ debug($this->data);exit;
             $this->Deliberation->odtFusion();
 
             // selon le format d'envoi du document (pdf ou odt)
-            if ($this->Session->read('user.format.sortie') == 0) {
+            if ($this->Auth->user('formatSortie') == 0) {
                 $mimeType = "application/pdf";
                 $filename = $filename . '.pdf';
-                $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult, 'odt', 'pdf');
+                $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult->binary, 'odt', 'pdf');
             } else {
                 $mimeType = "application/vnd.oasis.opendocument.text";
                 $filename = $filename . '.odt';
-                $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult, 'odt', 'odt');
+                $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult->binary, 'odt', 'odt');
             }
             unset($this->Deliberation->odtFusionResult);
 
@@ -4793,7 +4794,7 @@ debug($this->data);exit;
         $this->Deliberation->odtFusion(array('modelOptions' => array('deliberationIds' => $ids)));
 
         // selon le format d'envoi du document (pdf ou odt)
-        if ($this->Session->read('user.format.sortie') == 0) {
+        if ($this->Auth->User('formatSortie') == 0) {
             $mimeType = "application/pdf";
             $filename = $filename . '.pdf';
             $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult->content->binary, 'odt', 'pdf');

@@ -12,19 +12,21 @@ class CollectivitesController extends AppController {
             'mapActions' => array(
                 'read' => array('admin_index'),
                 'create' => array('admin_add'),
-                'update' => array('admin_edit','setLogo','setMails','synchronize'),
+                'update' => array('admin_edit','setLogo','setMails'),
                 ),
         )
     );
 
     function admin_index() {
-        $collectivite = $this->Collectivite->find('first', array('conditions' => array('Collectivite.id' => 1),
+        $collectivite = $this->Collectivite->find('first', array(
+            'conditions' => array('Collectivite.id' => 1),
             'recursive' => -1));
-        $this->set('collectivite', $collectivite);
+        
         $logo_path = null;
         if (file_exists(APP . WEBROOT_DIR . DS . 'files' . DS . 'image' . DS . 'logo'))
             $logo_path = FULL_BASE_URL . $this->base . "/files/image/logo";
 
+        $this->set('collectivite', $collectivite);
         $this->set('logo_path', $logo_path);
     }
 
@@ -40,11 +42,15 @@ class CollectivitesController extends AppController {
             }
             if ($this->Collectivite->save($this->data)){
                 $this->Session->setFlash('Informations de la collectivité modifiées', 'growl');
+                
                 return $this->redirect($this->previous);
             }
             $this->Session->setFlash('Erreur durant la sauvegarde', 'growl');
         }
+        
+        $this->Collectivite->recursive=-1;
         $this->request->data = $this->Collectivite->read(null, 1);
+        
         if (Configure::read('USE_PASTELL')) {
             $this->set('entities', $this->Pastell->listEntities());
             $this->set('selected', $this->data['Collectivite']['id_entity']);
@@ -114,63 +120,4 @@ class CollectivitesController extends AppController {
             return $this->redirect(array('action'=>'index'));
         }
     }
-
-    function synchronize() {
-        $ldapconn = ldap_connect(LDAP_Configure::read('HOST'), PORT) or die("Impossible de se connecter au serveur LDAP {LDAP_Configure::read('HOST')}");
-        if ($ldapconn) {
-            // bind with appropriate dn to give update access
-            $r = ldap_bind($ldapconn, MANAGER, LDAP_PASS);
-            if (!$r)
-                die("ldap_bind failed<br>");
-
-            $dn = "ou=users,dc=adullact,dc=org";
-            $filter = "(|(sn=*))";
-            $justthese = array(MAIL, COMMON_NAME, LDAP_UID, PASSWORD_USER);
-            $sr = ldap_search($ldapconn, $dn, $filter, $justthese);
-            $users = ldap_get_entries($ldapconn, $sr);
-
-            foreach ($users as $user) {
-                if (isset($user[LDAP_UID][0]))
-                    $login = $user[LDAP_UID][0];
-
-                if (isset($user[PASSWORD_USER][0]))
-                    $password = $user[PASSWORD_USER][0];
-                else
-                    unset($password);
-
-                if (isset($login) && isset($password)) {
-                    if (isset($user[MAIL][0]))
-                        $mail = $user[MAIL][0];
-                    else
-                        $mail = "";
-
-                    if (isset($user[COMMON_NAME][0])) {
-                        $cn = $user[COMMON_NAME][0];
-                        $prenom = substr($cn, 0, strpos($cn, ' '));
-                        $nom = substr($cn, strpos($cn, ' '), strlen($cn));
-                    }
-                    else
-                        $cn = "";
-
-                    $data = $this->User->findAll("User.login = '$login'");
-                    if (empty($data)) {
-                        $this->User->create();
-                        $this->data['User']['id'] = '';
-                        $this->data['User']['nom'] = $nom;
-                        $this->data['User']['prenom'] = $prenom;
-                        $this->data['User']['login'] = $login;
-                        $this->data['User']['mail'] = $mail;
-                        $pwd = base64_decode(substr($password, 5, strlen($password)));
-                        $mdp = unpack("H*", $pwd);
-                        $this->data['User']['password'] = $mdp[1];
-                        $this->User->save($this->data);
-                    }
-                }
-            }
-            ldap_close($ldapconn);
-        } else {
-            echo "Unable to connect to LDAP server";
-        }
-    }
-
 }

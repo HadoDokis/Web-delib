@@ -54,19 +54,19 @@ class ConversionComponent extends Component {
 
         // initialisations
         $ret = array();
-        $convertorType = Configure::read('CONVERSION_TYPE');
+        /*$convertorType = Configure::read('CONVERSION_TYPE');
 
         if (empty($convertorType)) {
             $ret['resultat'] = false;
             $ret['info'] = __('Type du programme de conversion non déclaré dans le fichier de configuration de Webdelib', true);
             return $ret;
-        }
+        }*/
 
         $options = array(
             'uglyStructHack' => true
         );
 
-        $url = 'http://' . Configure::read('CLOUDOOO_HOST') . ':' . Configure::read('CLOUDOOO_PORT');
+        $url = 'http://' . Configure::read('FusionConv.cloudooo_host') . ':' . Configure::read('FusionConv.cloudooo_port');
         $client = XML_RPC2_Client::create($url, $options);
         try {
             $result = $client->convertFile(base64_encode($data), $dataExtention, $dataSortieExtention, false, true);

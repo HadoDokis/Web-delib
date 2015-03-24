@@ -6,7 +6,7 @@ $this->Navbar->create(array(
     'responsive'=> true,
     'fluid'=> true));
 
-$this->Navbar->brand($collectivite['nom'],array(
+$this->Navbar->brand($infoCollectivite['nom'],array(
                 'admin' => false,
                 'plugin'=> null, 
                 'controller' => 'pages', 
@@ -61,7 +61,7 @@ if ($this->fetch('filtre')){
     $block.= $this->BsForm->inputGroup('User.search', array(array(
                                 'content'=>'',
                                 'id' => 'search_tree_button',
-                                'icon'=>'glyphicon glyphicon-search',
+                                'icon'=>'search',
                                 'title' => __('Rechercher un service'),
                                 'type' => 'button',
                                 'state' => 'primary',
@@ -70,7 +70,7 @@ if ($this->fetch('filtre')){
                                 'class' => 'dropdown-toggle',
                                 'title' => __('Option de recherche'),
                                 'data-toggle' => 'dropdown',
-                                'icon'=>'glyphicon glyphicon-cog',
+                                'icon'=>'cog',
                                 'after'=>'<ul class="dropdown-menu dropdown-menu-right" role="menu">
             <li><a id="search_tree_erase_button" title="Remettre à zéro la recherche">Effacer la recherche</a></li>
             <li class="divider"></li>
@@ -129,15 +129,19 @@ if ($this->fetch('filtre')){
         'button'=> $this->Bs->icon('search'),
     )), array('pull'=>'right'));*/
 
-$this->Navbar->beginMenu($infoUser, null, array('pull'=>'right'));
-if ($this->permissions->check('changeFormat')) {
+$this->Navbar->beginMenu($this->Bs->icon('bars',array('lg')), null, array('pull'=>'right'));
+$this->Navbar->text($this->Bs->icon('user').' '.$infoUser, array('wrap'));
+$this->Navbar->text($this->Bs->icon('sitemap').' '.$infoServiceEmeteur, array('wrap'));
+if ($this->permissions->check('changeFormatSortie')) {
 $this->Navbar->link('Changer le format de sortie des éditions', 
-            array('admin' => false, 'plugin' => null, 'controller' => 'users', 'action' => 'changeFormat'),
+            array('admin' => false, 'plugin' => null, 'controller' => 'users', 'action' => 'changeFormatSortie'),
             array('escape'=>false));
 }
+if ($this->permissions->check('changeServiceEmetteur')) {
 $this->Navbar->link('Changer le service émetteur', 
-            array('admin' => false, 'plugin' => null, 'controller' => 'users', 'action' => 'service'),
+            array('admin' => false, 'plugin' => null, 'controller' => 'users', 'action' => 'changeServiceEmetteur'),
             array('escape'=>false));
+}
 if ($this->permissions->check('changeUserMdp')) {
 $this->Navbar->link('Changer de mot de passe', 
             array('admin' => false, 'plugin' => null, 'controller' => 'users', 'action' => 'changeUserMdp'),
@@ -148,7 +152,7 @@ $this->Navbar->link('Changer de thème',
             array('admin' => false, 'plugin' => null, 'controller' => 'users', 'action' => 'changeTheme'),
             array('escape'=>false));
 }
-$this->Navbar->link('Se déconnecter', 
+$this->Navbar->link($this->Bs->icon('sign-out').' '.'Se déconnecter', 
             array('admin' => false, 'plugin' => null, 'controller' => 'users', 'action' => 'logout'),
             array('escape'=>false));
 $this->Navbar->endMenu();

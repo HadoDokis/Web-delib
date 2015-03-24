@@ -1789,34 +1789,34 @@ class Deliberation extends AppModel {
 
         // variables du projet (en dehors de toute section)
         if ($modelOdtInfos->hasUserFieldDeclared('titre_projet'))
-            $aData['titre_projet'] = $delib['Deliberation']['titre']; // 'lines'));
+            $aData['titre_projet'] = array('value'=> $delib['Deliberation']['titre'], 'type'=>'lines');
         if ($modelOdtInfos->hasUserFieldDeclared('objet_projet')) {
             if (empty($delib['Deliberation']['is_multidelib']))
-                $aData['objet_projet'] = $delib['Deliberation']['objet']; // 'lines'));
+                $aData['objet_projet'] = array('value'=> $delib['Deliberation']['objet'], 'type'=>'lines');
             else
-                $aData['objet_projet'] = $delib['Deliberation']['objet_delib']; // 'lines'));
+                $aData['objet_projet'] = array('value'=> $delib['Deliberation']['objet_delib'], 'type'=>'lines');
         }
 
         if ($modelOdtInfos->hasUserFieldDeclared('libelle_projet'))
-            $aData['libelle_projet'] = $delib['Deliberation']['objet']; //, 'lines'));
+            $aData['libelle_projet'] = array('value'=> $delib['Deliberation']['objet'], 'type'=>'lines');
         if ($modelOdtInfos->hasUserFieldDeclared('objet_delib'))
-            $aData['objet_delib'] = $delib['Deliberation']['objet_delib']; //, 'lines'));
+            $aData['objet_delib'] = array('value'=> $delib['Deliberation']['objet_delib'], 'type'=>'lines');
         if ($modelOdtInfos->hasUserFieldDeclared('libelle_delib'))
-            $aData['libelle_delib'] = $delib['Deliberation']['objet_delib']; //, 'lines'));
+            $aData['libelle_delib'] = array('value'=> $delib['Deliberation']['objet_delib'], 'type'=>'lines');
         if ($modelOdtInfos->hasUserFieldDeclared('identifiant_projet'))
-            $aData['identifiant_projet'] = $delib['Deliberation']['id']; //, 'text'));
+            $aData['identifiant_projet'] = array('value'=> $delib['Deliberation']['id'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('service_emetteur'))
-            $aData['service_emetteur'] = $this->Service->field('libelle', array('id' => $delib['Deliberation']['service_id'])); //, 'text'));
+            $aData['service_emetteur'] = array('value'=>$this->Service->field('libelle', array('id' => $delib['Deliberation']['service_id'])), 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('service_avec_hierarchie'))
-            $aData['service_avec_hierarchie'] = $this->Service->_doList($delib['Deliberation']['service_id']); //, 'text'));
+            $aData['service_avec_hierarchie'] = array('value'=>$this->Service->_doList($delib['Deliberation']['service_id']), 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('etat_projet'))
-            $aData['etat_projet'] = $delib['Deliberation']['etat']; //, 'text'));
+            $aData['etat_projet'] = array('value'=>$delib['Deliberation']['etat'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('classification_deliberation'))
-            $aData['classification_deliberation'] = $delib['Deliberation']['num_pref']; //, 'text'));
+            $aData['classification_deliberation'] = array('value'=>$delib['Deliberation']['num_pref'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('date_envoi_signature'))
             $aData['date_envoi_signature'] = CakeTime::i18nFormat($delib['Deliberation']['date_envoi_signature'], '%d/%m/%Y'); //, 'date'));
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_seance'))
-            $aData['nombre_seance'] = $this->getNbSeances($delib['Deliberation']['id']); //, 'text'));
+            $aData['nombre_seance'] = array('value'=>$this->getNbSeances($delib['Deliberation']['id']), 'type'=>'text');
 
             
 // Information du service émetteur
@@ -1843,23 +1843,23 @@ class Deliberation extends AppModel {
 
         // variables de la délibération (en dehors de toute section)
         if ($modelOdtInfos->hasUserFieldDeclared('numero_acte'))
-            $aProjet['numero_acte'] = $delib['Deliberation']['num_delib']; //, 'text'));
+            $aProjet['numero_acte'] = array('value'=>$delib['Deliberation']['num_delib'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('numero_deliberation'))
-            $aProjet['numero_deliberation'] = $delib['Deliberation']['num_delib']; //, 'text'));
+            $aProjet['numero_deliberation'] = array('value'=>$delib['Deliberation']['num_delib'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('acte_adopte'))
-            $aProjet['acte_adopte'] = ($delib['Deliberation']['etat'] == 3 || $delib['Deliberation']['etat'] == 5) ? '1' : '0'; //, 'text'));
+            $aProjet['acte_adopte'] = array('value'=>($delib['Deliberation']['etat'] == 3 || $delib['Deliberation']['etat'] == 5) ? '1' : '0', 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_pour'))
-            $aProjet['nombre_pour'] = $delib['Deliberation']['vote_nb_oui']; //, 'text'));
+            $aProjet['nombre_pour'] = array('value'=>$delib['Deliberation']['vote_nb_oui'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_abstention'))
-            $aProjet['nombre_abstention'] = $delib['Deliberation']['vote_nb_abstention']; //, 'text'));
+            $aProjet['nombre_abstention'] = array('value'=>$delib['Deliberation']['vote_nb_abstention'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_contre'))
-            $aProjet['nombre_contre'] = $delib['Deliberation']['vote_nb_non']; //, 'text'));
+            $aProjet['nombre_contre'] = array('value'=>$delib['Deliberation']['vote_nb_non'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_sans_participation'))
-            $aProjet['nombre_sans_participation'] = $delib['Deliberation']['vote_nb_retrait']; //, 'text'));
+            $aProjet['nombre_sans_participation'] = array('value'=>$delib['Deliberation']['vote_nb_retrait'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_votant'))
-            $aProjet['nombre_votant'] = $delib['Deliberation']['vote_nb_oui'] + $delib['Deliberation']['vote_nb_abstention'] + $delib['Deliberation']['vote_nb_non']; //, 'text'));
+            $aProjet['nombre_votant'] = array('value'=>$delib['Deliberation']['vote_nb_oui'] + $delib['Deliberation']['vote_nb_abstention'] + $delib['Deliberation']['vote_nb_non'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('commentaire_vote'))
-            $aProjet['commentaire_vote'] = $delib['Deliberation']['vote_commentaire']; //, 'lines'));
+            $aProjet['commentaire_vote'] = array('value'=> $delib['Deliberation']['vote_commentaire'], 'type'=>'lines');
         if ($modelOdtInfos->hasUserFieldDeclared('date_reception'))
             $aProjet['date_reception'] = $delib['Deliberation']['tdt_ar_date']; //, 'date'));
 
@@ -1906,7 +1906,7 @@ class Deliberation extends AppModel {
 
         // nombre de séances du projet
         $seanceIds = $this->Deliberationseance->nfield('seance_id', array('Deliberationseance.deliberation_id' => $delib['Deliberation']['id']), array('Seance.date'));
-        $aData['nombre_seance'] = count($seanceIds); //, 'text'));
+        $aData['nombre_seance'] = array('value'=>count($seanceIds), 'type'=>'text');
         // position du projet dans la séance de l'édition ou de la séance délibérante
         if ($modelOdtInfos->hasUserFieldDeclared('position_projet')) {
             if (empty($fusionSeanceId))
@@ -1914,7 +1914,7 @@ class Deliberation extends AppModel {
             else
                 $positionSeanceId = $fusionSeanceId;
             $position = empty($positionSeanceId) ? 0 : $this->getPosition($delib['Deliberation']['id'], $positionSeanceId);
-            $aProjet['position_projet'] = $position; //, 'text'));
+            $aProjet['position_projet'] = array('value'=>$position, 'type'=>'text');
         }
 
         // itération sur les séances

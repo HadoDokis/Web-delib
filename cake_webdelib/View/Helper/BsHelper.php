@@ -788,15 +788,22 @@ class BsHelper extends HtmlHelper {
 		} else {
                         //ancienne méthode avec probleme encode utf8_encode
                         //return parent::link($text, $url, $options, $confirmMessage);
-			
-                        //patch
-                        $result = parent::link($text, $url, $options, $confirmMessage);
-                        $result = str_replace('\u00e9','é',$result);
-                        $result = str_replace('\u00e8','è',$result);
-                        $result = str_replace('\u00e7','ç',$result);
-                        $result = str_replace('\u00eA','ê',$result);
-                        $result = str_replace('\u00eB','ë',$result);
-                        return $result;
+                        if($confirmMessage){
+                            $options['confirm']=$confirmMessage;
+                            unset($confirmMessage);
+                        }  
+                        
+                        if(isset($options['confirm']))
+                        {  
+                            //Fix array_map
+                            $options['confirm'] = str_replace('\u00e9','é',$options['confirm']);
+                            $options['confirm'] = str_replace('\u00e8','è',$options['confirm']);
+                            $options['confirm'] = str_replace('\u00e7','ç',$options['confirm']);
+                            $options['confirm'] = str_replace('\u00eA','ê',$options['confirm']);
+                            $options['confirm'] = str_replace('\u00eB','ë',$options['confirm']);
+                        }
+                        
+                        return parent::link($text, $url, $options);
 		}
 	}
 
@@ -989,8 +996,10 @@ class BsHelper extends HtmlHelper {
 				$outFooter .= $this->btn(__('Fermer'), null, array('tag' => 'button', 'class' => 'btn-link', 'data-dismiss' => 'modal'));
 			}
 			if (isset($buttons['confirm'])) {
-
-				// Check if it's a form
+                            if(!isset($buttons['confirm']['options'])) {
+                                $buttons['confirm']['options'] = array();
+                            }
+                            // Check if it's a form
 				if ($form) {
 					$class = (isset($buttons['confirm']['class'])) ? $buttons['confirm']['class'] : 'btn-success';
 					$outFooter .= $this->btn(__($buttons['confirm']['name']), null, array_merge( $buttons['confirm']['options'], array('tag' => 'button', 'class' => $class, 'type' => $type)));

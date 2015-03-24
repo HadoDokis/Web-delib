@@ -46,7 +46,7 @@ class Annex extends AppModel {
             'rule' => array('maxLength', 200),
             'message' => 'Le titre du fichier est trop long (200 caract&egrave;res maximum)', 'growl')
     );
-
+    
     /**
      * Regarde dans le fichier formats.inc si le document peut être envoyé au controle de légalité
      * @return bool
@@ -201,17 +201,27 @@ class Annex extends AppModel {
         // nombre d'annexes
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_annexe'))
             $aData['nombre_annexe']= count($annexes);//, 'text'));
-        if (empty($annexes)) return;
+        if (empty($annexes)){
+            if ($modelOdtInfos->hasUserFieldDeclared('titre_annexe'))
+                 $aAnnexe['titre_annexe'] = array('value'=> '', 'type'=>'text');
+            if ($modelOdtInfos->hasUserFieldDeclared('nom_fichier'))
+                $aAnnexe['nom_fichier'] = array('value'=> '', 'type'=>'text');
+            if ($modelOdtInfos->hasUserFieldDeclared('fichier'))
+                 $aAnnexe['nom_fichier'] = array('value'=> file_get_contents(APP.DS.'Config'.DS.'OdtVide.odt'), 'type'=>'content');
+            
+            $aData['Annexes'][]=$aAnnexe;
+            return;
+        }
 
         // fusion des variables pour chaque annexe
         foreach($annexes as $annexe) {
             $aAnnexe=array();
             if (!empty($annexe['Annex']['titre']))
-                $aAnnexe['titre_annexe']= $annexe['Annex']['titre'];//, 'text'));
+                $aAnnexe['titre_annexe']= array('value'=> $annexe['Annex']['titre'], 'type'=>'text');
             if (!empty($annexe['Annex']['filename']))
-                $aAnnexe['nom_fichier']= $annexe['Annex']['filename'];//, 'text'));
+                $aAnnexe['nom_fichier']= array('value'=> $annexe['Annex']['filename'], 'type'=>'text');
             if (!empty($annexe['Annex']['edition_data']))
-                $aAnnexe['fileodt.fichier']=$annexe['Annex']['edition_data'];
+                $aAnnexe['fileodt.fichier']=array('value'=> $annexe['Annex']['edition_data'], 'type'=>'file');
             
             $aData['Annexes'][]=$aAnnexe;
         }

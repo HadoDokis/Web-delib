@@ -13,7 +13,7 @@ class PostseancesController extends AppController {
 	public $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Typeseance', 'Typeacte', 'Nature', 'TdtMessage');
 
     function index() {
-        $format = $this->Session->read('user.format.sortie');
+        $format = $this->Auth->User('formatSortie');
 
         if (empty($format))
             $format = 0;
@@ -47,7 +47,7 @@ class PostseancesController extends AppController {
     }
 
     function afficherProjets($id = null, $return = null) {
-        $format = $this->Session->read('user.format.sortie');
+        $format = $this->Auth->User('formatSortie');
         if (empty($format))
             $format = 0;
         $this->set('format', $format);
