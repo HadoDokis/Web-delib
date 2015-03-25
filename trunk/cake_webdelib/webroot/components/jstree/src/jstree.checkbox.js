@@ -1,7 +1,7 @@
 /**
  * ### Checkbox plugin
  *
- * This plugin renders checkbox icons in front of each node, making multiple selection much easier. 
+ * This plugin renders checkbox icons in front of each node, making multiple selection much easier.
  * It also supports tri-state behavior, meaning that if a node has a few of its children checked it will be rendered as undetermined, and state will be propagated up.
  */
 /*globals jQuery, define, exports, require, document */
@@ -55,15 +55,15 @@
 		 */
 		keep_selected_style	: true,
 		/**
-		 * This setting controls how cascading and undetermined nodes are applied. 
-		 * If 'up' is in the string - cascading up is enabled, if 'down' is in the string - cascading down is enabled, if 'undetermined' is in the string - undetermined nodes will be used. 
+		 * This setting controls how cascading and undetermined nodes are applied.
+		 * If 'up' is in the string - cascading up is enabled, if 'down' is in the string - cascading down is enabled, if 'undetermined' is in the string - undetermined nodes will be used.
 		 * If `three_state` is set to `true` this setting is automatically set to 'up+down+undetermined'. Defaults to ''.
 		 * @name $.jstree.defaults.checkbox.cascade
 		 * @plugin checkbox
 		 */
 		cascade				: '',
 		/**
-		 * This setting controls if checkbox are bound to the general tree selection or to an internal array maintained by the checkbox plugin. Defaults to `true`, only set to `false` if you know exactly what you are doing. 
+		 * This setting controls if checkbox are bound to the general tree selection or to an internal array maintained by the checkbox plugin. Defaults to `true`, only set to `false` if you know exactly what you are doing.
 		 * @name $.jstree.defaults.checkbox.tie_selection
 		 * @plugin checkbox
 		 */
@@ -378,10 +378,15 @@
 		 * @plugin checkbox
 		 */
 		this._undetermined = function () {
-			var i, j, m = this._model.data, t = this.settings.checkbox.tie_selection, s = this._data[ t ? 'core' : 'checkbox' ].selected, p = [], tt = this;
+			var i, j, k, l, o = {}, m = this._model.data, t = this.settings.checkbox.tie_selection, s = this._data[ t ? 'core' : 'checkbox' ].selected, p = [], tt = this;
 			for(i = 0, j = s.length; i < j; i++) {
 				if(m[s[i]] && m[s[i]].parents) {
-					p = p.concat(m[s[i]].parents);
+					for(k = 0, l = m[s[i]].parents.length; k < l; k++) {
+						if(o[m[s[i]].parents[k]] === undefined && m[s[i]].parents[k] !== '#') {
+							o[m[s[i]].parents[k]] = true;
+							p.push(m[s[i]].parents[k]);
+						}
+					}
 				}
 			}
 			// attempt for server side undetermined state
@@ -390,22 +395,36 @@
 					var tmp = tt.get_node(this), tmp2;
 					if(!tmp.state.loaded) {
 						if(tmp.original && tmp.original.state && tmp.original.state.undetermined && tmp.original.state.undetermined === true) {
-							p.push(tmp.id);
-							p = p.concat(tmp.parents);
+							if(o[tmp.id] === undefined && tmp.id !== '#') {
+								o[tmp.id] = true;
+								p.push(tmp.id);
+							}
+							for(k = 0, l = tmp.parents.length; k < l; k++) {
+								if(o[tmp.parents[k]] === undefined && tmp.parents[k] !== '#') {
+									o[tmp.parents[k]] = true;
+									p.push(tmp.parents[k]);
+								}
+							}
 						}
 					}
 					else {
 						for(i = 0, j = tmp.children_d.length; i < j; i++) {
 							tmp2 = m[tmp.children_d[i]];
 							if(!tmp2.state.loaded && tmp2.original && tmp2.original.state && tmp2.original.state.undetermined && tmp2.original.state.undetermined === true) {
-								p.push(tmp2.id);
-								p = p.concat(tmp2.parents);
+								if(o[tmp2.id] === undefined && tmp2.id !== '#') {
+									o[tmp2.id] = true;
+									p.push(tmp2.id);
+								}
+								for(k = 0, l = tmp2.parents.length; k < l; k++) {
+									if(o[tmp2.parents[k]] === undefined && tmp2.parents[k] !== '#') {
+										o[tmp2.parents[k]] = true;
+										p.push(tmp2.parents[k]);
+									}
+								}
 							}
 						}
 					}
 				});
-			p = $.vakata.array_unique(p);
-			p = $.vakata.array_remove_item(p,'#');
 
 			this.element.find('.jstree-undetermined').removeClass('jstree-undetermined');
 			for(i = 0, j = p.length; i < j; i++) {
@@ -540,8 +559,8 @@
 		};
 		/**
 		 * uncheck a node (only if tie_selection in checkbox settings is false, otherwise deselect_node will be called internally)
-		 * @name deselect_node(obj)
-		 * @param {mixed} obj an array can be used to deselect multiple nodes
+		 * @name uncheck_node(obj)
+		 * @param {mixed} obj an array can be used to uncheck multiple nodes
 		 * @trigger uncheck_node.jstree
 		 * @plugin checkbox
 		 */
@@ -732,6 +751,7 @@
 					});
 				}
 				delete state.checkbox;
+				this.set_state(state, callback);
 				return false;
 			}
 			return res;
