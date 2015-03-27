@@ -1,12 +1,20 @@
 <?php
 class HistoriquesController extends AppController {
 
-    public $components = array('Paginator', 'Filtre');
+    public $components = array(
+        'Paginator', 
+        'Filtre',
+        'Auth' => array(
+            'mapActions' => array(
+                'read' => array('admin_index'),
+                )
+            )
+        );
 
     /**
      * Affichage de l'historique des commentaires 
      */
-    public function index() {
+    public function admin_index() {
         //on initialise le filtre avec le retour de donné pour paramétrer le filtre
         $this->Filtre->initialisation('Historique', $this->data);
         //initialisation des conditions pour la recherche

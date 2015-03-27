@@ -12,7 +12,7 @@ class SeancesController extends AppController {
             'Auth' => array(
             'mapActions' => array(
                 'create' => array('add','getSeancesParTypeseanceAjax'),
-                'read' => array('index','listerFuturesSeances', 'calendrier', 'listerAnciennesSeances',
+                'read' => array('calendrier', 'index','listerFuturesSeances', 'listerAnciennesSeances',
                     'delete','edit', 'sortby',           
 			'afficherProjets', 
 			'reportePositionsSeanceDeliberante',  
@@ -31,7 +31,7 @@ class SeancesController extends AppController {
                         'sendConvocations',
                         'sendToIdelibre',
 			'saisirCommentaire','genereFusionToFiles','genereFusionMultiSeancesToClient'
-                    ,'genererConvocation','genererOrdredujour','downloadZip','genereFusionToClient',
+                    ,'downloadZip','genereFusionToClient',
                     'download','getFileType','getFileName','getSize','getData',
                     'downloadAttachedFileConvocation','downloadAttachedFileOrdredujour'
                 ),
@@ -236,7 +236,6 @@ class SeancesController extends AppController {
     }
 
     function listerAnciennesSeances() {
-        $this->Seance->Behaviors->attach('Containable');
         if (empty($this->data)) {
             $seances = $this->Seance->find('all', array('conditions' => array('Seance.traitee' => 1),
                 'contain' => array('Typeseance.libelle'),
@@ -250,16 +249,17 @@ class SeancesController extends AppController {
         // initialisations
         $seances_calendrier = array();
         $annee = empty($annee) ? date('Y') : $annee;
-        $droitAdd = $this->Droits->check($this->Session->read('user.User.id'), 'Seances:add');
-        $droitEdit = $this->Droits->check($this->Session->read('user.User.id'), 'Seances:edit');
+        $droitAdd = $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Seances', 'create');
+        $droitEdit = $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Seances', 'update');
 
-        // lecture des séances non traitées en DB
-        $this->Seance->Behaviors->attach('Containable');
+        //lecture des séances non traitées en DB
         $seances = $this->Seance->find('all', array(
             'fields' => array('Seance.id', 'Seance.date', 'Seance.type_id'),
             'contain' => array('Typeseance.libelle'),
             'conditions' => array('Seance.traitee' => 0),
-            'order' => 'date ASC'));
+            'order' => 'date ASC',
+            'recursive'=>-1
+            ));
         foreach ($seances as $seance) {
             $seances_calendrier[] = array(
                 'id' => $seance['Seance']['id'],
@@ -1365,16 +1365,6 @@ class SeancesController extends AppController {
 
             return $this->redirect(array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id));
         }
-    }
-
-    function genererConvocation($seance_id, $model_id) {
-        $this->_generer($seance_id, $model_id, "/seances/sendConvocations/$seance_id/$model_id");
-        exit;
-    }
-
-    function genererOrdredujour($seance_id, $model_id) {
-        $this->_generer($seance_id, $model_id, "/seances/sendOrdredujour/$seance_id/$model_id");
-        exit;
     }
 
     function downloadZip($seance_id, $model_id) {

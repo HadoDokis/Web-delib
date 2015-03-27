@@ -24,8 +24,6 @@ $this->Html->addCrumb('Modification d\'un projet');
 
 echo $this->Bs->tag('h3', 'Modification du projet : ' . $this->Html->value('Deliberation.id'));
 
-//echo debug(CakeSession::read('User.History'));
-
 echo $this->BsForm->create('Deliberation', array(
     'url' => array('controller' => 'deliberations', 
         'action' => 'edit'), 'type' => 'file', 'novalidate' => true/*, 'name' => 'Deliberation'*/));
@@ -70,6 +68,9 @@ echo    $this->BsForm->select('Deliberation.typeacte_id', $typeActes, array(
             'empty' => false,
             'selected'=> $this->Html->value('Deliberation.typeacte_id')
         )).
+//        $this->Bs->scriptBlock('
+//            updateTypeseances($("#DeliberationTypeacteId"));
+//        ').
 $this->BsForm->input('Deliberation.objet', array(
     'type' => 'textarea', 
     'label' => 'Libellé <abbr title="obligatoire">*</abbr>', 
@@ -130,38 +131,22 @@ echo $this->BsForm->select('Deliberation.rapporteur_id', $rapporteurs, array(
 
 $selectTypeseances='';
    if (!empty($typeseances)){
-        $selectTypeseances .=   $this->BsForm->select('Deliberation.Seance.Typeseance', $typeseances, array(
-                 'options' => $typeseances,
+        $selectTypeseances .=   $this->BsForm->select('Typeseance', $typeseances, array(
                  'class' => 'select2 selectmultiple',
                  'label' => 'Types de séance',
                  'placeholder'=> __('Choisir un type de séance'),
+                'autocomplete' => 'off',
                  'onchange' => "updateDatesSeances(this);",
                  'multiple' => true)
          );
-   $selectTypeseances .=  $this->Bs->scriptBlock('
-                    $("#TypeseanceTypeseance").select2({
-                        width: "100%",
-                        allowClear: true,
-                        placeholder: "Selection vide"
-                    });
-                      ');
    }
    $selectDatesSeances='';
    if (!empty($seances)){
-                $selectDatesSeances .=  $this->BsForm->select('Deliberation.Deliberationseance', $seances, array(
-                        'options' => $seances,
+                $selectDatesSeances .=  $this->BsForm->select('Seance', $seances, array(
                         'class' => 'select2 selectmultiple',
                         'label' => 'Dates de séance',
-                        'selected' => isset($seances_selected) ? $seances_selected : '',
+                        'autocomplete' => 'off',
                         'multiple' => true)); 
-   
-   $selectDatesSeances .= $this->Bs->scriptBlock('
-                    $("#SeanceSeance").select2({
-                        width: "80%",
-                        allowClear: true,
-                        placeholder: "Selection vide"
-                    });
-                      ');
    }
 echo $this->Bs->div('',$selectTypeseances,array('id'=>'selectTypeseances'));
 echo $this->Bs->div('',$selectDatesSeances,array('id'=>'selectDatesSeances'));
@@ -192,15 +177,15 @@ echo $this->Html->tag(null, '<br />') .
 if (!empty($infosupdefs)){
     echo  $this->Bs->tabPane('Infos_suppl', array('class' => (isset($nameTab) && $nameTab=='Infos_suppl' ? 'active' : ''))); 
     echo $this->Html->tag('br /');  
-
         foreach ($infosupdefs as $infosupdef) {
             // Amélioration 4.1 : on ne peut modifier une infosup qu'en fonction du profil
             $disabled = true;
-            foreach ($infosupdef['Profil'] as $profil)
-                if ($profil['id'] == $profil_id)
-                    $disabled = false;
+            foreach ($infosupdef['Profil'] as $profil) {
+            if ($profil['id'] == AuthComponent::user('profil_id'))
+                $disabled = false;
+            }
 
-            if ($infosupdef['Infosupdef']['type'] == 'file' && $disabled) continue;
+        if ($infosupdef['Infosupdef']['type'] == 'file' && $disabled) continue;
 
             $fieldName = 'Infosup.' . $infosupdef['Infosupdef']['code'];
             $fieldId = 'Infosup' . Inflector::camelize($infosupdef['Infosupdef']['code']);

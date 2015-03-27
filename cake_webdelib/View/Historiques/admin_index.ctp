@@ -1,5 +1,4 @@
 <?php
-echo $this->Html->script('main.js');
 $this->Html->addCrumb('Historiques');
 echo $this->element('filtre');
 echo $this->Bs->tag('h3', 'Historiques');
@@ -18,7 +17,11 @@ foreach ($historique as $data) {
         $cell = '';
         $cell .= $this->Bs->cell($data['Historique']['created']);
         $cell .= $this->Bs->cell($data['User']['nom'] . ' ' . $data['User']['prenom']);
-        $cell .= $this->Bs->cell($this->Html->link($data['Deliberation']['id'], array('controller' => 'deliberations', 'action' => 'view', $data['Deliberation']['id']), array('class' => 'btn', 'escape' => false, 'alt' => 'Nouvelle recherche parmi tous les projets', 'title' => 'Nouvelle recherche parmi tous les projets')));
+        $cell .= $this->Bs->cell($this->Html->link($data['Deliberation']['id'], array(
+            'admin'=>false,
+            'prefix'=> null,
+            'controller' => 'deliberations', 
+            'action' => 'view', $data['Deliberation']['id']), array('class' => 'btn', 'escape' => false, 'alt' => 'Nouvelle recherche parmi tous les projets', 'title' => 'Nouvelle recherche parmi tous les projets')));
         $cell .= $this->Bs->cell($data['Historique']['commentaire'], 'text-justified');
         $affichage .= $cell;
     }

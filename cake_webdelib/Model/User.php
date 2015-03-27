@@ -64,7 +64,7 @@ class User extends AppModel
     public $displayField = "nom";
 
     public $displayFields = array(
-        'fields' => array('nom', 'prenom', 'login'),
+        'fields' => array('nom', 'prenom', 'username'),
         'format' => '%s %s (%s)');
     
     public $belongsTo = array(
@@ -276,17 +276,17 @@ class User extends AppModel
     }
 
     /*
-     * retourne le prenom, nom et (login) de l'utilisateur $id
+     * retourne le prenom, nom et (username) de l'utilisateur $id
      *
      */
     function prenomNomLogin($id)
     {
         $this->recursive = -1;
-        $this->data = $this->read('prenom, nom, login', $id);
+        $this->data = $this->read('prenom, nom, username', $id);
         if (empty($this->data))
             return '';
         else
-            return $this->data['User']['prenom'] . ' ' . $this->data['User']['nom'] . ' (' . $this->data['User']['login'] . ')';
+            return $this->data['User']['prenom'] . ' ' . $this->data['User']['nom'] . ' (' . $this->data['User']['username'] . ')';
     }
 
     function getCircuits($user_id)

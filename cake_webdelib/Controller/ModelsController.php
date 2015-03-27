@@ -1,7 +1,7 @@
 <?php
 class ModelsController extends AppController {
 
-	public $uses = array(
+    public $uses = array(
         'Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire',
         'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'ModelOdtValidator.Modeltemplate'
     );

@@ -23,7 +23,7 @@ class UsersController extends AppController {
                                         'getVille',
                                         'view',
                                         'admin_index','manager_index'),
-                    'changeformatSortie',
+                    'changeFormatSortie',
                     'changeUserMdp',
                     'changeTheme',
                     'changeServiceEmetteur',
@@ -203,15 +203,16 @@ class UsersController extends AppController {
             }
 
             if ($this->User->save($this->data)) {
-                if(!empty($id)){
+                if(empty($id)){
                     $this->User->id=$this->User->getInsertID();
                 }
-                $this->AclManager->setPermissionsUser('User', $this->User->id, $this->request->data['Aco']['User']);
+                
                 if($admin){
                      $this->AclManager->setPermissionsService('User', $this->User->id, $this->request->data['Aco']['Service']);
+                     $this->AclManager->setPermissionsCircuit('User', $this->User->id, $this->request->data['Aco']['Circuit']);
                 }
                 $this->AclManager->setPermissionsTypeacte('User', $this->User->id, $this->request->data['Aco']['Typeacte']);
-                $this->AclManager->setPermissionsCircuit('User', $this->User->id, $this->request->data['Aco']['Circuit']);
+                $this->AclManager->setPermissionsUser('User', $this->User->id, $this->request->data['Aco']['User']);
                 
                 $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['username'] . '\' a été modifié', 'growl');
                 
