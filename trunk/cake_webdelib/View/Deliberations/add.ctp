@@ -84,7 +84,7 @@ $this->BsForm->input('Deliberation.titre', array(
         'class' => 'select2 selectone',
         'escape' => false));
     
-    echo $this->BsForm->select('multiRedactor',$redacteurs,array('label' => 'Autre(s) rédacteur(s)','title' => 'Ajouter un rédacteur ayant les droits d\'incérer le projet dans un circuit','class' => 'select2 selectone','multiple' => true, 'style' => 'width:100%')); 
+    echo $this->BsForm->select('multiRedactor', $redacteurs,array('label' => 'Autre(s) rédacteur(s)','title' => 'Ajouter un rédacteur ayant les droits d\'incérer le projet dans un circuit','class' => 'select2 selectone','multiple' => true, 'style' => 'width:100%')); 
     //if ($DELIBERATIONS_MULTIPLES)
 echo $this->BsForm->checkbox('Deliberation.is_multidelib', array(
      'autocomplete' => 'off',

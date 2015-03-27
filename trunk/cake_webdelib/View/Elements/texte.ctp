@@ -69,15 +69,11 @@ if (empty($delib['Deliberation'][$type . "_name"]) || isset($validationErrorsArr
             )).
             $this->Bs->close(2);
 } else {
-    if (isset($id))
-        $url = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . "/files/generee/projet/$id/$type.odt";
-    else
-        $url = '#';
-
     echo '<div class="input file">';
     echo "<label class='libelle'>$libelle</label>";
     echo '<span id="Deliberation' . $type . 'AfficheFichierJoint">';
-    echo ': '.$this->Html->link( (stripos(Configure::read('PROTOCOLE_DL'), 'http') === true?'<i class=\'fa fa-pencil\'></i>':'').$filename, $url, array('download'=>$filename));
+    echo $linkFile_{$type};
+    echo ': '.$this->Html->link( (stripos(Configure::read('PROTOCOLE_DL'), 'http') === true?'<i class=\'fa fa-pencil\'></i>':'').$filename, null, array('download'=>$filename));
 
     echo '&nbsp;&nbsp;';
     echo $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer', "javascript:supprimerFichierJoint('Deliberation', '" . $type . "', '" . $libelle . "')", 

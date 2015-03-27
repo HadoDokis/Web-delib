@@ -366,10 +366,12 @@ class Deliberation extends AppModel {
     }
 
     function getCurrentSeances($id, $retourDetaillee) {
-        $this->Behaviors->attach('Containable');
-        $delib = $this->find('first', array('conditions' => array("Deliberation.id" => $id),
+        $delib = $this->find('first', array(
             'fields' => 'Deliberation.id',
-            'contain' => 'Seance'));
+            'contain' => ($retourDetaillee?'Seance':'Seance.id'),
+            'conditions' => array("Deliberation.id" => $id),
+            'recursive'=>-1,
+            ));
         if ($retourDetaillee)
             return $delib['Seance'];
         else {
@@ -529,17 +531,23 @@ class Deliberation extends AppModel {
         return $delib_id;
     }
 
-    function canSaveSeances($seances_id) {
+    function canSaveSeances($id) {
         $result = false;
         $nb_seances_deliberante = 0;
-        $this->Seance->Behaviors->attach('Containable');
         //$seances_id = $this->data['Seance']['Seance'];
-        if (isset($seances_id)) {
-            $seances = $this->Seance->find('all', array('conditions' => array('Seance.id' => $seances_id),
-                'fields' => array('Seance.id'),
-                'contain' => array('Typeseance.action')));
-            foreach ($seances as $seance) {
-                if ($seance['Typeseance']['action'] == 0)
+        if (isset($id)) {
+            $deliberation = $this->find('first', array(
+                'fields' => array('id'),
+                'contain' => array(
+                    'Seance' => array(
+                        'fields' => array('id'),
+                        'Typeseance.action'
+                        )
+                    ),
+                'conditions' => array('Deliberation.id' => $id),
+                'recursive'=>-1));
+            foreach ($deliberation['Seance'] as $seance) {
+                if ($seance['Typeseance']['action'] === 0)
                     $nb_seances_deliberante ++;
             }
             if ($nb_seances_deliberante > 1)
@@ -1131,19 +1139,19 @@ class Deliberation extends AppModel {
         return $actes;
     }
 
-    function is_delib($acte_id) {
-        $acte = $this->find('first', array(
-            'fields' => array('Deliberation.typeacte_id'),
-            'conditions' => array('Deliberation.id' => $acte_id),
-            'contain' => array('Typeacte.nature_id'),
+    function is_delib($id) {
+        $projet = $this->find('first', array(
+            'fields' => array('Deliberation.id'),
+            'contain' => array(
+                'Typeacte'=> array(
+                    'Nature' => array('fields'=>'code')
+                    ,
+                )),
+            'conditions' => array('Deliberation.id' => $id),
+            'recursive' => -1
             ));
         
-        $nature = $this->Typeacte->Nature->find('first', array(
-            'fields' => array('Nature.code'),
-            'conditions' => array('Nature.id' => $acte['Typeacte']['nature_id']),
-            'recursive' => -1));
-        
-        return $nature['Nature']['code'] == 'DE';
+        return !empty($projet['Nature']['code']) && $projet['Nature']['code'] == 'DE' ? true : false;
     }
 
     function is_arrete($acte_id) {
@@ -2210,28 +2218,18 @@ class Deliberation extends AppModel {
      */
     function duplicate($id = null){
        if(!empty($id)){
-            $deliberation = $this->find('first',array(
-                'contain' => array('User' => array('fields' => array('id'))),
-                'recursive' => -1,
-                'conditions' => array('Deliberation.id' => $id)
-            ));
-            foreach ($deliberation['User'] as $id => $user){
-                unset($deliberation['User'][$id]['UsersDeliberation']['deliberation_id']);
-                unset($deliberation['User'][$id]['UsersDeliberation']['id']);
+            $this->recursive = 1;
+            $delib=$this->read(null,$id);
+            $this->create();
+            $delib['Deliberation']['redacteur_id'] = AuthComponent::user('id');
+            unset($delib['Deliberation']['modified']);
+            unset($delib['Deliberation']['created']);
+            $this->set($delib);
+            if($this->save()!=false){
+                return $this->id;
             }
-            unset($deliberation['Deliberation']['id']);
-            App::uses('SessionHelper', 'View/Helper');
-            $user = SessionHelper::read('user');
-            $deliberation['Deliberation']['texte_projet'] = $deliberation['Deliberation']['texte_synthese'] = $deliberation['Deliberation']['deliberation'] = NULL;
-            $deliberation['Deliberation']['redacteur_id'] = $user['User']['id'];
-            $deliberation['Deliberation']['texte_projet_name'] = $deliberation['Deliberation']['texte_projet_type'] = '';
-            $deliberation['Deliberation']['texte_synthese_name'] = $deliberation['Deliberation']['texte_synthese_type'] = '';
-            $deliberation['Deliberation']['deliberation_name'] = $deliberation['Deliberation']['deliberation_type'] = '';
-            $deliberation['Deliberation']['texte_projet_size'] = $deliberation['Deliberation']['texte_synthese_size'] = $deliberation['Deliberation']['deliberation_size'] = 0;
-            $deliberation['Deliberation']['modified'] = $deliberation['Deliberation']['created'] = date("Y-m-d H:i:s");
-            $save = $this->saveAll($deliberation);
-            return $save['Deliberation']['id'];
         }
+        
+        return false;
     }
-
 }

@@ -163,7 +163,7 @@ $navbar = array(
                 'html' => 'link',
                 'libelle' => 'Nouvelle',
                 'check'=> array('Seances', 'create'),
-                'title'=> 'Créer une nouvelle projet',
+                'title'=> 'Créer une nouvelle seance',
                 'icon' => 'plus',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'add')
             ),
@@ -171,23 +171,25 @@ $navbar = array(
                 'html' => 'link',
                 'libelle' => 'A traiter',
                 'check'=> array('Seances', 'read'),
-                'title'=> 'Créer une nouvelle projet',
+                'title'=> 'Liste des séances à traiter',
+                'icon' => 'unlock-alt',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'index')
             ),
             array(
                 'html' => 'link',
                 'libelle' => 'Passées',
                 'check'=> array('Seances', 'read'),
-                'title'=> 'Créer une nouvelle projet',
-                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'listerAnciennesSeances')
+                'title'=> 'Liste des séances passées',
+                'icon' => 'history',
+                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'calendrier')
             ),
             array(
                 'html' => 'link',
                 'libelle' => 'Calendrier',
-                'check'=> array('Seances/afficherCalendrier'),
+                'check'=> array('Seances', 'read'),
                 'title'=> 'Calendrier des séances',
                 'icon' => 'calendar',
-                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'afficherCalendrier')
+                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'listerAnciennesSeances')
             ),
         )
     ),
@@ -199,7 +201,7 @@ $navbar = array(
                 'libelle' => 'Editions',
                 'check'=> array('Postseances', 'read'),
                 'title'=> 'Editions des séances passées',
-                'icon' => 'plus',
+                'icon' => 'lock',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'postseances', 'action' => 'index')
             ),
             array('html' => 'divider'),
@@ -267,7 +269,7 @@ $navbar = array(
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Modèles d\'édition',
-                                'check'=> array('modelOdtValidator/modeltemplates'),
+                                'check'=> array('ModelOdtValidator/Modeltemplates'),
                                 'title'=> 'Informations sur la collectivité',
                                 'icon' => 'book',
                                 'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>'model_odt_validator', 'controller'=>'modeltemplates', 'action'=>'index')
@@ -416,6 +418,14 @@ $navbar = array(
                                 'title'=> 'Gestion des tâches automatiques',
                                 'icon' => 'clock-o',
                                 'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'crons', 'action'=>'index')
+                            ),
+                            array(
+                                'html' => 'link',
+                                'libelle' => 'Historiques',
+                                'check'=> array('Historiques'),
+                                'title'=> 'Historiques des modifications de projets',
+                                'icon' => 'history',
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'historiques', 'action'=>'index')
                             ),
                         )
                     ),

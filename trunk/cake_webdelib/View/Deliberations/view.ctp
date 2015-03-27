@@ -89,6 +89,19 @@ $linkBarre .= $this->Bs->confirm('Refuser',
                     'border-top-right-radius'=> '4px',
                 )
             ), array('form'=>true)); 
+if($userCanadd ){
+$linkBarre .= $this->Bs->close();
+$linkBarre .= $this->Bs->div('btn-group');
+//$projet['Deliberation']['etat'] -> 0 on verifiesi le projet en cour de rédaction
+
+            $linkBarre.= $this->Bs->btn('Dupliquer',array('controller' => 'deliberations', 'action' => 'duplicate', $projet['Deliberation']['id']), array(
+            'type'=>'default',
+            //'class' => !$userCanadd ? 'disabled' : '' ,    
+            'confirm'=>'Confirmez-vous la duplication du projet \'' . $projet['Deliberation']['objet'] . '\' ?',
+            'icon'=>'glyphicon glyphicon-duplicate large',//glyphicon-duplicate
+            'title' => 'Dupliquer le projet ' . $projet['Deliberation']['objet'],
+        ));
+}
 $linkBarre .= $this->Bs->close(2);
 
 // affichage  du titre

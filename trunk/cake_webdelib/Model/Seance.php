@@ -290,7 +290,8 @@ class Seance extends AppModel
 
     function reOrdonne($delib_id, $seances_selectionnees)
     {
-        if (is_int($seances_selectionnees)) {
+        if (!is_array($seances_selectionnees)) {
+            
             $seance_id = $seances_selectionnees;
             unset($seances_selectionnees);
             $seances_selectionnees = array();
@@ -301,18 +302,22 @@ class Seance extends AppModel
         $seances_enregistrees = array();
 
         $delibs = $this->Deliberationseance->find('all', array(
-            'conditions' => array('Deliberation.id' => $delib_id),
-            'fields' => array('Seance.id',
-                'Deliberationseance.deliberation_id', 'Deliberationseance.id',
-                'Deliberationseance.position', 'Deliberationseance.seance_id'),
-            'order' => array('Deliberationseance.position ASC')));
-        foreach ($delibs as $delib)
-            $seances_enregistrees[] = $delib['Seance']['id'];
+            'fields' => array('deliberation_id', 'id', 'position', 'seance_id'),
+            'conditions' => array('deliberation_id' => $delib_id),
+            'order' => array('position ASC'),
+            'recursive'=>-1,
+            ));
+        
+        if (!empty($delibs)) {
+            foreach ($delibs as $delib) {
+                $seances_enregistrees[] = $delib['Deliberationseance']['seance_id'];
+            }
 
-        $seances_a_retirer = array_diff($seances_enregistrees, $seances_selectionnees);
+            $seances_a_retirer = array_diff($seances_enregistrees, $seances_selectionnees);
 
-        foreach ($seances_a_retirer as $seance_id) {
-            $this->Deliberationseance->deleteDeliberationseance($delib_id, $seance_id);
+            foreach ($seances_a_retirer as $seance_id) {
+                $this->Deliberationseance->deleteDeliberationseance($delib_id, $seance_id);
+            }
         }
 
         if (is_array($seances_enregistrees) and  (!empty($seances_enregistrees))) {
