@@ -126,7 +126,7 @@ function updateTypeseances(domObj) {
 
 function updateDatesSeances(domObj) {
     var ajaxUrl = '/deliberations/getSeancesParTypeseanceAjax/' + $(domObj).val();
-    var seancesSelected = $("#SeanceSeance").val();
+    var seancesSelected = $("#Deliberationseance").val();
     $.ajax({
         url: ajaxUrl,
         beforeSend: function () {
@@ -135,8 +135,9 @@ function updateDatesSeances(domObj) {
         success: function (result) {
             $('#selectDatesSeances').html(result);
             if (seancesSelected != null) {
-                $("#SeanceSeance").val(seancesSelected);
-                $("#SeanceSeance").select2("val", seancesSelected);
+                alert(seancesSelected);
+                $("#Deliberationseance").val(seancesSelected);
+                $("#Deliberationseance").select2("val", seancesSelected);
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
