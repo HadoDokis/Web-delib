@@ -126,7 +126,7 @@ function updateTypeseances(domObj) {
 
 function updateDatesSeances(domObj) {
     var ajaxUrl = '/deliberations/getSeancesParTypeseanceAjax/' + $(domObj).val();
-    var seancesSelected = $("#Deliberationseance").val();
+    var seancesSelected = $("#SeanceSeance").val();
     $.ajax({
         url: ajaxUrl,
         beforeSend: function () {
