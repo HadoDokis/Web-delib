@@ -43,6 +43,12 @@ class Collectivite extends AppModel {
                 'message' => "Format de l'image invalide. Autorisé : fichier 'jpg', 'jpeg' et 'png'"
             )
         ),
+        'templateProject' => array(
+            array(
+                'rule' => array('checkJson'),
+                'message' => "Format du Json invalide."
+            )
+        )
     );
 
     /**
@@ -79,6 +85,22 @@ class Collectivite extends AppModel {
     function checkFormatLogo($data, $extension = null, $required = false) {
         return parent::checkFormat($data['logo'], $extension, $required);
     }
+    
+    function checkJson($data){
+        return is_string($data['templateProject']) && is_object(json_decode($data['templateProject'])) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
+    }
 
-
+    function getJson9Cases() {
+        try {
+            $file = APP . 'Config/9cases.json';
+            $handle  = fopen($file, 'r');
+            $content = fread($handle, filesize($file));
+            fclose($handle);
+        }
+        catch (Exception $e)
+        {
+            return false;
+        }
+        return $content;
+    }
 }

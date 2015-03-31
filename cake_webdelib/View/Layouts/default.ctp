@@ -45,6 +45,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     //Scripts JS
     echo $this->Html->script('/components/modernizr/modernizr');
     echo $this->Html->script('/components/jquery/jquery.min');
+    echo $this->Html->script('/components/jquery-ui/jquery-ui.min');
     echo $this->Html->script('/components/jquery/jquery-migrate.js');
     echo $this->Html->script('/components/bootstrap/dist/js/bootstrap.min');
     echo $this->Html->script('/components/bootstrap.growl/bootstrap-growl.min');

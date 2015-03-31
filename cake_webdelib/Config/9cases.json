@@ -1,0 +1,45 @@
+{
+   "Case1":{
+      "model":"Service",
+      "fields":"libelle",
+      "text":"Service \u00e9metteur"
+   },
+   "Case2":{
+      "model":"Deliberation",
+      "fields":"objet"
+   },
+   "Case3":{
+      "model":"Seance",
+      "fields":"libelle",
+      "text":"S\u00e9ance(s)"
+   },
+   "Case4":{
+      "model":"Circuit",
+      "fields":"nom",
+      "text":"Circuit"
+   },
+   "Case5":{
+      "model":"Deliberation",
+      "fields":"titre",
+      "text":"Titre du projet"
+   },
+    "Case6":{
+      "model":"Deliberation",
+      "fields":"date_limite",
+      "text":"A traiter avant le"
+   },
+   "Case7":{
+      "model":"Typeacte",
+      "fields":"name"
+   },
+   "Case8":{
+      "model":"Theme",
+      "fields":"libelle",
+      "text":"Th\u00e8me"
+   },
+   "Case9":{
+      "model":"Deliberation",
+      "fields":"num_pref",
+      "text":"Classification"
+   }
+}

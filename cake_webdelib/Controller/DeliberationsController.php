@@ -2793,6 +2793,7 @@ class DeliberationsController extends AppController {
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['id'], $projet['Deliberation']['etat'], $editerTous);
             }
 
+            
             // initialisation des séances
             $listeTypeSeance = array();
             $this->request->data[$i]['listeSeances'] = array();
@@ -2860,8 +2861,7 @@ class DeliberationsController extends AppController {
             if (isset($this->data[$i]['Deliberation']['date_limite']))
                 $this->request->data[$i]['Deliberation']['date_limite'] = $projet['Deliberation']['date_limite'];
         }
-
-        // passage des variables à la vue
+        $this->set('fields', $this->_get9casesData());
         $this->set('titreVue', $titreVue);
         $this->set('listeLiens', $listeLiens);
         if ($nbProjets == null)
@@ -2871,6 +2871,65 @@ class DeliberationsController extends AppController {
         $this->render($render);
     }
 
+    private function _get9casesData()
+    {
+        // passage des variables à la vue
+        $templateProject = $this->Session->read('Collective.templateProject');
+        $templateProjectTemp = array();
+        
+        foreach($templateProject as $field)
+        {
+            if(isset($field['model']) && $field['model']=='Infosupdef'){
+                $tempInfosupdef = $this->Infosupdef->find('first', array(
+                        'conditions' => array( 'id' => $field['id'], 'actif'=> true, 'model'=>'Deliberation' ),
+                        'fields' => array('nom', 'val_initiale'),
+                        'recursive' => -1));
+                $field['nom']=$tempInfosupdef['Infosupdef']['nom'];
+                $field['val_initiale']=$tempInfosupdef['Infosupdef']['val_initiale'];
+            }
+            else if($this->_array_depth($field)>1)
+            {
+                $templateProjectValueTemp = array();
+                foreach($field as $valueTemp)
+                {
+                     if(isset($valueTemp['model']) && $valueTemp['model']=='Infosupdef'){
+                        $tempInfosupdef = $this->Infosupdef->find('first', array(
+                                'conditions' => array( 'id' => $valueTemp['id'], 'actif'=> true, 'model'=>'Deliberation' ),
+                                'fields' => array('nom', 'val_initiale'),
+                                'recursive' => -1));
+                        $valueTemp['nom']=$tempInfosupdef['Infosupdef']['nom'];
+                        $valueTemp['val_initiale']=$tempInfosupdef['Infosupdef']['val_initiale'];
+                    }
+                    $templateProjectValueTemp[] = $valueTemp;
+                }
+                $templateProjectTemp[] = $templateProjectValueTemp;
+            }
+            else
+            {
+                $templateProjectTemp[] = $field;
+            }
+            
+        }
+        unset($templateProject);
+        return $templateProjectTemp;
+    }
+    
+    private function _array_depth($array) {
+        $max_depth = 1;
+        if (is_array($array)){
+            foreach ($array as $value) {
+                if (is_array($value)) {
+                    $depth = $this->_array_depth($value) + 1;
+
+                    if ($depth > $max_depth) {
+                        $max_depth = $depth;
+                    }
+                }
+            }
+        }
+        return $max_depth;
+    }
+    
     /**
      * Affiche la liste de tous les projets dont le rédacteur fait parti de mon/mes services
      * Permet de valider en urgence un projet

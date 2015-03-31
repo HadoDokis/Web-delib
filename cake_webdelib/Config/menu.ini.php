@@ -191,6 +191,22 @@ $navbar = array(
                 'icon' => 'calendar',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'listerAnciennesSeances')
             ),
+            array(
+                'html' => 'link',
+                'libelle' => 'Calendrier',
+                'check'=> array('Seances/afficherCalendrier'),
+                'title'=> 'Calendrier des séances',
+                'icon' => 'calendar',
+                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'afficherCalendrier')
+            ),
+            array(
+                'html' => 'link',
+                'libelle' => 'Tableau de bord',
+                'check'=> array('Seances','read'),
+                'title'=> 'Calendrier des séances',
+                'icon' => 'calendar',
+                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'deliberations', 'action' => 'tableauBord')
+            ),
         )
     ),
     'Post-séances'=>array(
@@ -305,6 +321,14 @@ $navbar = array(
                                 'title'=> 'Gestion des types de séance',
                                 'icon' => 'leanpub',
                                 'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeseances', 'action'=>'index')
+                            ),
+                            array(
+                                'html' => 'link',
+                                'libelle' => 'Editer affichage 9 cases',
+                                'check'=> array('Collectivites'),
+                                'title'=> 'Editer l\'affichage des 9 cases',
+                                'icon' => 'archive',
+                                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'collectivites', 'action' => 'edit9Cases')
                             ),
                         )
                     ),
