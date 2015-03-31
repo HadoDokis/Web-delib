@@ -391,7 +391,7 @@ class UsersController extends AppController {
                 $this->_purgeMenuDroit($navbar);
                 $this->_purgeMenuHtml($navbar);
                 $this->Session->write('Auth.Navbar', $navbar);
-                
+               
                 $this->Session->setFlash('Bienvenue sur Webdelib', 'growl');
                 
                 //$this->Auth->redirectUrl()
@@ -401,9 +401,17 @@ class UsersController extends AppController {
             }
         }
         
-        $collective = $this->Collectivite->read(array('logo','nom'), 1);
+        $collective = $this->Collectivite->read(array('logo','nom','templateProject'), 1);
         $this->Session->write('Collective.nom', $collective['Collectivite']['nom']);
         
+        //Mise en session du template des 9 cases
+        if(!empty($collective['templateProject'])){
+            $templateProject = json_decode($collective['templateProject'], true); 
+        }else{
+            $templateProject = json_decode($this->Collectivite->getJson9Cases(), true);
+        }
+        $this->Session->write('Collective.templateProject', $templateProject);
+         
         App::uses('File', 'Utility');
         $file = new File(WEBROOT_DIR . DS . 'files' . DS . 'image' . DS . 'logo');
         

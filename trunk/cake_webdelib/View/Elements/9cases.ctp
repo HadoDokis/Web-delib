@@ -31,24 +31,26 @@ echo $this->Bs->table(array(array('title' => (!empty($traitement_lot) ?$this->Fo
 if(!empty($projets))
 foreach ($projets as $projet) {
     
-    $case_emetteur='<b>Service émetteur :</b><br/>';
-    if (isset($projet['Deliberation']['Service']['libelle']))
-       $case_emetteur.=$projet['Deliberation']['Service']['libelle'];
-    elseif (isset($projet['Service']['libelle']))
-        $case_emetteur.=$projet['Service']['libelle'];
     
-    $case_projet_libelle=$projet['Deliberation']['objet'];
-    $case_circuit='<b>Circuit : </b><br/>'.$projet['Circuit']['nom'];
+    $Service_libelle='<b>Service émetteur :</b><br/>';
+    if (isset($projet['Deliberation']['Service']['libelle']))
+       $Service_libelle.=$projet['Deliberation']['Service']['libelle'];
+    elseif (isset($projet['Service']['libelle']))
+        $Service_libelle.=$projet['Service']['libelle'];
+    
+    $Deliberation_objet=$projet['Deliberation']['objet'];
+    $Circuit_last_viseur = '<b>Dernière action de : </b><br/>'.$projet['last_viseur'];
+    $Circuit_nom='<b>Circuit : </b><br/>'.$projet['Circuit']['nom'];
     if (isset($projet['last_viseur']) && !empty($projet['last_viseur']))
-        $case_circuit.='<br/>Dernière action de : ' . $projet['last_viseur'];
+        $Circuit_nom.='<br/>Dernière action de : ' . $projet['last_viseur'];
         
-    $case_projet_titre=$projet['Deliberation']['titre'];
-    $case_delais='<b>A traiter avant le :</b><br/>'.$projet['Deliberation']['date_limite'];
+    $Deliberation_titre=$projet['Deliberation']['titre'];
+    $Deliberation_date_limite='<b>A traiter avant le :</b><br/>'.$projet['Deliberation']['date_limite'];
     $this->BsForm->setLeft(0);
     $this->BsForm->setRight(10);
-    $case_seance='<b>Séance(s) :</b><br/>';
+    $Seance_libelle='<b>Séance(s) :</b><br/>';
     if (in_array('attribuerSeance', $projet['Actions'])) {
-        $case_seance.=$this->BsForm->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'attribuerSeance'), 'type' => 'post'));
+        $Seance_libelle.=$this->BsForm->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'attribuerSeance'), 'type' => 'post'));
         /*$case_seance.=$this->BsForm->input(
             , '<span class="fa fa-save"></span>'
                 array('content'=>,
@@ -58,7 +60,7 @@ foreach ($projets as $projet) {
                 'side'=>'right',
                 
             )*/
-        $case_seance.=$this->BsForm->select('Deliberation.seance_id',$projet['Seances'],
+        $Seance_libelle.=$this->BsForm->select('Deliberation.seance_id',$projet['Seances'],
             array(  'class'=>'select2multiple',
                    // 'before'=>false,
                    // 'after'=>false,
@@ -67,7 +69,7 @@ foreach ($projets as $projet) {
                     'empty' => true,
                     'multiple' => true)
         );
-        /*$case_seance.=$this->BsForm->inputGroup(
+        /*$Seance_libelle.=$this->BsForm->inputGroup(
             'Deliberation.seance_id', 
                 array('content'=>'<span class="fa fa-save"></span>',
                 'type' => 'button',
@@ -85,24 +87,24 @@ foreach ($projets as $projet) {
         );*/
         
         //<span class="fa fa-save"></span> 
-        $case_seance.= $this->Bs->btn('<span class="fa fa-save"></span> Sauvegarder', 
+        $Seance_libelle.= $this->Bs->btn('<span class="fa fa-save"></span> Sauvegarder', 
                 array(), 
                 array('type' => 'success', 'escapeTitle'=> false, 'escape' => false));
-        $case_seance.=$this->Form->hidden('Deliberation.id', array('value' => $projet['Deliberation']['id']));
-       $case_seance.= $this->BsForm->end();
+        $Seance_libelle.=$this->Form->hidden('Deliberation.id', array('value' => $projet['Deliberation']['id']));
+       $Seance_libelle.= $this->BsForm->end();
     } else {
         foreach ($projet['listeSeances'] as $seance)
-            $case_seance.= $seance['libelle'] . (isset($seance['date']) && !empty($seance['date']) ? ' : ' . $this->Html2->ukToFrenchDateWithHour($seance['date']) : '') . '<br/>';
+            $Seance_libelle.= $seance['libelle'] . (isset($seance['date']) && !empty($seance['date']) ? ' : ' . $this->Html2->ukToFrenchDateWithHour($seance['date']) : '') . '<br/>';
     }
-    $case_nature='';
+    $Typeacte_name='';
     if (isset($projet['Typeacte']['name'])){
-        $case_nature = strtolower($projet['Typeacte']['name']);
+        $Typeacte_name = strtolower($projet['Typeacte']['name']);
     }
-        $case_theme = '<b>Thème : </b>';
+        $Theme_libelle = '<b>Thème : </b>';
         if (isset($projet['Theme']['libelle']))
-                    $case_theme.= $projet['Theme']['libelle'];
+                    $Theme_libelle.= $projet['Theme']['libelle'];
             
-        $case_classification = '<b>Classification : </b>'.$projet['Deliberation']['num_pref'];
+        $Deliberation_num_pref = '<b>Classification : </b>'.$projet['Deliberation']['num_pref'];
              
         $etat=$this->Bs->btn(null, null,
                         array(
@@ -242,23 +244,41 @@ foreach ($projets as $projet) {
     $actions.= $this->Bs->close(2);
 
     echo $this->Bs->cell($etat);
-    echo $this->Bs->cell(
-        $this->Bs->row().
-        $this->Bs->col('xs4').$case_emetteur.$this->Bs->close().
-        $this->Bs->col('xs4').$case_projet_libelle.$this->Bs->close().
-        $this->Bs->col('xs4').$case_seance.$this->Bs->close().
-        $this->Bs->close().
-        $this->Bs->row().
-        $this->Bs->col('xs4').$case_circuit.$this->Bs->close().
-        $this->Bs->col('xs4').$case_projet_titre.$this->Bs->close().
-        $this->Bs->col('xs4').$case_delais.$this->Bs->close().
-        $this->Bs->close().
-        $this->Bs->row().
-        $this->Bs->col('xs4').$case_nature.$this->Bs->close().
-        $this->Bs->col('xs4').$case_theme.$this->Bs->close().
-        $this->Bs->col('xs4').$case_classification.$this->Bs->close().
-        $this->Bs->close(1)/*,array('style'=>'width: 100%')*/
-            , 'max');
+    
+    //Creation du tableau a partir du JSON 9cases
+    $i = 1;
+    $contentFields = $this->Bs->row();
+    foreach($fields as $field)
+    {
+        if(isset($field['model']) && $field['model']=='Infosupdef'){
+            $contentFields .= $this->Bs->col('xs4').(!empty($tempField['nom'])?'<b>'.$tempField['nom'].'</b> : ':'').$field['val_initiale'].'<br>'.$this->Bs->close();
+        }
+        else {
+            $contentFields .= $this->Bs->col('xs4');
+            if(isset($field['model'])){
+                $contentFields .= ${$field['model'].'_'.$field['fields']};
+            }
+            else{
+                foreach($field as $tempField)
+                {
+                    if(isset($tempField['model']) && $tempField['model']=='Infosupdef'){
+                        $contentFields .= (!empty($tempField['nom'])?'<b>'.$tempField['nom'].'</b> : ':'').$tempField['val_initiale'].'<br>';
+                    }else{
+                        $contentFields .= ${$tempField['model'].'_'.$tempField['fields']}.'<br>';
+                    }
+                }
+            }
+            $contentFields .= $this->Bs->close();
+        }
+        if($i==3 || $i==6 || $i==9){
+            $contentFields .= $this->Bs->close();
+            if($i!=9) $contentFields .= $this->Bs->row();
+        }
+        $i++;
+    }
+    $contentFields .= $this->Bs->close(1);
+    
+    echo $this->Bs->cell($contentFields , 'max');   
     echo $this->Bs->cell($actions, 'text-right');
 }
 else {
