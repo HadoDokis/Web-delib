@@ -1,5 +1,5 @@
 <?php
-echo $this->Html->script('/libs/bootstrap-filestyle/js/bootstrap-filestyle.min.js');
+echo $this->Html->script('/components/bootstrap-filestyle/src/bootstrap-filestyle.js');
 
 if(empty($seance['Seance']['traitee'])) {
     if ($seance['Typeseance']['action'] == 0){
