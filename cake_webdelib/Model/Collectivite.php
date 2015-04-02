@@ -90,17 +90,11 @@ class Collectivite extends AppModel {
         return is_string($data['templateProject']) && is_object(json_decode($data['templateProject'])) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
     }
 
+    /**
+     * Recupere le tableau jSON des valeurs definies par defaut pour les 9 cases
+     */
     function getJson9Cases() {
-        try {
-            $file = APP . 'Config/9cases.json';
-            $handle  = fopen($file, 'r');
-            $content = fread($handle, filesize($file));
-            fclose($handle);
-        }
-        catch (Exception $e)
-        {
-            return false;
-        }
-        return $content;
+        $file = new File(APP . 'Config/9cases.json');
+        return $file->read();
     }
 }

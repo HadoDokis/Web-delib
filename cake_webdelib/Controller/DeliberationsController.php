@@ -2635,7 +2635,7 @@ class DeliberationsController extends AppController {
                 'Typeacte' => array('fields' => array('name')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
-                    'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action'),
+                'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action'),
                     )),
                 'Deliberationseance' => array('fields' => array('id'),
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
@@ -2842,6 +2842,11 @@ class DeliberationsController extends AppController {
             }
             if (!in_array('telecharger', $this->request->data[$i]['Actions']))
                 $this->request->data[$i]['Actions'][] = 'generer';
+            
+           
+            //remplissage des 9 cases depuis le json, pour chaque projet
+            $this->request->data[$i]['fields'] = $this->_get9casesData($projet['Deliberation']['id']);
+
             // initialisation des dates, modèle et service
             $seances_id = array();
 
@@ -2861,7 +2866,6 @@ class DeliberationsController extends AppController {
             if (isset($this->data[$i]['Deliberation']['date_limite']))
                 $this->request->data[$i]['Deliberation']['date_limite'] = $projet['Deliberation']['date_limite'];
         }
-        $this->set('fields', $this->_get9casesData());
         $this->set('titreVue', $titreVue);
         $this->set('listeLiens', $listeLiens);
         if ($nbProjets == null)
@@ -2870,65 +2874,54 @@ class DeliberationsController extends AppController {
         
         $this->render($render);
     }
-
-    private function _get9casesData()
+    
+    /**
+     * Génére le tableau des 9 cases de chaque projet de délibération
+     * @param $deliberation_id : Id du projet de deliberation
+     * @return array();
+     */
+    private function _get9casesData($deliberation_id)
     {
-        // passage des variables à la vue
-        $templateProject = $this->Session->read('Collective.templateProject');
-        $templateProjectTemp = array();
-        
-        foreach($templateProject as $field)
-        {
-            if(isset($field['model']) && $field['model']=='Infosupdef'){
-                $tempInfosupdef = $this->Infosupdef->find('first', array(
-                        'conditions' => array( 'id' => $field['id'], 'actif'=> true, 'model'=>'Deliberation' ),
-                        'fields' => array('nom', 'val_initiale'),
-                        'recursive' => -1));
-                $field['nom']=$tempInfosupdef['Infosupdef']['nom'];
-                $field['val_initiale']=$tempInfosupdef['Infosupdef']['val_initiale'];
+        $caseProject = array();
+        foreach($this->Session->read('Collective.templateProject') as $field) {
+            $explodeField = explode('.',$field);
+            $case = array();
+            $case['model'] = $explodeField[0];
+            $case['fields'] = $explodeField[1];
+            if (isset($explodeField[2])){
+                $case['id'] = $explodeField[2];
             }
-            else if($this->_array_depth($field)>1)
-            {
-                $templateProjectValueTemp = array();
-                foreach($field as $valueTemp)
-                {
-                     if(isset($valueTemp['model']) && $valueTemp['model']=='Infosupdef'){
-                        $tempInfosupdef = $this->Infosupdef->find('first', array(
-                                'conditions' => array( 'id' => $valueTemp['id'], 'actif'=> true, 'model'=>'Deliberation' ),
-                                'fields' => array('nom', 'val_initiale'),
-                                'recursive' => -1));
-                        $valueTemp['nom']=$tempInfosupdef['Infosupdef']['nom'];
-                        $valueTemp['val_initiale']=$tempInfosupdef['Infosupdef']['val_initiale'];
-                    }
-                    $templateProjectValueTemp[] = $valueTemp;
-                }
-                $templateProjectTemp[] = $templateProjectValueTemp;
+            if(isset($case['model']) && $case['model']=='Infosupdef'){
+                $caseProject[] = $this->_combineInfosup($deliberation_id, $case['id']);
+            } else {
+                $caseProject[] = $case;
             }
-            else
-            {
-                $templateProjectTemp[] = $field;
-            }
-            
         }
-        unset($templateProject);
-        return $templateProjectTemp;
+        return $caseProject;
     }
     
-    private function _array_depth($array) {
-        $max_depth = 1;
-        if (is_array($array)){
-            foreach ($array as $value) {
-                if (is_array($value)) {
-                    $depth = $this->_array_depth($value) + 1;
-
-                    if ($depth > $max_depth) {
-                        $max_depth = $depth;
-                    }
-                }
-            }
-        }
-        return $max_depth;
+    /**
+     * Combine la liste de toutes les informations supplémentaires
+     * @param $deliberation_id : Id du projet de deliberation
+     * @param $infosupdef_id : Id de l'information supplémentaire
+     * @return array();
+     */
+    private function _combineInfosup($deliberation_id, $infosupdef_id){
+        $infosupdef = $this->Infosupdef->find('first', array(
+            'conditions' => array( 'id' => $infosupdef_id, 'actif'=> true, 'model'=>'Deliberation' ),
+            'fields' => array('code','type','nom'),
+            'recursive' => -1));
+        $infosup = $this->Infosup->find('first', array(
+            'recursive' => -1,
+            'conditions' => array(
+            'foreign_key' => $deliberation_id,
+            'infosupdef_id' => $infosupdef_id)));
+        $combineInfosup['compacte'] = $this->Infosup->compacte($infosup, false);
+        $combineInfosup['model']='Infosupdef';
+        $combineInfosup = array_merge($combineInfosup, $infosupdef['Infosupdef']);
+        return $combineInfosup;
     }
+
     
     /**
      * Affiche la liste de tous les projets dont le rédacteur fait parti de mon/mes services
@@ -2977,7 +2970,7 @@ class DeliberationsController extends AppController {
             array_push($actions, 'delete');
 
 
-        $this->_ajouterFiltre($projets);
+        $this->_ajouterFiltre($projets);      
         $this->_afficheProjets('index', $projets, 'Projets dont le rédacteur fait partie de mon service', $actions);
     }
 

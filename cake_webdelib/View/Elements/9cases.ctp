@@ -44,8 +44,8 @@ foreach ($projets as $projet) {
     if (isset($projet['last_viseur']) && !empty($projet['last_viseur']))
         $Circuit_nom.='<br/>Dernière action de : ' . $projet['last_viseur'];
         
-    $Deliberation_titre=$projet['Deliberation']['titre'];
-    $Deliberation_date_limite='<b>A traiter avant le :</b><br/>'.$projet['Deliberation']['date_limite'];
+    $Deliberation_titre=$projet['Deliberation']['titre'].'<br>';
+    $Deliberation_date_limite='<b>A traiter avant le : </b>'.$projet['Deliberation']['date_limite'].'<br>';
     $this->BsForm->setLeft(0);
     $this->BsForm->setRight(10);
     $Seance_libelle='<b>Séance(s) :</b><br/>';
@@ -247,32 +247,37 @@ foreach ($projets as $projet) {
     
     //Creation du tableau a partir du JSON 9cases
     $i = 1;
-    $contentFields = $this->Bs->row();
-    foreach($fields as $field)
+    $contentFields = $this->Bs->row().$this->Bs->col('xs4');
+
+    foreach($projet['fields'] as $key=>$field)
     {
         if(isset($field['model']) && $field['model']=='Infosupdef'){
-            $contentFields .= $this->Bs->col('xs4').(!empty($tempField['nom'])?'<b>'.$tempField['nom'].'</b> : ':'').$field['val_initiale'].'<br>'.$this->Bs->close();
-        }
-        else {
-            $contentFields .= $this->Bs->col('xs4');
+            $content = $key.'h' .(!empty($field['nom'])?'<b>'.$field['nom'].'</b> : ':'');
+            if (isset($field['code']) && isset($field['compacte'][$field['code']])) {
+                if ($field['type'] == 'richText') {
+                    $content .= $this->Html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque' . $field['code'] . '\', \'' . $field['code'] . '\')', array(
+                        'id' => 'afficheMasque' . $field['code'], 'affiche' => 'masque')) .
+                            $this->Bs->div('annexesGauche') . $this->Bs->close() .
+                            $this->Bs->div('spacer') . $this->Bs->close() .
+                            $this->Bs->div('fckEditorProjet') .
+                            $this->Form->input($field['compacte'][$field['code']], array('label' => '', 'type' => 'textarea', 'style' => 'display:none;', 'value' => $field['code']));
+                            $this->Bs->close() . 
+                            $this->Bs->div('spacer') . $this->Bs->close();
+                } elseif ($field['type'] == 'listmulti') {
+                    $content .= implode(', ', $field['compacte'][$field['code']]);
+                } else {
+                    $content .=$field['compacte'][$field['code']];
+                }
+            }
+            $contentFields .= $this->Bs->col('xs4').$content.'<br>'.$this->Bs->close();
+        } else {
             if(isset($field['model'])){
                 $contentFields .= ${$field['model'].'_'.$field['fields']};
             }
-            else{
-                foreach($field as $tempField)
-                {
-                    if(isset($tempField['model']) && $tempField['model']=='Infosupdef'){
-                        $contentFields .= (!empty($tempField['nom'])?'<b>'.$tempField['nom'].'</b> : ':'').$tempField['val_initiale'].'<br>';
-                    }else{
-                        $contentFields .= ${$tempField['model'].'_'.$tempField['fields']}.'<br>';
-                    }
-                }
-            }
-            $contentFields .= $this->Bs->close();
         }
         if($i==3 || $i==6 || $i==9){
             $contentFields .= $this->Bs->close();
-            if($i!=9) $contentFields .= $this->Bs->row();
+            if($i!=9) $contentFields .= $this->Bs->col('xs4');
         }
         $i++;
     }

@@ -324,10 +324,10 @@ $navbar = array(
                             ),
                             array(
                                 'html' => 'link',
-                                'libelle' => 'Editer affichage 9 cases',
+                                'libelle' => 'Gestion des 9 cases',
                                 'check'=> array('Collectivites'),
-                                'title'=> 'Editer l\'affichage des 9 cases',
-                                'icon' => 'archive',
+                                'title'=> 'Gestion des 9 cases',
+                                'icon' => 'table',
                                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'collectivites', 'action' => 'edit9Cases')
                             ),
                         )
