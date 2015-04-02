@@ -1,5 +1,5 @@
 <?php
-echo $this->Bs->tag('h3', __('Mon tableau de bord'));
+echo $this->Bs->tag('h3', __('Accueil'));
 //<div id="content">
 //    <div id="tableau_bord">
 if ($this->permissions->check('mesProjetsATraiter')) {

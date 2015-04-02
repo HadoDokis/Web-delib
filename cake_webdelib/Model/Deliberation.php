@@ -2217,6 +2217,7 @@ class Deliberation extends AppModel {
      * @return type $id id du nouveau projet créé
      */
     function duplicate($id = null){
+        //FIX duplication des champs valides
        if(!empty($id)){
             $this->recursive = 1;
             $delib=$this->read(null,$id);

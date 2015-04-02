@@ -42,7 +42,7 @@ echo $this->Bs->btn('Nouveau', array('action' => 'add'), array(
 echo $this->Bs->close();
 
 echo $this->Bs->div('btn-group', null, array('role'=>"group"));
-    echo $this->Bs->btn('Modifier', array('prefix'=>'admin', 'controller'=>'profils', 'action'=>'edit'), 
+    echo $this->Bs->btn('Modifier', array('admin'=> true, 'prefix'=>'admin', 'controller'=>'profils', 'action'=>'edit'), 
             array('escape' => false, 
                 'type'=>'warning',
                 'icon'=>'glyphicon glyphicon-edit',
@@ -51,7 +51,7 @@ echo $this->Bs->div('btn-group', null, array('role'=>"group"));
     echo $this->Bs->close();
     
     echo $this->Bs->div('btn-group', null, array('role'=>"group"));
-    echo $this->Bs->btn('Supprimer', array('prefix'=>'admin', 'controller'=>'profils', 'action'=>'delete'), array(
+    echo $this->Bs->btn('Supprimer', array('admin'=> true, 'prefix'=>'admin', 'controller'=>'profils', 'action'=>'delete'), array(
         'escape' => false, 
         'type'=>'danger',
         'id' => 'boutonDelete', 
@@ -62,7 +62,7 @@ echo $this->Bs->div('btn-group', null, array('role'=>"group"));
     echo $this->Bs->close();
     
     echo $this->Bs->div('btn-group', null, array('role'=>"group"));
-    echo $this->Bs->btn('Recharger les droits', array('prefix'=>'admin', 'controller'=>'profils', 'action'=>'updateDroits'), array(
+    echo $this->Bs->btn('Recharger les droits', array('admin'=> true, 'prefix'=>'admin', 'controller'=>'profils', 'action'=>'updateDroits'), array(
         'escape' => false, 
         'type'=>'primary',
         'id' => 'boutonUpdate', 
@@ -72,7 +72,7 @@ echo $this->Bs->div('btn-group', null, array('role'=>"group"));
     echo $this->Bs->close();
     
     echo $this->Bs->div('btn-group', null, array('role'=>"group"));
-    echo $this->Bs->btn('Envoyer un mail', array('prefix'=>'admin', 'controller'=>'profils', 'action'=>'mail'), array(
+    echo $this->Bs->btn('Envoyer un mail', array('admin'=> true, 'prefix'=>'admin', 'controller'=>'profils', 'action'=>'notifier'), array(
         'escape' => false, 
         'type'=>'primary',
         'id' => 'boutonMail', 

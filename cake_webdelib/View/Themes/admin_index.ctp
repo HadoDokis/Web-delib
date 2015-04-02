@@ -117,9 +117,9 @@ echo $this->Bs->div( null,$this->Tree->generateIndex($data, 'Theme',
             $("a#boutonDelete").hide().prop('href', '#');
             if (data.selected.length) {
                 var node = data.instance.get_node(data.selected);
-                $("a#boutonEdit").show().prop('href', '/themes/edit/' + data.instance.get_node(data.selected).data.id)
+                $("a#boutonEdit").show().prop('href', '/admin/themes/edit/' + data.instance.get_node(data.selected).data.id)
                 if ($('#' + node.id).hasClass('jstree-leaf')) { //Ne peux supprimer que les "feuilles"
-                    $("a#boutonDelete").show().prop('href', '/themes/delete/' + data.instance.get_node(data.selected).data.id)
+                    $("a#boutonDelete").show().prop('href', '/admin/themes/delete/' + data.instance.get_node(data.selected).data.id)
                 }
             }
         });

@@ -1,4 +1,7 @@
 <?php
+$this->Html->addCrumb('Liste des compteurs', array('action'=>'index'));
+$this->Html->addCrumb('Compteur : '.$compteur['Compteur']['nom']);
+
 $panel_left = '<b>Nom : </b>'.$compteur['Compteur']['nom'].'<br>' .
               '<b>Définition du compteur : </b>'.$compteur['Compteur']['def_compteur'].'<br>' .
               '<b>Critère de réinitialisation de la séquence : </b>'.$compteur['Compteur']['def_reinit'].'<br>' .

@@ -18,14 +18,15 @@ class TypeactesController extends AppController {
     );
 
     function admin_index() {
-        $this->Typeacte->Behaviors->attach('Containable');
         $typeactes = $this->Typeacte->find('all', array(
             'contain' => array(
                 'Nature.name',
                 'Compteur.nom',
                 'Modelprojet.name',
                 'Modeldeliberation.name'),
-            'order' => array('Typeacte.name' => 'ASC')));
+            'recursive'=>-1,
+            'order' => array('Typeacte.name' => 'ASC'
+                )));
         for ($i = 0; $i < count($typeactes); $i++)
             $typeactes[$i]['Typeacte']['is_deletable'] = $this->Typeacte->isDeletable($typeactes[$i]['Typeacte']['id']);
         $this->set('typeactes', $typeactes);
@@ -88,8 +89,9 @@ class TypeactesController extends AppController {
             $this->set('models_docfinal', $this->Modeltemplate->getModelsByTypes(array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)));
             $this->set('natures', $this->Typeacte->Nature->generateList('Nature.name'));
             $this->set('selectedNatures', null);
-            $this->render('admin_edit');
         }
+        
+        $this->render('admin_edit');
     }
 
     function admin_edit($id = null) {

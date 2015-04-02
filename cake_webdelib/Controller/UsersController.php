@@ -29,7 +29,7 @@ class UsersController extends AppController {
                     'changeServiceEmetteur',
                     'create' => array('admin_add','admin_changeMdp','manager_add','manager_changeMdp'),
                     'update' => array('admin_edit','manager_edit'),
-                    'remove' => array('admin_delete','manager_delete'),
+                    'delete' => array('admin_delete','manager_delete'),
                     'allow' => array('login', 'logout')
                                     )
         ),
@@ -115,7 +115,7 @@ class UsersController extends AppController {
                 'Profil.name',
                 'Service.name',
             ),
-            'order' => array('User.login' => 'asc'),
+            'order' => array('User.username' => 'asc'),
             'limit' => 20,
             'recursive'=>-1,
             'allow'=> $allow
@@ -208,12 +208,20 @@ class UsersController extends AppController {
                 }
                 
                 if($admin){
-                     $this->AclManager->setPermissionsService('User', $this->User->id, $this->request->data['Aco']['Service']);
-                     $this->AclManager->setPermissionsCircuit('User', $this->User->id, $this->request->data['Aco']['Circuit']);
+                    if (!empty($this->request->data['Aco']['Service'])) {
+                        $this->AclManager->setPermissionsService('User', $this->User->id, $this->request->data['Aco']['Service']);
+                    }
+                    if (!empty($this->request->data['Aco']['Circuit'])) {
+                        $this->AclManager->setPermissionsCircuit('User', $this->User->id, $this->request->data['Aco']['Circuit']);
+                    }
                 }
-                $this->AclManager->setPermissionsTypeacte('User', $this->User->id, $this->request->data['Aco']['Typeacte']);
-                $this->AclManager->setPermissionsUser('User', $this->User->id, $this->request->data['Aco']['User']);
-                
+                if (!empty($this->request->data['Aco']['Service'])) {
+                    $this->AclManager->setPermissionsTypeacte('User', $this->User->id, $this->request->data['Aco']['Typeacte']);
+                }
+                if (!empty($this->request->data['Aco']['Service'])) {
+                    $this->AclManager->setPermissionsUser('User', $this->User->id, $this->request->data['Aco']['User']);
+                }
+
                 $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['username'] . '\' a été modifié', 'growl');
                 
                 $this->redirect($this->previous);
@@ -239,7 +247,7 @@ class UsersController extends AppController {
             $this->AclManager->permissionsCircuit($id, 'Cakeflow', array('create','update','delete','manager'));
             $crud[]='manager';
         }
-        $this->AclManager->permissionsTypeacte($id, null, array_merge(array('read'), $crud));
+        $this->AclManager->permissionsTypeacte($id, null, array_merge(array('create','read','update','delete'), $crud));
         $this->AclManager->permissionsUser($id, null, array_merge(array('read','create','update','delete'), $crud));
 
         if($admin){

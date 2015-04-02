@@ -45,90 +45,6 @@ if ($this->fetch('filtre')){
     , array('list'=>false));
 }
 
- $block=$this->Form->create('User', array(
-        'id' => 'quickSearch',
-        'role'=>'search',
-        'class' => 'navbar-form navbar-right',
-        'url' => array(
-            'admin'=>false,
-            'plugin' => null,
-            'controller' => 'deliberations',
-            'action' => 'search')));
- 
-    $block.= $this->BsForm->hidden('type', array('value'=>'quick'));
-    $this->BsForm->setMax();
-    $block.= '<div class="form-group">';
-    $block.= $this->BsForm->inputGroup('User.search', array(array(
-                                'content'=>'',
-                                'id' => 'search_tree_button',
-                                'icon'=>'search',
-                                'title' => __('Rechercher un service'),
-                                'type' => 'button',
-                                'state' => 'primary',
-    ), array(
-    'content'=>'<span class="caret"></span>',
-                                'class' => 'dropdown-toggle',
-                                'title' => __('Option de recherche'),
-                                'data-toggle' => 'dropdown',
-                                'icon'=>'cog',
-                                'after'=>'<ul class="dropdown-menu dropdown-menu-right" role="menu">
-            <li><a id="search_tree_erase_button" title="Remettre à zéro la recherche">Effacer la recherche</a></li>
-            <li class="divider"></li>
-            <li>'.$this->Bs->btn('Recherche détaillée', array(
-                'admin'=>false,
-                'prefix'=> null,
-                'controller'=>'deliberations', 'action'=>'search', 'all'),
-                    array('title'=>'Recherche détaillée')).'</i></li>
-        </ul>',
-                                'type' => 'button',
-                                'state' => 'default')
-    ), array(
-        'placeholder'=>__('Rechercher'),
-        'class' => 'form-control span2',
-        'autocomplete' => 'off'
-    ), array('multiple'=>true, 'side'=>'right', 
-        ));
-    $block.= '</div>';
-    $this->BsForm->setDefault();
-    
-    /*$block.= '<div class="form-group">';
-    $block.= $this->Form->input('User.search', array(
-        'class' => 'form-control span2',
-        'div' => false,
-        'label' => false,
-        'id' => 'searchInput',
-        'placeholder' => 'Rechercher',
-        'autocomplete' => 'off'));
-    $block.= '</div>';*/
-         
-    /*block.= '<div class="form-group">';
-    $block.= $this->Form->input('User.search', array(
-        'class' => 'form-control span2',
-        'div' => false,
-        'label' => false,
-        'id' => 'searchInput',
-        'placeholder' => 'Rechercher',
-        'autocomplete' => 'off'));
-    $block.= '</div>';*/
-    $block.= $this->Form->end();
-     $this->Navbar->block($block, array('list'=>false));
-     
-/*$this->Navbar->searchForm(array(
-    'id' => 'quickSearch',
-    'model'=>array('url' => array(
-            'plugin' => null,
-            'controller' => 'deliberations',
-            'action' => 'quicksearch',
-    ),), 
-    'pull'=>'right',
-    'form'=>array(
-        'id' => 'quickSearch',
-        //'class' => 'span2',
-        'placeholder' => 'Rechercher', 
-        'autocomplete' => 'off',
-        'button'=> $this->Bs->icon('search'),
-    )), array('pull'=>'right'));*/
-
 $this->Navbar->beginMenu($this->Bs->icon('bars',array('lg')), null, array('pull'=>'right'));
 $this->Navbar->text($this->Bs->icon('user').' '.$infoUser, array('wrap'));
 $this->Navbar->text($this->Bs->icon('sitemap').' '.$infoServiceEmeteur, array('wrap'));
@@ -157,4 +73,52 @@ $this->Navbar->link($this->Bs->icon('sign-out').' '.'Se déconnecter',
             array('escape'=>false));
 $this->Navbar->endMenu();
 
+ $block=$this->Form->create('User', array(
+        'id' => 'quickSearch',
+        'role'=>'search',
+        'class' => 'navbar-form navbar-right',
+        'url' => array(
+            'admin'=>false,
+            'plugin' => null,
+            'controller' => 'deliberations',
+            'action' => 'search')));
+ 
+    $block.= $this->BsForm->hidden('type', array('value'=>'quick'));
+    $this->BsForm->setMax();
+    $block.= '<div class="form-group">';
+    $block.= $this->BsForm->inputGroup('User.search', array(array(
+                                'content'=>'',
+                                'id' => 'search_tree_button',
+                                'icon'=>'search',
+                                'title' => __('Rechercher un service'),
+                                'type' => 'button',
+                                'state' => 'primary',
+    ), array(
+    'content'=>'<span class="caret"></span>',
+                                'class' => 'dropdown-toggle',
+                                'title' => __('Option de recherche'),
+                                'data-toggle' => 'dropdown',
+                                'icon'=>'cog',
+                                'after'=>'<ul class="dropdown-menu dropdown-menu-right" role="menu">
+            <li>'.$this->Bs->btn('Recherche détaillée', array(
+                'admin'=>false,
+                'prefix'=> null,
+                'controller'=>'deliberations', 'action'=>'search', 'all'),
+                    array('title'=>'Recherche détaillée')).'</i></li>
+        </ul>',
+                                'type' => 'button',
+                                'state' => 'default')
+    ), array(
+        'placeholder'=>__('Rechercher'),
+        'class' => 'form-control span2',
+        'autocomplete' => 'off'
+    ), array('multiple'=>true, 'side'=>'right', 
+        ));
+    $block.= '</div>';
+    $this->BsForm->setDefault();
+    
+    $block.= $this->Form->end();
+ 
+$this->Navbar->block($block, array('list'=>false)); 
+    
 echo $this->Navbar->end(true);

@@ -180,6 +180,10 @@ class BsFormHelper extends FormHelper {
 			$options['class'] = 'form-horizontal';
 			$this->setFormType('horizontal');
 		}
+                
+                if (!isset($options['novalidate'])) {
+                    $options['novalidate'] = true;
+                }
 
 		$this->_setModelForm($model);
 

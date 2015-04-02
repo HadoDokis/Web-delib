@@ -10,9 +10,9 @@ class ProfilsController extends AppController {
         'Auth' => array(
             'mapActions' => array(
                 'create' => array('admin_add'),
-                'read' => array('admin_index', 'view','notifier'),
+                'read' => array('admin_index', 'view','admin_notifier'),
                 'update' => array('admin_edit'),
-                'remove' => array('admin_delete')),
+                'delete' => array('admin_delete')),
         ),
         'AuthManager.AclManager',
         );
@@ -144,11 +144,13 @@ class ProfilsController extends AppController {
         }
     }
 
-    function notifier($profil_id) {
-        $profil = $this->Profil->find('first', array('conditions' => array('Profil.id' => $profil_id),
-            'recursive' => -1));
+    function admin_notifier($profil_id) {
+        $profil = $this->Profil->find('first', array(
+            'conditions' => array('Profil.id' => $profil_id),
+            'recursive' => -1)
+            );
 
-        if (empty($this->data)) {
+        if (!$this->request->is('Post')) {
             $this->set('libelle_profil', $profil['Profil']['name']);
             $this->set('id', $profil['Profil']['id']);
         } else {
@@ -188,7 +190,10 @@ class ProfilsController extends AppController {
                 $this->Email->send($this->data['Profil']['content']);
                 sleep(1);
             }
-            $this->Progress->end('/profils/index');
+            
+            $this->Session->setFlash('Les mails ont été envoyés', 'growl');
+            
+            $this->Progress->end('/admin/profils/index');
         }
     }
     

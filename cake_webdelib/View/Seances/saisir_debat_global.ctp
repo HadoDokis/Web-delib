@@ -9,7 +9,9 @@ else
 $this->Html->addCrumb(__('Saisir les débats généraux'));
 echo $this->Html->tag('h3', __('Saisir les débats généraux'));
     
-echo $this->BsForm->create('Seances', array('url' => array('controller' => 'seances', 'action' => 'saisirDebatGlobal', $this->data['Seance']['id']), 'type' => 'file'));
+echo $this->BsForm->create('Seances', array('url' => array(
+    'controller' => 'seances', 
+    'action' => 'saisirDebatGlobal', $this->data['Seance']['id']), 'type' => 'file'));
 
 if ($this->data['Seance']['debat_global_size'] > 0) {
     echo $this->Bs->div('media').
@@ -42,7 +44,23 @@ if ($this->data['Seance']['debat_global_size'] > 0) {
             'confirm'=>'Voulez-vous vraiment supprimer '.$this->data['Seance']['debat_global_name'].' du projet ?'
             )).
             $this->Bs->close(3).$this->Bs->tag('br/', null);
-}
+}  else {
+echo $this->Bs->div('media').
+            $this->Bs->link($this->Bs->icon('file-text-o',array('4x')),'#',array('class'=>'media-left','escape'=>false)).
+        $this->Bs->div('media-body').
+         $this->Bs->tag('h4', 'Créer un nouveau document' ,array('class'=>'media-heading')).
+            $this->Bs->div('btn-group').
+            $this->Bs->btn('Nouveau document' , array(
+                'controller'=>'seances',
+                'action'=>'saisirDebatGlobal', 
+                $seance_id, true), array(
+            'type'=>'default',
+            'size' => 'xs',
+            'class'=>'media-left',
+            'icon'=>'plus',
+            )).
+            $this->Bs->close(3).$this->Bs->tag('br/', null);
+
 
 $this->BsForm->setLeft(0);
 echo $this->Bs->row().
@@ -53,8 +71,8 @@ $this->BsForm->input('Seance.texte_doc',
                 'data-buttonText'=>'Nouveau Débats généraux',
                 'data-iconName'=>'fa fa-file-text-o',
                 'data-badge'=> false,
-                'help' => 'Les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.',
-                'title' => 'Choisir un fichier', 
+                'help' => __('Les modifications apportées ici ne prendront effet que lors de la sauvegarde.'),
+                'title' => __('Choisir un fichier'), 
                 'class' => 'filestyle')).$this->Bs->close().
         $this->Bs->col('xs4').
         $this->Bs->div('btn-group btn-group-right').
@@ -65,6 +83,7 @@ $this->BsForm->input('Seance.texte_doc',
             'onclick'=>'$("#SeanceTexteDoc").filestyle(\'clear\');',
         )).
         $this->Bs->close(3);
+}
 
 echo $this->BsForm->hidden('Seance.id');
 echo $this->Html2->btnSaveCancel('', $previous);

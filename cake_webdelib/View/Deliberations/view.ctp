@@ -28,7 +28,7 @@ $linkBarre .= $this->Bs->div('btn-group');
 $linkBarre .= $this->Bs->confirm('Commenter', 
         array('controller' => 'commentaires', 'action' => 'add', $projet['Deliberation']['id']), 
         array('type' => 'info', 
-            'icon' => 'glyphicon glyphicon-comment', 
+            'icon' => 'o-comment', 
             'title' => 'Modifier le projet ' . $projet['Deliberation']['objet'],
             'texte' => $this->BsForm->create('Commentaire',array('url' => array('controller' => 'commentaires', 'action' => 'add', $projet['Deliberation']['id'])))
                 . $this->Form->hidden('Commentaire.delib_id', array('value' => $projet['Deliberation']['id']))
@@ -45,16 +45,18 @@ $linkBarre .= $this->Bs->close();
 
 $linkBarre .= $this->Bs->div('btn-group');
 $linkBarre .= $this->Bs->btn('Retourner à', 
-            array('controller' => 'deliberations', 'action' => 'retour', $projet['Deliberation']['id']), 
+            array('controller' => 'deliberations', 
+                'action' => 'retour', $projet['Deliberation']['id']), 
             array('type' => 'primary', 
-                'icon' => 'glyphicon glyphicon-retweet', 
+                'icon' => 'backward', 
                 'title' => 'Modifier le projet ' . $projet['Deliberation']['objet']
             ));
 if ($this->permissions->check('Deliberations/rebond'))
 $linkBarre .= $this->Bs->btn('Envoyer à', 
-            array('controller' => 'deliberations', 'action' => 'rebond', $projet['Deliberation']['id']), 
+            array('controller' => 'deliberations', 
+                'action' => 'rebond', $projet['Deliberation']['id']), 
             array('type' => 'primary', 
-                'icon' => 'glyphicon glyphicon-share-alt', 
+                'icon' => 'forward', 
                 'title' => 'Modifier le projet ' . $projet['Deliberation']['objet']
             ));        
 $linkBarre .= $this->Bs->close();

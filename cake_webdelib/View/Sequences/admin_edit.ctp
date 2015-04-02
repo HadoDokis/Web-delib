@@ -1,7 +1,10 @@
 <?php
+$this->Html->addCrumb('Liste des séquences', array('action'=>'index'));
+
 if ($this->Html->value('Sequence.id')) {
+    $this->Html->addCrumb(__('Modification d\'un séquence'));
     echo $this->Bs->tag('h3', 'Modification d\'une séquence') .
-    $this->Form->create('Sequence', array(
+    $this->BsForm->create('Sequence', array(
          'admin' => 'true',
          'prefix' => 'admin',
          'url' => array(
@@ -10,8 +13,9 @@ if ($this->Html->value('Sequence.id')) {
              ), 
         'type' => 'post'));
 } else {
+    $this->Html->addCrumb(__('Ajout d\'un séquence'));
     echo $this->Bs->tag('h3', 'Ajout d\'une séquence') .
-    $this->Form->create('Sequence', array(
+    $this->BsForm->create('Sequence', array(
          'admin' => 'true',
          'prefix' => 'admin',
          'url' => array(
@@ -33,17 +37,17 @@ $this->Bs->close() .
 $this->Bs->div('spacer').$this->Bs->close() . 
 $this->Bs->div('required');
 
-if (Configure::read('INIT_SEQ') && $this->action == 'add')
+if (Configure::read('INIT_SEQ') && $this->action == 'admin_add')
     echo $this->BsForm->input(
             'Sequence.num_sequence', array(
                 'label' => 'Num&eacute;ro de s&eacute;quence', 
                 'value' => 0));
-elseif ($this->action == 'edit')
+elseif ($this->action == 'admin_edit')
     echo $this->BsForm->input(
             'Sequence.num_sequence', array(
                 'label' => 'Num&eacute;ro de s&eacute;quence', 
                 'disabled' => true));
-elseif ($this->action == 'add')
+elseif ($this->action == 'admin_add')
     echo $this->BsForm->input(
             'Sequence.num_sequence', array(
                 'label' => 'Num&eacute;ro de s&eacute;quence', 
@@ -55,6 +59,6 @@ $this->BsForm->setLeft(5);
 echo $this->Bs->close() . 
 $this->Bs->div('spacer').$this->Bs->close() . 
 $this->Form->hidden('Sequence.id') .
-$this->Html2->btnSaveCancel('', $previous, 'Enregistrer', 'Enregistrer') .
+$this->Html2->btnSaveCancel('', $previous) .
 $this->Form->end();
 

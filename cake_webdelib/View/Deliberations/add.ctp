@@ -107,8 +107,29 @@ echo $this->BsForm->select('Deliberation.rapporteur_id', $rapporteurs, array(
     'readonly' => 'readonly',
     'value'=>isset($date)?$date:''));
 
-echo $this->Bs->div('','',array('id'=>'selectTypeseances'));
-echo $this->Bs->div('','',array('id'=>'selectDatesSeances'));
+   $selectTypeseances='';
+   if (!empty($typeseances)){
+        $selectTypeseances .=   $this->BsForm->select('Typeseance', $typeseances, array(
+                 'class' => 'select2 selectmultiple',
+                 'label' => 'Types de séance',
+                 //'selected'=> $this->Html->value('Typeseance.Typeseance'),
+                 'placeholder'=> __('Choisir un type de séance'),
+                 'autocomplete' => 'off',
+                 'onchange' => 'updateDatesSeances(this);',
+                 'multiple' => true));
+   }
+   $selectDatesSeances='';
+   if (!empty($seances)){
+                $selectDatesSeances .=  $this->BsForm->select('Seance', $seances, array(
+                        'class' => 'select2 selectmultiple',
+                        'label' => 'Dates de séance',
+                        //'selected'=> $this->Html->value('Seance.Seance'),
+                        'autocomplete' => 'off',
+                        'multiple' => true)); 
+   }
+
+echo $this->Bs->div('',$selectTypeseances,array('id'=>'selectTypeseances'));
+echo $this->Bs->div('',$selectDatesSeances,array('id'=>'selectDatesSeances'));
 echo $this->Bs->close(2);
 echo $this->Bs->tabClose().
 $this->Bs->tabPaneClose();

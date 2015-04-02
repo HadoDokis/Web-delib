@@ -13,7 +13,7 @@ $etat_icon=array(
                     'type'=>'default',
                     'icon'=>'glyphicon glyphicon-lock'),
                 'atraiter'=>array(
-                    'type'=>'primary',
+                    'type'=>'success',
                     'icon'=>'glyphicon glyphicon-play'),
                 'attente'=>array(
                     'type'=>'warning',
@@ -23,7 +23,8 @@ $etat_icon=array(
                     'icon'=>'glyphicon glyphicon-ok'),
             );
 
-echo $this->Bs->table(array(array('title' => (!empty($traitement_lot) ?$this->Form->checkbox(null, array('id'=> 'masterCheckbox','autocomplete'=>'off')):'' ).'État'),
+echo $this->Bs->table(array(array(
+    'title' => (!empty($traitement_lot) ? $this->Form->checkbox(null, array('id'=> 'masterCheckbox','autocomplete'=>'off')):'' ).'État'),
     array('title' => 'Vue synthétique', array('width'=>'100%')),
     array('title' => 'Actions')
         ), array('hover', 'striped','bordered'));
@@ -110,7 +111,7 @@ foreach ($projets as $projet) {
                         array(
                             'tag'=>'button',
                             'type'=>empty($projet['iconeEtat']['status'])?$etat_icon[$projet['iconeEtat']['image']]['type']:$projet['iconeEtat']['status'],
-                            'class'=>'btn-lg',
+                            'size' => 'lg',
                             //'disabled'=>'disabled',
                             'data-toggle'=>'popover',
                             'data-content'=>$projet['iconeEtat']['image'],
@@ -120,7 +121,7 @@ foreach ($projets as $projet) {
                     )
                 );
 
-                $etat.= '<h4><span class="label label-default" '.(!empty($projet['listeSeances'][0]['color'])?'style="background-color: '.$projet['listeSeances'][0]['color'].'"':'').'>'.$projet['Deliberation']['id'].'</span></h4>';
+                $etat.= '<h4 class="text-center"><span class="label label-default" '.(!empty($projet['listeSeances'][0]['color'])?'style="background-color: '.$projet['listeSeances'][0]['color'].'"':'').'>'.$projet['Deliberation']['id'].'</span></h4>';
         
                 if (!empty($traitement_lot)){
                     
@@ -160,7 +161,7 @@ foreach ($projets as $projet) {
         $actions.=  $this->Bs->btn('',
         array('controller' => 'deliberations', 'action' => 'traiter', $projet['Deliberation']['id']),
         array(
-            'type' => 'primary',
+            'type' => 'success',
             'icon'=>'glyphicon glyphicon-play',
             'title' => 'Traiter le projet ' . $projet['Deliberation']['objet']));
      }
@@ -170,7 +171,7 @@ foreach ($projets as $projet) {
             array('controller' => 'deliberations', 'action' => 'validerEnUrgence', $projet['Deliberation']['id']),
             array(
                 'type' => 'warning',
-                'icon'=>'glyphicon glyphicon-ok',
+                'icon'=>'eject',
                 'title' => 'Valider en urgence le projet ' . $projet['Deliberation']['objet']),
             'Confirmez-vous la validation en urgence du projet \'' . $projet['Deliberation']['id'] . '\'');
 
@@ -179,7 +180,7 @@ foreach ($projets as $projet) {
             array('controller' => 'deliberations', 'action' => 'goNext', $projet['Deliberation']['id']),
             array(
                 'type' => 'warning',
-                'icon'=>'glyphicon glyphicon-plane',
+                'icon'=>'fast-forward',
                 'title' => 'Sauter une ou des étapes pour le projet ' . $projet['Deliberation']['id'],
                 'escape' => false));
     

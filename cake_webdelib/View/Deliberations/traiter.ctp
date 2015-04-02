@@ -16,7 +16,7 @@ $linkBarre .= $this->Bs->btn('Générer',
             'icon' => 'glyphicon glyphicon-cog', 
             'title' => 'Générer le document du projet ' . $projet['Deliberation']['objet']
             ));
-if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
+if ($this->permissions->check('Deliberations', 'update'))
     $linkBarre .= $this->Bs->btn('Modifier', 
             array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $projet['Deliberation']['id']), 
             array('type' => 'primary', 
@@ -48,14 +48,14 @@ $linkBarre .= $this->Bs->div('btn-group');
 $linkBarre .= $this->Bs->btn('Retourner à', 
             array('controller' => 'deliberations', 'action' => 'retour', $projet['Deliberation']['id']), 
             array('type' => 'primary', 
-                'icon' => 'glyphicon glyphicon-retweet', 
+                'icon' => 'fast-backward', 
                 'title' => 'Modifier le projet ' . $projet['Deliberation']['objet']
             ));
-if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:rebond'))
+if ($this->permissions->check('Deliberations/rebond'))
 $linkBarre .= $this->Bs->btn('Envoyer à', 
             array('controller' => 'deliberations', 'action' => 'rebond', $projet['Deliberation']['id']), 
             array('type' => 'primary', 
-                'icon' => 'glyphicon glyphicon-retweet', 
+                'icon' => 'fast-forward', 
                 'title' => 'Modifier le projet ' . $projet['Deliberation']['objet']
             ));        
 $linkBarre .= $this->Bs->close();
@@ -97,7 +97,7 @@ $linkBarre .= $this->Bs->confirm('Refuser',
 $linkBarre .= $this->Bs->close(2);
 
 // affichage  du titre
-$title = '<span class="label label-default">' . $projet['Typeacte']['libelle'] . '</span> ';
+$title = '<span class="label label-default">' . $projet['Typeacte']['name'] . '</span> ';
 if (!empty($projet['Multidelib'])) {
     $listeIds = $projet['Deliberation']['id'];
     foreach ($projet['Multidelib'] as $delibRattachee) {

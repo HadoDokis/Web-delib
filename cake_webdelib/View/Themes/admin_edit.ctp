@@ -5,7 +5,10 @@ $this->Html->addCrumb(__('Modification d\'un thème'));
 
 echo $this->Bs->tag('h3', __('Modification du thème : ').$this->Html->value('Theme.libelle'));
 
-echo $this->BsForm->create('Theme'); 
+echo $this->BsForm->create('Theme',array('url' => array(
+    'admin'=> true,
+    'prefix'=> 'admin',
+    'controller' => 'themes', 'action' => 'edit')));
 
 echo $this->BsForm->input('Theme.libelle', array('label' => 'Libellé', 'maxlength' => '500')); 
 echo $this->BsForm->input('Theme.order', array('label' => 'Critère de tri')); 

@@ -129,7 +129,7 @@ echo $this->BsForm->select('Deliberation.rapporteur_id', $rapporteurs, array(
         )
     );
 
-$selectTypeseances='';
+   $selectTypeseances='';
    if (!empty($typeseances)){
         $selectTypeseances .=   $this->BsForm->select('Typeseance', $typeseances, array(
                  'class' => 'select2 selectmultiple',

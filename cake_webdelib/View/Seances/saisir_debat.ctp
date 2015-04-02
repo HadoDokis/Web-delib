@@ -57,7 +57,25 @@ if ($this->data['Deliberation']['debat_size'] > 0) {
             'confirm'=>'Voulez-vous vraiment supprimer '.$this->data['Deliberation']['debat_name'].' du projet ?'
             )).
             $this->Bs->close(3).$this->Bs->tag('br/', null);
-}
+}  
+else 
+    {
+        echo $this->Bs->div('media').
+            $this->Bs->link($this->Bs->icon('file-text-o',array('4x')),'#',array('class'=>'media-left','escape'=>false)).
+        $this->Bs->div('media-body').
+         $this->Bs->tag('h4', 'Créer un nouveau document' ,array('class'=>'media-heading')).
+            $this->Bs->div('btn-group').
+            $this->Bs->btn('Nouveau document' , array(
+                'controller'=>'seances',
+                'action'=>'saisirDebat', 
+                $delib_id, $seance_id, true), array(
+            'type'=>'default',
+            'size' => 'xs',
+            'class'=>'media-left',
+            'icon'=>'plus',
+            )).
+            $this->Bs->close(3).$this->Bs->tag('br/', null);
+
 
 $this->BsForm->setLeft(0);
 echo $this->Bs->row().
@@ -80,7 +98,7 @@ $this->BsForm->input('Deliberation.texte_doc',
             'onclick'=>'$("#SeanceTexteDoc").filestyle(\'clear\');',
         )).
         $this->Bs->close(3);
-
+}
 echo $this->BsForm->hidden('Deliberation.id');
 echo $this->BsForm->hidden('Seance.id');
 echo $this->Html2->btnSaveCancel('', $previous);

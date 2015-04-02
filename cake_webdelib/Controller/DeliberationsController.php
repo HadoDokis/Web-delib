@@ -34,13 +34,11 @@ class DeliberationsController extends AppController {
                     'quicksearch', 'genereFusionToClient',
                     'textsynthesevue','deliberationvue','textprojetvue'),
                 'create' => array('add','getTypeseancesParTypeacteAjax','mesProjetsRedaction','addIntoCircuit','attribuercircuit'),
-                'update' => array('edit','admin_add','getTypeseancesParTypeacteAjax'),
-                'remove' => array('delete'),
+                'update' => array('edit','getTypeseancesParTypeacteAjax'),
                 'editerTous',
                 'deleteDebat',
                 'validerEnUrgence',
-                'goNext',
-                'tableauBord',
+                'tableauBord'=> array('viewDetailed'),
                 'mesProjetsATraiter' => array('traiter','retour'),
                 'tousLesProjetsSansSeance' => array('attribuerSeance'),
                 'autresActesAValider' => array('autreActesValides','autresActesAEnvoyer','autresActesEnvoyes'),
@@ -303,13 +301,6 @@ class DeliberationsController extends AppController {
                 $this->request->data['Deliberation']['date_limite'] = CakeTime::format(str_replace('/', '-', $this->data['Deliberation']['date_limite']), '%Y-%m-%d 00:00:00');
             }
             $this->Deliberation->unbindModel(array('hasAndBelongsToMany' => array('Seance')));
-            // Si on definit une seance a une delib, on la place en derniere position de la seance
-            if (isset($this->data['Deliberation'])) {
-                if (!$this->Deliberation->canSaveSeances($this->data['Deliberation']['Deliberationseance'])) {
-                    $this->Session->setFlash("Vous ne pouvez enregistrer plusieurs séances délibérantes", 'growl', array('type' => 'erreur'));
-                    return $this->redirect(array('action' => 'add'));
-                }
-            }
 
             //gabarits pour ce type d'acte ?
             $typeacte = $this->Deliberation->Typeacte->find('first', array(
@@ -356,16 +347,21 @@ class DeliberationsController extends AppController {
                 $delibId = $this->Deliberation->getLastInsertId();
 
                 $seances = array();
-                if (isset($this->data['Deliberation']['Deliberationseance'])) {
-                    if (!empty($this->data['Deliberation']['Deliberationseance'])) {
-                        foreach ($this->data['Deliberation']['Deliberationseance'] as $seance_id) {
-                            $seances[] = $seance_id;
-                        }
+                if (!empty($this->data['Seance'])) {
+                    foreach ($this->data['Seance'] as $seance_id) {
+                        $seances[] = $seance_id;
                     }
                 }
-
+                
                 $this->Seance->reOrdonne($delibId, $seances);
-                unset($this->request->data['Deliberation']);
+               
+                // Si on definit une seance a une delib, on la place en derniere position de la seance
+                if (!empty($this->data['Seance'])) {
+                    if (!$this->Deliberation->canSaveSeances($id)) {
+                        $this->Session->setFlash("Vous ne pouvez enregistrer plusieurs séances délibérantes", 'growl', array('type' => 'erreur'));
+                        $success=false;
+                    }
+                }
                 
                 if (array_key_exists('Infosup', $this->data)) {
                     $success &= $this->Deliberation->Infosup->saveCompacted($this->request->data['Infosup'], $delibId, 'Deliberation');
@@ -433,33 +429,36 @@ class DeliberationsController extends AppController {
             $this->set('typeseances', $typeseances);
 
             // initialisation dekjhlkjlkjlkj la liste des séances
-            $seances = array();
-            if (!empty($this->request->data['Typeseance'])) {
-                $selectedTypeseanceIds = set::extract('/Typeseance/Typeseance', $this->request->data);
+            if (!empty($this->request->data['Seance'])) {
+                $seances = array();
+                if (!empty($this->request->data['Typeseance'])) {
+                    $selectedTypeseanceIds = set::extract('/Typeseance/Typeseance', $this->request->data);
 
-                $seances_tmp = $this->Seance->find('all', array(
-                    'conditions' => array('Seance.type_id' => $selectedTypeseanceIds,
-                        'Seance.traitee' => 0),
-                    'order' => array('Seance.date' => 'ASC'),
-                    'contain' => array('Typeseance.libelle', 'Typeseance.retard'),
-                    'fields' => array('Seance.id', 'Seance.type_id', 'Seance.date')));
-                foreach ($seances_tmp as $seance)
-                    $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'];// . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-                foreach ($seances_tmp as $seance) {
-                    $bSeanceok = false;
-
-                    if ($canEditAll)
-                        $bSeanceok = true;
-
-                    if (!$bSeanceok) {
-                        $iTime = strtotime($seance['Seance']['date']);
-                        if (time() < mktime(0, 0, 0, date("m", $iTime), date("d", $iTime) - $seance['Typeseance']['retard'], date("Y", $iTime)))
-                            $bSeanceok = true;
-                    }
-
-                    if ($bSeanceok)
+                    $seances_tmp = $this->Seance->find('all', array(
+                        'conditions' => array('Seance.type_id' => $selectedTypeseanceIds,
+                            'Seance.traitee' => 0),
+                        'order' => array('Seance.date' => 'ASC'),
+                        'contain' => array('Typeseance.libelle', 'Typeseance.retard'),
+                        'fields' => array('Seance.id', 'Seance.type_id', 'Seance.date')));
+                    foreach ($seances_tmp as $seance)
                         $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'];// . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+                    foreach ($seances_tmp as $seance) {
+                        $bSeanceok = false;
+
+                        if ($canEditAll)
+                            $bSeanceok = true;
+
+                        if (!$bSeanceok) {
+                            $iTime = strtotime($seance['Seance']['date']);
+                            if (time() < mktime(0, 0, 0, date("m", $iTime), date("d", $iTime) - $seance['Typeseance']['retard'], date("Y", $iTime)))
+                                $bSeanceok = true;
+                        }
+
+                        if ($bSeanceok)
+                            $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle']. ' : ' . CakeTime::i18nFormat($seance['Seance']['date'], '%A %d %B %G à %k:%M');
+                    }
                 }
+                $this->set('seances', $seances);
             }
 
             $this->set('typeActes', $this->Deliberation->Typeacte->find('list', array(
@@ -503,9 +502,8 @@ class DeliberationsController extends AppController {
                 }
             }
             $this->set('redacteurs', $listeusers);
-
-            $this->set('seances', $seances);
         }
+        
     }
 
     public function download($id, $file) {
@@ -1007,7 +1005,7 @@ class DeliberationsController extends AppController {
                 
                 if (!$this->Deliberation->canSaveSeances($id)) {
                     $this->Session->setFlash("Vous ne pouvez affecter le projet qu'à une seule séance délibérante", 'growl', array('type' => 'erreur'));
-                    $this->redirect($this->here);
+                    $success=false;
                 }
                 
             if ($success) {
@@ -1242,6 +1240,10 @@ class DeliberationsController extends AppController {
                         $seances[$seance['Seance']['id']]['libelle'] = $seance['Typeseance']['libelle'];
                     $seances[$seance['Seance']['id']]['date'] = $seance['Seance']['date'];
                 }
+                
+                $this->set('seances', $seances);
+                $this->set('seances_selected', $seances_selected);
+                $this->set('typeseances_selected', $typeseances_selected);
 
                 if (Configure::read('DELIBERATIONS_MULTIPLES')) {
                     $this->set('gabarits_acte', $this->Deliberation->Typeacte->find('list', array('fields' => array('id', 'gabarit_acte_name'))));
@@ -1287,10 +1289,6 @@ class DeliberationsController extends AppController {
                         $this->request->data['Multidelib'][$imd]['Annexes'] = $annexes_delibRattachee;
                     }
                 }
-
-                $this->set('seances', $seances);
-                $this->set('seances_selected', $seances_selected);
-                $this->set('typeseances_selected', $typeseances_selected);
 
                 $this->set('services', $this->Deliberation->Service->find('list', array('conditions' => array('Service.actif' => '1'))));
                 $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
@@ -5031,7 +5029,7 @@ class DeliberationsController extends AppController {
      * @param type $total tableau des total a insérer dans le json
      * @param type $depth profondeur actuel du noeud passer
      */
-    private function _constructTotalJson(&$json, $total, $depth,$max=false) {
+    private function _constructTotalJson(&$json, $total, $depth, $max=false) {
         $tmp = array();
         $tree = $this->Deliberation->Service->generateTreeList(array('actif' => 1));
         $eert = array_reverse($tree);
@@ -5371,7 +5369,7 @@ class DeliberationsController extends AppController {
      * @param type $array tableau a formatter
      * @return type tableau formatter
      */
-    public function Map($array = array()) {
+    public function _Map($array = array()) {
         $tmp = array();
         //date actuel
         $now = date("Y-m-d");
@@ -5521,7 +5519,7 @@ class DeliberationsController extends AppController {
         $eert = array_reverse($tree);
         $tmp = array();
         $total = array();
-        $results = $this->Map($services);
+        $results = $this->_Map($services);
         //la boucle sur les résultats services pour construire le json
         foreach ($results as $Valideur => $datas) {
             foreach ($datas as $Redacteur => $data) {
@@ -5557,7 +5555,7 @@ class DeliberationsController extends AppController {
                 $nameTotalr = null;
             }
         }
-        debug($total);
+
         //deuxième ajout au json colonnes total
         $this->_constructTotalJson($json, $total, $depth);
         $json = json_encode($json);
@@ -5576,7 +5574,6 @@ class DeliberationsController extends AppController {
                 $this->disableCache();
 
                 //Choix du rendu à appliquer
-                $render = 'test';
                 $ordre = array('Deliberation.id' => 'DESC');
                 //validateur;redacteur
                 //[0]        [1]
@@ -5671,7 +5668,7 @@ class DeliberationsController extends AppController {
 
                 $this->set('projets', $Stringprojets); //pour le telechargement CSS
                 $this->_sortProjetSeanceDate($projets);
-                $this->_afficheProjets($render, $projets, 'Vue détaillée', array('view', 'edit', 'plat'));
+                $this->_afficheProjets(null, $projets, 'Vue détaillée', array('view', 'edit', 'plat'));
             }
         }
     }
