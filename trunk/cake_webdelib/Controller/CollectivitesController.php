@@ -120,137 +120,28 @@ class CollectivitesController extends AppController {
             return $this->redirect(array('action'=>'admin_index'));
         }
     }
-    
-    private function _array_depth($array) {
-        $max_depth = 1;
-        if (is_array($array)){
-            foreach ($array as $value) {
-                if (is_array($value)) {
-                    $depth = $this->_array_depth($value) + 1;
 
-                    if ($depth > $max_depth) {
-                        $max_depth = $depth;
-                    }
-                }
-            }
-        }
-        return $max_depth;
-    }
-
-
-    function edit9Cases($opt=null)
+    /**
+     * Recupere le tableau des differentes options d'affichage pour les selecteurs
+     */
+    private function _selecteur9Cases()
     {
-        $rollback = false;
-        //sauvegarde
-        if (!empty($this->request->data)) {
-            $this->Collectivite->id = 1;
-            foreach($this->request->data['Collectivites'] as $key=>$val)
-            {
-                if (strpos($val,'&&') !== false) {
-                    $valTemp = array();
-                    foreach (explode('&&',$val) as $valChild){
-                        $valTemp[] = json_decode($valChild, true);
-                    }
-                    $val = $valTemp;
-                }
-                else {
-                    $val = json_decode($val, true);
-                }
-                if(empty($val)) $rollback=true;
-                $caseTotal[$key] = $val;
-            }
-            ksort($caseTotal);
-            if (!$rollback){
-                if($this->Collectivite->saveField('templateProject', json_encode($caseTotal), true)) {
-                    $this->Session->write('Collective.templateProject', $caseTotal);
-                    $this->Session->setFlash('La modification à été correctement sauvegardée', 'growl', array('type' => 'information'));
-                }
-            } else {
-                $this->Session->setFlash('La sauvegarde à échoué', 'growl', array('type' => 'danger'));
-            }
-        }
+        $selecteur = array('Typeacte.name' => 'Type d\'acte',
+                           'Seance.libelle' => 'Séance(s)',
+                           'Theme.libelle' => 'Thème');
+         
+        $selecteur['Délibération'] = array(
+            'Service.libelle' => 'Service émetteur',
+            'Deliberation.objet' => 'Objet',
+            'Deliberation.titre'=> 'Titre du projet',
+            'Deliberation.num_pref'=> 'Classification',
+            'Deliberation.date_limite'=> 'A traiter avant le');
         
-        //restaure les valeurs par defaut
-        if($opt == 'revertModification')
-        {
-            $this->Collectivite->id = 1;
-            if($this->Collectivite->saveField('templateProject', $this->Collectivite->getJson9Cases(), true)) {
-                $this->Session->write('Collective.templateProject', json_decode($this->Collectivite->getJson9Cases(),true));
-                $this->Session->setFlash('La restauration à été correctement effectuée', 'growl', array('type' => 'information'));
-            }
-        }
-       
-        $collectivite = $this->Collectivite->find('first', array(
-            'conditions' => array('Collectivite.id' => 1),
-            'fields' => array('templateProject'),
-            'recursive' => -1));
+        $selecteur['Circuit'] = array(
+            'Circuit.nom' => 'Nom du circuit',
+            'Circuit.last_viseur' => 'Dernière action de');
         
-        //on recupere les options d'affichage pour les 9 cases   
-       //groupe global
-        $montableau[] = array('id'=> json_encode(array(
-            'model'=>'Typeacte',
-            'fields'=>'name',
-                )), 'text'=> 'Type d\'acte');
-        $montableau[] = array('id'=> json_encode(array(
-            'model'=>'Seance',
-            'fields'=>'libelle',
-            'text' => 'Séance(s)'
-                )), 'text'=> 'Séance(s)');
-        $montableau[] = array('id'=> json_encode(array(
-            'model'=>'Theme',
-            'fields'=>'libelle',
-            'text' => 'Thème'
-                )), 'text'=> 'Thème');
-        
-        //groupe Deliberation
-        $mongroup['id'] = '';
-        $mongroup['text'] = 'Délibération';
-        $children = array(
-            array('id' => json_encode(array(
-            'model'=>'Service',
-            'fields'=>'libelle',
-            'text'=>'Service émetteur',
-                )), 'text'=> 'Service émetteur'), 
-            array('id' => json_encode(array(
-            'model'=>'Deliberation',
-            'fields'=>'objet'
-                )),'text'=> 'Objet'), 
-            array('id' => json_encode(array(
-            'model'=>'Deliberation',
-            'fields'=>'titre',
-             'text'=>'Titre du projet'
-                )),'text'=> 'Titre du projet'),
-            array('id' => json_encode(array(
-            'model'=>'Deliberation',
-            'fields'=>'num_pref',
-             'text'=>'Classification'
-                )),'text'=> 'Classification'),
-            array('id' => json_encode(array(
-            'model'=>'Deliberation',
-            'fields'=>'date_limite',
-             'text'=>'A traiter avant le'
-                )), 'text'=> 'A traiter avant le'));
-        $mongroup['children'] = $children;
-        $montableau[] = $mongroup;
-        
-        //groupe Circuit
-        $mongroup['id'] = '';
-        $mongroup['text'] = 'Circuit';
-        $children = array(
-            array('id'=> json_encode(array(
-            'model'=>'Circuit',
-            'fields'=>'nom',
-             'text'=>'Circuit'
-                )), 'text'=> 'Nom du circuit'), 
-            array('id'=> json_encode(array(
-            'model'=>'Circuit',
-            'fields'=>'last_viseur',
-             'text'=>'Dernière action de'
-                )), 'text'=> 'Dernière action de'));
-        $mongroup['children'] = $children;
-        $montableau[] = $mongroup;
-        
-        //groupe Infosup
+        //infos supplémentaires
         $this->Infosupdef->virtualFields['nomType'] = 'Infosupdef.nom || \' (\' || Infosupdef.type ||\')\'';
         $this->Infosupdef->virtualFields['idInfosup'] = 'Infosupdef.id';
         $infosupList = $this->Infosupdef->find('list', array(
@@ -259,58 +150,54 @@ class CollectivitesController extends AppController {
             'recursive' => -1,
             'order' => 'nom'
         ));
-        
-        $mongroup['id'] = '';
-        $mongroup['text'] = 'Informations supplementaires';
         $children = array();
         foreach ($infosupList as $key=>$value){
-            
-            $children[] = array('id' => json_encode(array(
-                'model'=>'Infosupdef',
-                'id' => $key,
-                'text' => $value
-                )), 'text' => $value);
+            $children["Infosupdef.id.$key"] = $value;
         }
-        $mongroup['children'] = $children;
-        $montableau[] = $mongroup;
+        $selecteur['Informations supplementaires'] = $children;
+        
+        return $selecteur;
+    }
 
-        $this->set('caseGroup',json_encode($montableau));
-        
-        //On affiche l'enregistrement existant ou celui par defaut
-        if(!empty($collectivite['Collectivite']['templateProject'])){
-            $templateProject = json_decode($collectivite['Collectivite']['templateProject'], true); 
-        }else{
-            $templateProject = json_decode($this->Collectivite->getJson9Cases(), true);
-        }
-        
-        //On affiche temporairement les modifications non enregistrées
-        if($rollback){
-            $templateProject = $caseTotal;
-        }
-                
-        $separator = '';
-        foreach($templateProject as $key=>$value)
-        {
-            if($this->_array_depth($value)>1)
-            {
-                $i=0;
-                $tempValueArray = '';
-                $separator = '';
-                foreach($value as $valueTemp)
-                {
-                    if($i>0) $separator = '&&';
-                    $tempValueArray .= $separator.json_encode($valueTemp);
-                    $i++;
-                }
-                $templateProjectFinal[$key] = $tempValueArray;
-            }
-            else if(!empty($value)){
-                $templateProjectFinal[$key] = json_encode($value);
-            }
-            else {
-                $templateProjectFinal[$key] = '';
+    /**
+     * Affichage de l'editeur des 9 cases pour l'ensemble des projets
+     * @$opt = Appel en méthode $_GET
+     */
+    function edit9Cases($opt=null)
+    {
+        $invalidePost = false;
+        $selecteur = array();
+        $templateProject = $this->Collectivite->getJson9Cases();
+
+        //Sauvegarde des 9 cases
+        if ($this->request->is('post')) {
+            $this->Collectivite->id = 1;
+            $templateProjectPost = array_values($this->request->data);
+            if($this->Collectivite->saveField('templateProject', json_encode($templateProjectPost))) {
+                $this->Session->write('Collective.templateProject', $templateProjectPost);
+                $this->Session->setFlash('La modification à été correctement sauvegardée', 'growl', array('type' => 'information'));
+                $templateProject = $templateProjectPost;
+                unset($templateProjectPost);
             }
         }
-        $this->set('templateProject',$templateProjectFinal);
+        //On remet les valeurs par defaut des 9 cases
+        else if($opt == 'revertModification') {
+            $this->Collectivite->id = 1;
+            if($this->Collectivite->saveField('templateProject', $templateProject)) {
+                $templateProject = json_decode($templateProject,true);
+                $this->Session->write('Collective.templateProject', $templateProject);
+                $this->Session->setFlash('La restauration à été correctement effectuée', 'growl', array('type' => 'information'));
+            } else {
+                $this->Session->setFlash('La restauration à échoué', 'growl', array('type' => 'danger'));
+            }
+            
+        //On affiche l'enregistrement existant en Session
+        } else if($this->Session->check('Collective.templateProject')){
+            $templateProject = $this->Session->read('Collective.templateProject');
+        }
+
+        //on construit les options et on affiche la valeur par defaut pour chaque select
+        $this->set('selecteurProject', $this->_selecteur9Cases());
+        $this->set('templateProject', $templateProject);
     }   
 }

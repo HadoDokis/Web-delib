@@ -403,10 +403,10 @@ class UsersController extends AppController {
         
         $collective = $this->Collectivite->read(array('logo','nom','templateProject'), 1);
         $this->Session->write('Collective.nom', $collective['Collectivite']['nom']);
-        
+
         //Mise en session du template des 9 cases
-        if(!empty($collective['templateProject'])){
-            $templateProject = json_decode($collective['templateProject'], true); 
+        if(!empty($collective['Collectivite']['templateProject'])){
+            $templateProject = json_decode($collective['Collectivite']['templateProject'], true); 
         }else{
             $templateProject = json_decode($this->Collectivite->getJson9Cases(), true);
         }
