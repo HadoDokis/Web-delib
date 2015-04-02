@@ -93,7 +93,7 @@ class ProfilsController extends AppController {
                 /*$aro_id = $this->Aro->find('first', array('conditions' => array('model' => 'Profil', 'foreign_key' => $id), 'fields' => array('id')));
                 $this->Aro->id = $aro_id['Aro']['id'];
                 $this->Aro->saveField('parent_id', $this->data['Profil']['parent_id']);*/
-                $Users = $this->Profil->User->find('all', array('conditions' => array('User.profil_id' => $this->data['Profil']['id']), 'recursive' => -1));
+                $Users = $this->Profil->User->find('all', array('conditions' => array('User.active' => true,'User.profil_id' => $this->data['Profil']['id']), 'recursive' => -1));
                 $nbUsers = count($Users);
                 $cpt = 0;
                 foreach ($Users as $User) {
@@ -157,6 +157,7 @@ class ProfilsController extends AppController {
             $this->Progress->start(200, 100, 200, '#FFCC00', '#006699');
 
             $conditions['AND']['User.profil_id'] = $profil['Profil']['id'];
+            $conditions['AND']['User.active'] = '1';
             $conditions['AND']['User.email ILIKE'] = "%@%";
             $users = $this->Profil->User->find('all', array('conditions' => $conditions,
                 'recursive' => -1)

@@ -115,6 +115,9 @@ class AppModel extends Model {
         // On force la récursivite à -1
         $params['recursive'] = -1;
 
+        // On cache les users inactif
+        $params['conditions'] = array('User.active' => true );
+
         // Execution du find
         $recs = $this->find('all', $params);
 
