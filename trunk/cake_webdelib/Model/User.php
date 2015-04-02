@@ -513,8 +513,8 @@ class User extends AppModel
             )
         );
 
-        $typeactes=$this->find('list',array(
-            'fields' => array('Typeacte.name'),
+        $typeactes = $this->find('list', array(
+            'fields' => array('Typeacte.id','Typeacte.name'),
             'joins' => array(
                 $this->join( 'Aro', array( 'type' => 'INNER' ) ),
                 $this->Aro->join( 'Permission', array( 'type' => 'INNER' ) ),

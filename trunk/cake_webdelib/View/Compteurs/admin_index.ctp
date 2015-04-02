@@ -1,4 +1,5 @@
 <?php
+$this->Html->addCrumb('Liste des compteurs');
 
 echo $this->Bs->tag('h3', 'Liste des compteurs') .
  $this->Bs->table(array(array('title' => 'Libellé'),
@@ -23,4 +24,4 @@ foreach ($compteurs as $compteur) {
     ));
 }
 echo $this->Bs->endTable() .
- $this->Html2->btnAdd("Ajouter un type d'acte", "Ajouter");
+ $this->Html2->btnAdd("Ajouter un compteur", "Ajouter");

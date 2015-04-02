@@ -82,7 +82,7 @@ endif;
 <!-- Contents -->
 <div id="principal" class="container-fluid">
     <?php 
-    echo $this->Html->getCrumbList(array('class'=>'breadcrumb'), __('Mon tableau de bord'));
+    echo $this->Html->getCrumbList(array('class'=>'breadcrumb'), __('Accueil'));
     echo $this->Session->flash(); 
     echo $this->Session->flash('auth', array('element'=>'growl', 'params' => array('type' => 'danger'))); 
     echo $this->fetch('content'); ?>

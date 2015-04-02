@@ -2,7 +2,7 @@
     //echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => $titreVue));
     //echo $this->Html->tag('h2', "$titreVue $nb");
 
-echo $this->Bs->div('panel panel-default');
+echo $this->Bs->div('panel panel-primary');
 echo $this->Bs->div('panel-heading', 
         $this->Bs->row().
         $this->Bs->col('xs8').
@@ -10,9 +10,15 @@ echo $this->Bs->div('panel-heading',
                 ).
         $this->Bs->close().
         $this->Bs->col('xs4').
-        $this->Bs->tag('p', $this->Html->link(__('Voir le contenu de la banette'), 
-                array('controller'=>$this->request['controller'],'action'=>$this->request['action'])
-                ), array('class'=>'text-right')).
+        $this->Bs->tag('p', $this->Bs->btn(__('Voir le contenu de la banette'), 
+                array(
+                    'controller'=>$this->request['controller'],
+                    'action'=>$this->request['action']
+                ), array(
+                    'type'=>'default',
+                    //'type'=>'inverse',
+                    )
+                ),array('class'=>'text-right')).
         $this->Bs->close(2)
         );
 

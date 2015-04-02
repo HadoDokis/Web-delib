@@ -16,7 +16,7 @@ class InfosupdefsController extends AppController
             parent::beforeFilter();
     }
 
-    function admin_index() {
+    function admin_index($type) {
             $this->Filtre->initialisation($this->name.':'.$this->request->action, $this->request->data);
             $conditions =  $this->Filtre->conditions();
             if (!$this->Filtre->critereExists('Actif')) $conditions['actif'] = 1;
@@ -26,7 +26,10 @@ class InfosupdefsController extends AppController
                     'conditions' => $conditions,
                     'order' => 'ordre'));
             $this->set('titre', 'Liste des informations supplémentaires des projets');
-            $this->set('lienAdd', '/infosupdefs/add/Deliberation');
+            $this->set('lienAdd', array('admin' => true,
+                                        'prefix' => 'admin',
+                                        'controller'=>'infosupdefs',
+                                        'action'=>'add', $type));
             if (!$this->Filtre->critereExists()) {
                     $this->Filtre->addCritere('Actif', array('field' => 'Infosupdef.actif',
                             'inputOptions' => array(

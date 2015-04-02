@@ -71,9 +71,9 @@ class TypeseancesController extends AppController {
             $this->set('selectedTypeacteurs', null);
             $this->set('acteurs', $this->Typeseance->Acteur->generateList('Acteur.nom'));
             $this->set('selectedActeurs', null);
-            $this->set('natures', $this->Typeacte->find('list', array('fields' => array('Typeacte.name'))));
-            $this->set('selectedNatures', null);
-            $this->render('edit');
+            $this->set('typeActes', $this->Typeacte->find('list', array('fields' => array('Typeacte.name'))));
+            $this->set('selectedTypeActes', null);
+            $this->render('admin_edit');
         }
     }
 
@@ -153,7 +153,7 @@ class TypeseancesController extends AppController {
             $message = 'Erreur lors de la tentative de suppression du type de séance ' . $typeseance['Typeseance']['libelle'];
         }
         $this->Session->setFlash($message, 'growl');
-        return $this->redirect($this->referer());
+        return $this->redirect($this->previous);
     }
 
 }

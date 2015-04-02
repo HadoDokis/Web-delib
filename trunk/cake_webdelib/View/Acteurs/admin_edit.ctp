@@ -58,10 +58,10 @@ echo $this->Html->tag('div', null, array('class' => 'panel panel-default')) .
 $this->Html->tag('div', 'Type', array('class' => 'panel-heading')) .
 $this->Html->tag('div', null, array('class' => 'panel-body')).
 $this->BsForm->select('Acteur.typeacteur_id', $typeacteurs, array(//data[Acteur][typeacteur_id]
-        'onchange'=>'afficheInfosElus(this);',
-     'id'=>'ActeurTypeacteurId',
-     'label'=>'Type d\'acteur',
-    'selected'=> (empty($acteur['Acteur']['typeacteur_id'])?$typeacteurs[$acteur['Acteur']['typeacteur_id']]:null)
+    'onchange'=>'afficheInfosElus(this);',
+    'id'=>'ActeurTypeacteurId',
+    'label'=>'Type d\'acteur',
+    'selected'=> $this->Html->value('Acteur.typeacteur_id')
          )); 
 
 echo $this->BsForm->input('Acteur.position', array('label' => 'Ordre dans le conseil', 'size' => '3')) .
@@ -72,7 +72,7 @@ echo $this->BsForm->datetimepicker('date_naissance', array('language'=>'fr', 'au
     'style' => 'cursor:pointer',
     'help' => 'Cliquez sur le champs ci-dessus pour choisir la date',
     'readonly' => 'readonly',
-    'value'=>isset($acteur['Acteur']['date_naissance'])?$acteur['Acteur']['date_naissance']:'')).
+    'value'=> $this->Html->value('Acteur.date_naissance'))).
 $this->Bs->close(2);
 
 echo $this->Html->tag('div', null, array('class' => 'panel panel-default')) .

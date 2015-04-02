@@ -38,7 +38,7 @@ class SequencesController extends AppController {
         if ($sortie)
             $this->redirect($this->previous);
         else
-            $this->render('edit');
+            $this->render('admin_edit');
     }
 
     function admin_edit($id = null) {
@@ -74,5 +74,3 @@ class SequencesController extends AppController {
     }
 
 }
-
-?>

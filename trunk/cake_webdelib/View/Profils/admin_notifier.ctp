@@ -17,7 +17,9 @@ echo $this->Fck->load('Profil.content');
 echo $this->Bs->div('btn-group col-md-offset-' . $this->BsForm->getLeft(), null) ;
 echo $this->Html2->btnCancel($previous);
 echo $this->Bs->btn("Envoyer", array('action'=>'index'), 
-        array('type' => "primary", 
+        array(
+            'tag' => 'button',
+            'type' => 'primary', 
             'icon'=>'glyphicon glyphicon-envelope',
             'escape' => false, 
             'title' => __('Envoyer le message aux utilisateurs de ce profil'),

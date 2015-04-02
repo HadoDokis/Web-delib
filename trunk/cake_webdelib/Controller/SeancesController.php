@@ -13,15 +13,13 @@ class SeancesController extends AppController {
             'mapActions' => array(
                 'create' => array('add','getSeancesParTypeseanceAjax'),
                 'read' => array('calendrier', 'index','listerFuturesSeances', 'listerAnciennesSeances',
-                    'delete','edit', 'sortby',           
+                        'edit', 'sortby',           
 			'afficherProjets', 
 			'reportePositionsSeanceDeliberante',  
 			'genererConvoc',   
 			'multiodj',
 			'changePosition',
-			'saisirDebatGlobal',
 			'details',
-			'saisirDebat',
 			'voter',
 			'changeRapporteur',
 			'detailsAvis',
@@ -29,6 +27,7 @@ class SeancesController extends AppController {
 			'saisirSecretaire',
 			'getListActeurs',
                         'sendConvocations',
+                        'saisirDebatGlobal',
                         'sendToIdelibre',
 			'saisirCommentaire','genereFusionToFiles','genereFusionMultiSeancesToClient'
                     ,'downloadZip','genereFusionToClient',
@@ -36,7 +35,7 @@ class SeancesController extends AppController {
                     'downloadAttachedFileConvocation','downloadAttachedFileOrdredujour'
                 ),
                 'update' => array('edit','clore','sendOrdredujour','getSeancesParTypeseanceAjax'),
-                'delete' => array('deleteDebatGlobal','effacerVote','resetVote')),
+                'delete' => array('deleteDebatGlobal', 'saisirDebat', 'delete', 'effacerVote', 'resetVote')),
         ));
 	
 	var $cacheAction = 0;
@@ -590,7 +589,7 @@ class SeancesController extends AppController {
         $this->redirect($this->previous);
     }
 
-    function saisirDebat($delib_id = null, $seance_id = null) {
+    function saisirDebat($delib_id = null, $seance_id = null, $addFile=null) {
 
         $this->set('seance_id', $seance_id);
         $this->set('delib_id', $delib_id);
@@ -606,6 +605,22 @@ class SeancesController extends AppController {
         if ($seance['Seance']['pv_figes'] == 1) {
             $this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...', 'growl', array('type' => 'erreur'));
             return $this->redirect(array('controller' => 'postseances', 'action' => 'index'));
+        }
+        
+        if($this->request->isGet() && !empty($addFile) && $addFile==true)
+        {
+            $file = new File(APP.DS.'Config'.DS.'OdtVide.odt', false);
+            $this->request->data['Deliberation']['id'] = $delib_id;
+            $this->request->data['Deliberation']['texte_doc']['tmp_name'] = $file->pwd();
+            $this->request->data['Deliberation']['texte_doc']['name'] = 'debat.odt';
+            $this->request->data['Deliberation']['texte_doc']['size'] = $file->size();
+            $this->request->data['Deliberation']['texte_doc']['type'] = $file->mime();
+            $this->request->data['Deliberation']['texte_doc']['error'] = false;
+            
+            if ($this->Deliberation->SaveDebat($this->data['Deliberation'])) {
+                $this->Session->setFlash('Débat ajouté', 'growl');
+                return $this->redirect($this->previous);
+            }
         }
 
         if ($this->request->isPost()) {
@@ -637,10 +652,29 @@ class SeancesController extends AppController {
             $this->set('file_debat', $this->SabreDav->newFileDav('Debat_' . $delib_id . '.odt', $deliberation['Deliberation']['debat']));
     }
 
-    public function saisirDebatGlobal($id = null) {
+    public function saisirDebatGlobal($id = null, $addFile=null) {
         $this->set('seance_id', $id);
-        if ($this->request->is('post')) {
-
+        
+        if($this->request->isGet() && !empty($addFile) && $addFile==true)
+        {
+            $file = new File(APP.DS.'Config'.DS.'OdtVide.odt', false);
+            $this->request->data['Seance']['id'] = $id;
+            $this->request->data['Seance']['texte_doc']['tmp_name'] = $file->pwd();
+            $this->request->data['Seance']['texte_doc']['name'] = 'debat_global.odt';
+            $this->request->data['Seance']['texte_doc']['size'] = $file->size();
+            $this->request->data['Seance']['texte_doc']['type'] = $file->mime();
+            $this->request->data['Seance']['texte_doc']['error'] = false;
+            
+            if ($this->Seance->SaveDebatGen($this->data)) {
+                $this->Session->setFlash('Débat global ajouté', 'growl');
+                return $this->redirect($this->previous);
+            }
+            
+            $this->Session->setFlash('Problème lors de la création du document', 'growl', array('type' => 'erreur'));
+            
+            return $this->redirect($this->previous);
+        }
+        if ($this->request->isPost()) {
             $this->request->data['Seance']['id'] = $id;
             if ($this->Seance->SaveDebatGen($this->data)) {
                 $this->Session->setFlash('Débat global enregistré', 'growl');
@@ -680,7 +714,11 @@ class SeancesController extends AppController {
 
         if ($this->Seance->save($data, false)) {
             $this->Session->setFlash('Débat supprimé !', 'growl');
-            return $this->redirect(array('controller' => 'seances', 'action' => 'SaisirDebatGlobal', $id));
+            return $this->redirect(array(
+                'admin'=> false,
+                'prefix'=> null,
+                'controller' => 'seances', 
+                'action' => 'saisirDebatGlobal', $id));
         } else {
             $this->Session->setFlash("Problème survenu lors de la suppression des débats généraux", 'growl', array('type' => 'error'));
             return $this->redirect($this->here);

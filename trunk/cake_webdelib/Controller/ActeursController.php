@@ -10,7 +10,7 @@ class ActeursController extends AppController
                 'create' => array('admin_add'),
                 'read' => array('admin_index', 'admin_view'),
                 'update' => array('admin_edit'),
-                'remove' => array('admin_delete')),
+                'delete' => array('admin_delete')),
         )
         );
     public $uses = array('Acteur', 'Deliberation', 'Vote');
@@ -40,12 +40,18 @@ class ActeursController extends AppController
 
     public function admin_index()
     {
-        $this->Acteur->Behaviors->attach('Containable');
-        $this->paginate = array('Acteur' => array(
-            'limit' => 20,
-            'conditions' => array('Acteur.actif' => 1),
-            'contain' => array('Service', 'Suppleant', 'Typeacteur'),
-            'order' => array('Acteur.position' => 'asc')));
+        $this->paginate = array(
+            'Acteur' => array(
+                'contain' => array(
+                    'Service', 
+                    'Suppleant', 
+                    'Typeacteur'),
+                'conditions' => array('Acteur.actif' => true),
+                'limit' => 20,
+                'recursive'=> -1,
+                'order' => array('Acteur.position' => 'asc')
+            ));
+        
         $this->Paginator->settings = $this->paginate;
         $acteurs = $this->Paginator->paginate('Acteur');
         foreach ($acteurs as &$acteur) {
@@ -91,8 +97,9 @@ class ActeursController extends AppController
             $this->set('typeacteurs', $typeacteurs=Hash::combine($typeacteurs, '{n}.Typeacteur.id', '{n}.Typeacteur.nom'));
             $this->set('services', $this->Acteur->Service->generateTreeList(array('Service.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('selectedServices', null);
-            $this->render('admin_edit');
         }
+        
+        $this->render('admin_edit');
     }
 
     public function admin_edit($id = null)
@@ -157,6 +164,23 @@ class ActeursController extends AppController
             $this->set('services', $this->Acteur->Service->generateTreeList(array('Service.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
             //if (isset($date_naissance)) $this->set('date_naissance', $date_naissance);
         }
+    }
+
+    public function _controleEtSauve()
+    {
+        if (!empty($this->request->data['Acteur']['typeacteur_id'])) {
+            if ($this->Acteur->Typeacteur->field('elu', 'id = ' . $this->request->data['Acteur']['typeacteur_id'])) {
+                // pour un élu : initialisation de 'position' si non définie
+                if (!$this->request->data['Acteur']['position'])
+                    $this->request->data['Acteur']['position'] = $this->Acteur->getPostionMaxParActeursElus() + 1;
+            } else {
+                // pour un non élu : suppression des informations éventuellement saisies (service, position, date naissance)
+                if (array_key_exists('Service', $this->request->data))
+                    $this->request->data['Service']['Service'] = array();
+                $this->request->data['Acteur']['position'] = 999;
+            }
+        }
+        return $this->Acteur->save($this->request->data);
     }
 
     /* dans le controleur car utilisé dans la vue index pour l'affichage */

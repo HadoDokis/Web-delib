@@ -1,4 +1,5 @@
 <?php
+$this->Html->addCrumb('Liste des séquences', array('action'=>'index'));
 
 $panel_left = '<b>Libelle : </b>'.$sequence['Sequence']['nom'].'<br>' .
               '<b>Numéro de la séquence : </b>'.$sequence['Sequence']['num_sequence'].'<br>' .

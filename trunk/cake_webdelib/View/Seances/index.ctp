@@ -1,22 +1,35 @@
 <?php
 if(!isset($this->request['render']) || $this->request['render']!='banette')
-if ($this->params['filtre'] != 'hide') {
-    $this->BsForm->setLeft(0);
-    $this->Html->addCrumb(__('Séances à traiter'));
-    echo $this->Html->tag('h3', __('Séances à traiter'));
-    echo $this->Bs->container(array('class'=>'-fluid')).
-        $this->Bs->row().
-            $this->Bs->col('xs12').
-    $this->BsForm->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'genereFusionMultiSeancesToClient'), 'class' => 'waiter form-inliney'));
-  
-} 
+{
+    if ($this->params['filtre'] != 'hide') {
+        $this->BsForm->setLeft(0);
+        $this->Html->addCrumb(__('Séances à traiter'));
+        echo $this->Html->tag('h3', __('Séances à traiter'));
+        echo $this->Bs->container(array('class'=>'-fluid')).
+            $this->Bs->row().
+                $this->Bs->col('xs12').
+        $this->BsForm->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'genereFusionMultiSeancesToClient'), 'class' => 'waiter form-inliney'));
+
+    } 
+}
 
 if(isset($this->request['render']) && $this->request['render']=='banette'){
-    echo $this->Bs->div('panel panel-default');
-echo $this->Bs->div('panel-heading', __('Séances à traiter').
-        '<span style="float: right">'.$this->Html->link(__('Voir toutes les seances à traiter'), 
-                array('controller'=>$this->request['controller'],'action'=>$this->request['action'])
-                ).'</span>'
+    echo $this->Bs->div('panel panel-primary');
+echo $this->Bs->div('panel-heading',
+        $this->Bs->row().
+        $this->Bs->col('xs8').
+        $this->Bs->tag('h4', __('Séances à traiter') ).
+        $this->Bs->close().
+        $this->Bs->col('xs4').
+        $this->Bs->tag('p', $this->Bs->btn(__('Voir toutes les seances à traiter'), 
+                array(
+                    'controller'=>$this->request['controller'],
+                    'action'=>$this->request['action']
+                ), array(
+                    'type'=>'default',
+                    )
+                ),array('class'=>'text-right')).
+        $this->Bs->close(2)
         );
 }
 ?>
@@ -371,7 +384,7 @@ echo $this->Bs->div('panel-heading', __('Séances à traiter').
                 echo $this->Html->link('<span class="fa fa-edit"></span>',
                     array('controller' => 'seances', 'action' => 'edit', $seance['Seance']['id']),
                     array(
-                        'class' => 'bouton_modifier btn btn-default',
+                        'class' => 'bouton_modifier btn btn-primary',
                         'title' => 'Modifier la séance du ' . $seance['Seance']['date'],
                         'escape' => false,
                     ));
@@ -394,7 +407,7 @@ echo $this->Bs->div('panel-heading', __('Séances à traiter').
 </div>
 <?php
 if($this->request['render']=='banette')
-    echo('</div>');
+    echo $this->Bs->close();
 else
 if (!empty($models) && !empty($seances)) {
     $this->BsForm->setLeft(0);
@@ -414,7 +427,9 @@ if (!empty($models) && !empty($seances)) {
     $this->html->tag('em', 'Note : Pour générer un document multi-séances, cochez les séances souhaitées dans la liste, sélectionnez le modèle d\'édition, puis cliquez sur le bouton "Générer le document".', array('class'=>'help-block')).
     $this->Bs->close();
 }
+echo $this->Bs->close();
 echo $this->BsForm->end();
+
 
 ?>
 <script type="text/javascript">

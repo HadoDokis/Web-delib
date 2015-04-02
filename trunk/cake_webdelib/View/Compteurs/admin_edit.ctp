@@ -1,4 +1,6 @@
 <?php 
+$this->Html->addCrumb('Liste des compteurs', array('action'=>'index'));
+
 $aideformatOptions =  array(
         'AIDEFORMAT' => 'Sélectionner les formats dans la liste', 
         '#s#'=> 'numéro de la séquence',
@@ -24,6 +26,7 @@ $aideformatDateOptions =  array(
 
 echo $this->Html->script('compteurs.js');
 if ($this->Html->value('Compteur.id')) {
+    $this->Html->addCrumb('Modification d\'un compteur');
     echo $this->Bs->tag('h3', 'Modification d\'un compteur') .
     $this->BsForm->create('Compteur', array(
          'url' => array(
@@ -35,6 +38,7 @@ if ($this->Html->value('Compteur.id')) {
              ), 
         'type' => 'post'));
 } else {
+    $this->Html->addCrumb('Création d\'un compteur');
     echo $this->Bs->tag('h3', 'Création d\'un compteur') .
     $this->BsForm->create('Compteur', array(
          'url' => array(

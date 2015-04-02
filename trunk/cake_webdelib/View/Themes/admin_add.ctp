@@ -6,7 +6,10 @@ $this->Html->addCrumb(__('Ajout d\'un thème'));
 echo $this->Bs->tag('h3', __('Ajout d\'un thème'));
 
 
-echo $this->BsForm->create('Theme');
+echo $this->BsForm->create('Theme',array('url' => array(
+    'admin'=> true,
+    'prefix'=> 'admin',
+    'controller' => 'themes', 'action' => 'add')));
 echo $this->BsForm->input('Theme.libelle', array('label' => 'Libellé <abbr title="obligatoire">*</abbr>', 'maxlength' => '500')); 
 echo $this->BsForm->input('Theme.order', array('label' => __('Critère de tri')));
 echo $this->BsForm->select('Theme.parent_id', $themes,  array(

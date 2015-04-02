@@ -33,7 +33,18 @@ class Service extends AppModel
             'limit' => '',
             'unique' => true,
             'finderQuery' => '',
-            'deleteQuery' => '')
+            'deleteQuery' => ''),
+        'UsersService' => array(
+            'classname' => 'UsersService',
+            'joinTable' => 'users_services',
+            'foreignKey' => 'service_id',
+            'associationForeignKey' => 'user_id',
+            'conditions' => '',
+            'order' => '',
+            'limit' => '',
+            'unique' => true,
+            'finderQuery' => '',
+            'deleteQuery' => ''),
     );
     
     public $actsAs = array(
@@ -149,5 +160,93 @@ class Service extends AppModel
         }
         
         return array('Service' => array('alias' => $data['Service']['name']));
+    }
+    
+    function _getDataJson($options){
+        $conditionsVisa = '';
+        if(!empty($options['conditions']['"Visas"."id" IN '])){
+            $conditionsVisa ='WHERE wkf_visas.id IN (';
+            foreach ($options['conditions']['"Visas"."id" IN '] as $val){
+                $conditionsVisa .= $conditionsVisa=='WHERE wkf_visas.id IN ('?$val:','.$val;
+            }
+            $conditionsVisa .= ')';
+            unset($options['conditions']['"Visas"."id" IN ']);
+        }
+
+        $options['joins'] = array(
+        array('table' => 'users_services',
+            'alias' => 'usersServices',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Service.id = usersServices.service_id',
+            )
+        ),
+        array('table' => '(SELECT traitement_id,trigger_id,action,date  FROM wkf_visas '.$conditionsVisa.' GROUP BY traitement_id,trigger_id,action,date)',
+            'alias' => 'Visas',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'usersServices.user_id = Visas.trigger_id'
+            )
+        ),
+        array('table' => 'wkf_traitements',
+            'alias' => 'Traitements',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Traitements.id = Visas.traitement_id'
+            )    
+        ),
+         array('table' => 'deliberations',
+            'alias' => 'Deliberation',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Traitements.target_id = Deliberation.id'
+            )
+        ),
+        array('table' => 'services',
+            'alias' => 'Services2',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Services2.id = Deliberation.service_id'
+            )
+        ),
+        array('table' => 'themes',
+            'alias' => 'Theme',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Theme.id = Deliberation.theme_id'
+            )
+        ),
+        array('table' => 'wkf_circuits',
+            'alias' => 'Circuit',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Circuit.id = Deliberation.circuit_id'
+            )
+        ),
+        array('table' => 'typeactes',
+            'alias' => 'Typeacte',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Typeacte.id = Deliberation.typeacte_id'
+            )
+        ),
+        array('table' => 'deliberations_seances',
+            'alias' => 'DeliberationsSeances',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'DeliberationsSeances.deliberation_id = Deliberation.id'
+            )
+        ),
+        array('table' => 'seances',
+            'alias' => 'Seance',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'DeliberationsSeances.seance_id = Seance.id'
+            )
+        ),
+    );
+    $options['recursive'] = -1;
+    $services = $this->find('all',$options);
+    return $services;
     }
 }
