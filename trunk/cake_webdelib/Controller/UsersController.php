@@ -21,7 +21,7 @@ class UsersController extends AppController {
                                         'getNom',
                                         'getPrenom',
                                         'getVille',
-                                        'view',
+                                        'admin_view',
                                         'admin_index','manager_index'),
                     'changeFormatSortie',
                     'changeUserMdp',
@@ -29,7 +29,7 @@ class UsersController extends AppController {
                     'changeServiceEmetteur',
                     'create' => array('admin_add','admin_changeMdp','manager_add','manager_changeMdp'),
                     'update' => array('admin_edit','manager_edit'),
-                    'delete' => array('admin_delete','manager_delete'),
+                    'delete' => array('admin_delete','manager_delete','admin_enable','admin_disable'),
                     'allow' => array('login', 'logout')
                                     )
         ),
@@ -51,7 +51,7 @@ class UsersController extends AppController {
         $conditions =  $this->Filtre->conditions();
         if (!$this->Filtre->critereExists()) {
             //Définition d'un champ virtuel pour affichage complet des informations
-            $this->User->virtualFields['name'] = 'User.prenom || \' \' || User.nom || \' (\' || User.username || \')\'';
+            $this->User->virtualFields['name'] = 'User.prenom || \' \' || User.nom || \' (\' || User.username || \' \' || User.active || \')\'';
             $users = $this->User->find('list', array(
                 'fields'=> array('id', 'name'),
                 'order' => 'username',
@@ -109,7 +109,8 @@ class UsersController extends AppController {
                 'User.nom', 
                 'User.prenom', 
                 'User.telfixe', 
-                'User.telmobile'),
+                'User.telmobile',
+                'User.active'),
             
             'contain' => array(
                 'Profil.name',
@@ -138,7 +139,7 @@ class UsersController extends AppController {
         $this->set('users', $users);
     }
 
-    function view($id = null) {
+    function admin_view($id = null) {
         $user = $this->User->read(null, $id);
         if (!$user) {
             $this->Session->setFlash('Utilisateur introuvable', 'growl');
@@ -308,70 +309,106 @@ class UsersController extends AppController {
     }
 
     function admin_delete($id = null) {
-		$messageErreur = '';
-		$user = $this->User->find('first' , array(
+        $messageErreur = '';
+        $user = $this->User->find('first' , array(
             'conditions' => array('User.id' => $id),
             'fields'     => array('id', 'username'),
             'recursive'  => -1));
-		if (empty($user))
-			$this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
-		elseif (!$this->_isDeletable($user, $messageErreur)) {
-			$this->Session->setFlash($messageErreur, 'growl', array('type'=>'erreur'));
-		} elseif ($this->User->delete($id)) {
-			$this->Session->setFlash('L\'utilisateur \''.$user['User']['username'].'\' a été supprimé', 'growl');
-		}
-		$this->redirect('/users/index');
-	}
+        if (empty($user))
+                $this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
+        elseif (!$this->_isDeletable($user, $messageErreur)) {
+                $this->Session->setFlash($messageErreur, 'growl', array('type'=>'erreur'));
+        } elseif ($this->User->delete($id)) {
+                $this->Session->setFlash('L\'utilisateur \''.$user['User']['username'].'\' a été supprimé', 'growl');
+        }
+        $this->redirect('/users/index');
+    }
+    
+    /**
+     * Activer un compte utilisateur
+     */
+    function admin_enable($id = null) {
+        $this->_enableUser($id, true);
+    }
 
-	function getNom ($id) {
-		$condition = "User.id = $id";
-		$fields = "nom";
-		$dataValeur = $this->User->findAll($condition, $fields);
-		if (isset($dataValeur['0'] ['User']['nom']))
-			return $dataValeur['0'] ['User']['nom'];
-		else
-			return '';
-	}
+    /**
+     * Désactiver un compte utilisateur
+     */
+    function admin_disable($id = null) {
+        $this->_enableUser($id, false);
+    }
+    
+    /**
+     * Active ou desactive un compte utilisateur
+     * @param int $id
+     * @param bool $enabled
+     */
+    private function _enableUser($id = null, $enabled = false) {
+        $user = $this->User->find('first' , array(
+            'conditions' => array('User.id' => $id),
+            'fields'     => array('id', 'username','User.active'),
+            'recursive'  => -1));
+        if (empty($user)) {
+            $this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
+        }else{
+            $this->User->id = $id;
+            if ($this->User->saveField('active', $enabled)) {
+                $this->Session->setFlash('L\'utilisateur \''.$user['User']['username'].'\' a été '.(($enabled)?'activé':'désactivé'), 'growl');
+            }
+        }
+        
+        $this->redirect($this->previous);
+    }
+    
+    function getNom ($id) {
+            $condition = "User.id = $id";
+            $fields = "nom";
+            $dataValeur = $this->User->findAll($condition, $fields);
+            if (isset($dataValeur['0'] ['User']['nom']))
+                    return $dataValeur['0'] ['User']['nom'];
+            else
+                    return '';
+    }
 
-	function getPrenom ($id) {
-		$condition = "User.id = $id";
-		$fields = "prenom";
-		$dataValeur = $this->User->findAll($condition, $fields);
-		if (isset($dataValeur['0'] ['User']['prenom']))
-			return $dataValeur['0'] ['User']['prenom'];
-		else
-			return '';
-	}
+    function getPrenom ($id) {
+            $condition = "User.id = $id";
+            $fields = "prenom";
+            $dataValeur = $this->User->findAll($condition, $fields);
+            if (isset($dataValeur['0'] ['User']['prenom']))
+                    return $dataValeur['0'] ['User']['prenom'];
+            else
+                    return '';
+    }
 
-	function getAdresse ($id) {
-		$condition = "User.id = $id";
-		$fields = "adresse";
-		$dataValeur = $this->User->findAll($condition, $fields);
-		if (isset($dataValeur['0'] ['User']['adresse']))
-			return $dataValeur['0'] ['User']['adresse'];
-		else
-			return '';
-	}
+    function getAdresse ($id) {
+            $condition = "User.id = $id";
+            $fields = "adresse";
+            $dataValeur = $this->User->findAll($condition, $fields);
+            if (isset($dataValeur['0'] ['User']['adresse']))
+                    return $dataValeur['0'] ['User']['adresse'];
+            else
+                    return '';
+    }
 
-	function getCP ($id) {
-		$condition = "User.id = $id";
-		$fields = "CP";
-		$dataValeur = $this->User->findAll($condition, $fields);
-		if (isset($dataValeur['0'] ['User']['CP']))
-			return $dataValeur['0'] ['User']['CP'];
-		else
-			return '';
-	}
+    function getCP ($id) {
+            $condition = "User.id = $id";
+            $fields = "CP";
+            $dataValeur = $this->User->findAll($condition, $fields);
+            if (isset($dataValeur['0'] ['User']['CP']))
+                    return $dataValeur['0'] ['User']['CP'];
+            else
+                    return '';
+    }
 
-	function getVille ($id) {
-		$condition = "User.id = $id";
-		$fields = "ville";
-		$dataValeur = $this->User->findAll($condition, $fields);
-		if (isset($dataValeur['0'] ['User']['ville']))
-			return $dataValeur['0'] ['User']['ville'];
-		else
-			return '';
-	}
+    function getVille ($id) {
+            $condition = "User.id = $id";
+            $fields = "ville";
+            $dataValeur = $this->User->findAll($condition, $fields);
+            if (isset($dataValeur['0'] ['User']['ville']))
+                    return $dataValeur['0'] ['User']['ville'];
+            else
+                    return '';
+    }
 
     function login()
     {

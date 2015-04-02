@@ -492,7 +492,10 @@ class DeliberationsController extends AppController {
                 'conditions' => $condition,
                 'contain' => array('User' => array(
                     'fields' => array('id','username','nom','prenom'),
-                    'conditions' => array('User.id <>' => $this->Auth->user('id')))),
+                    'conditions' => array(
+                        'User.id <>' => $this->Auth->user('id'),
+                        'User.active' => true,
+                        ))),
                 'recursive' => -1,
                 ));
             $listeusers = array();
@@ -921,7 +924,7 @@ class DeliberationsController extends AppController {
             $users = $this->Deliberation->Service->find('all',array(
                 'fields' => array('Service.id'),
                 'conditions' => $condition,
-                'contain' => array('User' => array('fields' => array('User.id','User.username','User.nom','User.prenom'),'conditions' => array('User.id <>' => $user['Deliberation']['redacteur_id']))),
+                'contain' => array('User' => array('fields' => array('User.id','User.username','User.nom','User.prenom'),'conditions' => array('User.active' => true, 'User.id <>' => $user['Deliberation']['redacteur_id']))),
                 'recursive' => -1,
                 ));
             $listeusers = array();
@@ -1572,6 +1575,7 @@ class DeliberationsController extends AppController {
         //on récupaire tout les utilisateurs
             $redacteurs = $this->Deliberation->Redacteur->find('all',array(
                'fields' => array('Redacteur.id','Redacteur.username','Redacteur.nom','Redacteur.prenom'), 
+                'conditions' => array('User.active' => true),
                 'recursive' => -1,
                 ));
             // on format les données pour le select id => text
@@ -4860,7 +4864,6 @@ class DeliberationsController extends AppController {
         $this->response->download($filename);
         return $this->response;
     }
-    
     
     public function beforeFilter() {
         parent::beforeFilter();

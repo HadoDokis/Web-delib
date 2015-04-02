@@ -13,23 +13,35 @@ echo $this->Bs->tag('h3', 'Liste des utilisateurs') .
         ), array('hover', 'striped'));
 foreach ($users as $user) {
     $services='';
-    foreach ($user['Service'] as $service)
-        if (is_array($service))
+    $user_actif = $user['User']['active'];
+    foreach ($user['Service'] as $service){
+        if (is_array($service)){
             $services.=$service['name'] . $this->Html->tag(null, '<br />');
-    echo $this->Bs->tableCells(array(
-        $user['User']['username'],
-        $user['User']['nom'],
-        $user['User']['prenom'],
-        $user['Profil']['name'],
-        $services,
-        $this->Html->nestedList($user['Typeacte']),
+        }
+    }
+    if (!$user_actif){ echo $this->Bs->lineColor('danger'); }
+    echo $this->Bs->cell($user['User']['username']) .
+    $this->Bs->cell($user['User']['nom']) .
+    $this->Bs->cell($user['User']['prenom']) .
+    $this->Bs->cell($user['Profil']['name']) .
+    $this->Bs->cell($services) .
+    $this->Bs->cell($this->Html->nestedList($user['Typeacte'])) .
+    $this->Bs->cell(
         $this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'users', 'action' => 'view', $user['User']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn($this->Bs->icon('lock'), array('controller' => 'users', 'action' => 'changeMdp', $user['User']['id']), array('type' => 'default', 'title' => 'Nouveau mot de passe','escape'=>false)) .
         $this->Bs->btn(null, array('controller' => 'users', 'action' => 'edit', $user['User']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-        $this->Bs->btn(null, array('controller' => 'users', 'action' => 'delete', $user['User']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$user['User']['is_deletable'] ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer :' . $user['User']['username'] . ' ?') .
-        $this->Bs->close()
-    ));
+        $this->Bs->btn(null, array('controller' => 'users', 'action' => 'delete', $user['User']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$user['User']['is_deletable'] ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer : ' . $user['User']['username'] . ' ?') .
+        $this->Bs->btn(null, array(
+               'controller' => 'users', 
+               'action' => ($user_actif)?'disable':'enable', 
+               $user['User']['id']), array(
+                   'type' => 'default', 
+                   'icon' => ($user_actif)?'toggle-on':'toggle-off', 
+                   'title' => ($user_actif)?'Désactiver':'Activer'),
+                   'Êtes vous sur de vouloir '.(($user_actif)?'désactiver':'activer').' : ' . $user['User']['username'] . ' ?') .
+    $this->Bs->close());
+
 }
 echo $this->Bs->endTable() .
         $this->Paginator->numbers(array(
