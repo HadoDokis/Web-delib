@@ -28,9 +28,8 @@ if ($mode == 'edit') {
 if (empty($annexes)) {
         $annexes = array();
         $aTableOptions['attributes']['style'] = 'display:none;';
-        $aTableOptions['class'] = 'bootstrap-table';
 }
-echo $this->Bs->table($aTitles, array('hover', 'striped'), $aTableOptions);
+echo $this->Bs->table($aTitles, array('hover', 'striped','bootstrap-table'), $aTableOptions);
 
 //Mettre dans le modèle
 $aPosition=array();
@@ -49,9 +48,12 @@ foreach ($annexes as $key=>$annexe) {
         
     $this->Bs->lineAttributes($aOptions);
     
-    $sPosition=$this->Html->tag('div', $annexe['position'], array('class' => 'annexe-view'));
+    $sPosition=$this->Html->tag('div', $annexe['position'], 
+            array('class' => 'annexe-view',
+                  'id' => 'afficheAnnexePosition' . $annexe['id'],
+                  'data-valeurinit' => $annexe['position']));
     $sPosition.=$this->Bs->div('annexe-edit', null, array('style' => 'display:none;'));
-    $sPosition.=$this->BsForm->select('Annex.position', $aPosition, array(
+    $sPosition.=$this->BsForm->select('AnnexesAModifier.' . $annexe['id'] . '.position', $aPosition, array(
             'value' => $annexe['position'],
             'autocomplete'=>'off',
             'label'=>false,

@@ -1083,13 +1083,10 @@ class DeliberationsController extends AppController {
                                 'edition_data' => NULL,
                                 'data_pdf' => NULL));
                         } else {
-                            $this->Annex->save(array(
-                                'id' => $annexeId,
-                                'titre' => $annexe['titre'],
-                                'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
-                                'joindre_fusion' => $annexe['joindre_fusion'],
-                                'edition_data' => NULL,
-                                'data_pdf' => NULL));
+                            $annexe['edition_data'] = NULL;
+                            $annexe['data_pdf'] = NULL;
+                            $annexe['id'] = $annexeId;
+                            $this->Annex->save($annexe);
                         }
                         if (!empty($this->Annex->validationErrors)) {
                             $this->Annex->rollback();
@@ -1174,19 +1171,19 @@ class DeliberationsController extends AppController {
                 $msg_error = '';
                 if (!empty($annexesErrors)) {
                     foreach ($annexesErrors as $annexeName => $annexError) {
-                        $msg_error .= "<strong>Annexe &apos;" . $annexeName . "&apos; :</strong><br>";
+                        $msg_error .= "Annexe '" . $annexeName . "' : \n";
                         foreach ($annexError as $error) {
-                            $msg_error .= "- " . $error . "<br/>";
+                            $msg_error .= "- " . $error . "\n";
                         }
                     }
-                    $this->Session->setFlash($msg_annexe_error, 'growl', array('type' => 'erreur'));
+                    $this->Session->setFlash($msg_error, 'growl', array('type' => 'erreur'));
                 }
                 $InfosupErrors = $this->Deliberation->Infosup->invalidFields();
                 if (!empty($InfosupErrors)) {
                     foreach ($InfosupErrors as $InfosupName => $InfosupError) {
-                        $msg_error .= "<strong>Information supplémentaire :</strong><br>";
+                        $msg_error .= "Information supplémentaire : \n";
                         foreach ($InfosupError as $error) {
-                            $msg_error .= "- " . $error . "<br/>";
+                            $msg_error .= "- " . $error . "\n";
                         }
                     }
                 }

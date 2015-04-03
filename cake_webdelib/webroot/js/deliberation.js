@@ -36,7 +36,7 @@ $(document).ready(function () {
     
         return false;
     });
-
+ 
     $("#DeliberationEditForm, #DeliberationAddForm").submit(function () {
         $(window).unbind("beforeunload");
     });
@@ -75,23 +75,50 @@ $(document).ready(function () {
     
     //modifier l'ordre des annnexes 
     $('#tableAnnexesdelibPrincipale .selectone').change(function(){
-        var new_position = $( this ).val();
-        var latest_position = $(this).closest('tr').attr('data-position');
-        //on met a jour la position
-        if (latest_position != new_position){
-            //console.log('Avant : ' + $(this).closest('tr').attr('data-position') + ' Devient :' + new_position );
-            $(this).closest('tr').attr('data-position', new_position);
-            //on boucle sur le tableau pour reorganiser les positions inférieurs
-            /*$('#tableAnnexesdelibPrincipale tr').each(function(){
-                //on decale d'un cran en dessous la ligne
-                console.log('Avant : ' + $(this).attr('data-position') + ' Devient :' + (parseInt($(this).attr('data-position')) + 1) );
-                $(this).attr('data-position', (parseInt($(this).attr('data-position')) + 1) );
-            });*/
-        }
-        //on met a jour l'affichage
+        
+        //on prends l'id de l'annexe dont on souhaite changer la position
+        //et celui de destination, ainsi que leur position initiale respective
+        var annexe_source_id = $(this).closest('tr').attr('data-annexeid');
+        var annexe_source_position_initiale = $(this).closest('tr').attr('data-position');
+        var annexe_destination_id = $('#tableAnnexesdelibPrincipale').find('[data-position=' + $( this ).val() + ']').attr('data-annexeid');
+        var annexe_destination_position_initiale = $( this ).val();    
+
+        var annexe_destination = $('#tableAnnexesdelibPrincipale #editAnnexe' + annexe_destination_id);
+        var annexe_source = $('#tableAnnexesdelibPrincipale #editAnnexe' + annexe_source_id);
+        //on switch la position de l'annexe de destination avec celui d'origine
+        annexe_destination.attr('data-position', annexe_source_position_initiale);
+        annexe_source.attr('data-position', annexe_destination_position_initiale);
+        
+        //on met a jour les positions de source et de destination des text et selected
+        annexe_destination.find('.selectone').select2("val", annexe_source_position_initiale);
+        annexe_destination.find('.annexe-view:first').html( annexe_source_position_initiale );
+        annexe_source.find('.selectone').select2("val", annexe_destination_position_initiale);
+        annexe_source.find('.annexe-view:first').html( annexe_destination_position_initiale );
+
+        //on met a jour l'ordre d'affichage
         mettreEnOrdre('tableAnnexesdelibPrincipale', 'data-position');
     });
 });
+
+
+    
+//modifier l'ordre des annnexes 
+function mettreEnOrdre(table_id, type){
+
+    var $table=$('#' + table_id);
+
+    var rows = $table.find('tr').get();
+    rows.sort(function(a, b) {
+    var keyA = $(a).attr(type);
+    var keyB = $(b).attr(type);
+    if (keyA < keyB) return -1;
+    if (keyA > keyB) return 1;
+    return 0;
+    });
+    $.each(rows, function(index, row) {
+    $table.children('tbody').append(row);
+    });
+}
 
 function disableExitWarning() {
     $(window).unbind('beforeunload');
@@ -329,6 +356,7 @@ function annulerModifierAnnexe(annexeId) {
     $bloc.find('#modifieAnnexeTitre' + annexeId).val($bloc.find('#afficheAnnexeTitre' + annexeId).attr('data-valeurinit'));
     $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('checked', $bloc.find('#afficheAnnexeCtrl' + annexeId).attr('data-valeurinit'));
     $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', $bloc.find('#afficheAnnexeFusion' + annexeId).attr('data-valeurinit'));
+    $bloc.find('#modifieAnnexePosition' + annexeId).prop('checked', $bloc.find('#afficheAnnexePosition' + annexeId).attr('data-valeurinit'));
    
     $bloc.removeClass('warning').removeClass('aModifier').removeAttr('title');
     
@@ -386,22 +414,4 @@ function modifierAnnexe(annexeId) {
     $bloc.find('.annexe-edit-btn').hide();
     $bloc.find('.annexe-edit').show();
     $bloc.find('.annexe-cancel-btn').show();
-}
-
-//modifier l'ordre des annnexes 
-function mettreEnOrdre(table_id, type){
-
-    var $table=$('#' + table_id);
-
-    var rows = $table.find('tr').get();
-    rows.sort(function(a, b) {
-    var keyA = $(a).attr(type);
-    var keyB = $(b).attr(type);
-    if (keyA < keyB) return -1;
-    if (keyA > keyB) return 1;
-    return 0;
-    });
-    $.each(rows, function(index, row) {
-    $table.children('tbody').append(row);
-    });
 }
