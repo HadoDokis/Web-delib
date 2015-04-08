@@ -41,7 +41,8 @@ foreach ($annexes as $key=>$annexe) {
     $aOptions=array(
         'id' => $mode.'Annexe' . $annexe['id'],
         'data-annexeid' => $annexe['id'],
-        'data-position' => $annexe['position']
+        'data-position' => $annexe['position'],
+        'data-valeurinit' => $annexe['position']
     );
     if (!empty($ref))
         $aOptions['data-ref'] = $ref;
@@ -50,15 +51,16 @@ foreach ($annexes as $key=>$annexe) {
     
     $sPosition=$this->Html->tag('div', $annexe['position'], 
             array('class' => 'annexe-view',
-                  'id' => 'afficheAnnexePosition' . $annexe['id'],
-                  'data-valeurinit' => $annexe['position']));
+                  'id' => 'afficheAnnexePosition' . $annexe['id']
+                  ));
     $sPosition.=$this->Bs->div('annexe-edit', null, array('style' => 'display:none;'));
     $sPosition.=$this->BsForm->select('AnnexesAModifier.' . $annexe['id'] . '.position', $aPosition, array(
             'value' => $annexe['position'],
             'autocomplete'=>'off',
             'label'=>false,
+            'disabled' => true,
             'class'=>'input-sm select2 selectone',
-            'id'=>'modifieAnnexeOrdre[]',
+            'id'=>'modifieAnnexePosition' . $annexe['id'],
     ));
     $sPosition.= $this->Bs->close();
         
@@ -193,7 +195,7 @@ foreach ($annexes as $key=>$annexe) {
     }   
 }
 echo $this->Bs->endTable();
-
+echo $this->Form->hidden('', array('id' => 'refProjet', 'disabled' => 'disabled', 'value' => $ref));
 if ($mode != 'edit') return;
 // div pour la suppression des annexes
 echo $this->Html->tag('div', '', array('id' => 'supprimeAnnexes' . $ref, 'style' => 'display:none'));

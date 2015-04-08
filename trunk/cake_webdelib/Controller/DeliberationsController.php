@@ -428,7 +428,7 @@ class DeliberationsController extends AppController {
             }
             $this->set('typeseances', $typeseances);
 
-            // initialisation dekjhlkjlkjlkj la liste des séances
+            // initialisation de la liste des séances
             if (!empty($this->request->data['Seance'])) {
                 $seances = array();
                 if (!empty($this->request->data['Typeseance'])) {
@@ -1054,7 +1054,7 @@ class DeliberationsController extends AppController {
                         //Cas bloc annexe vide
                         if (empty($annexe['file']['name']))
                             continue;
-                        if ($annexe['ref'] == 'delibPrincipale' || $annexe['ref'] == 'delibRattachee' . $id)
+                        if (isset($annexe['ref']) && ( $annexe['ref'] == 'delibPrincipale' || $annexe['ref'] == 'delibRattachee' . $id))
                             $success &= $this->_saveAnnexe($id, $annexe, $annexesErrors);
                     }
                 }

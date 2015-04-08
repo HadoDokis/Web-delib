@@ -16,19 +16,25 @@ $this->BsForm->input('Annex.0.file', array(
     'data-iconName'=>'fa fa-file-text-o',
     'data-badge'=> false,
     'title' => 'Document', 
-    'class' => 'filestyle'
+    'class' => 'filestyle',
+    'disabled' => true
    // 'after' => $this->Html->tag('p', 'Document obligatoire !', array('class' => "error-message", 'id' => 'annexe-error-message', 'style' => "display: none"))
     )).
 $this->Bs->div('spacer', '').
-$this->BsForm->input('Annex.0.titre', array('label' => 'Titre', 'autocomplete' => 'off')).
+$this->BsForm->input('Annex.0.titre', array(
+    'label' => 'Titre',
+    'disabled' => true,
+    'autocomplete' => 'off')).
 $this->Html->tag('div', '', array('class' => 'spacer')).
 $this->BsForm->checkbox('Annex.0.ctrl', array(
     'label' => __('Joindre au controle de légalité'), 
+    'disabled' => true,
     //'inline'=> true,
     'checked' => false)).
 $this->Bs->div('spacer', '').
 $this->BsForm->checkbox('Annex.0.fusion', array(
     'label' => __('Joindre à la fusion'),
+    'disabled' => true,
     //'inline' => true,
     'checked' => true)
 ).
