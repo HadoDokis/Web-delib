@@ -7,8 +7,8 @@
  *
  * Description : Fenêtre modale contenant un formulaire pour l'ajout d'annexe
  */
-$body=$this->Form->hidden('Annex.0.ref', array('id' => 'refDelib')).
-$this->Form->hidden('Annex.0.numAnnexe', array('id' => 'numAnnexe')).
+$body=$this->Form->hidden('Annex.0.ref', array('id' => 'refDelib','disabled' => true)).
+$this->Form->hidden('Annex.0.numAnnexe', array('id' => 'numAnnexe','disabled' => true)).
 $this->BsForm->input('Annex.0.file', array(
     'label' => 'Document <abbr title="obligatoire">*</abbr>', 
     'type' => 'file', 
