@@ -47,6 +47,34 @@ class Annex extends AppModel {
             'message' => 'Le titre du fichier est trop long (200 caract&egrave;res maximum)', 'growl')
     );
     
+    
+        
+    /**
+     * En cas de suppresion ou de modifcation d'un annexe 
+     * on remet l'ordre de chaque position à jour,
+     * pour ne pas perturber l'affichage
+     * @delibId Integer : Numero de la deliberation
+     */
+    public function _reorderAnnex($delibId=NULL) {
+        if (!empty($delibId)) {
+            $annexes = $this->find('all', array(
+                'recursive' => -1,
+                'fields' => array('id'),
+                'conditions' => array('foreign_key' => $delibId),
+                'order' => array('Annex.position' => 'ASC')
+            ));
+            foreach($annexes as $key=>$annexe) {            
+                $this->id = $annexe['Annex']['id'];
+                $this->saveField('position', ++$key);
+            }
+        }
+    }
+    
+    public function afterSave($created, $options) {
+        if(!empty($options['delibId']))
+        $this->__reorderAnnex($options['delibId']);
+    }
+    
     /**
      * Regarde dans le fichier formats.inc si le document peut être envoyé au controle de légalité
      * @return bool

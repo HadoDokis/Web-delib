@@ -610,7 +610,9 @@ class DeliberationsController extends AppController {
             $newAnnexe['Annex']['position'] = $annexe['numAnnexe'];
             $newAnnexe['Annex']['foreign_key'] = $delibId;
             $newAnnexe['Annex']['titre'] = $annexe['titre'];
-            $newAnnexe['Annex']['joindre_ctrl_legalite'] = $annexe['ctrl'];
+            if(isset($annexe['ctrl'])){
+                $newAnnexe['Annex']['joindre_ctrl_legalite'] = $annexe['ctrl'];
+            }
             $newAnnexe['Annex']['joindre_fusion'] = $annexe['fusion'];
 
             $file = new File($annexe['file']['tmp_name'], false);
@@ -632,7 +634,7 @@ class DeliberationsController extends AppController {
             $newAnnexe['Annex']['filename'] = $annexe['file']['name'];
             $file->close();
 
-            if (!$this->Annex->save($newAnnexe['Annex'])) {
+            if (!$this->Annex->save($newAnnexe['Annex'], array('delibId' => $delibId))) {
                 $this->Annex->rollback();
                 foreach ($this->Annex->validationErrors as $error_annexe) {
                     $annexesErrors[$titre][] = implode(',', $error_annexe);
@@ -1048,6 +1050,7 @@ class DeliberationsController extends AppController {
                     if (!$success)
                         unset($this->request->data['Infosup']);
                 }
+
                 // sauvegarde des nouvelles annexes
                 if (array_key_exists('Annex', $this->data)){
                     foreach ($this->data['Annex'] as $annexe) {
@@ -1063,8 +1066,8 @@ class DeliberationsController extends AppController {
                     foreach ($this->data['AnnexesASupprimer'] as $annexeId){
                         $this->Annex->delete($annexeId);
                     }
+                    $this->Annex->_reorderAnnex($id);
                 }
-
                 // Modification des annexes
                 if (array_key_exists('AnnexesAModifier', $this->data)) {
                     foreach ($this->data['AnnexesAModifier'] as $annexeId => $annexe) {

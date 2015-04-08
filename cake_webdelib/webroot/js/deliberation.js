@@ -79,49 +79,43 @@ $(document).ready(function () {
     //modifier l'ordre des annnexes 
     $('#tableAnnexesdelibPrincipale .selectone').change(function(){
         var ref = $('#refProjet').val();
-        var tableAnnexes = $('table#tableAnnexes' + ref);
+        var table = $('table#tableAnnexes' + ref );// + ' tbody');
         //on prends l'id de l'annexe dont on souhaite changer la position
         //et celui de destination, ainsi que leur position initiale respective
         var annexe_src_id = $(this).closest('tr').attr('data-annexeid');
         var annexe_src_pos = $(this).closest('tr').attr('data-position');
-        var annexe_dest_id = tableAnnexes.find('[data-position=' + $( this ).val() + ']').attr('data-annexeid');
+        var annexe_dest_id = table.find('[data-position=' + $( this ).val() + ']').attr('data-annexeid');
         var annexe_dest_pos = $( this ).val();
-        switchOrdrePosition(annexe_src_id, annexe_src_pos, annexe_dest_id, annexe_dest_pos);
+        
+        //on deplace la ligne du tableau
+        deplacerAnnexePosition(table, annexe_src_pos, annexe_dest_pos);
     });
 });
 
-//on switch la position de l'annexe avec celle de destination
-function switchOrdrePosition(annexe_src_id, annexe_src_pos, annexe_dest_id, annexe_dest_pos)
+//deplace la position d'un annexe
+function deplacerAnnexePosition(table, oldPosition, newPosition) { 
+    table.each(function(){ 
+        var row = $(this).find('tr').eq(oldPosition);//.remove(); 
+        if(oldPosition > newPosition){
+            $(this).find('tr').eq(newPosition).before(row);
+        }else{
+            $(this).find('tr').eq(newPosition).after(row);
+        }
+    });
+    reordonnerPosition();
+}   
+
+//met à jour l'ordre d'affichage des annexes
+function reordonnerPosition()
 {
     var ref = $('#refProjet').val();
-    var annexe_destination = $('table#tableAnnexes' + ref + ' #editAnnexe' + annexe_dest_id);
-    var annexe_source = $('table#tableAnnexes' + ref + ' #editAnnexe' + annexe_src_id);
-    //on switch la position de l'annexe de destination avec celui d'origine
-    annexe_destination.attr('data-position', annexe_src_pos);
-    annexe_source.attr('data-position', annexe_dest_pos);
-
-    //on met a jour les positions de sources et de destinations des text et selected
-    annexe_destination.find('.selectone').select2("val", annexe_src_pos);
-    annexe_destination.find('.annexe-view:first').html( annexe_src_pos );
-    annexe_source.find('.selectone').select2("val", annexe_dest_pos);
-    annexe_source.find('.annexe-view:first').html( annexe_dest_pos );
-
-    //on met a jour l'ordre d'affichage
-    ordonnerPosition($('table#tableAnnexes' + ref), 'data-position');
-}
-    
-//modifie l'ordre d'affichage des annnexes une fois leurs positions afféctées
-function ordonnerPosition(table, type){
-    var rows = table.find('tr').get();
-    rows.sort(function(a, b) {
-        var keyA = parseInt($(a).attr(type));
-        var keyB = parseInt($(b).attr(type));
-        if (keyA < keyB) return -1;
-        if (keyA > keyB) return 1;
-        return 0;
-    });
-    $.each(rows, function(index, row) {
-        table.children('tbody').append(row);
+    var tabletr = $('table#tableAnnexes' + ref + ' tbody tr' );// + ' tbody');
+    $(tabletr).each(function(listIndex) {
+        ++listIndex;
+        //on met a jour les positions de sources et de destinations des text et selected
+        $(this).find('.selectone').select2( "val", listIndex );
+        $(this).find('.annexe-view:first').html( listIndex );
+        $(this).attr('data-position', listIndex);
     });
 }
 
@@ -286,9 +280,9 @@ function ajouterAnnexe() {
     }, 'slow');
     
     //on reset le modal 
-    resetAnnexeModal();
+    //resetAnnexeModal();
     //on remet les champs en disabled pour eviter leurs POST au submit global
-    disableAnnexeModal(true);
+    //disableAnnexeModal(true);
     return false;
 }
 
@@ -350,6 +344,8 @@ function disableAnnexeModal(disabled) {
     $('#Annex0File').prop('disabled', disabled);
     $('#Annex0Ctrl').prop('disabled', disabled);
     $('#Annex0Fusion').prop('disabled', disabled);
+    $('#refDelib').prop('disabled', disabled);
+    $('#numAnnexe').prop('disabled', disabled);
 }
 
 // Fonction de suppression d'une annexe
@@ -376,8 +372,6 @@ function annulerSupprimerAnnexe(annexeId) {
     $bloc.find('.annexe-edit-btn').show();
 }
 
-
-
 // Fonction d'annulation de la modification de l'annexe
 function annulerModifierAnnexe(annexeId) {
     var $bloc = $('#editAnnexe' + annexeId);
@@ -389,14 +383,14 @@ function annulerModifierAnnexe(annexeId) {
     //on prends l'id de l'annexe dont on souhaite changer la position
     //et celui de destination, ainsi que leur position initiale respective
     var ref = $('#refProjet').val();
-    var tableAnnexes = $('table#tableAnnexes' + ref);
+    var table = $('table#tableAnnexes' + ref);
     
     var annexe_src_id = annexeId;
     var annexe_src_pos = $('#editAnnexe'+ annexeId).attr('data-position');
-    var annexe_dest_id = tableAnnexes.find('[data-position=' +  $('#editAnnexe'+ annexeId).attr('data-valeurinit') + ']').attr('data-annexeid');
-    var annexe_dest_pos = tableAnnexes.find('[data-position=' + $('#editAnnexe'+ annexeId).attr('data-valeurinit')+ ']').attr('data-position');//$( this ).val();   
-    switchOrdrePosition(annexe_src_id, annexe_src_pos, annexe_dest_id, annexe_dest_pos);
-
+    var annexe_dest_id = table.find('[data-position=' +  $('#editAnnexe'+ annexeId).attr('data-valeurinit') + ']').attr('data-annexeid');
+    var annexe_dest_pos = table.find('[data-position=' + $('#editAnnexe'+ annexeId).attr('data-valeurinit')+ ']').attr('data-position');//$( this ).val();   
+    deplacerAnnexePosition(table, annexe_src_pos, annexe_dest_pos);
+    
     $bloc.removeClass('warning').removeClass('aModifier').removeAttr('title');
     
     //on remet les champs en disabled
