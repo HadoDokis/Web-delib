@@ -147,7 +147,6 @@ foreach ($projets as $projet) {
         ));
 
      if (in_array('traiter', $projet['Actions'])){
-   
         if(!empty($projet['iconeEtat']['status']))
         {
            if ($projet['iconeEtat']['status'] == 'warning') {
