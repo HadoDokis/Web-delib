@@ -165,7 +165,7 @@ $navbar = array(
                 'check'=> array('Seances', 'create'),
                 'title'=> 'Créer une nouvelle seance',
                 'icon' => 'plus',
-                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'add')
+                'url' => array('admin' => false, 'prefix'=>null, 'plugin' => null, 'controller' => 'seances', 'action' => 'add')
             ),
             array(
                 'html' => 'link',
@@ -173,38 +173,22 @@ $navbar = array(
                 'check'=> array('Seances', 'read'),
                 'title'=> 'Liste des séances à traiter',
                 'icon' => 'unlock-alt',
-                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'index')
+                'url' => array('admin' => false, 'prefix'=>null, 'plugin' => null, 'controller' => 'seances', 'action' => 'index')
             ),
             array(
                 'html' => 'link',
-                'libelle' => 'Passées',
+                'libelle' => 'Calendrier',
                 'check'=> array('Seances', 'read'),
-                'title'=> 'Liste des séances passées',
-                'icon' => 'history',
+                'title'=> 'Calendrier des séances',
+                'icon' => 'calendar',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'calendrier')
             ),
             array(
                 'html' => 'link',
-                'libelle' => 'Calendrier',
-                'check'=> array('Seances', 'read'),
-                'title'=> 'Calendrier des séances',
-                'icon' => 'calendar',
-                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'listerAnciennesSeances')
-            ),
-            array(
-                'html' => 'link',
-                'libelle' => 'Calendrier',
-                'check'=> array('Seances/afficherCalendrier'),
-                'title'=> 'Calendrier des séances',
-                'icon' => 'calendar',
-                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'seances', 'action' => 'afficherCalendrier')
-            ),
-            array(
-                'html' => 'link',
                 'libelle' => 'Tableau de bord',
-                'check'=> array('Seances','read'),
-                'title'=> 'Calendrier des séances',
-                'icon' => 'calendar',
+                'check'=> array('tableauBord'),
+                'title'=> 'Tableau de bord des séances',
+                'icon' => 'clipboard',
                 'url' => array('admin' => false, 'plugin' => null, 'controller' => 'deliberations', 'action' => 'tableauBord')
             ),
         )
@@ -312,7 +296,7 @@ $navbar = array(
                                 'check'=> array('Typeactes'),
                                 'title'=> 'Gestion des types d\'acte',
                                 'icon' => 'book',
-                                'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeactes', 'action'=>'index')
+                                'url' => array('admin' => true, 'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeactes', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -320,7 +304,7 @@ $navbar = array(
                                 'check'=> array('Typeseances'),
                                 'title'=> 'Gestion des types de séance',
                                 'icon' => 'leanpub',
-                                'url' => array('admin' => true,'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeseances', 'action'=>'index')
+                                'url' => array('admin' => true, 'prefix' => 'admin', 'plugin'=>null, 'controller'=>'typeseances', 'action'=>'index')
                             ),
                             array(
                                 'html' => 'link',
@@ -328,7 +312,7 @@ $navbar = array(
                                 'check'=> array('Collectivites'),
                                 'title'=> 'Gestion des 9 cases',
                                 'icon' => 'table',
-                                'url' => array('admin' => false, 'plugin' => null, 'controller' => 'collectivites', 'action' => 'edit9Cases')
+                                'url' => array('admin' => false, 'prefix' =>null, 'plugin' => null, 'controller' => 'collectivites', 'action' => 'edit9Cases')
                             ),
                         )
                     ),
@@ -413,14 +397,14 @@ $navbar = array(
                                 'libelle' => 'Projet',
                                 'check'=> array('Infosupdefs'),
                                 'title'=> 'Gestion des informations suplémentaires de projet',
-                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index')
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index', 'projet')
                             ),
                             array(
                                 'html' => 'link',
                                 'libelle' => 'Séance',
                                 'check'=> array('Infosupdefs'),
                                 'title'=> 'Gestion des informations suplémentaires de séance',
-                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index_seance')
+                                'url' => array('admin' => true,'prefix'=> 'admin', 'plugin'=>null, 'controller'=>'infosupdefs', 'action'=>'index', 'seance')
                             ),
                         )
                     ),

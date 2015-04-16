@@ -16,7 +16,7 @@ $aTitles=array(
     array('title' => 'Joindre au contrôle de légalité'),
     array('title' => 'Joindre à la fusion')
 );
-if ($mode == 'edit') {
+if ($action == 'edit') {
     $aTitles[]=array('title'=>'Actions'); 
     $aTableOptions['attributes']['id'] = 'tableAnnexes' . $ref;
 }
@@ -33,9 +33,9 @@ for ($index = 0; $index < count($annexes); $index++) {
 }
 
 foreach ($annexes as $key=>$annexe) {
-    if ($mode == 'edit'){
+    if ($action == 'edit'){
     $aOptions=array(
-        'id' => $mode.'Annexe' . $annexe['id'],
+        'id' => $action.'Annexe' . $annexe['id'],
         'data-annexeid' => $annexe['id'], 
     );
     if (!empty($ref))
