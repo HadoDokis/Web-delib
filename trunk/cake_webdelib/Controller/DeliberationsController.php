@@ -1070,27 +1070,20 @@ class DeliberationsController extends AppController {
                 }
                 // Modification des annexes
                 if (array_key_exists('AnnexesAModifier', $this->data)) {
-                    foreach ($this->data['AnnexesAModifier'] as $annexeId => $annexe) {
+                    foreach ($this->request->data['AnnexesAModifier'] as $annexeId => $annexe) {
                         $this->Annex->begin();
                         $annex_filename = $this->Annex->find('first', array(
                             'recursive' => -1,
                             'fields' => array('filename', 'filetype', 'id', 'foreign_key'),
                             'conditions' => array('Annex.id' => $annexeId)));
-                        if ($annex_filename['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text' || $annex_filename['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet') {
-                            $this->Annex->save(array(
-                                'id' => $annexeId,
-                                'titre' => $annexe['titre'],
-                                'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
-                                'joindre_fusion' => $annexe['joindre_fusion'],
-                                'data' => file_get_contents(TMP . 'files' . DS . 'generee' . DS . 'projet' . DS . $annex_filename['Annex']['foreign_key'] . DS . $annex_filename['Annex']['filename']),
-                                'edition_data' => NULL,
-                                'data_pdf' => NULL));
-                        } else {
+                       
+                            $annexe['id'] = $annexeId;
                             $annexe['edition_data'] = NULL;
                             $annexe['data_pdf'] = NULL;
-                            $annexe['id'] = $annexeId;
+                            if ($annex_filename['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text' || $annex_filename['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet') {
+                               $annexe['data'] = file_get_contents(TMP . 'files' . DS . 'generee' . DS . 'projet' . DS . $annex_filename['Annex']['foreign_key'] . DS . $annex_filename['Annex']['filename']);
+                            }
                             $this->Annex->save($annexe);
-                        }
                         if (!empty($this->Annex->validationErrors)) {
                             $this->Annex->rollback();
                             $success = false;
@@ -1575,7 +1568,7 @@ class DeliberationsController extends AppController {
         //on récupaire tout les utilisateurs
             $redacteurs = $this->Deliberation->Redacteur->find('all',array(
                'fields' => array('Redacteur.id','Redacteur.username','Redacteur.nom','Redacteur.prenom'), 
-                'conditions' => array('User.active' => true),
+                'conditions' => array('Redacteur.active' => true),
                 'recursive' => -1,
                 ));
             // on format les données pour le select id => text
@@ -1993,7 +1986,7 @@ class DeliberationsController extends AppController {
                 'Typeacte.name',
                 'Circuit.nom',
                 'Annex' => array(
-                    'fields' => array('id', 'filename_pdf'),
+                    'fields' => array('id', 'data_pdf', 'filename'),
                     'conditions' => array('joindre_ctrl_legalite' => true)
                 ),
                 'Deliberationtypeseance' => array(
@@ -2032,8 +2025,7 @@ class DeliberationsController extends AppController {
             } else
                 $optionsNumPref[$groupName]["$key"] = $key . ' - ' . $value;
         }*/
-
-        $this->set('optionsNumPref', $optionsNumPref);
+        $this->set('nomenclatures', $this->Nomenclature->generateTreeList(null, '{n}.Nomenclature.name', '{n}.Nomenclature.libelle', '&nbsp;'));
 
         $this->set('deliberations', $projets);
     }
@@ -2790,7 +2782,7 @@ class DeliberationsController extends AppController {
                 $estDansCircuit = $this->Traitement->triggerDansTraitementCible($this->Auth->user('id'), $projet['Deliberation']['id']);
                 $tourDansCircuit = $estDansCircuit ? $this->Traitement->positionTrigger($this->Auth->user('id'), $projet['Deliberation']['id']) : 0;
                 $estRedacteur = ($this->Auth->user('id') == $projet['Deliberation']['redacteur_id']);
-                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['id'], 1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
+                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['id'], $projet['Deliberation']['etat'], false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
             } else {
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['id'], $projet['Deliberation']['etat'], $editerTous);
             }
@@ -3336,178 +3328,181 @@ class DeliberationsController extends AppController {
             $this->redirect($this->previous);
     }
 
-    public function mesProjetsRecherche() {
-        if (empty($this->data)) {
-            $this->set('action', array('controller' => 'deliberations', 'action' => 'mesProjetsRecherche'));
-            $this->set('titreVue', 'Recherche multi-critères parmi mes projets');
-
-            $this->set('rapporteurs', $this->Acteur->generateListElus());
-            //  $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
-            $this->set('date_seances', $this->Seance->generateAllList());
-            $this->set('services', $this->Deliberation->Service->generateTreeList(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
-            $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
-            $this->set('circuits', $this->Circuit->find('list', array('order' => array('Circuit.nom asc'),
-                        'fields' => array('Circuit.id', 'Circuit.nom'),
-                        'recursive' => -1)));
-            $this->set('etats', $this->Deliberation->generateListEtat());
-            $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions' => array('recherche' => 1, 'actif' => true),
-                        'fields' => array('id', 'code', 'nom', 'commentaire', 'type'),
-                        'order' => array('ordre'),
-                        'recursive' => -1)));
-            $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
-            $this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
-            $this->set('models', $this->Modeltemplate->find('list', array(
-                        'recursive' => -1,
-                        'conditions' => array('modeltype_id' => array(MODEL_TYPE_RECHERCHE)),
-                        'fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
-
-            $this->render('rechercheMultiCriteres');
-        } else {
-            $conditions = array();
-            $multiseances = array();
-
-            if (!empty($this->data['Deliberation']['id'])) {
-                if (!is_numeric($this->data['Deliberation']['id'])) {
-                    $this->Session->setFlash('Vous devez saisir un identifiant valide', 'growl', array('type' => 'erreur'));
-                    $this->redirect(array('action' => 'mesProjetsRecherche'));
-                }
-                $conditions["Deliberation.id"] = $this->data['Deliberation']['id'];
-            }
-            if (!empty($this->data['Deliberation']['rapporteur_id']))
-                $conditions["Deliberation.rapporteur_id"] = $this->data['Deliberation']['rapporteur_id'];
-            if (!empty($this->data['Deliberation']['service_id'])) {
-                $aService_id = array();
-                foreach ($this->User->Service->doListId($this->data['Deliberation']['service_id']) as $aService)
-                    $aService_id[] = $aService;
-                $conditions['Deliberation.service_id'] = $aService_id;
-            }
-            if (!empty($this->data['Deliberation']['typeacte_id']))
-                $conditions['Deliberation.typeacte_id'] = $this->data['Deliberation']['typeacte_id'];
-            if (!empty($this->data['Deliberation']['theme_id']))
-                $conditions["Deliberation.theme_id"] = $this->data['Deliberation']['theme_id'];
-            if (!empty($this->data['Deliberation']['circuit_id']))
-                $conditions["Deliberation.circuit_id"] = $this->data['Deliberation']['circuit_id'];
-            if ($this->data['Deliberation']['etat'] != '')
-                $conditions["Deliberation.etat"] = $this->data['Deliberation']['etat'];
-
-            if (!empty($this->data['Deliberation']['texte'])) {
-                $texte = $this->data['Deliberation']['texte'];
-                $conditions['AND']["OR"]["Deliberation.objet ILIKE"] = '%'.$texte.'%';
-                $conditions['AND']["OR"]["Deliberation.titre ILIKE"] = '%'.$texte.'%';
-            }
-            if (!empty($this->data['Deliberation']['dateDebut'])) {
-                $conditions['Deliberation.created >= DATE'] = $this->data['Deliberation']['dateDebut'];
-            }
-            if (!empty($this->data['Deliberation']['dateFin'])) {
-                $conditions['Deliberation.created <= DATE'] = $this->data['Deliberation']['dateFin'];
-            }
-            if (!empty($this->data['Deliberation']['dateDebutAr'])) {
-                $conditions['Deliberation.tdt_ar_date >= DATE'] = $this->data['Deliberation']['dateDebutAr'];
-            }
-            if (!empty($this->data['Deliberation']['dateFinAr'])) {
-                $conditions['Deliberation.tdt_ar_date <= DATE'] = $this->data['Deliberation']['dateFinAr'];
-            }
-            if (empty($conditions["Deliberation.id"]) || (!isset($conditions["Deliberation.id"]))) {
-                if ((isset($this->data['Deliberation']['seance_id'])) && (!empty($this->data['Deliberation']['seance_id']))) {
-                    $projet_ids = array();
-                    foreach ($this->data['Deliberation']['seance_id'] as $seance_id) {
-                        $multiseances[] = $seance_id;
-                        $projet_ids = $this->Seance->getDeliberationsId($seance_id);
-                    }
-                    $conditions['Deliberation.id'] = $projet_ids;
-                }
-            }
-            if (array_key_exists('Infosup', $this->data)) {
-                $rechercheInfoSup = $this->Deliberation->Infosup->selectInfosup($this->data['Infosup']);
-                if (!empty($rechercheInfoSup))
-                    $conditions["Deliberation.id"] = $rechercheInfoSup;
-            }
-            if (empty($conditions)) {
-                $this->Session->setFlash('Vous devez saisir au moins un critère.', 'growl', array('type' => 'erreur'));
-                $this->redirect(array('action' => 'mesProjetsRecherche'));
-            } else {
-                $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($this->Auth->user('id')));
-                if (!empty($listeCircuits))
-                    $conditions['OR']['Deliberation.circuit_id'] = $listeCircuits;
-                $conditions['OR']['Deliberation.redacteur_id'] = $this->Auth->user('id');
-                //Récupère la liste des délib que l'utilisateur a visé (résolution bug changement circuit non visible)
-                $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($this->Auth->user('id')));
-                if (!empty($listeDelibsParticipe))
-                    $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
-
-                //TODO on peut voir certain projet mecanique à revoir
-                $this->Deliberation->Behaviors->load('Containable');
-                $projets = $this->Deliberation->find('all', array(
-                    'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
-                        'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
-                        'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
-                        'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
-                    'conditions' => $conditions,
-                    'contain' => array('Service' => array('fields' => array('name')),
-                        'Theme' => array('fields' => array('libelle')),
-                        'Typeacte' => array('fields' => array('libelle')),
-                        'Circuit' => array('fields' => array('nom')),
-                        'Deliberationtypeseance' => array('fields' => array('id'),
-                            'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
-                            )),
-                        'Deliberationseance' => array('fields' => array('id'),
-                            'Seance' => array('fields' => array('id', 'date', 'type_id'),
-                                'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
-                    'order' => 'Deliberation.id DESC'));
-                $this->_sortProjetSeanceDate($projets);
-
-                if ($this->data['Deliberation']['generer'] == 0) {
-                    $this->_afficheProjets('index', $projets, 'Résultat de la recherche parmi mes projets', array('view', 'generer'), array('mesProjetsRecherche'));
-                } else {
-                    if (count($projets) > 0) {
-                        $deliberationIds = array();
-                        foreach ($projets as &$projet)
-                            $deliberationIds[] = $projet['Deliberation']['id'];
-                        return $this->_genereFusionRechercheToClient($deliberationIds, $this->data['Deliberation']['model'], $this->data['waiter']['token']);
-                    } else {
-                        $this->Session->setFlash('Aucun résultat à la recherche effectuée.', 'growl', array('type' => 'erreur'));
-                        $this->redirect(array('action' => 'mesProjetsRecherche'));
-                    }
-                }
-            }
-        }
-    }
+//    public function mesProjetsRecherche() {
+//        if (empty($this->data)) {
+//            $this->set('action', array('controller' => 'deliberations', 'action' => 'mesProjetsRecherche'));
+//            $this->set('titreVue', 'Recherche multi-critères parmi mes projets');
+//
+//            $this->set('rapporteurs', $this->Acteur->generateListElus());
+//            //  $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
+//            $this->set('date_seances', $this->Seance->generateAllList());
+//            $this->set('services', $this->Deliberation->Service->generateTreeList(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
+//            $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+//            $this->set('circuits', $this->Circuit->find('list', array('order' => array('Circuit.nom asc'),
+//                        'fields' => array('Circuit.id', 'Circuit.nom'),
+//                        'recursive' => -1)));
+//            $this->set('etats', $this->Deliberation->generateListEtat());
+//            $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions' => array('recherche' => 1, 'actif' => true),
+//                        'fields' => array('id', 'code', 'nom', 'commentaire', 'type'),
+//                        'order' => array('ordre'),
+//                        'recursive' => -1)));
+//            $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
+//            $this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
+//            $this->set('models', $this->Modeltemplate->find('list', array(
+//                        'recursive' => -1,
+//                        'conditions' => array('modeltype_id' => array(MODEL_TYPE_RECHERCHE)),
+//                        'fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
+//
+//            $this->render('rechercheMultiCriteres');
+//        } else {
+//            $conditions = array();
+//            $multiseances = array();
+//
+//            if (!empty($this->data['Deliberation']['id'])) {
+//                if (!is_numeric($this->data['Deliberation']['id'])) {
+//                    $this->Session->setFlash('Vous devez saisir un identifiant valide', 'growl', array('type' => 'erreur'));
+//                    $this->redirect(array('action' => 'mesProjetsRecherche'));
+//                }
+//                $conditions["Deliberation.id"] = $this->data['Deliberation']['id'];
+//            }
+//            if (!empty($this->data['Deliberation']['rapporteur_id']))
+//                $conditions["Deliberation.rapporteur_id"] = $this->data['Deliberation']['rapporteur_id'];
+//            if (!empty($this->data['Deliberation']['service_id'])) {
+//                $aService_id = array();
+//                foreach ($this->User->Service->doListId($this->data['Deliberation']['service_id']) as $aService)
+//                    $aService_id[] = $aService;
+//                $conditions['Deliberation.service_id'] = $aService_id;
+//            }
+//            if (!empty($this->data['Deliberation']['typeacte_id']))
+//                $conditions['Deliberation.typeacte_id'] = $this->data['Deliberation']['typeacte_id'];
+//            if (!empty($this->data['Deliberation']['theme_id']))
+//                $conditions["Deliberation.theme_id"] = $this->data['Deliberation']['theme_id'];
+//            if (!empty($this->data['Deliberation']['circuit_id']))
+//                $conditions["Deliberation.circuit_id"] = $this->data['Deliberation']['circuit_id'];
+//            if ($this->data['Deliberation']['etat'] != '')
+//                $conditions["Deliberation.etat"] = $this->data['Deliberation']['etat'];
+//
+//            if (!empty($this->data['Deliberation']['texte'])) {
+//                $texte = $this->data['Deliberation']['texte'];
+//                $conditions['AND']["OR"]["Deliberation.objet ILIKE"] = '%'.$texte.'%';
+//                $conditions['AND']["OR"]["Deliberation.titre ILIKE"] = '%'.$texte.'%';
+//            }
+//            if (!empty($this->data['Deliberation']['dateDebut'])) {
+//                $conditions['Deliberation.created >= DATE'] = $this->data['Deliberation']['dateDebut'];
+//            }
+//            if (!empty($this->data['Deliberation']['dateFin'])) {
+//                $conditions['Deliberation.created <= DATE'] = $this->data['Deliberation']['dateFin'];
+//            }
+//            if (!empty($this->data['Deliberation']['dateDebutAr'])) {
+//                $conditions['Deliberation.tdt_ar_date >= DATE'] = $this->data['Deliberation']['dateDebutAr'];
+//            }
+//            if (!empty($this->data['Deliberation']['dateFinAr'])) {
+//                $conditions['Deliberation.tdt_ar_date <= DATE'] = $this->data['Deliberation']['dateFinAr'];
+//            }
+//            if (empty($conditions["Deliberation.id"]) || (!isset($conditions["Deliberation.id"]))) {
+//                if ((isset($this->data['Deliberation']['seance_id'])) && (!empty($this->data['Deliberation']['seance_id']))) {
+//                    $projet_ids = array();
+//                    foreach ($this->data['Deliberation']['seance_id'] as $seance_id) {
+//                        $multiseances[] = $seance_id;
+//                        $projet_ids = $this->Seance->getDeliberationsId($seance_id);
+//                    }
+//                    $conditions['Deliberation.id'] = $projet_ids;
+//                }
+//            }
+//            if (array_key_exists('Infosup', $this->data)) {
+//                $rechercheInfoSup = $this->Deliberation->Infosup->selectInfosup($this->data['Infosup']);
+//                if (!empty($rechercheInfoSup))
+//                    $conditions["Deliberation.id"] = $rechercheInfoSup;
+//            }
+//            if (empty($conditions)) {
+//                $this->Session->setFlash('Vous devez saisir au moins un critère.', 'growl', array('type' => 'erreur'));
+//                $this->redirect(array('action' => 'mesProjetsRecherche'));
+//            } else {
+//                $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($this->Auth->user('id')));
+//                if (!empty($listeCircuits))
+//                    $conditions['OR']['Deliberation.circuit_id'] = $listeCircuits;
+//                $conditions['OR']['Deliberation.redacteur_id'] = $this->Auth->user('id');
+//                //Récupère la liste des délib que l'utilisateur a visé (résolution bug changement circuit non visible)
+//                $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($this->Auth->user('id')));
+//                if (!empty($listeDelibsParticipe))
+//                    $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
+//
+//                //TODO on peut voir certain projet mecanique à revoir
+//                $this->Deliberation->Behaviors->load('Containable');
+//                $projets = $this->Deliberation->find('all', array(
+//                    'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
+//                        'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
+//                        'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
+//                        'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
+//                    'conditions' => $conditions,
+//                    'contain' => array('Service' => array('fields' => array('name')),
+//                        'Theme' => array('fields' => array('libelle')),
+//                        'Typeacte' => array('fields' => array('libelle')),
+//                        'Circuit' => array('fields' => array('nom')),
+//                        'Deliberationtypeseance' => array('fields' => array('id'),
+//                            'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
+//                            )),
+//                        'Deliberationseance' => array('fields' => array('id'),
+//                            'Seance' => array('fields' => array('id', 'date', 'type_id'),
+//                                'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
+//                    'order' => 'Deliberation.id DESC'));
+//                $this->_sortProjetSeanceDate($projets);
+//
+//                if ($this->data['Deliberation']['generer'] == 0) {
+//                    $this->_afficheProjets('index', $projets, 'Résultat de la recherche parmi mes projets', array('view', 'generer'), array('mesProjetsRecherche'));
+//                } else {
+//                    if (count($projets) > 0) {
+//                        $deliberationIds = array();
+//                        foreach ($projets as &$projet)
+//                            $deliberationIds[] = $projet['Deliberation']['id'];
+//                        return $this->_genereFusionRechercheToClient($deliberationIds, $this->data['Deliberation']['model'], $this->data['waiter']['token']);
+//                    } else {
+//                        $this->Session->setFlash('Aucun résultat à la recherche effectuée.', 'growl', array('type' => 'erreur'));
+//                        $this->redirect(array('action' => 'mesProjetsRecherche'));
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     function search() {
 
         if ($this->request->is('post')) {
+            //Recherche textuelle
+            if (isset($this->request->data['User']['search'])) {
+                if (empty($this->request->data['User']['search']) OR ( !ctype_digit(trim($this->request->data['User']['search'])) && strlen(trim($this->request->data['User']['search'])) < 4)) {
+                    $this->Session->setFlash('Vous devez saisir au moins un mot. (plus de 3 caractères)', 'growl', array('type' => 'erreur'));
 
+                    return $this->redirect($this->previous);
+                }
 
-        if (empty($this->request->data['User']['search']) OR ( !ctype_digit(trim($this->request->data['User']['search'])) && strlen(trim($this->request->data['User']['search'])) < 4)) {
-            $this->Session->setFlash('Vous devez saisir au moins un mot. (plus de 3 caractères)', 'growl', array('type' => 'erreur'));
+                $field = trim($this->request->data['User']['search']);
+                
+                $conditionsRecherche = array();
+                if (ctype_digit($field)) {
+                    $conditionsRecherche['OR']['Deliberation.id'][] = $field;
+                }
+                $conditionsRecherche['OR']['Deliberation.objet ILIKE'] = "%$field%";
+                $conditionsRecherche['OR']['Deliberation.titre ILIKE'] = "%$field%";
+            }
             
-            return $this->redirect($this->previous);
-        }
-        $field = trim($this->request->data['User']['search']);
-        
-        $conditionsDroits = array();
-        if (!$this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations/tousLesProjetsRecherche','read')) {
-            $listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($this->Auth->user('id'));
-            if (!empty($listeCircuits))
-                $conditionsDroits['OR']['Deliberation.circuit_id'] = explode(',', $listeCircuits);
+            //Vérification des droits sur les fichiers
+            $conditionsDroits = array();
+            if (!$this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations/tousLesProjetsRecherche','read')) {
+                $listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($this->Auth->user('id'));
+                if (!empty($listeCircuits))
+                    $conditionsDroits['OR']['Deliberation.circuit_id'] = explode(',', $listeCircuits);
 
-            $conditionsDroits['OR']['Deliberation.redacteur_id'] = $this->Auth->user('id');
-            //Récupère la liste des délib que l'utilisateur a visé (résolution bug changement circuit non visible)
-            $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($this->Auth->user('id')));
-            if (!empty($listeDelibsParticipe))
-                $conditionsDroits['OR']['Deliberation.id'] = $listeDelibsParticipe;
-        }
-
-        $conditionsRecherche = array();
-        if (ctype_digit($field)) {
-            $conditionsRecherche['OR']['Deliberation.id'][] = $field;
-        }
-        $conditionsRecherche['OR']['Deliberation.objet ILIKE'] = "%$field%";
-        $conditionsRecherche['OR']['Deliberation.titre ILIKE'] = "%$field%";
+                $conditionsDroits['OR']['Deliberation.redacteur_id'] = $this->Auth->user('id');
+                //Récupère la liste des délib que l'utilisateur a visé (résolution bug changement circuit non visible)
+                $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($this->Auth->user('id')));
+                if (!empty($listeDelibsParticipe))
+                    $conditionsDroits['OR']['Deliberation.id'] = $listeDelibsParticipe;
+            }
 
         ////////////////////////////////////////////
             
-            if (!empty($this->data['Deliberation']['id'])) {
+            if (isset($this->data['Deliberation']['id']) && !empty($this->data['Deliberation']['id'])) {
                 if (!is_numeric($this->data['Deliberation']['id'])) {
                     $this->Session->setFlash('Vous devez saisir un identifiant valide', 'growl', array('type' => 'erreur'));
                     $this->redirect(array('action' => 'search'));
@@ -3564,13 +3559,12 @@ class DeliberationsController extends AppController {
                     $conditionsRecherche["Deliberation.id"] = $rechercheInfoSup;
             }
             
-            
             if (empty($conditionsRecherche)) {
                 $this->Session->setFlash('Vous devez saisir au moins un critère.', 'growl', array('type' => 'erreur'));
                 $this->redirect(array(
-                        'admin'=>false,
-                        'prefix'=>null,
-                        'controller'=>'deliberations',
+                        'admin' => false,
+                        'prefix' => null,
+                        'controller' => 'deliberations',
                         'action' => 'search'));
             } else {
                 
@@ -3593,21 +3587,25 @@ class DeliberationsController extends AppController {
                             'Seance' => array('fields' => array('id', 'date', 'type_id'),
                                 'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
                     'conditions' => $conditions,
+                    'recursive'=>-1,
                     'order' => $ordre
                 ));
-                $this->_sortProjetSeanceDate($projets);
-                if (empty($this->data['Deliberation']['generer'])) {
+                
+                if (empty($projets)){
                     
-                    $actions = array('view', 'generer');
-                    if ($this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations','delete'))
-                        array_push($actions, 'delete');
+                    $this->Session->setFlash(__('Aucun projet correspondant aux critères de recherche.'), 'growl', array('type' => 'erreur'));
 
-                    if ($this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'editerTous'))
-                        $actions[] = 'edit';
-                    
-                    $this->_afficheProjets('search', $projets, 'Résultat de la recherche', $actions, array('search'));
-                    
-                } else {
+                    return $this->redirect(array(
+                                                    'admin'=>false,
+                                                    'prefix'=>null,
+                                                    'controller'=>'deliberations',
+                                                    'action' => 'search')
+                            );
+                }
+                
+                $this->_sortProjetSeanceDate($projets);
+                
+                if (!empty($this->data['Deliberation']['generer'])) {
                     
                     if (empty($this->data['Deliberation']['model'])) {
                         $this->Session->setFlash("Vous devez choisir un modèle de document", 'growl', array('type' => 'erreur'));
@@ -3628,44 +3626,43 @@ class DeliberationsController extends AppController {
                         return $this->_genereFusionRechercheToClient($deliberationIds, $this->data['Deliberation']['model'], $this->data['waiter']['token']);
                     
                         
-                    } else {
-                        $this->Session->setFlash('Aucun projet correspondant aux critères de recherche.', 'growl', array('type' => 'erreur'));
-                        
-                        return $this->redirect(array(
-                        'admin'=>false,
-                        'prefix'=>null,
-                        'controller'=>'deliberations',
-                        'action' => 'search'));
                     }
                 }
+                
+                    
+                $actions = array('view', 'generer');
+                
+                if ($this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'Deliberations', 'delete')) {
+                    array_push($actions, 'delete');
+                }
+
+                if ($this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'editerTous')) {
+                    $actions[] = 'edit';
+                }
+
+                $this->_afficheProjets('index', $projets, 'Résultat de la recherche', $actions, array('search'));
             }
         }
-        else
-        {
-            $this->set('rapporteurs', $this->Acteur->generateListElus());
-            //    $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
-            $this->set('date_seances', $this->Seance->generateAllList());
-            $this->set('services', $this->Deliberation->Service->generateTreeList(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
-            $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
-            $this->set('circuits', $this->Circuit->find('list', array('order' => array('Circuit.nom asc'),
-                        'fields' => array('Circuit.id', 'Circuit.nom'),
-                        'recursive' => -1)));
-            $this->set('etats', $this->Deliberation->generateListEtat());
-            $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions' => array('recherche' => 1, 'actif' => true),
-                        'fields' => array('id', 'code', 'nom', 'commentaire', 'type'),
-                        'order' => array('ordre'),
-                        'recursive' => -1)));
-            $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
-            $this->set('models', $this->Modeltemplate->find('list', array(
-                        'conditions' => array('modeltype_id' => array(MODEL_TYPE_RECHERCHE)),
-                        'fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
-            $this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
+        
+        $this->set('rapporteurs', $this->Acteur->generateListElus());
+        //    $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
+        $this->set('date_seances', $this->Seance->generateAllList());
+        $this->set('services', $this->Deliberation->Service->generateTreeList(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
+        $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+        $this->set('circuits', $this->Circuit->find('list', array('order' => array('Circuit.nom asc'),
+                    'fields' => array('Circuit.id', 'Circuit.nom'),
+                    'recursive' => -1)));
+        $this->set('etats', $this->Deliberation->generateListEtat());
+        $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions' => array('recherche' => 1, 'actif' => true),
+                    'fields' => array('id', 'code', 'nom', 'commentaire', 'type'),
+                    'order' => array('ordre'),
+                    'recursive' => -1)));
+        $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
+        $this->set('models', $this->Modeltemplate->find('list', array(
+                    'conditions' => array('modeltype_id' => array(MODEL_TYPE_RECHERCHE)),
+                    'fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
+        $this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
 
-            $this->render('search');
-    }
-
-        $this->set('action', array('controller' => 'deliberations', 'action' => 'search'));
-        $this->set('titreVue', 'Recherche');
     }
 
     /**
@@ -3762,7 +3759,7 @@ class DeliberationsController extends AppController {
             $this->Signature = new Signature();
         } catch (Exception $e) {
             $this->Session->setFlash($e->getMessage(), 'growl');
-            return $this->redirect($this->referer());
+            return $this->redirect($this->previous);
         }
 
         // Formulaire envoyé
@@ -3793,7 +3790,7 @@ class DeliberationsController extends AppController {
             } catch (Exception $e) {
                 $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'error'));
             }
-            return $this->redirect($this->referer());
+            return $this->redirect($this->previous);
         }
 
         $this->Filtre->initialisation($this->name . ':' . $this->action . ':' . $seance_id, $this->data, array('url' => $this->here));
@@ -3905,7 +3902,8 @@ class DeliberationsController extends AppController {
             $delibs[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($delibs[$i]['Deliberation']['num_pref']);
         }
 
-        $this->set('nomenclatures', $this->Signature->listClassification());
+        $this->set('nomenclatures', $this->Nomenclature->generateTreeList(null, '{n}.Nomenclature.name', '{n}.Nomenclature.libelle', '&nbsp;'));
+        //$this->set('nomenclatures', $this->Signature->listClassification());
 
         $circuits = $this->Signature->printCircuits();
         $this->set('deliberations', $delibs);
@@ -4783,7 +4781,7 @@ class DeliberationsController extends AppController {
      * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
      * @return CakeResponse
      */
-    private function genereFusionToClient($id, $cookieToken = null) {
+    public function genereFusionToClient($id, $cookieToken = null) {
         try {
             // vérification de l'existence du projet/délibération en base de données
             if (!$this->Deliberation->hasAny(array('id' => $id)))
@@ -4826,7 +4824,7 @@ class DeliberationsController extends AppController {
         } catch (Exception $e) {
             $this->log('Fusion :' . $e->getMessage() . ' File:' . $e->getFile() . ' Line:' . $e->getLine(), 'error');
             $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
-            $this->redirect($this->referer());
+            $this->redirect($this->previous);
         }
     }
 
@@ -4955,8 +4953,8 @@ class DeliberationsController extends AppController {
         }
         $conditions['Deliberation.service_id IS NOT'] = null;
         $conditions['Deliberation.etat <> '] = -1;
-        $conditions['Deliberation.parapheur_etat IS '] = null;
-        $conditions['Deliberation.vote_id'] = 0;
+        $conditions['Deliberation.parapheur_etat IS'] = null;
+        //$conditions['Deliberation.vote_id'] = 0; FIX
             $db = $this->Deliberation->Vote->getDataSource();
             $subQuery = $db->buildStatement(
                 array(
@@ -5481,7 +5479,7 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.service_id IS NOT'] = null;
         $conditions['Deliberation.etat <> '] = -1;
         $conditions['Deliberation.parapheur_etat IS '] = null;
-        $conditions['Deliberation.vote_id'] = 0;
+        //$conditions['Deliberation.vote_id'] = 0;
             $db = $this->Deliberation->Vote->getDataSource();
             $subQuery = $db->buildStatement(
                 array(
@@ -5591,7 +5589,7 @@ class DeliberationsController extends AppController {
                     $conditions['Visas.date IS'] = null;
                 }
                 $conditions['Deliberation.service_id IS NOT'] = null;
-                $conditions['Deliberation.vote_id'] = 0;
+                //$conditions['Deliberation.vote_id'] = 0;
                 $db = $this->Deliberation->Vote->getDataSource();
                 $subQuery = $db->buildStatement(
                     array(
