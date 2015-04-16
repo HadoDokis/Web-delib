@@ -929,36 +929,23 @@ class SeancesController extends AppController {
         $this->response->body($seance['Seance'][$file]);
     }
     
-    function downloadAttachedFileConvocation( $seance_id = '', $model_id = '', $acteur_id = '') {
+    function downloadAttachedFileConvocation( $seance_id, $model_id, $acteur_id) {
         return $this->_downloadAttachedFile('convocation', $seance_id, $model_id, $acteur_id);
     }
     
-    function downloadAttachedFileOrdredujour( $seance_id = '', $model_id = '', $acteur_id = '') {
+    function downloadAttachedFileOrdredujour( $seance_id, $model_id, $acteur_id) {
         return $this->_downloadAttachedFile('ordredujour', $seance_id, $model_id, $acteur_id);
     }
     
     //Télechargement des pieces jointes PDF
-    function _downloadAttachedFile($type=null, $seance_id = '', $model_id = '', $acteur_id = '') {
+    function _downloadAttachedFile($type, $seance_id, $model_id, $acteur_id) {
 
-        $conditions=array();
-        switch ($type) {
-            case 'convocation':
-                $conditions[]=array('Typeseance.modelconvocation_id' => $model_id);
-                break;
-            case 'ordredujour':
-                $conditions[]=array('Typeseance.modelordredujour_id' => $model_id);
-                break;
-            default:
-                break;
-        }
-                       
-        $conditions[]=array('Seance.id' => $seance_id);
-        
-        
         $seance = $this->Seance->find('first', array(
-            'conditions' => $conditions,
             'fields' => array('Seance.id'),
             'contain' => array('Typeseance.libelle'),
+            'conditions' => array(
+                    'Typeseance.model'.$type.'_id' => $model_id,
+                    'Seance.id' => $seance_id),
             'recursive'=>-1));
 
         //refonte du chemin vers le pdf
@@ -970,10 +957,11 @@ class SeancesController extends AppController {
         if($file->exists())
         {
             $this->response->disableCache();
-            $this->response->body($file->read(true));
+            $this->response->body($file->read());
             $this->response->type('application/pdf');
             $this->response->download($nameFileGen);
-           return $this->response;
+            
+            return $this->response;
         }
         
     }

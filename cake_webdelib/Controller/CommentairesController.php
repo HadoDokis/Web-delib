@@ -11,7 +11,7 @@ class CommentairesController extends AppController
         $this->set('delib_id', $delib_id);
         if (!empty($this->request->data)) {
             $this->Commentaire->create();
-            $this->request->data['Commentaire']['agent_id'] = $this->Session->read('user.User.id');
+            $this->request->data['Commentaire']['agent_id'] = $this->Auth->user('id');
             $this->request->data['Commentaire']['commentaire_auto'] = 0;
             if ($this->Commentaire->save($this->request->data)) {
                 return $this->redirect($this->previous);
