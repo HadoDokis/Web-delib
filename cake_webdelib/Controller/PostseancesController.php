@@ -788,7 +788,7 @@ class PostseancesController extends AppController {
                     $delib_filename = $delib_id . '-' . $delib['Deliberation']['num_delib'] . '.pdf';
                     $document = $this->_createElement($dom, 'document', null, array(
                         'idDocument' => $aDocuments['ActeTampon'],
-                        'nom' => $delib_filename, 'relname' => 'ActeTampon' . DS . $delib_filename,
+                        'nom' => $delib_filename, 'relName' => 'ActeTampon' . DS . $delib_filename,
                         'type' => 'ActeTampon'));
                     $document->appendChild($this->_createElement($dom, 'signature', 'false'));
                     $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
