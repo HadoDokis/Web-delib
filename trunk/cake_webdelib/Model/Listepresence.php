@@ -123,7 +123,7 @@ class Listepresence extends AppModel {
         $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
         
         if ($modelOdtInfos->hasUserFieldDeclared('nombre_acteur_absent')) {
-            $aData['nombre_acteur_absent']= $nbActeurs;//, 'text'));
+            $aData['nombre_acteur_absent']= array('value'=> $nbActeurs, 'type'=>'text');
         }
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = array();
@@ -135,7 +135,7 @@ class Listepresence extends AppModel {
         if (empty($aliasActeurFields)) return;
         
         // lecture des données en base de données
-        $this->Behaviors->load('Containable');
+        $aActeursAbsents = array();
         $acteurs = $this->find('all', array (
             'fields' => array('Listepresence.id'),
             'contain' => $aliasActeurFields,
@@ -143,21 +143,19 @@ class Listepresence extends AppModel {
             'order' => 'Acteur.position ASC'));
 
         if ($nbActeurs==0){
-            $oDevPart = new GDO_PartType();
-            foreach($acteurFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_absent', "", "text"));
-            $oStyleIteration->addPart($oDevPart);
-            $oMainPart->addElement($oStyleIteration);
-            return;
+            foreach ($acteurFields as $fieldname) {
+                $aActeursAbsents[$fieldname . '_acteur_absent'] = array('value' => '', 'type' => 'text');
+            }
         }
         
         foreach($acteurs as &$acteur) {
             // traitement de la date de naissance
-            if (!empty($acteur['Acteur']['date_naissance']))
-                $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
-            $aActeursAbsents = array();
-            foreach($acteurFields as $fieldname)
-                $aActeursAbsents[$fieldname.'_acteur_absent']=$acteur['Acteur'][$fieldname];//, "text"));
+            if (!empty($acteur['Acteur']['date_naissance'])) {
+                $acteur['Acteur']['date_naissance'] = array('value' => date("d/m/Y", strtotime($acteur['Acteur']['date_naissance'])), 'type' => 'date');
+            }
+            foreach ($acteurFields as $fieldname) {
+                $aActeursAbsents[$fieldname . '_acteur_absent'] = array('value' => $acteur['Acteur'][$fieldname], 'type' => 'text');
+            }
         }
         $aData['ActeursAbsents']=$aActeursAbsents;
     }
@@ -195,37 +193,37 @@ class Listepresence extends AppModel {
         if (empty($aliasActeurFields) && empty($aliasMandateFields)) return;
 
         // lecture des données en base de données
-        $this->Behaviors->load('Containable');
         $acteurs = $this->find('all', array (
             'fields' => array('Listepresence.id'),
             'contain' => array_merge($aliasActeurFields,$aliasMandateFields),
             'conditions' => $conditions,
             'order' => 'Acteur.position ASC'));
 
+        $aActeursMandates=array();
         if ($nbActeurs==0){
-            $oDevPart = new GDO_PartType();
-            foreach($acteurFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandataire', "", "text"));
-            foreach($mandateFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandate', "", "text"));
-            $oStyleIteration->addPart($oDevPart);
-            $oMainPart->addElement($oStyleIteration);
-            return;
+            foreach ($acteurFields as $fieldname) {
+                $aActeursMandates[$fieldname . '_acteur_mandataire'] = array('value' => '', 'type' => 'text');
+            }
+            foreach ($mandateFields as $fieldname) {
+                $aActeursMandates[$fieldname . '_acteur_mandate'] = array('value' => '', 'type' => 'text');
+            }
         }
         
         foreach($acteurs as &$acteur) {
             // traitement de la date de naissance
-            if (!empty($acteur['Acteur']['date_naissance']))
+            if (!empty($acteur['Acteur']['date_naissance'])) {
                 $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
-            if (!empty($acteur['Mandataire']['date_naissance']))
+            }
+            if (!empty($acteur['Mandataire']['date_naissance'])) {
                 $acteur['Mandataire']['date_naissance'] = date("d/m/Y", strtotime($acteur['Mandataire']['date_naissance']));
-            
-            $aActeursMandates=array();
-            foreach($acteurFields as $fieldname)
-                $aActeursMandates[$fieldname.'_acteur_mandataire']=$acteur['Acteur'][$fieldname];//, "text"));
-            foreach($mandateFields as $fieldname)
-                $aActeursMandates[$fieldname.'_acteur_mandate'] = $acteur['Mandataire'][$fieldname];// "text"));
-            $oStyleIteration->addPart($oDevPart);
+            }
+
+            foreach ($acteurFields as $fieldname) {
+                $aActeursMandates[$fieldname . '_acteur_mandataire'] = array('value' => $acteur['Acteur'][$fieldname], 'type' => 'text');
+            }
+            foreach ($mandateFields as $fieldname) {
+                $aActeursMandates[$fieldname . '_acteur_mandate'] = array('value' => $acteur['Mandataire'][$fieldname], 'type' => 'text');
+            }
         }
         
         $aData['ActeursMandates']=$aActeursMandates;

@@ -187,8 +187,9 @@ class Acteur extends AppModel
             'conditions' => array('id' => $id)));
         if (empty($acteur))
             throw new Exception('acteur '.$suffixe.' id:'.$id.' non trouvé en base de données');
-        foreach($acteur[$this->alias] as $field => $val)
-            $aData[$field.'_'.$suffixe]=$val;//, 'text'));
+        foreach ($acteur[$this->alias] as $field => $val) {
+            $aData[$field . '_' . $suffixe] = array('value' => $val, 'type' => 'text');
+        }
     }
 
 }

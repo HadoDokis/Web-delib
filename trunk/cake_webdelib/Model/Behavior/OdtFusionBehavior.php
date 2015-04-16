@@ -181,7 +181,10 @@ class OdtFusionBehavior extends ModelBehavior {
         App::uses( 'FusionConvBuilder', 'FusionConv.Utility' );
         $MainPart = new GDO_PartType();
         $correspondances=$types=$data=array();
-        $this->_format($MainPart, $aData, $data, $types);
+//        unset($aData['fileodt.texte_acte']);
+//        unset($aData['fileodt.texte_acte']);
+//        var_dump($aData);exit;
+        //$this->_format($MainPart, $aData, $data, $types);
         unset($aData);
         
         $Document = FusionConvBuilder::main( $MainPart, $data, $types );
@@ -224,17 +227,16 @@ class OdtFusionBehavior extends ModelBehavior {
     
     private function _format(&$MainPart, &$aData, &$data, &$types){
         
-        foreach($aData as $key=>$value)
-        {
-            if(ctype_digit($key))
-            {
-                $this->_format($data, $dataIteration, $typesIteration);
-                $MainPart = new GDO_PartType();
-                $result = FusionConvBuilder::iteration( $MainPart, 'IterationName', $dataIteration, $typesIteration, null );
+        if (!empty($aData)) {
+            foreach ($aData as $key => $value) {
+                if (ctype_digit($value)) {
+                    $this->_format($data, $dataIteration, $typesIteration);
+                    $MainPart = FusionConvBuilder::iteration($MainPart, $key, $dataIteration, $typesIteration, null);
+                } else {
+                    $data[$key] = $value['value'];
+                    $types[$key] = $value['type'];
+                }
             }
-            $data[$key]=$value['value'];
-            $types[$key]=$value['type'];
-            
         }
     }
 

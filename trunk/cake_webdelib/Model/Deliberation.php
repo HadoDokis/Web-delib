@@ -1813,10 +1813,11 @@ class Deliberation extends AppModel {
             $aData['libelle_delib'] = array('value'=> $delib['Deliberation']['objet_delib'], 'type'=>'lines');
         if ($modelOdtInfos->hasUserFieldDeclared('identifiant_projet'))
             $aData['identifiant_projet'] = array('value'=> $delib['Deliberation']['id'], 'type'=>'text');
-        if ($modelOdtInfos->hasUserFieldDeclared('service_emetteur'))
-            $aData['service_emetteur'] = array('value'=>$this->Service->field('libelle', array('id' => $delib['Deliberation']['service_id'])), 'type'=>'text');
+        if ($modelOdtInfos->hasUserFieldDeclared('service_emetteur')) {
+            $aData['service_emetteur'] = array('value' => $this->Service->field('name', array('id' => $delib['Deliberation']['service_id'])), 'type' => 'text');
+        }
         if ($modelOdtInfos->hasUserFieldDeclared('service_avec_hierarchie'))
-            $aData['service_avec_hierarchie'] = array('value'=>$this->Service->_doList($delib['Deliberation']['service_id']), 'type'=>'text');
+            $aData['service_avec_hierarchie'] = array('value'=> $this->Service->_doList($delib['Deliberation']['service_id']), 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('etat_projet'))
             $aData['etat_projet'] = array('value'=>$delib['Deliberation']['etat'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('classification_deliberation'))
@@ -1905,7 +1906,7 @@ class Deliberation extends AppModel {
         foreach ($fileodts as $champ => $variable)
             if ($modelOdtInfos->hasUserField($variable)) {
                 if (!empty($delib['Deliberation'][$champ])) {
-                    $aData['fileodt.' . $variable] = $delib['Deliberation'][$champ];
+                    $aData['fileodt.' . $variable] = array('value'=> $delib['Deliberation'][$champ], 'type'=>'file');
                 }
             }
 
@@ -1914,7 +1915,7 @@ class Deliberation extends AppModel {
 
         // nombre de séances du projet
         $seanceIds = $this->Deliberationseance->nfield('seance_id', array('Deliberationseance.deliberation_id' => $delib['Deliberation']['id']), array('Seance.date'));
-        $aData['nombre_seance'] = array('value'=>count($seanceIds), 'type'=>'text');
+        $aData['nombre_seance'] = array('value'=> count($seanceIds), 'type'=>'text');
         // position du projet dans la séance de l'édition ou de la séance délibérante
         if ($modelOdtInfos->hasUserFieldDeclared('position_projet')) {
             if (empty($fusionSeanceId))
@@ -1922,7 +1923,7 @@ class Deliberation extends AppModel {
             else
                 $positionSeanceId = $fusionSeanceId;
             $position = empty($positionSeanceId) ? 0 : $this->getPosition($delib['Deliberation']['id'], $positionSeanceId);
-            $aProjet['position_projet'] = array('value'=>$position, 'type'=>'text');
+            $aProjet['position_projet'] = array('value'=> $position, 'type'=>'text');
         }
 
         // itération sur les séances
