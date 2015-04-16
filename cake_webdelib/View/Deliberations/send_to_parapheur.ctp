@@ -1,194 +1,144 @@
 <?php echo $this->Html->script('utils.js'); 
 $this->Html->addCrumb('Séances à traiter', array('controller'=>'seances','action'=>'listerFuturesSeances'));
 $this->Html->addCrumb('Signature des délibérations');
-?>
-<div class="deliberations">
-    <?php if (isset($message)) echo($message); ?>
-    <?php if (empty($seance_id)): ?>
-        <h2>Délibérations signées</h2>
-    <?php else: ?>
-        <h2>Signature des délibérations</h2>
-    <?php endif; ?>
-    <?php
-    echo $this->element('filtre');
-    if (!empty($seance_id))
-        echo $this->Form->create('Deliberation', array(
-            'url' => array('controller' => 'deliberations', 'action' => 'sendToParapheur', $seance_id),
-            'type' => 'file'
-        ));
-    ?>
-    <table class='table table-striped'>
-        <thead>
-        <tr>
-            <?php if ($seance_id != null) : ?>
-                <th style="width: 2px;"><input type='checkbox' id='masterCheckbox'/></th>
-            <?php endif; ?>
-            <th style="width: 20px;">Id</th>
-            <th>Numéro Délibération</th>
-            <th>Libellé de l'acte</th>
-            <th>Classification</th>
-            <th>Bordereau</th>
-            <th style='width:210px'>
-                Statut <?php //echo $this->Html->link('<i class="fa fa-refresh"></i>', array('controller' => 'deliberations', 'action' => 'refreshSignature'), array('escape' => false)); ?></th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php
-        $numLigne = 1;
-        foreach ($deliberations as $delib) {
-            echo $this->Html->tag('tr', null);
-            $numLigne++;
 
-            $options = array();
-            if ($seance_id != null) {
-                if (empty($delib['Deliberation']['signee'])
-                    && in_array($delib['Deliberation']['parapheur_etat'], array(null, 0, -1))
-                    && in_array($delib['Deliberation']['etat'], array(3, 4))
-                )
-                    $options['checked'] = true;
-                else
-                    $options['disabled'] = true;
+echo $this->element('filtre');
+$titles=array();
+if (!empty($seance_id)){
+    echo $this->Bs->tag('h3', 'Signature des délibérations');
+    echo $this->BsForm->create('Deliberation', array(
+        'url' => array('controller' => 'deliberations', 'action' => 'sendToParapheur', $seance_id),
+        'type' => 'file'
+    ));
+    $titles[]=array('title' => $this->BsForm->checkbox('masterCheckbox', array(
+        'label' => '',
+        'inline'=>true
+     )));
+} 
+else { 
+    echo $this->Bs->tag('h3', 'Délibérations signées');
+}
+    
+$titles[]=array('title' => 'id');
+$titles[]=array('title' => 'Numéro Délibération');
+$titles[]=array('title' => 'Libellé de l\'acte');
+$titles[]=array('title' => 'Classification');
+$titles[]=array('title' => 'Bordereau');
+$titles[]=array('title' => 'Statut');
 
-                echo '<td style="text-align:center;">' . $this->Form->checkbox('Deliberation.id_' . $delib['Deliberation']['id'], $options) . '</td>';
+echo $this->Bs->table($titles, array('hover', 'striped'));
+
+foreach ($deliberations as $delib) {
+
+        $options = array();
+        if ($seance_id != null) {
+            if (empty($delib['Deliberation']['signee'])
+                && in_array($delib['Deliberation']['parapheur_etat'], array(null, 0, -1))
+                && in_array($delib['Deliberation']['etat'], array(3, 4))
+            )
+                $options['checked'] = true;
+            else
+                $options['disabled'] = true;
+
+            echo $this->Bs->cell($this->Form->checkbox('Deliberation.id_' . $delib['Deliberation']['id'], $options));
+        }
+        echo $this->Bs->cell($this->Html->link($delib['Deliberation']['id'], array('action' => 'view', $delib['Deliberation']['id'])));
+        if (!empty($delib['Deliberation']['num_delib'])) {
+            echo $this->Bs->cell($this->Html->link($delib['Deliberation']['num_delib'], array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $delib['Deliberation']['id']), array('class' => 'waiter')));
+        } else {
+            echo $this->Bs->cell($this->Html->link('Acte : ' . $delib['Deliberation']['id'], array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $delib['Deliberation']['id']), array('class' => 'waiter')));
+        }
+
+        echo $this->Bs->cell($delib['Deliberation']['objet_delib']);
+
+            if ($seance_id == null)
+               echo $this->Bs->cell(!empty($delib['Deliberation']['num_pref']) ? $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>');
+            else {
+                $id_num_pref = $delib['Deliberation']['id'] . '_num_pref';
+                    if (empty($nomenclatures)) $nomenclatures = array();
+                    echo $this->Bs->cell( $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
+                        'name' => $delib['Deliberation']['id'] . 'classif2',
+                        'label' => false,
+                        'options' => $nomenclatures,
+                        'default' => $delib['Deliberation']['num_pref'],
+                        'readonly' => empty($nomenclatures),
+                        'empty' => true,
+                        'class' => 'select2 selectone',
+                        'data-placeholder'=>'Sélectionnez une classification',
+                        'style' => 'width:auto; max-width:400px;',
+                        'div' => array('style' => 'text-align:center;font-size: 1.1em;'),
+                        'escape' => false
+                    )));
             }
-            ?>
-            <td style="text-align:center"><?php echo $this->Html->link($delib['Deliberation']['id'], array('action' => 'view', $delib['Deliberation']['id'])); ?></td>
-            <td>
-                <?php
-                if (!empty($delib['Deliberation']['num_delib']))
-                    echo $this->Html->link($delib['Deliberation']['num_delib'], array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $delib['Deliberation']['id']), array('class' => 'waiter'));
-                else
-                    echo $this->Html->link('Acte : ' . $delib['Deliberation']['id'], array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $delib['Deliberation']['id']), array('class' => 'waiter'));
-                ?>
-            </td>
-            <td>
-                <?php echo($delib['Deliberation']['objet_delib']); ?>
-            </td>
-
-            <td style="text-align:center">
-                <?php
-                if ($seance_id == null)
-                    echo !empty($delib['Deliberation']['num_pref']) ? $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>';
-                else {
-                    $id_num_pref = $delib['Deliberation']['id'] . '_num_pref';
-                    if (Configure::read('TDT') == 'PASTELL') {
-                        if (empty($nomenclatures)) $nomenclatures = array();
-                        echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
-                            'name' => $delib['Deliberation']['id'] . 'classif2',
-                            'label' => false,
-                            'options' => $nomenclatures,
-                            'default' => $delib['Deliberation']['num_pref'],
-                            'readonly' => empty($nomenclatures),
-                            'empty' => true,
-                            'class' => 'select2 selectone',
-                            'data-placeholder'=>'Sélectionnez une classification',
-                            'style' => 'width:auto; max-width:400px;',
-                            'div' => array('style' => 'text-align:center;font-size: 1.1em;'),
-                            'escape' => false
-                        ));
-                    } else {
-                        echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref_libelle', array(
-                            'label' => false,
-                            'div' => false,
-                            'id' => $delib['Deliberation']['id'] . 'classif1',
-                            'style' => 'width: 25em;',
-                            'disabled' => true,
-                            'value' => $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle']));?>
-                        <br/>
-                        <a class="list_form" href="#add"
-                           onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id']; ?>', 'Classification', 'scrollbars=yes,,width=570,height=450');"
-                           id="<?php echo $delib['Deliberation']['id']; ?> _classification_text">[Choisir la
-                            classification]</a>
-                        <?php
-                        echo $this->Form->hidden('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
-                            'id' => $delib['Deliberation']['id'] . 'classif2',
-                            'name' => $delib['Deliberation']['id'] . 'classif2',
-                            'value' => $delib['Deliberation']['num_pref'],
-                        ));
-                    }
-                }
-                ?>
-            </td>
-
-            <td style="text-align: center">
-                <?php
-                if (!empty($delib['Deliberation']['parapheur_bordereau']))
-                    echo $this->Html->link('<i class="fa fa-file-o"></i> Bordereau de signature', array('action' => 'downloadBordereau', $delib['Deliberation']['id']), array('escape' => false, 'title' => 'Télécharger le bordereau de signature', 'style' => 'text-decoration: none'));
-                ?>
-            </td>
-            <td>
-                <?php
-                switch ($delib['Deliberation']['parapheur_etat']) {
+        echo $this->Bs->cell(!empty($delib['Deliberation']['parapheur_bordereau']) ? $this->Html->link('<i class="fa fa-file-o"></i> Bordereau de signature', array('action' => 'downloadBordereau', $delib['Deliberation']['id']), array('escape' => false, 'title' => 'Télécharger le bordereau de signature', 'style' => 'text-decoration: none')):'');
+            
+            switch ($delib['Deliberation']['parapheur_etat']) {
                     case -1 :
-                        echo '<i class="fa fa-exclamation-triangle" title="' . $delib['Deliberation']['parapheur_commentaire'] . '"></i>&nbsp;Retour parapheur : refusée';
+                        $status=  '<i class="fa fa-exclamation-triangle" title="' . $delib['Deliberation']['parapheur_commentaire'] . '"></i>&nbsp;Retour parapheur : refusée';
                         break;
                     case 1 :
-                        echo '<i class="fa fa-clock-o"></i> En cours de signature';
+                        $status=  '<i class="fa fa-clock-o"></i> En cours de signature';
                         break;
                     case 2 :
-                        echo '<i class="fa fa-check"></i> Approuvé dans le parapheur&nbsp;';
+                        $status=  '<i class="fa fa-check"></i> Approuvé dans le parapheur&nbsp;';
                         if (!empty($delib['Deliberation']['signee'])) {
                             if (!empty($delib['Deliberation']['signature']))
-                                echo '(<a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;">Signature</a>)';
+                                $status.=  '(<a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;">Signature</a>)';
                             else
-                                echo '(Visa)';
+                                $status.=  '(Visa)';
                         }
                         break;
                     default : //0 ou null
                         if (!empty($delib['Deliberation']['signee'])) {
                             if (!empty($delib['Deliberation']['signature']))
-                                echo '<i class="fa fa-check"></i> Signée&nbsp;<a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;"><i class="fa fa-download"></i></a>';
+                                $status=  '<i class="fa fa-check"></i> Signée&nbsp;<a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;"><i class="fa fa-download"></i></a>';
                             else
-                                echo '<i class="fa fa-check"></i> Signée manuellement';
+                                $status=  '<i class="fa fa-check"></i> Signée manuellement';
                         } else {
                             switch ($delib['Deliberation']['etat']) {
                                 case -1 :
-                                    echo '<i class="fa fa-times"></i> Projet refusé';
+                                    $status=  '<i class="fa fa-times"></i> Projet refusé';
                                     break;
                                 case 2 :
-                                    echo '<i class="fa fa-clock-o"></i> A faire voter';
+                                    $status=  '<i class="fa fa-clock-o"></i> A faire voter';
                                     break;
                                 case 3 :
-                                    echo '<i class="fa fa-thumbs-up"></i> Projet voté';
+                                    $status=  '<i class="fa fa-thumbs-up"></i> Projet voté';
                                     break;
                                 case 4 :
-                                    echo '<i class="fa fa-thumbs-down"></i> Projet non adopté';
+                                    $status=  '<i class="fa fa-thumbs-down"></i> Projet non adopté';
                                     break;
                                 case 5 :
-                                    echo '<i class="fa fa-certificate"></i> Projet envoyé au tdt';
+                                    $status=  '<i class="fa fa-certificate"></i> Projet envoyé au tdt';
                                     break;
                                 default :
-                                    echo '<i class="fa fa-pencil"></i> En cours d&apos;élaboration';
+                                    $status= '<i class="fa fa-pencil"></i> En cours d&apos;élaboration';
                             }
+                            
                         }
-                }
-                ?>
-            </td>
-            </tr>
-        <?php } ?>
-        </tbody>
-    </table>
-    <?php
+                    }
+                    echo $this->Bs->cell($status);
+    }
+echo $this->Bs->endTable();
+echo $this->Html->tag(null, '<br />') ;
+$this->BsForm->setLeft(0);
+$this->BsForm->setRight(12);
     if (!empty($seance_id) && !empty($deliberations)) {
-        $this->BsForm->setLeft(0);
-        $this->BsForm->setRight(0);
         echo $this->Bs->row().
         $this->Bs->col('xs4').
         $this->BsForm->selectGroup('Parapheur.circuit_id', array_merge(array(''=>''), $circuits), array(
-                                'content'=>'<i class="fa fa-mail-forward"></i> Envoyer <span id="nbProjetChecked"></span>',
-                                'type' => 'button',
-                                'state' => 'primary',
+                                'content'=>$this->Bs->icon('mail-forward').' Envoyer <span id="nbProjetChecked"></span>',
+                                'type' => 'submit',
+                                'state' => 'success',
                                 'side'=>'right'), array(
                                 'class'=>'select2 selectone',
                                 'data-placeholder'=>'Sélectionnez une action',
-                                'label' => 'Actions disponibles')).$this->BsForm->end().
-        $this->Bs->close(2);
-        echo $this->Html->tag(null, '<br />') ;
+                                'label' => 'Actions disponibles')).
+        $this->Bs->close(2).
+        $this->BsForm->end();
     }
-    echo $this->Html2->btnCancel(array('controller'=>'seances','action'=>'listerFuturesSeances'));//'<i class="fa fa-arrow-left"></i> Retour', $previous);
-    ?>
-</div>
-
+echo $this->Html2->btnCancel($previous);
+?>
 <script type="application/javascript">
     /**
      * Actions au chargement de la page

@@ -4,8 +4,7 @@ $this->Html->addCrumb('Mes projets', array('controller' => $this->params['contro
 $titre=$titreVue . ' (' . $nbProjets .' '. ($nbProjets > 1 ?'projets':'projet').')';
 
 if (($this->params['filtre'] != 'hide')
-    && ($this->params['action'] != 'mesProjetsRecherche')
-    && ($this->params['action'] != 'tousLesProjetsRecherche')
+    && ($this->params['action'] != 'search')
 ) {
     echo $this->element('filtre').
     $this->Bs->tag('h3', $titre);
