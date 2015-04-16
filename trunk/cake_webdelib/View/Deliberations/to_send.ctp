@@ -79,25 +79,11 @@ foreach ($deliberations as $deliberation) {
              echo $deliberation['Deliberation']['num_pref'] . ' - ' . $deliberation['Deliberation']['num_pref_libelle'] ;
         }
         else {
-            if (!empty($nomenclatures)) {
-                
-                $select=$this->Form->input($id_num_pref, array(
-                    'name' => $deliberation['Deliberation']['id'] . 'classif2',
-                    'label' => false,
-                    'options' => $nomenclatures,
-                    'default' => $deliberation['Deliberation']['num_pref'],
-                    'readonly' => empty($nomenclatures),
-                    'empty' => true,
-                    'class' => 'selectone',
-                    'style' => 'width:auto; max-width:500px;',
-                    'div' => array('style' => 'text-align:center;font-size: 1.1em;'),
-                    'escape' => false
-                ));
-            } else {
                 $this->BsForm->setLeft(0);
                 $this->BsForm->setRight(0);
-                $select=$this->BsForm->select($id_num_pref, $optionsNumPref , array(
+                $select=$this->BsForm->select($id_num_pref, $nomenclatures , array(
                     'class'=>'selectone',
+                    'escape'=> false,
                     'default'=>!empty($deliberation['Deliberation']['num_pref'])?$deliberation['Deliberation']['num_pref']:null,
                     'placeholder' => 'Cliquer ici pour choisir la classification',
                 ));
@@ -120,7 +106,6 @@ foreach ($deliberations as $deliberation) {
                     'name' => $deliberation['Deliberation']['id'] . 'classif2',
                     'value' => $deliberation['Deliberation']['num_pref']
                 ));*/
-            }
         }
         $annexes='';
         if(!empty($deliberation['Annex'])){
@@ -133,7 +118,7 @@ foreach ($deliberations as $deliberation) {
             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">';
                   foreach ($deliberation['Annex'] as $annexe) {
                   $annexes.='<li role="presentation">' .
-                  $this->Bs->btn($annexe['filename_pdf'], array('controller' => 'annexes', 'action' => 'download', $annexe['id']), array('icon' => 'glyphicon glyphicon-download-alt',
+                  $this->Bs->btn($annexe['filename'], array('controller' => 'annexes', 'action' => 'download', $annexe['id']), array('icon' => 'glyphicon glyphicon-download-alt',
                       'role' => 'menuitem',
                       'tabindex' => -1
                   ))

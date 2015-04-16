@@ -41,11 +41,13 @@ foreach ($presents as $present) {
     } else {
         $cell_elu = $present['Acteur']['prenom'] . ' ' . $present['Acteur']['nom'];
     }
+    echo $this->Bs->cell($cell_elu);
 
     //cellule Présent
-    $selected = $present['Listepresence']['present'];
-    $cell_present = $this->BsForm->checkbox('Acteur.' . $present['Acteur']['id'] . '.present', array('label' =>false, 'checked'=>$selected)); 
-
+    echo $this->Bs->cell($this->BsForm->checkbox('Acteur.' . $present['Acteur']['id'] . '.present', array(
+        'label' =>false,
+        'checked'=>$present['Listepresence']['present'])));
+        
     //cellule Mandataire
     if (empty($present['Acteur']['id'])) {
         $cell_mandataire = $this->Form->input("Acteur." . $present['Acteur']['id'] . '.mandataire', 
@@ -71,9 +73,6 @@ foreach ($presents as $present) {
             'value' => !empty($present['Listepresence']['mandataire']) ? $present['Listepresence']['mandataire'] : false
         ));
     }
-    
-    echo $this->Bs->cell($cell_elu);
-    echo $this->Bs->cell($cell_present);
     echo $this->Bs->cell($cell_mandataire);
 }
 
