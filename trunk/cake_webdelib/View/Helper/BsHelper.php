@@ -954,7 +954,7 @@ class BsHelper extends HtmlHelper {
 
 		// Modal
 		$out .= '<div class="modal fade ' . $classes . '" id="' . $id . '" tabindex="-1" role="dialog" aria-labelledby="' . $id . 'Label" aria-hidden="true">';
-		$out .= '<div class="modal-dialog">';
+		$out .= '<div class="modal-dialog'.(isset($options['size'])?' modal-'.$options['size']:'').'">';
 
 		// Content
 		$out .= '<div class="modal-content">';
