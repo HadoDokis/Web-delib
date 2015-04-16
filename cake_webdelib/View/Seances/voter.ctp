@@ -31,7 +31,7 @@ echo $this->Bs->div('panel panel-default') .
         array('controller'=>'deliberations', 'action'=>'listerPresents', $deliberation['Deliberation']['id'],$seance_id), array('return')),
             'header' => 'Liste des présents'
         ), 
-    array('form'=>true)) .
+    array('form'=>true,'size'=>'lg')) .
     $this->Bs->btn('Récupérer la délibération précédente',
         array('controller'=>'deliberations', 
             'action'=>'copyFromPrevious', 
@@ -122,13 +122,9 @@ echo $this->Bs->row(array('id'=>'voteDetail')).
                // debug($this->request->data['detailVote'][$present['Acteur']['id']].'=>'.$option);
                 //debug($this->Html->value('detailVote.'.$present['Acteur']['id']));
                $cell_vote = $this->BsForm->radio('detailVote.'.$present['Acteur']['id'], array($option=>''), array(
-                    'fieldset'=>false, 'label'=>false, 'legend'=>false, 'div'=>false,
-                   'before'=>null,
-                   'after'=>null,
-                    //'value'=>$option,
-                    'checked'=> (!empty($this->request->data['detailVote'][$present['Acteur']['id']]) && $this->request->data['detailVote'][$present['Acteur']['id']]==$option) ? false : false,
-                    'inline'=>true,
-                    'onChange' => 'javascript:vote()')); //vote(this)
+                   'inline'=>true,
+                   'checked'=> (!empty($this->request->data['detailVote'][$present['Acteur']['id']]) && $this->request->data['detailVote'][$present['Acteur']['id']]==$option) ? false : false,
+                     'onChange' => 'javascript:vote()')); //vote(this)
                 echo $this->Bs->cell($cell_vote);
             }
         }

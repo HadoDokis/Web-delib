@@ -61,8 +61,8 @@ class BsFormHelper extends FormHelper {
  * @return void
  */
 	public function setDefault() {
-		$this->__left = BsFormHelper::getLeft();
-                $this->__right = BsFormHelper::getRight();
+		$this->__left = 3;
+                $this->__right = 9;
 	}
         
 /**

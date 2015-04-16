@@ -63,7 +63,7 @@ echo $this->Bs->div('panel-heading',
     $attributes=!empty($seance['Typeseance']['color'])?array('style'=>'color: '.$seance['Typeseance']['color']):array();
     ?>
         <td><strong><?php echo $this->Bs->icon('tag', array('lg'), $attributes);?> <?php echo $seance['Typeseance']['libelle']; ?></strong></td>
-    <?php echo $this->Html->tag('td', $seance['Seance']['date']); ?>
+    <?php echo $this->Html->tag('td',  $this->Time->i18nFormat($seance['Seance']['date'], '%A %d %B %G à %k:%M')); ?>
     <td class="actions" style="text-align:center;vertical-align: middle">
 
         <!--
@@ -95,14 +95,13 @@ echo $this->Bs->div('panel-heading',
                 'title' => 'Générer la liste des convocations pour la séance du ' . $seance['Seance']['date'],
                 'escape' => false,
             )));
-        if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
-            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-file-text-o"></i> Générer l\'aperçu de l\'ordre jour',
-                array('action' => 'genereFusionToClient', $seance['Seance']['id'], 'ordredujour'),
-                array(
-                    'class' => 'waiter',
-                    'escape' => false,
-                    'title' => "Aperçu de l'ordre jour pour la séance du " . $seance['Seance']['date'],
-                )));
+            if (Configure::read('AFFICHE_CONVOCS_ANONYME')) {
+            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-file-text-o"></i> Générer l\'aperçu de l\'ordre jour', array('action' => 'genereFusionToClient', $seance['Seance']['id'], 'ordredujour'), array(
+                        'class' => 'waiter',
+                        'escape' => false,
+                        'title' => "Aperçu de l'ordre jour pour la séance du " . $seance['Seance']['date'],
+            )));
+        }
         echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-file-text-o"></i> Générer l\'ordre jour détaillé',
             array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance['Seance']['id'],
                 $seance['Typeseance']['modelordredujour_id']),

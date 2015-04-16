@@ -30,9 +30,7 @@ foreach ($users as $user) {
         $this->Bs->div('btn-group') .
         $this->Bs->btn(null, array('controller' => 'users', 'action' => 'view', $user['User']['id']), array('type' => 'default', 'icon' => 'glyphicon glyphicon-eye-open', 'title' => 'Voir')) .
         $this->Bs->btn($this->Bs->icon('lock'), array('controller' => 'users', 'action' => 'changeMdp', $user['User']['id']), array('type' => 'default', 'title' => 'Nouveau mot de passe','escape'=>false)) .
-        $this->Bs->btn(null, array('controller' => 'users', 'action' => 'edit', $user['User']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
-        $this->Bs->btn(null, array('controller' => 'users', 'action' => 'delete', $user['User']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$user['User']['is_deletable'] ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer : ' . $user['User']['username'] . ' ?') .
-        $this->Bs->btn(null, array(
+                $this->Bs->btn(null, array(
                'controller' => 'users', 
                'action' => ($user_actif)?'disable':'enable', 
                $user['User']['id']), array(
@@ -40,6 +38,8 @@ foreach ($users as $user) {
                    'icon' => ($user_actif)?'toggle-on':'toggle-off', 
                    'title' => ($user_actif)?'Désactiver':'Activer'),
                    'Êtes vous sur de vouloir '.(($user_actif)?'désactiver':'activer').' : ' . $user['User']['username'] . ' ?') .
+        $this->Bs->btn(null, array('controller' => 'users', 'action' => 'edit', $user['User']['id']), array('type' => 'primary', 'icon' => 'glyphicon glyphicon-edit', 'title' => 'Modifier')) .
+        $this->Bs->btn(null, array('controller' => 'users', 'action' => 'delete', $user['User']['id']), array('type' => 'danger', 'icon' => 'glyphicon glyphicon-trash', 'title' => 'Supprimer', 'class' => !$user['User']['is_deletable'] ? 'disabled' : ''), 'Êtes vous sur de vouloir supprimer : ' . $user['User']['username'] . ' ?') .
     $this->Bs->close());
 
 }

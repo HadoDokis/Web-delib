@@ -91,6 +91,7 @@ foreach ($deliberations as $deliberation) {
         $actions.=$this->Bs->btn('Générer', 
                         array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']), 
                         array('type' => 'default', 
+                            'class' => 'waiter',
                             'icon' => 'glyphicon glyphicon-cog', 
                             'title' => 'Générer le document du projet ' . $deliberation['Deliberation']['objet_delib']
         ));
