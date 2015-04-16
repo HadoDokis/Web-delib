@@ -141,9 +141,9 @@ class Service extends AppModel
      */
     function setVariablesFusion(&$aData, &$modelOdtInfos, $id) {
         if ($modelOdtInfos->hasUserFieldDeclared('service_emetteur'))
-            $aData['service_emetteur'] = $this->field('name', array('id'=>$id));
+            $aData['service_emetteur'] = array('value'=> $this->field('name', array('id'=>$id)), 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('service_avec_hierarchie'))
-            $aData['service_avec_hierarchie'] = $this->_doList($id);
+            $aData['service_avec_hierarchie'] = array('value'=> $this->_doList($id), 'type'=>'text');
     }
     
     public function parentNode() {

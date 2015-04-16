@@ -1,4 +1,5 @@
 <?php
+
 class Seance extends AppModel
 {
     public $days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
@@ -229,9 +230,8 @@ class Seance extends AppModel
 
     function generateAllList()
     {
-        $this->Behaviors->load('Containable');
         $generateList = array();
-        $seances = $this->find('all', array('order' => 'date ASC',
+        $seances = $this->find('all', array('order' => 'date DESC',
             'fields' => array('Seance.id', 'Seance.type_id', 'Seance.date'),
             'contain' => array('Typeseance.libelle', 'Typeseance.action')));
 
@@ -435,24 +435,24 @@ class Seance extends AppModel
         $dateSeanceTimeStamp = strtotime($seance['Seance']['date']);
         if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe.'_lettres')) {
             App::uses('CakeTime', 'Utility');
-            $aData['date_'.$suffixe.'_lettres']=AppTools::dateLettres($dateSeanceTimeStamp);//, 'text'));
+            $aData['date_'.$suffixe.'_lettres'] = array('value'=> AppTools::dateLettres($dateSeanceTimeStamp), 'type'=>'text');
         }
         if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe))
-            $aData['date_'.$suffixe]= date('d/m/Y', $dateSeanceTimeStamp);//, 'text'));
+            $aData['date_'.$suffixe]= array('value'=> date('d/m/Y', $dateSeanceTimeStamp), 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('heure_'.$suffixe))
-            $aData['heure_'.$suffixe]= date('H:i', $dateSeanceTimeStamp);//, 'text'));
+            $aData['heure_'.$suffixe]= array('value'=> date('H:i', $dateSeanceTimeStamp), 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('hh_'.$suffixe))
-            $aData['hh_'.$suffixe]= date('H', $dateSeanceTimeStamp);//, 'text'));
+            $aData['hh_'.$suffixe]= array('value'=> date('H', $dateSeanceTimeStamp), 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('mm_'.$suffixe))
-            $aData['mm_'.$suffixe]= date('i', $dateSeanceTimeStamp);//, 'text'));
+            $aData['mm_'.$suffixe]= array('value'=> date('i', $dateSeanceTimeStamp), 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('date_convocation_'.$suffixe))
-            $aData['date_convocation_'.$suffixe]= (empty($seance['Seance']['date_convocation'])?'':date('d/m/Y', strtotime($seance['Seance']['date_convocation'])));//, 'text'));
+            $aData['date_convocation_'.$suffixe]= array('value'=> (empty($seance['Seance']['date_convocation'])?'':date('d/m/Y', strtotime($seance['Seance']['date_convocation']))), 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('identifiant_'.$suffixe))
-            $aData['identifiant_'.$suffixe]= $seance['Seance']['id'];//, 'text'));
+            $aData['identifiant_'.$suffixe]= array('value'=> $seance['Seance']['id'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('commentaire_'.$suffixe))
-            $aData['commentaire_'.$suffixe]= $seance['Seance']['commentaire'];//, 'text'));
+            $aData['commentaire_'.$suffixe]= array('value'=> $seance['Seance']['commentaire'], 'type'=>'text');
         if ($modelOdtInfos->hasUserFieldDeclared('type_'.$suffixe))
-            $aData['type_'.$suffixe]= $this->Typeseance->field('libelle', array('id' => $seance['Seance']['type_id']));//, 'text'));
+            $aData['type_'.$suffixe]= array('value'=> $this->Typeseance->field('libelle', array('id' => $seance['Seance']['type_id'])), 'type'=>'text');
 
         // président de séance
         if (!empty($seance['Seance']['president_id'])){
