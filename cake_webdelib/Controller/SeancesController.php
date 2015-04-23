@@ -1410,7 +1410,7 @@ class SeancesController extends AppController {
                     $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id),
                         'recursive' => -1,
                         'fields' => array('Acteur.nom')));
-                    $zip->addFile($file->path, $acteur['Acteur']['nom'] . '.pdf');
+                    $zip->addFile($file->path, $acteur['Acteur']['nom']. '_' . $acteur_id . '.pdf');
                     $file->close();
                 }
             $zip->close();
