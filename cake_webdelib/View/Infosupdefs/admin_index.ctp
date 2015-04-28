@@ -1,4 +1,5 @@
 <?php
+$this->Html->addCrumb($titre);
 echo $this->Bs->tag('h3', $titre) .
         $this->element('filtre').
  $this->Bs->table(array(array('title' => 'Ordre'),

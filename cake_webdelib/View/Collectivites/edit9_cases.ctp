@@ -87,6 +87,7 @@ $caseList .= $this->Bs->close(3);
 /**
  * AFFICHAGE
  */
+$this->Html->addCrumb('Modification de l\'affichage des 9 cases');
 echo $this->Bs->tag('h3', 'Modification de l\'affichage des 9 cases') .
      $this->Bs->div('spacer') .  $this->Bs->close() .
      $this->BsForm->create('Collectivites', array(
