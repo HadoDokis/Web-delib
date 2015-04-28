@@ -1,7 +1,7 @@
 /**
  * Créé par Florian Ajir <florian.ajir@adullact.org> le 05/03/14.
  *
- * Instructions javascript à éxectuter au lancement de toutes les pages
+ * Instructions javascript à executer au lancement de toutes les pages
  */
 
 /**
@@ -20,16 +20,22 @@ function modifierDate(nom, dateSplit, nb) {
     //on construit la date
     var now = new Date(tab[0], tab[1] - 1, tab[2], tab[3], 0, 0, 0);
     //on ajoute la valeur voulue en fonction de la combox
+    //1 heure
     if ($(nom).val() == 0) {
         now.setHours(now.getHours() + nb);
+    //1 jour
     } else if ($(nom).val() == 1) {
         now.setDate(now.getDate() + nb);
+    //1 mois
     } else if ($(nom).val() == 2) {
         now.setMonth(now.getMonth() + nb);
+    //1 an
     } else if ($(nom).val() == 3) {
         now.setFullYear(now.getFullYear() + nb);
+    //1 semaine
+    } else if ($(nom).val() == 4) {
+        now.setDate((now.getDate() - 6) + nb);
     }
-
     return now.getFullYear() + '-' + ajoutZero((now.getMonth() + 1).toString()) + '-' + ajoutZero(now.getDate().toString()) + ' ' + ajoutZero(now.getHours().toString()) + ':' + ajoutZero(now.getMinutes().toString()) + ':' + ajoutZero(now.getSeconds().toString());
 }
 /**

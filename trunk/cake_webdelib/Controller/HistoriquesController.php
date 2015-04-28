@@ -142,7 +142,12 @@ class HistoriquesController extends AppController {
         //champ select
         $this->Filtre->addCritere('difDate', array(
             'retourLigne' => true,
-            'attribute' => array(__('1 heure'), __('1 jour'), __('1 mois'), __('1 ans'),__('hier'),_('cette semaine'),__('aujourd\'hui')),
+            'attribute' => array(
+                0 => __('1 heure'), 
+                1 => __('1 jour'), 
+                4 => __('1 semaine'), 
+                2 => __('1 mois'), 
+                3 => __('1 ans')),
             'inputOptions' => array(
                 'empty' => 'Aucune plage de date',
                 'type' => 'select',
