@@ -1,4 +1,5 @@
 <?php
+$this->Html->addCrumb('Information de votre collectivité');
 echo $this->Bs->tag('h3', 'Information de votre collectivité') .
  $this->Bs->table(array(
     array('title' => 'Collectivité'),

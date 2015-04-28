@@ -25,7 +25,15 @@ class InfosupdefsController extends AppController
                     'recursive' => -1 ,
                     'conditions' => $conditions,
                     'order' => 'ordre'));
-            $this->set('titre', 'Liste des informations supplémentaires des projets');
+            
+            if($type == 'seance'){
+                $this->set('titre', 'Liste des informations supplémentaires des séances');
+            }
+            else{
+                $this->set('titre', 'Liste des informations supplémentaires des projets');
+            }
+            
+            
             $this->set('lienAdd', array('admin' => true,
                                         'prefix' => 'admin',
                                         'controller'=>'infosupdefs',
