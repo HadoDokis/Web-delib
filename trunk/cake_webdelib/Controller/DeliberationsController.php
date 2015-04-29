@@ -38,7 +38,7 @@ class DeliberationsController extends AppController {
                 'editerTous',
                 'deleteDebat',
                 'validerEnUrgence',
-                'tableauBord'=> array('viewDetailed'),
+                'tableauBord'=> array('viewDetailed', 'downloadTableauBordCsv'),
                 'mesProjetsATraiter' => array('traiter','retour'),
                 'tousLesProjetsSansSeance' => array('attribuerSeance'),
                 'autresActesAValider' => array('autreActesValides','autresActesAEnvoyer','autresActesEnvoyes'),
@@ -655,7 +655,7 @@ class DeliberationsController extends AppController {
 
     public function edit($id = null) {
         
-            
+
         $annexesErrors = array();
         $canEditAll = $this->Acl->check(array('User' => array('id' => $this->Auth->user('id'))), 'editerTous');
         
@@ -5781,5 +5781,89 @@ class DeliberationsController extends AppController {
             //'options' => array(__('1 heure'), __('1 jour'),__('1 mois'),__('1 ans'))
             ),
             'column' => 3));
+    }
+    
+    /**
+     * Permet de télécharger au format csv les list affiché dans le tableau de bord
+     * 
+     * @param type $delib_id liste des id des projets à retourner au format csv
+     */
+    function downloadTableauBordCsv($delib_ids) {
+        if (!empty($delib_ids)) {
+            $tabledelib_id = explode('|', $delib_ids);
+            if (count($tabledelib_id) != 1) {
+                $conditions['"Deliberation"."id" IN '] = $tabledelib_id;
+            } else {
+                $conditions['"Deliberation"."id"'] = $tabledelib_id;
+            }
+            $options['conditions'] = $conditions;
+            $options['fields'] = array(
+                'Deliberation.id',
+                'Deliberation.objet',
+                'Visas.etape_nom',
+                'Visas.date',
+                'Users.nom',
+                'Users.prenom',
+            );
+            $options['joins'] = array(
+                array('table' => 'wkf_traitements',
+                    'alias' => 'Traitements',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Traitements.target_id = Deliberation.id'
+                    )
+                ),
+                array('table' => 'wkf_visas',
+                    'alias' => 'Visas',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Visas.traitement_id = Traitements.id'
+                    )
+                ),
+                array('table' => 'users',
+                    'alias' => 'Users',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Visas.trigger_id = Users.id'
+                    )
+                ),
+            );
+            $options['order'] = 'Deliberation.id';
+            $options['recursive'] = -1;
+            $Deliberations = $this->Deliberation->find('all', $options);
+            // \r \n </br> "\n"
+            //$csv = 'Affaire;Etapes';     
+            $id = null;
+            $csv = '';
+            foreach ($Deliberations as $Deliberation) {
+                if(empty($id)){
+                    $id = $Deliberation['Deliberation']['id'];
+                    $csv .= '(' . $Deliberation['Deliberation']['id'] . ')' . str_replace(CHR(13).CHR(10),"",$Deliberation['Deliberation']['objet']) . ';' ;
+                }
+                if($id != $Deliberation['Deliberation']['id']){
+                    $id = $Deliberation['Deliberation']['id'];
+                    $csv .= CHR(13).'(' . $Deliberation['Deliberation']['id'] . ')' . str_replace(CHR(13).CHR(10),"",$Deliberation['Deliberation']['objet']) . ';' ;
+                }
+               if(empty($Deliberation['Visas']['date'])) 
+                   $Deliberation['Visas']['date'] = ' non traité';
+               else 
+                   $Deliberation['Visas']['date'] = ' traité le '.$Deliberation['Visas']['date'];
+               $csv .=  $Deliberation['Visas']['etape_nom'] . ' ' .
+                        $Deliberation['Visas']['date'] .
+                        ' par ' .$Deliberation['Users']['prenom'].' '. $Deliberation['Users']['nom'] .
+                         ';';
+            }
+            $today = date("d-m-Y à H:i:s");
+            //$today = gmdate( 'D, d M Y H:i:s' );
+            // envoi au client
+            $this->response->disableCache();
+            $this->response->body($csv);
+           // $this->response->type('application/csv');
+            $this->response->type('application/csv');
+            //$this->response->download($today.'.csv');
+            $this->response->header('disposition-type: case-insensitive');
+            $this->response->header('Content-Disposition', 'attachment; filename="' . $today . '.csv"');
+            return $this->response;
+        }
     }
 }
