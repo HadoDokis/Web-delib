@@ -50,7 +50,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->script('/components/bootstrap/dist/js/bootstrap.min');
     echo $this->Html->script('/components/bootstrap.growl/bootstrap-growl.min');
     echo $this->Html->script('/components/select2/select2.min');
-    //echo $this->Html->script('/components/select2/select2_locale_fr');
+    echo $this->Html->script('/components/select2/select2_locale_fr');
     echo $this->Html->script('/components/scrollup/dist/jquery.scrollUp.min');
     echo $this->Html->script('/components/jstree/dist/jstree.min');
     echo $this->html->script('/components/bootstrap-submenu/dist/js/bootstrap-submenu.min');
