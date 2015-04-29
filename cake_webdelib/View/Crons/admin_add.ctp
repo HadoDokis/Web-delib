@@ -8,9 +8,10 @@ foreach ($plugin_model_method as $plugin => $models) {
             $modelList[$model] = $model;
     }
 }
-
+$this->Html->addCrumb(__('Planification de la tâche'), array('controller' => 'crons', 'action' => 'index'));
+$this->Html->addCrumb('Nouvelle tâche planifiée');
 echo $this->Html->tag('h3', __('Nouvelle tâche planifiée', true)) .
-$this->Form->create(null, array(
+$this->Form->create('Cron', array(
     'plugin' => 'Crons', 
     'controller' => 'crons', 
     'action' => 'add'));
@@ -26,13 +27,13 @@ $panel['left'][] ='<b>'.__('Heure de la prochaine exécution', true).' : </b>';
 $panel['left'][] ='<b>'.__('Délais entre deux exécutions', true).' : </b>';
 $panel['left'][] ='<b>'.__('Activation', true).' : </b>';
 
-$panel['right'][] = $this->Form->input('nom', array('label' => false ));
-$panel['right'][] = $this->Form->input('description', array('label' => false));
-$panel['right'][] = $this->Form->input('plugin', array('label' => false,'type' => 'select', 'empty' => true, 'options' => $plugins));
-$panel['right'][] = $this->Form->input('model', array('label' => false, 'type' => 'select', 'empty' => true, 'options' => $modelList));
-$panel['right'][] = $this->Form->input('action', array('label' => false, 'type' => 'select', 'empty' => true));
-$panel['right'][] = $this->Form->input('params', array('label' => false));
-$panel['right'][] = $this->Form->input('next_execution_date', array('label' => false,
+$panel['right'][] = $this->Form->input('Cron.nom', array('label' => false ));
+$panel['right'][] = $this->Form->input('Cron.description', array('label' => false));
+$panel['right'][] = $this->Form->input('Cron.plugin', array('label' => false,'type' => 'select', 'empty' => true, 'options' => $plugins));
+$panel['right'][] = $this->Form->input('Cron.model', array('label' => false, 'type' => 'select', 'empty' => true, 'options' => $modelList));
+$panel['right'][] = $this->Form->input('Cron.action', array('label' => false, 'type' => 'select', 'empty' => true));
+$panel['right'][] = $this->Form->input('Cron.params', array('label' => false));
+$panel['right'][] = $this->Form->input('Cron.next_execution_date', array('label' => false,
                     'type' => 'date',
                     'dateFormat' => 'DMY',
                     'minYear' => date('Y') - 0,
@@ -40,9 +41,9 @@ $panel['right'][] = $this->Form->input('next_execution_date', array('label' => f
                     'monthNames' => false,
                     'empty' => true
                 ));
-$panel['right'][] = $this->Form->input('next_execution_heure', array('label' => false, 'type' => 'time', 'timeFormat' => '24', 'interval' => 15));
+$panel['right'][] = $this->Form->input('Cron.next_execution_heure', array('label' => false, 'type' => 'time', 'timeFormat' => '24', 'interval' => 15));
 $panel['right'][] = $this->DurationPicker->picker('Cron.execution_duration', array('label' => false, 'empty' => true, 'value' => null));
-$panel['right'][] = $this->Form->input('active', array('label' => false, 'checked' => true));
+$panel['right'][] = $this->Form->input('Cron.active', array('label' => false, 'checked' => true));
 
 echo $this->Bs->panel('Ajout d\'une nouvelle tâche');
 foreach($panel['left'] as $i => $temp)
@@ -59,8 +60,8 @@ foreach($panel['left'] as $i => $temp)
 unset($panel);
 echo $this->Bs->endPanel() .
 $this->Html2->btnSaveCancel('', $previous, 'Valider', 'Valider') .
-$this->Form->hidden('id') .
-$this->Form->hidden('has_params', array('value' => '0')) .
+$this->Form->hidden('Cron.id') .
+$this->Form->hidden('Cron.has_params', array('value' => '0')) .
 $this->Form->end();
 ?>
 

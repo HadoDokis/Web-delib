@@ -1,4 +1,5 @@
 <?php
+$this->Html->addCrumb(__('Planification de la tâche'), array('controller' => 'crons', 'action' => 'index'));
 $this->Html->addCrumb('Circuits de traitement');
 echo $this->Bs->tag('h3', $contenuVue['titreVue']);
 

@@ -1,5 +1,6 @@
 <?php
 $superadmin = false;
+$this->Html->addCrumb(__('Planification de la tâche'), array('controller' => 'crons', 'action' => 'index'));
 echo $this->Html->css('crons') .
 $this->Bs->tag('h2', __('Liste des tâches automatiques', true)) .
 $this->Bs->table(
@@ -58,7 +59,7 @@ foreach ($this->data as $rownum => $rowElement) {
                         $rowElement['Cron']['id']), 
                             array(
                                 'type' => 'default', 
-                                'icon' => 'fa fa-info-circle fa-lg', 
+                                'icon' => 'info-circle', 
                                 'title' => 'Voir les détails'));
 
     if ($superadmin) {
@@ -69,7 +70,7 @@ foreach ($this->data as $rownum => $rowElement) {
                         $rowElement['Cron']['id']), 
                             array(
                                 'type' => 'default', 
-                                'icon' => 'fa fa-edit fa-lg', 
+                                'icon' => 'edit', 
                                 'title' => 'Modifier'));
 
         $liste_bouton .= $this->Bs->btn(null, array(
@@ -78,7 +79,7 @@ foreach ($this->data as $rownum => $rowElement) {
                         $rowElement['Cron']['id']), 
                             array(
                                 'type' => 'default', 
-                                'icon' => 'fa fa-trash-o fa-lg', 
+                                'icon' => 'trash-o', 
                                 'title' => 'Supprimer'),'Vous confirmez vouloir supprimer cette tâche automatique ?' );
     }
 
@@ -88,7 +89,7 @@ foreach ($this->data as $rownum => $rowElement) {
                     $rowElement['Cron']['id']), 
                         array(
                             'type' => 'primary', 
-                            'icon' => 'fa fa-clock-o fa-lg', 
+                            'icon' => 'clock-o', 
                             'title' => 'Planifier'));
 
     $liste_bouton .= $this->Bs->btn(null, array(
@@ -97,20 +98,19 @@ foreach ($this->data as $rownum => $rowElement) {
                 $rowElement['Cron']['id']), 
                     array(
                         'type' => 'success', 
-                        'icon' => 'fa fa-cog fa-lg', 
+                        'icon' => 'cog', 
                         'title' => 'Exécuter maintenant'));
    
-    $liste_bouton = $this->Bs->div('btn-group') . $liste_bouton . $this->Bs->close();
+    $liste_bouton = $this->Bs->div('btn-group-vertical') . $liste_bouton . $this->Bs->close();
     
-    echo $this->Bs->tableCells(array(
-        $rowElement['Cron']['statusLibelle'],
-        $rowElement['Cron']['nom'],
-        $this->Time->format("d-m-Y à H:i", $rowElement['Cron']['next_execution_time']),
-        $rowElement['Cron']['durationLibelle'],
-        $date_last_exec,
-        $rowElement['Cron']['activeLibelle'],
-        $liste_bouton
-    ));
+    echo 
+        $this->Bs->cell($rowElement['Cron']['statusLibelle']).
+        $this->Bs->cell($rowElement['Cron']['nom']).
+        $this->Bs->cell($this->Time->format("d-m-Y à H:i", $rowElement['Cron']['next_execution_time'])).
+        $this->Bs->cell($rowElement['Cron']['durationLibelle']).
+        $this->Bs->cell($date_last_exec).
+        $this->Bs->cell($rowElement['Cron']['activeLibelle']).
+        $this->Bs->cell($liste_bouton);
 }
 
 echo $this->Bs->endTable();
