@@ -840,7 +840,7 @@ class DeliberationsController extends AppController {
             // initialisation des délibérations rattachées
             if (array_key_exists('Multidelib', $this->request->data)) {
                 foreach ($this->request->data['Multidelib'] as &$delibRattachee) {
-                    $path_projet_delibRattachee = $path . 'webroot' . DS . 'files' . DS . 'generee' . DS . 'projet' . DS . $delibRattachee['id'] . DS;
+                    $path_projet_delibRattachee = APP . 'webroot' . DS . 'files' . DS . 'generee' . DS . 'projet' . DS . $delibRattachee['id'] . DS;
                     $path_webroot_delibRattachee = '/files/generee/projet/' . $delibRattachee['id'] . '/';
                     $this->Gedooo->createFile($path_projet_delibRattachee, 'deliberation.odt', $delibRattachee['deliberation']);
                     // création des fichiers des annexes de type vnd.oasis.opendocument
@@ -1259,7 +1259,7 @@ class DeliberationsController extends AppController {
                     foreach ($multiDelibs as $imd => $delibRattachee) {
                         $this->request->data['Multidelib'][$imd] = $delibRattachee['Multidelib'];
 
-                        $path_projet_delibRattachee = $path . 'webroot' . DS . 'files' . DS . 'generee' . DS . 'projet' . DS . $delibRattachee['Multidelib']['id'] . DS;
+                        $path_projet_delibRattachee = APP . 'webroot' . DS . 'files' . DS . 'generee' . DS . 'projet' . DS . $delibRattachee['Multidelib']['id'] . DS;
                         $path_webroot_delibRattachee = '/files/generee/projet/' . $delibRattachee['Multidelib']['id'] . '/';
                         $this->Gedooo->createFile($path_projet_delibRattachee, 'deliberation.odt', $delibRattachee['Multidelib']['deliberation']);
                         // création des fichiers des annexes de type vnd.oasis.opendocument
@@ -5627,10 +5627,10 @@ class DeliberationsController extends AppController {
                 //debug($options['conditions']);
                 $options['fields'] = array(
                     'Service.id',
-                    'Service.libelle',
+                    'Service.name',
                     'Deliberation.service_id',
                     'Deliberation.id',
-                    'Services2.libelle',
+                    'Services2.name',
                 );
                 $services = $this->Deliberation->Service->_getDataJson($options);
                 // on récupere les id des déliberations
@@ -5652,7 +5652,7 @@ class DeliberationsController extends AppController {
                     'contain' => array(
                         'Service' => array('fields' => array('name')),
                         'Theme' => array('fields' => array('libelle')),
-                        'Typeacte' => array('fields' => array('libelle')),
+                        'Typeacte' => array('fields' => array('name')),
                         'Circuit' => array('fields' => array('nom')),
                         'Deliberationtypeseance' => array('fields' => array('id'),
                             'Typeseance' => array('fields' => array('id', 'libelle', 'color', 'action'),
