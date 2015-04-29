@@ -5669,6 +5669,7 @@ class DeliberationsController extends AppController {
 
                 $this->set('projets', $Stringprojets); //pour le telechargement CSS
                 $this->_sortProjetSeanceDate($projets);
+                $this->layout='ajax';
                 $this->_afficheProjets(null, $projets, 'Vue détaillée', array('view', 'edit', 'plat'));
             }
         }
