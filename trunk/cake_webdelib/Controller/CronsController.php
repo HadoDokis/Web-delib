@@ -88,10 +88,13 @@ class CronsController extends AppController {
             }
         } else {
             // Initialisations avant sauvegarde
-            $this->request->data[$this->modelClass]['next_execution_time'] = array_merge($this->request->data[$this->modelClass]['next_execution_date'], $this->request->data[$this->modelClass]['next_execution_heure']);
+            $this->request->data[$this->modelClass]['next_execution_time'] = array_merge(
+                    $this->request->data[$this->modelClass]['next_execution_date'], 
+                    $this->request->data[$this->modelClass]['next_execution_heure']);
+            
             unset($this->request->data[$this->modelClass]['next_execution_date']);
             unset($this->request->data[$this->modelClass]['next_execution_heure']);
-            $this->request->data[$this->modelClass]['modified_user_id'] = $this->Session->read('user.User.id');
+            $this->request->data[$this->modelClass]['modified_user_id'] = $this->Auth->user('id');
             if ($this->{$this->modelClass}->save($this->request->data)) {
                 $nomCron = $this->{$this->modelClass}->field('nom');
                 $this->Session->setFlash(__('La tâche ', true) . ' \'' . $nomCron . '\' ' . __('a été correctement planifiée.', true), 'growl');
@@ -115,11 +118,12 @@ class CronsController extends AppController {
             $this->request->data[$this->modelClass]['next_execution_time'] = array_merge($this->request->data[$this->modelClass]['next_execution_date'], $this->request->data[$this->modelClass]['next_execution_heure']);
             unset($this->request->data[$this->modelClass]['next_execution_date']);
             unset($this->request->data[$this->modelClass]['next_execution_heure']);
-            $this->request->data[$this->modelClass]['created_user_id'] = $this->Session->read('user.User.id');
-            $this->request->data[$this->modelClass]['modified_user_id'] = $this->Session->read('user.User.id');
+            $this->request->data[$this->modelClass]['created_user_id'] = $this->Auth->user('id');
+            $this->request->data[$this->modelClass]['modified_user_id'] = $this->Auth->user('id');
+            $this->request->data[$this->modelClass]['lock'] = false;
             //mise en forme avant d'enregistrer plugin et controller
             $this->request->data[$this->modelClass]['plugin'] = strtolower($this->request->data[$this->modelClass]['plugin']);
-            $this->request->data[$this->modelClass]['controller'] = strtolower(str_replace('Controller', '', $this->request->data[$this->modelClass]['controller']));
+            //$this->request->data[$this->modelClass]['controller'] = strtolower(str_replace('Controller', '', $this->request->data[$this->modelClass]['controller']));
 
             $this->{$this->modelClass}->create($this->request->data);
             if ($this->{$this->modelClass}->save()) {

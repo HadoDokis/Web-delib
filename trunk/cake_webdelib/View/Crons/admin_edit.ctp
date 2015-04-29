@@ -1,5 +1,7 @@
 <?php
 $plugins = array();
+$this->Html->addCrumb(__('Planification de la tâche'), array('controller' => 'crons', 'action' => 'index'));
+
 foreach ($plugin_model_method as $plugin => $models) {
     if ($plugin !== '')
         $plugins[$plugin] = $plugin;
@@ -50,11 +52,11 @@ echo $this->Bs->panel('Edition de la tâche');
 foreach($panel['left'] as $i => $temp)
 {
    echo $this->Bs->row() .
-        $this->Bs->col('xs2') .
+        $this->Bs->col('xs3') .
         $this->Bs->close() .
         $this->Bs->col('xs3').$panel['left'][$i] .
         $this->Bs->close() .
-        $this->Bs->col('xs7').$panel['right'][$i] .
+        $this->Bs->col('xs3').$panel['right'][$i] .
         $this->Bs->close(2) .
         $this->Bs->div('spacer').$this->Bs->close();
 }
