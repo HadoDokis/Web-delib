@@ -1,5 +1,7 @@
 4.3.0
 ======
+- Correction ne prendre en compte que les projet dans un circuit pour les alertes de retard
+- Correction de l'export CMIS en Version 3
 - Mise en place de la recherche unifiée sur les projets
 - Mise en place du bouton d'action activer/désactiver dans la liste des utilisateurs
 - Mise en place de l'editeur des 9 cases
