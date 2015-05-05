@@ -62,6 +62,12 @@ class CronJob extends AppModel {
             $messages = array();
             foreach ($traitements as $traitement) {
                 if (empty($traitement['Visa'])) continue;
+                $this->Deliberation->recursive = -1;
+                $this->Deliberation->id = $traitement['Traitement']['target_id'];
+                
+                if(!$this->Deliberation->exists()) continue;
+                if($this->Deliberation->field('etat')!=1) continue;
+                
                 foreach ($traitement['Visa'] as $visa) {
                     // Si le visa ne respecte pas ces conditions, on passe au suivant
                     if (empty($visa['date_retard'])
@@ -78,9 +84,7 @@ class CronJob extends AppModel {
                     $users[] = $blaze;
                 //Envoi notification
                 foreach ($targets as $target){
-                    if($this->Deliberation->exists($target)){
                         $this->User->notifier($target, $user, 'retard_validation');
-                    }
                 }
             }
 
